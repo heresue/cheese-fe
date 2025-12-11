@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import './globals.css'; // 전역 스타일
+import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Cheese',

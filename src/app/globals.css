@@ -2,7 +2,7 @@
 @import 'pretendard/dist/web/variable/pretendardvariable.css';
 
 /* ------------------------------
-   1) Tokens (@theme)
+   1) Tokens
    ------------------------------ */
 @theme {
   --font-sans: 'Pretendard', system-ui, sans-serif;
@@ -48,7 +48,7 @@
 }
 
 /* ------------------------------
-   2) Global Base Layer (@layer base)
+   2) Global Base Layer
    ------------------------------ */
 @layer base {
   *,
