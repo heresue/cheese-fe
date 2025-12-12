@@ -1,0 +1,73 @@
+@import 'tailwindcss';
+@import 'pretendard/dist/web/variable/pretendardvariable.css';
+
+/* ------------------------------
+   1) Tokens
+   ------------------------------ */
+@theme {
+  --font-sans: 'Pretendard', system-ui, sans-serif;
+
+  /* Semantic Colors */
+  --color-bg: #fffcf0;
+  --color-bg-subtle: #ffffff; /* 임시적용: 흰색 */
+  --color-bg-surface: #ffffff;
+  --color-text: #111111;
+  --color-text-muted: #6b7280;
+
+  /* Primary */
+  --color-primary-0: #fffcf0;
+  --color-primary-10: #fff8de;
+  --color-primary-30: #fff2c6;
+  --color-primary-50: #ffeba9;
+  --color-primary-100: #ffe58d;
+  --color-primary-200: #ffe078;
+  --color-primary-300: #ffda5e;
+  --color-primary-400: #ffd33d;
+
+  /* Secondary */
+  --color-secondary-0: #f5f9ff;
+  --color-secondary-10: #e5eefe;
+  --color-secondary-30: #c9d9f6;
+  --color-secondary-50: #aac4f5;
+  --color-secondary-100: #8ca9ff;
+  --color-secondary-200: #698fff;
+  --color-secondary-300: #527eff;
+  --color-secondary-400: #2a5fff;
+
+  /* Neutral */
+  --color-bw-0: #ffffff;
+  --color-bw-100: #eeeeee;
+  --color-bw-200: #bbbbbb;
+  --color-bw-300: #999999;
+  --color-bw-400: #555555;
+  --color-bw-500: #111111;
+
+  /* Error */
+  --color-error-50: #ff5053;
+  --color-error-100: #f02326;
+}
+
+/* ------------------------------
+   2) Global Base Layer
+   ------------------------------ */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-sans);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
