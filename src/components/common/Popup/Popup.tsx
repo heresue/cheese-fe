@@ -1,5 +1,6 @@
 'use client';
 
+import clsx from 'clsx';
 import BasePopup from './BasePopup';
 import { Button } from '@/components/common/Button';
 
@@ -30,21 +31,17 @@ export default function Popup({
       <div
         role="dialog"
         aria-modal="true"
-        className={[
+        className={clsx(
           'w-full max-w-[640px] rounded-[16px]',
           'bg-bg-surface',
           'px-[20px] py-[40px]',
           'shadow-[0_0_4px_rgba(0,0,0,0.25)]',
-        ].join(' ')}
+        )}
       >
         <div className="flex flex-col items-center text-center">
           {title ? <h2 className="text-bw-900 text-[20px] font-semibold">{title}</h2> : null}
           {description ? (
-            <p
-              className={['text-bw-900 text-[20px] font-normal', title ? 'mt-[10px]' : ''].join(
-                ' ',
-              )}
-            >
+            <p className={clsx('text-bw-900 text-[20px] font-normal', title && 'mt-[10px]')}>
               {description}
             </p>
           ) : null}
