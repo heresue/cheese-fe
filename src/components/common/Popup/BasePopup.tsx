@@ -41,7 +41,7 @@ export default function BasePopup({
       />
 
       {/* content */}
-      <div className="relative w-full">{children}</div>
+      <div className="relative inline-flex">{children}</div>
     </div>,
     document.body,
   );

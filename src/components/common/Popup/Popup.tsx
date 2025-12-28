@@ -32,7 +32,7 @@ export default function Popup({
       <Panel
         role="dialog"
         aria-modal="true"
-        className={clsx('w-full max-w-[640px]', 'px-[20px] py-[40px]')}
+        className={clsx('w-full max-w-[640px] min-w-[360px]', 'px-[20px] py-[40px]')}
       >
         <div className="flex flex-col items-center text-center">
           {title ? <h2 className="text-bw-900 text-[20px] font-semibold">{title}</h2> : null}
