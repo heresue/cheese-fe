@@ -1,8 +1,9 @@
 'use client';
 
 import clsx from 'clsx';
-import BasePopup from './BasePopup';
 import { Button } from '@/components/common/Button';
+import { Panel } from '@/components/common/Panel';
+import BasePopup from './BasePopup';
 
 type PopupProps = {
   isOpen: boolean;
@@ -28,15 +29,10 @@ export default function Popup({
 }: PopupProps) {
   return (
     <BasePopup isOpen={isOpen} onClose={onClose}>
-      <div
+      <Panel
         role="dialog"
         aria-modal="true"
-        className={clsx(
-          'w-full max-w-[640px] rounded-[16px]',
-          'bg-bg-surface',
-          'px-[20px] py-[40px]',
-          'shadow-[0_0_4px_rgba(0,0,0,0.25)]',
-        )}
+        className={clsx('w-full max-w-[640px]', 'px-[20px] py-[40px]')}
       >
         <div className="flex flex-col items-center text-center">
           {title ? <h2 className="text-bw-900 text-[20px] font-semibold">{title}</h2> : null}
@@ -54,7 +50,7 @@ export default function Popup({
             </Button>
           </div>
         </div>
-      </div>
+      </Panel>
     </BasePopup>
   );
 }
