@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { usePopupBehavior } from '@/hooks/usePopupBehavior';
 
 type BasePopupProps = {
   isOpen: boolean;
@@ -16,29 +16,7 @@ export default function BasePopup({
   children,
   closeOnDimClick = true,
 }: BasePopupProps) {
-  // ESC 닫기
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [isOpen, onClose]);
-
-  // 외부 스크롤 차단
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [isOpen]);
+  usePopupBehavior({ isOpen, onClose });
 
   if (!isOpen) return null;
   if (typeof window === 'undefined') return null;
