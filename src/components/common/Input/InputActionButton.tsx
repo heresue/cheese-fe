@@ -1,6 +1,7 @@
 'use client';
 
 import type { ButtonHTMLAttributes } from 'react';
+import clsx from 'clsx';
 
 export type InputActionButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
 
@@ -12,7 +13,7 @@ export default function InputActionButton({
   return (
     <button
       type="button"
-      className={[
+      className={clsx(
         'shrink-0',
         'h-[26px] px-[10px]',
         'rounded-[5px]',
@@ -20,8 +21,8 @@ export default function InputActionButton({
         'border-primary-400 border',
         'text-bw-400 text-[12px] font-bold',
         'disabled:cursor-not-allowed disabled:opacity-50',
-        className ?? '',
-      ].join(' ')}
+        className,
+      )}
       {...rest}
     >
       {children}

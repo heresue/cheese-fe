@@ -1,6 +1,7 @@
 'use client';
 
 import { useId } from 'react';
+import clsx from 'clsx';
 import type { UnderlinedInputProps } from './type';
 
 export default function Input({
@@ -26,13 +27,13 @@ export default function Input({
         <div className="flex items-center gap-3">
           <input
             id={inputId}
-            className={[
+            className={clsx(
               'h-[47px] w-full min-w-0 bg-transparent outline-none',
               'text-bw-900 text-base font-normal',
               'placeholder:text-bw-400 placeholder:text-base placeholder:font-normal',
               'disabled:opacity-50',
-              className ?? '',
-            ].join(' ')}
+              className,
+            )}
             {...rest}
           />
 
