@@ -1,6 +1,7 @@
 'use client';
 
 import type { InputHTMLAttributes } from 'react';
+import clsx from 'clsx';
 
 type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
   label?: string;
@@ -10,21 +11,18 @@ export default function Checkbox({ id, label, className, ...rest }: CheckboxProp
   return (
     <label
       htmlFor={id}
-      className={[
-        'inline-flex cursor-pointer items-center gap-[5px] select-none',
-        className ?? '',
-      ].join(' ')}
+      className={clsx('inline-flex cursor-pointer items-center gap-[5px] select-none', className)}
     >
       <input id={id} type="checkbox" className="peer sr-only" {...rest} />
 
       <span
-        className={[
+        className={clsx(
           'relative flex items-center justify-center',
           'h-[20px] w-[20px] rounded-[2px]',
           'border-primary-400 border',
           'peer-checked:bg-primary-400',
           'peer-checked:[&>img]:opacity-100',
-        ].join(' ')}
+        )}
       >
         <img
           src="/icons/check.svg"
