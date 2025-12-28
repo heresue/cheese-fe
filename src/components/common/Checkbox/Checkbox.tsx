@@ -1,6 +1,6 @@
 'use client';
 
-import type { InputHTMLAttributes } from 'react';
+import { useId, type InputHTMLAttributes } from 'react';
 import clsx from 'clsx';
 
 type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
@@ -8,12 +8,15 @@ type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
 };
 
 export default function Checkbox({ id, label, className, ...rest }: CheckboxProps) {
+  const autoId = useId();
+  const inputId = id ?? autoId;
+
   return (
     <label
-      htmlFor={id}
+      htmlFor={inputId}
       className={clsx('inline-flex cursor-pointer items-center gap-[5px] select-none', className)}
     >
-      <input id={id} type="checkbox" className="peer sr-only" {...rest} />
+      <input id={inputId} type="checkbox" className="peer sr-only" {...rest} />
 
       <span
         className={clsx(
