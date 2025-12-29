@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { usePopupBehavior } from '@/hooks/usePopupBehavior';
 
 type BasePopupProps = {
   isOpen: boolean;
@@ -16,32 +16,25 @@ export default function BasePopup({
   children,
   closeOnDimClick = true,
 }: BasePopupProps) {
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [isOpen, onClose]);
+  usePopupBehavior({ isOpen, onClose });
 
   if (!isOpen) return null;
   if (typeof window === 'undefined') return null;
 
-  return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-5">
-      {/* dim */}
-      <button
-        type="button"
-        aria-label="팝업 닫기"
-        className="bg-bw-900/40 absolute inset-0"
-        onClick={closeOnDimClick ? onClose : undefined}
-      />
+  const handleOverlayClick = () => {
+    if (!closeOnDimClick) return;
+    onClose();
+  };
 
-      {/* content */}
-      <div className="relative w-full max-w-[640px]">{children}</div>
+  return createPortal(
+    <div
+      className="bg-bw-900/40 fixed inset-0 z-50 flex items-center justify-center p-5"
+      onClick={handleOverlayClick}
+      role="presentation"
+    >
+      <div className="relative inline-flex" onClick={(e) => e.stopPropagation()}>
+        {children}
+      </div>
     </div>,
     document.body,
   );

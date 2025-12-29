@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import clsx from 'clsx';
 import type { ButtonProps } from './type';
 
 const base =
@@ -19,16 +20,14 @@ export function getButtonStyle({
     const px = size ?? 48;
 
     return {
-      className: [base, 'rounded-full', 'bg-bw-100', className ?? ''].filter(Boolean).join(' '),
+      className: clsx(base, 'rounded-full', 'bg-bw-100', className),
       style: { width: px, height: px },
     };
   }
 
   // contained 버튼
   return {
-    className: [base, 'rounded-[10px]', 'bg-primary-300 text-bw-0', className ?? '']
-      .filter(Boolean)
-      .join(' '),
+    className: clsx(base, 'rounded-[10px]', 'bg-primary-300 text-bw-0', className),
     style: {
       width: width ?? '100%',
       height: height ?? 52,
