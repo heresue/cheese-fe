@@ -8,6 +8,7 @@ import InputActionButton from '@/components/common/Input/InputActionButton';
 export default function Input({
   label,
   error,
+  success,
   rightAddon,
   id,
   className,
@@ -18,8 +19,10 @@ export default function Input({
   const inputId = id ?? autoId;
 
   const isDisabled = !!rest.disabled;
-  const hasError = !!error;
-  const errorId = `${inputId}-error`;
+
+  const hasError = typeof error === 'string' && error.length > 0;
+  const hasSuccess = !hasError && typeof success === 'string' && success.length > 0;
+  const messageId = `${inputId}-message`;
 
   return (
     <div className="w-full">
@@ -43,7 +46,7 @@ export default function Input({
         <input
           id={inputId}
           aria-invalid={hasError}
-          aria-describedby={hasError ? errorId : undefined}
+          aria-describedby={hasError ? messageId : undefined}
           className={clsx(
             'h-[19px] min-w-0 flex-1',
             'border-0 bg-transparent',
@@ -62,11 +65,13 @@ export default function Input({
         ) : null}
       </div>
 
-      {/* error message */}
-      {error ? (
-        <p id={errorId} className="text-er1 mt-2 text-[12px] font-medium">
+      {/* message (optional) */}
+      {hasError ? (
+        <p id={messageId} className="text-er1 mt-2 text-[12px] font-medium">
           {error}
         </p>
+      ) : hasSuccess ? (
+        <p className="text-s1 mt-2 text-[12px] font-medium">{success}</p>
       ) : null}
     </div>
   );
