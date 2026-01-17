@@ -33,7 +33,7 @@ export default function Input({
 
       <div
         className={clsx(
-          'flex items-center justify-between',
+          'flex items-center',
           'gap-2 px-2 py-[5px]',
           'border-b transition-[border-color] duration-150',
           !isDisabled && 'border-g7',
