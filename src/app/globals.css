@@ -1,55 +1,62 @@
 @import 'tailwindcss';
 @import 'pretendard/dist/web/variable/pretendardvariable.css';
 
-/* ------------------------------
-   1) Tokens
-   ------------------------------ */
 @theme {
   --font-sans: 'Pretendard', system-ui, sans-serif;
 
-  /* Semantic Colors */
-  --color-bg: #fffcf0;
-  --color-bg-subtle: #ffffff; /* 임시적용: 흰색 */
-  --color-bg-surface: #ffffff;
-  --color-text: #111111;
-  --color-text-muted: #6b7280;
+  /* ================================
+     Palette
+     ================================ */
 
   /* Primary */
-  --color-primary-0: #fffcf0;
-  --color-primary-10: #fff8de;
-  --color-primary-30: #fff2c6;
-  --color-primary-50: #ffeba9;
-  --color-primary-100: #ffe58d;
-  --color-primary-200: #ffe078;
-  --color-primary-300: #ffda5e;
-  --color-primary-400: #ffd33d;
+  --color-p1: #ffd33d;
+  --color-p2: #ffda5e;
+  --color-p3: #ffe078;
+  --color-p4: #ffe58d;
+  --color-p5: #ffeba9;
+  --color-p6: #fff2c6;
+  --color-p7: #fff8de;
+  --color-p8: #fffcf0;
 
   /* Secondary */
-  --color-secondary-0: #f5f9ff;
-  --color-secondary-10: #e5eefe;
-  --color-secondary-30: #c9d9f6;
-  --color-secondary-50: #aac4f5;
-  --color-secondary-100: #8ca9ff;
-  --color-secondary-200: #698fff;
-  --color-secondary-300: #527eff;
-  --color-secondary-400: #2a5fff;
+  --color-s1: #2a5fff;
+  --color-s2: #527eff;
+  --color-s3: #698fff;
+  --color-s4: #8ca9ff;
+  --color-s5: #aac4f5;
+  --color-s6: #c9d9f6;
+  --color-s7: #e5eefe;
+  --color-s8: #f5f9ff;
 
-  /* Neutral */
-  --color-bw-0: #ffffff;
-  --color-bw-100: #eeeeee;
-  --color-bw-200: #bbbbbb;
-  --color-bw-300: #999999;
-  --color-bw-400: #555555;
-  --color-bw-500: #111111;
+  /* Gray scale */
+  --color-g1: #1c1c1c;
+  --color-g2: #2d2d2d;
+  --color-g3: #404040;
+  --color-g4: #555555;
+  --color-g5: #7f7f7f;
+  --color-g6: #a8a8a8;
+  --color-g7: #d2d2d2;
+  --color-g8: #e2e2e2;
+  --color-g9: #f1f1f1;
+  --color-g10: #fafaf8;
+  --color-g11: #ffffff;
+
+  /* Background */
 
   /* Error */
-  --color-error-50: #ff5053;
-  --color-error-100: #f02326;
+  --color-er1: #f02326;
+  --color-er2: #ff5053;
+
+  /* ================================
+     Semantic
+     ================================ */
+  --color-bg: #f6f2e8; /* 변수명 지정 필요 */
+  --color-bg-subtle: var(--color-g11);
+  --color-bg-surface: var(--color-g11);
+  --color-text: var(--color-g1);
+  --color-text-muted: var(--color-g6);
 }
 
-/* ------------------------------
-   2) Global Base Layer
-   ------------------------------ */
 @layer base {
   *,
   *::before,
