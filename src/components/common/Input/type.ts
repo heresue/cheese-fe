@@ -4,4 +4,5 @@ export interface UnderlinedInputProps extends Omit<InputHTMLAttributes<HTMLInput
   label?: string;
   error?: string;
   rightAddon?: ReactNode;
+  inputClassName?: string;
 }
