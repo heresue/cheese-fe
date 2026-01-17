@@ -3,7 +3,6 @@
 import { useId } from 'react';
 import clsx from 'clsx';
 import type { UnderlinedInputProps } from './type';
-import InputActionButton from '@/components/common/Input/InputActionButton';
 
 export default function Input({
   label,
@@ -58,11 +57,7 @@ export default function Input({
           {...rest}
         />
 
-        {rightAddon ? (
-          <div className="flex shrink-0 items-center">
-            <InputActionButton>{rightAddon}</InputActionButton>
-          </div>
-        ) : null}
+        {rightAddon ? <div className="flex shrink-0 items-center">{rightAddon}</div> : null}
       </div>
 
       {/* message (optional) */}
