@@ -19,8 +19,8 @@ export default function Input({
 
   const isDisabled = !!rest.disabled;
 
-  const hasError = typeof errorMessage === 'string' && errorMessage.length > 0;
-  const hasSuccess = !hasError && typeof successMessage === 'string' && successMessage.length > 0;
+  const hasError = !!errorMessage;
+  const hasSuccess = !hasError && !!successMessage;
   const messageId = `${inputId}-message`;
 
   return (
