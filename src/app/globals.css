@@ -35,6 +35,7 @@
   --color-g4: #555555;
   --color-g5: #7f7f7f;
   --color-g6: #a8a8a8;
+  --color-g6-rgb: 168 168 168;
   --color-g7: #d2d2d2;
   --color-g8: #e2e2e2;
   --color-g9: #f1f1f1;
@@ -53,8 +54,11 @@
   --color-bg: #f6f2e8; /* 변수명 지정 필요 */
   --color-bg-subtle: var(--color-g11);
   --color-bg-surface: var(--color-g11);
+
   --color-text: var(--color-g1);
   --color-text-muted: var(--color-g6);
+
+  --color-overlay-dim: rgb(var(--color-g6-rgb) / 0.6);
 }
 
 @layer base {
