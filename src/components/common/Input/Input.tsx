@@ -6,8 +6,8 @@ import type { UnderlinedInputProps } from './type';
 
 export default function Input({
   label,
-  error,
-  success,
+  errorMessage,
+  successMessage,
   rightAddon,
   id,
   className,
@@ -19,8 +19,8 @@ export default function Input({
 
   const isDisabled = !!rest.disabled;
 
-  const hasError = typeof error === 'string' && error.length > 0;
-  const hasSuccess = !hasError && typeof success === 'string' && success.length > 0;
+  const hasError = typeof errorMessage === 'string' && errorMessage.length > 0;
+  const hasSuccess = !hasError && typeof successMessage === 'string' && successMessage.length > 0;
   const messageId = `${inputId}-message`;
 
   return (
@@ -62,11 +62,11 @@ export default function Input({
 
       {/* message (optional) */}
       {hasError ? (
-        <p id={messageId} className="text-er1 mt-2 text-[12px] font-medium">
-          {error}
+        <p id={messageId} className="text-er1 mt-2 text-left text-[12px] font-medium">
+          {errorMessage}
         </p>
       ) : hasSuccess ? (
-        <p className="text-s1 mt-2 text-[12px] font-medium">{success}</p>
+        <p className="text-s1 mt-2 text-[12px] font-medium">{successMessage}</p>
       ) : null}
     </div>
   );
