@@ -36,7 +36,7 @@ export default function ConfirmPopup({
           'w-[min(385px,calc(100vw-32px))]',
           'max-h-[calc(100dvh-160px)] md:max-h-[calc(100dvh-316px)]',
           'flex flex-col overflow-hidden',
-          'px-[42.5px] py-[40px]',
+          'px-[42.5px] py-10',
         )}
       >
         <div className="flex flex-col items-center text-center">

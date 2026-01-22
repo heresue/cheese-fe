@@ -11,7 +11,7 @@ export default function Panel({ children, className, rounded = true, ...rest }: 
   return (
     <div
       className={clsx(
-        rounded ? 'rounded-[8px]' : 'rounded-none',
+        rounded ? 'rounded-lg' : 'rounded-none',
         'bg-bg-surface',
         'shadow-[0_0_4px_rgba(0,0,0,0.25)]',
         className,
