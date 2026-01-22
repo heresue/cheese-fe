@@ -43,9 +43,9 @@
   --color-gray-950: #1c1c1c; /* figma: grayscale/10 */
 
   /* Background */
-  --color-background-default: #f6f2e8; /* figma: 치즈/4-3 */
-  --color-background-alt: #ecf0f3; /* figma: 치즈/4 */
-  --color-background-accent: #ebeef7; /* figma: 치즈/4-2 */
+  --color-background-0: #f6f2e8; /* figma: 치즈/4-3 */
+  --color-background-1: #ecf0f3; /* figma: 치즈/4 */
+  --color-background-2: #ebeef7; /* figma: 치즈/4-2 */
 
   /* Error */
   --color-error: #f02326; /* figma: er1 */
@@ -56,10 +56,10 @@
   /* ================================
      Semantic
      ================================ */
-  --color-bg: var(--color-background-default);
+  --color-bg: var(--color-background-0);
   --color-bg-surface: var(--color-gray-50);
-  --color-bg-subtle: var(--color-background-alt);
-  --color-bg-accent: var(--color-background-accent);
+  --color-bg-subtle: var(--color-background-1);
+  --color-bg-accent: var(--color-background-2);
 
   --color-overlay-dim: rgb(var(--color-gray-500-rgb) / 0.6);
 
