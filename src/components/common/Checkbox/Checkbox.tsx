@@ -22,8 +22,8 @@ export default function Checkbox({ id, label, className, ...rest }: CheckboxProp
         className={clsx(
           'relative flex items-center justify-center',
           'h-[20px] w-[20px] rounded-[2px]',
-          'border-primary-400 border',
-          'peer-checked:bg-primary-400',
+          'border-primary-700 border',
+          'peer-checked:bg-primary-700',
           'peer-checked:[&>img]:opacity-100',
         )}
       >

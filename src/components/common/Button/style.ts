@@ -19,14 +19,14 @@ export function getButtonStyle({
     const px = size ?? 48;
 
     return {
-      className: clsx(base, 'rounded-full', 'bg-g9', className),
+      className: clsx(base, 'rounded-full', 'bg-gray-200', className),
       style: { width: px, height: px },
     };
   }
 
   // contained 버튼
   return {
-    className: clsx(base, 'rounded-[10px]', 'bg-p1 text-g3', className),
+    className: clsx(base, 'rounded-[10px]', 'bg-primary-800 text-gray-800', className),
     style: {
       width: width ?? '100%',
       height: height ?? 40,

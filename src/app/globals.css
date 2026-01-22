@@ -9,56 +9,66 @@
      ================================ */
 
   /* Primary */
-  --color-p1: #ffd33d;
-  --color-p2: #ffda5e;
-  --color-p3: #ffe078;
-  --color-p4: #ffe58d;
-  --color-p5: #ffeba9;
-  --color-p6: #fff2c6;
-  --color-p7: #fff8de;
-  --color-p8: #fffcf0;
+  --color-primary-100: #fffcf0; /* figma: p8 */
+  --color-primary-200: #fff8de; /* figma: p7 */
+  --color-primary-300: #fff2c6; /* figma: p6 */
+  --color-primary-400: #ffeba9; /* figma: p5 */
+  --color-primary-500: #ffe58d; /* figma: p4 */
+  --color-primary-600: #ffe078; /* figma: p3 */
+  --color-primary-700: #ffda5e; /* figma: p2 */
+  --color-primary-800: #ffd33d; /* figma: p1 */
 
   /* Secondary */
-  --color-s1: #2a5fff;
-  --color-s2: #527eff;
-  --color-s3: #698fff;
-  --color-s4: #8ca9ff;
-  --color-s5: #aac4f5;
-  --color-s6: #c9d9f6;
-  --color-s7: #e5eefe;
-  --color-s8: #f5f9ff;
+  --color-secondary-100: #fae1b8;
+  --color-secondary-200: #f7cd8b;
+  --color-secondary-300: #f4b961;
+  --color-secondary-400: #f3aa47;
+  --color-secondary-500: #f19c38;
+  --color-secondary-600: #ec9135;
+  --color-secondary-700: #e68231;
+  --color-secondary-800: #df732c;
 
   /* Gray scale */
-  --color-g1: #1c1c1c;
-  --color-g2: #2d2d2d;
-  --color-g3: #404040;
-  --color-g4: #555555;
-  --color-g5: #7f7f7f;
-  --color-g6: #a8a8a8;
-  --color-g6-rgb: 168 168 168;
-  --color-g7: #d2d2d2;
-  --color-g8: #e2e2e2;
-  --color-g9: #f1f1f1;
-  --color-g10: #fafaf8;
-  --color-g11: #ffffff;
+  --color-gray-50: #ffffff; /* figma: grayscale/0 */
+  --color-gray-100: #fafaf8; /* figma: grayscale/1 */
+  --color-gray-200: #f1f1f1; /* figma: grayscale/2 */
+  --color-gray-300: #e2e2e2; /* figma: grayscale/3 */
+  --color-gray-400: #d2d2d2; /* figma: grayscale/4 */
+  --color-gray-500: #a8a8a8; /* figma: grayscale/5 */
+  --color-gray-500-rgb: 168 168 168;
+  --color-gray-600: #7f7f7f; /* figma: grayscale/6 */
+  --color-gray-700: #555555; /* figma: grayscale/7 */
+  --color-gray-800: #404040; /* figma: grayscale/8 */
+  --color-gray-900: #2d2d2d; /* figma: grayscale/9 */
+  --color-gray-950: #1c1c1c; /* figma: grayscale/10 */
 
   /* Background */
+  --color-background-default: #f6f2e8; /* figma: 치즈/4-3 */
+  --color-background-alt: #ecf0f3; /* figma: 치즈/4 */
+  --color-background-accent: #ebeef7; /* figma: 치즈/4-2 */
 
   /* Error */
-  --color-er1: #f02326;
-  --color-er2: #ff5053;
+  --color-error: #f02326; /* figma: er1 */
+  --color-error-subtle: #ff5053; /* figma: er2 */
+  --color-success: #2a5fff;
+  --color-success-subtle: #698fff;
 
   /* ================================
      Semantic
      ================================ */
-  --color-bg: #f6f2e8; /* 변수명 지정 필요 */
-  --color-bg-subtle: var(--color-g11);
-  --color-bg-surface: var(--color-g11);
+  --color-bg: var(--color-background-default);
+  --color-bg-surface: var(--color-gray-50);
+  --color-bg-subtle: var(--color-background-alt);
+  --color-bg-accent: var(--color-background-accent);
 
-  --color-text: var(--color-g1);
-  --color-text-muted: var(--color-g6);
+  --color-overlay-dim: rgb(var(--color-gray-500-rgb) / 0.6);
 
-  --color-overlay-dim: rgb(var(--color-g6-rgb) / 0.6);
+  --color-text: var(--color-gray-950);
+  --color-text-muted: var(--color-gray-500);
+  --color-text-error: var(--color-error);
+  --color-text-success: var(--color-success);
+
+  --color-border: var(--color-gray-300);
 }
 
 @layer base {

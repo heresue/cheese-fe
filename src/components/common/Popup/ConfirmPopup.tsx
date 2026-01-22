@@ -40,9 +40,9 @@ export default function ConfirmPopup({
         )}
       >
         <div className="flex flex-col items-center text-center">
-          {title ? <h2 className="text-g1 text-[20px] font-bold">{title}</h2> : null}
+          {title ? <h2 className="text-[20px] font-bold text-gray-950">{title}</h2> : null}
           {description ? (
-            <p className={clsx('text-g1 text-[20px] font-normal', title && 'mt-3')}>
+            <p className={clsx('text-[20px] font-normal text-gray-950', title && 'mt-3')}>
               {description}
             </p>
           ) : null}

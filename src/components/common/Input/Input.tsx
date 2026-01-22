@@ -36,9 +36,9 @@ export default function Input({
           'flex items-center',
           'gap-2 px-2 py-[5px]',
           'border-b transition-[border-color] duration-150',
-          !isDisabled && 'border-g7',
-          !isDisabled && 'focus-within:border-g3',
-          isDisabled && 'border-g8',
+          !isDisabled && 'border-gray-400',
+          !isDisabled && 'focus-within:border-gray-800',
+          isDisabled && 'border-gray-300',
           className,
         )}
       >
@@ -49,9 +49,9 @@ export default function Input({
           className={clsx(
             'h-[19px] min-w-0 flex-1',
             'border-0 bg-transparent',
-            'placeholder:text-g6',
+            'placeholder:text-gray-500',
             'focus:outline-none',
-            isDisabled && 'text-g6 placeholder:text-g7',
+            isDisabled && 'text-gray-500 placeholder:text-gray-400',
             inputClassName,
           )}
           {...rest}
@@ -62,11 +62,11 @@ export default function Input({
 
       {/* message (optional) */}
       {hasError ? (
-        <p id={messageId} className="text-er1 mt-2 text-left text-[12px] font-medium">
+        <p id={messageId} className="text-text-error mt-2 text-left text-[12px] font-medium">
           {errorMessage}
         </p>
       ) : hasSuccess ? (
-        <p className="text-s1 mt-2 text-[12px] font-medium">{successMessage}</p>
+        <p className="text-text-success mt-2 text-[12px] font-medium">{successMessage}</p>
       ) : null}
     </div>
   );
