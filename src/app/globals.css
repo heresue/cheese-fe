@@ -9,66 +9,71 @@
      ================================ */
 
   /* Primary */
-  --color-primary-100: #fffcf0; /* figma: f1 */
-  --color-primary-200: #fff8de; /* figma: f2 */
-  --color-primary-300: #fff2c6; /* figma: f3 */
-  --color-primary-400: #ffeba9; /* figma: f4 */
-  --color-primary-500: #ffe58d; /* figma: f5 */
-  --color-primary-600: #ffe078; /* figma: f6 */
-  --color-primary-700: #ffda5e; /* figma: f7 */
-  --color-primary-800: #ffd33d; /* figma: f8 */
+  --color-primary-100: #fffcf0;
+  --color-primary-200: #fff8de;
+  --color-primary-300: #fff2c6;
+  --color-primary-400: #ffeba9;
+  --color-primary-500: #ffe58d;
+  --color-primary-600: #ffe078;
+  --color-primary-700: #ffda5e;
+  --color-primary-800: #ffd33d;
 
   /* Secondary */
-  --color-secondary-100: #fae1b8; /* figma: s1 */
-  --color-secondary-200: #f7cd8b; /* figma: s2 */
-  --color-secondary-300: #f4b961; /* figma: s3 */
-  --color-secondary-400: #f3aa47; /* figma: s4 */
-  --color-secondary-500: #f19c38; /* figma: s5 */
-  --color-secondary-600: #ec9135; /* figma: s6 */
-  --color-secondary-700: #e68231; /* figma: s7 */
-  --color-secondary-800: #df732c; /* figma: s8 */
+  --color-secondary-100: #fae1b8;
+  --color-secondary-200: #f7cd8b;
+  --color-secondary-300: #f4b961;
+  --color-secondary-400: #f3aa47;
+  --color-secondary-500: #f19c38;
+  --color-secondary-600: #ec9135;
+  --color-secondary-700: #e68231;
+  --color-secondary-800: #df732c;
 
   /* Gray scale */
-  --color-gray-50: #ffffff; /* figma: grayscale/0 */
-  --color-gray-100: #fafaf8; /* figma: grayscale/1 */
-  --color-gray-200: #f1f1f1; /* figma: grayscale/2 */
-  --color-gray-300: #e2e2e2; /* figma: grayscale/3 */
-  --color-gray-400: #d2d2d2; /* figma: grayscale/4 */
-  --color-gray-500: #a8a8a8; /* figma: grayscale/5 */
-  --color-gray-500-rgb: 168 168 168;
-  --color-gray-600: #7f7f7f; /* figma: grayscale/6 */
-  --color-gray-700: #555555; /* figma: grayscale/7 */
-  --color-gray-800: #404040; /* figma: grayscale/8 */
-  --color-gray-900: #2d2d2d; /* figma: grayscale/9 */
-  --color-gray-950: #1c1c1c; /* figma: grayscale/10 */
+  --color-gray-50: #ffffff;
+  --color-gray-100: #fafaf8;
+  --color-gray-200: #f1f1f1;
+  --color-gray-300: #e2e2e2;
+  --color-gray-400: #d2d2d2;
+  --color-gray-500: #a8a8a8;
+  --color-gray-500-rgb: 168 168 168; /* overlay */
+  --color-gray-600: #7f7f7f;
+  --color-gray-700: #555555;
+  --color-gray-800: #404040;
+  --color-gray-900: #2d2d2d;
+  --color-gray-950: #1c1c1c;
 
   /* Background */
-  --color-background-1: #f6f2e8; /* figma: bg1 */
-  --color-background-2: #ecf0f3; /* figma: bg2 */
-  --color-background-3: #ebeef7; /* figma: bg3 */
+  --color-background-1: #f6f2e8;
+  --color-background-2: #ecf0f3;
+  --color-background-3: #ebeef7;
 
-  /* Error */
-  --color-error: #f02326; /* figma: er1 */
-  --color-error-subtle: #ff5053; /* figma: er2 */
-  --color-success: #2a5fff; /* figma: sc1 */
-  --color-success-subtle: #698fff; /* figma: sc2 */
+  /* Status */
+  --color-error: #f02326; /* Figma: er1 */
+  --color-error-subtle: #ff5053; /* Figma: er2 */
+  --color-success: #2a5fff; /* Figma: sc1 */
+  --color-success-subtle: #698fff; /* Figma: sc2 */
 
-  /* Tag */
-  --color-tag-red-100: #f7cfd3; /* figma: t1 */
-  --color-tag-red-500: #e15241; /* figma: T1 */
-  --color-tag-yellow-100: #fcecba; /* figma: t2 */
-  --color-tag-yellow-500: #f6c244; /* figma: T2 */
-  --color-tag-green-100: #dfeccb; /* figma: t3 */
-  --color-tag-green-500: #97c05c; /* figma: T3 */
-  --color-tag-blue-100: #c2ddf8; /* figma: t4 */
-  --color-tag-blue-500: #4896ec; /* figma: T4 */
-  --color-tag-purple-100: #dbc0e4; /* figma: t5 */
-  --color-tag-purple-500: #9f50b6; /* figma: T5 */
-  --color-tag-gray-100: #d1d8dc; /* figma: t6 */
-  --color-tag-gray-500: #94a4ad; /* figma: T6 */
+  /* Tag palette */
+  --color-tag-red-100: #f7cfd3; /* Figma: t1 */
+  --color-tag-red-500: #e15241; /* Figma: T1 */
+
+  --color-tag-yellow-100: #fcecba; /* Figma: t2 */
+  --color-tag-yellow-500: #f6c244; /* Figma: T2 */
+
+  --color-tag-green-100: #dfeccb; /* Figma: t3 */
+  --color-tag-green-500: #97c05c; /* Figma: T3 */
+
+  --color-tag-blue-100: #c2ddf8; /* Figma: t4 */
+  --color-tag-blue-500: #4896ec; /* Figma: T4 */
+
+  --color-tag-purple-100: #dbc0e4; /* Figma: t5 */
+  --color-tag-purple-500: #9f50b6; /* Figma: T5 */
+
+  --color-tag-gray-100: #d1d8dc; /* Figma: t6 */
+  --color-tag-gray-500: #94a4ad; /* Figma: T6 */
 
   /* ================================
-     Semantic
+     Semantic Tokens
      ================================ */
   --color-bg: var(--color-background-1);
   --color-bg-surface: var(--color-gray-50);
