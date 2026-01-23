@@ -9,24 +9,24 @@
      ================================ */
 
   /* Primary */
-  --color-primary-100: #fffcf0; /* figma: p8 */
-  --color-primary-200: #fff8de; /* figma: p7 */
-  --color-primary-300: #fff2c6; /* figma: p6 */
-  --color-primary-400: #ffeba9; /* figma: p5 */
-  --color-primary-500: #ffe58d; /* figma: p4 */
-  --color-primary-600: #ffe078; /* figma: p3 */
-  --color-primary-700: #ffda5e; /* figma: p2 */
-  --color-primary-800: #ffd33d; /* figma: p1 */
+  --color-primary-100: #fffcf0; /* figma: f1 */
+  --color-primary-200: #fff8de; /* figma: f2 */
+  --color-primary-300: #fff2c6; /* figma: f3 */
+  --color-primary-400: #ffeba9; /* figma: f4 */
+  --color-primary-500: #ffe58d; /* figma: f5 */
+  --color-primary-600: #ffe078; /* figma: f6 */
+  --color-primary-700: #ffda5e; /* figma: f7 */
+  --color-primary-800: #ffd33d; /* figma: f8 */
 
   /* Secondary */
-  --color-secondary-100: #fae1b8;
-  --color-secondary-200: #f7cd8b;
-  --color-secondary-300: #f4b961;
-  --color-secondary-400: #f3aa47;
-  --color-secondary-500: #f19c38;
-  --color-secondary-600: #ec9135;
-  --color-secondary-700: #e68231;
-  --color-secondary-800: #df732c;
+  --color-secondary-100: #fae1b8; /* figma: s1 */
+  --color-secondary-200: #f7cd8b; /* figma: s2 */
+  --color-secondary-300: #f4b961; /* figma: s3 */
+  --color-secondary-400: #f3aa47; /* figma: s4 */
+  --color-secondary-500: #f19c38; /* figma: s5 */
+  --color-secondary-600: #ec9135; /* figma: s6 */
+  --color-secondary-700: #e68231; /* figma: s7 */
+  --color-secondary-800: #df732c; /* figma: s8 */
 
   /* Gray scale */
   --color-gray-50: #ffffff; /* figma: grayscale/0 */
@@ -43,23 +43,37 @@
   --color-gray-950: #1c1c1c; /* figma: grayscale/10 */
 
   /* Background */
-  --color-background-0: #f6f2e8; /* figma: 치즈/4-3 */
-  --color-background-1: #ecf0f3; /* figma: 치즈/4 */
-  --color-background-2: #ebeef7; /* figma: 치즈/4-2 */
+  --color-background-1: #f6f2e8; /* figma: bg1 */
+  --color-background-2: #ecf0f3; /* figma: bg2 */
+  --color-background-3: #ebeef7; /* figma: bg3 */
 
   /* Error */
   --color-error: #f02326; /* figma: er1 */
   --color-error-subtle: #ff5053; /* figma: er2 */
-  --color-success: #2a5fff;
-  --color-success-subtle: #698fff;
+  --color-success: #2a5fff; /* figma: sc1 */
+  --color-success-subtle: #698fff; /* figma: sc2 */
+
+  /* Tag */
+  --color-tag-red-100: #f7cfd3; /* figma: t1 */
+  --color-tag-red-500: #e15241; /* figma: T1 */
+  --color-tag-yellow-100: #fcecba; /* figma: t2 */
+  --color-tag-yellow-500: #f6c244; /* figma: T2 */
+  --color-tag-green-100: #dfeccb; /* figma: t3 */
+  --color-tag-green-500: #97c05c; /* figma: T3 */
+  --color-tag-blue-100: #c2ddf8; /* figma: t4 */
+  --color-tag-blue-500: #4896ec; /* figma: T4 */
+  --color-tag-purple-100: #dbc0e4; /* figma: t5 */
+  --color-tag-purple-500: #9f50b6; /* figma: T5 */
+  --color-tag-gray-100: #d1d8dc; /* figma: t6 */
+  --color-tag-gray-500: #94a4ad; /* figma: T6 */
 
   /* ================================
      Semantic
      ================================ */
-  --color-bg: var(--color-background-0);
+  --color-bg: var(--color-background-1);
   --color-bg-surface: var(--color-gray-50);
-  --color-bg-subtle: var(--color-background-1);
-  --color-bg-accent: var(--color-background-2);
+  --color-bg-subtle: var(--color-background-2);
+  --color-bg-accent: var(--color-background-3);
 
   --color-overlay-dim: rgb(var(--color-gray-500-rgb) / 0.6);
 
@@ -69,6 +83,11 @@
   --color-text-success: var(--color-success);
 
   --color-border: var(--color-gray-300);
+
+  /* TODO: Tag 컴포넌트 디자인 확정 후 semantic 재정의 */
+  --color-tag-bg: var(--color-tag-gray-100);
+  --color-tag-text: var(--color-tag-gray-500);
+  --color-tag-border: var(--color-tag-gray-500);
 }
 
 @layer base {
