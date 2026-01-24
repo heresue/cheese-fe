@@ -2,6 +2,7 @@
 
 import { useId, type InputHTMLAttributes } from 'react';
 import clsx from 'clsx';
+import CheckIcon from '@/assets/icons/check.svg';
 
 type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
   label?: string;
@@ -26,10 +27,10 @@ export default function Checkbox({ id, label, className, ...rest }: CheckboxProp
           'h-5 w-5 rounded-xs',
           'border-primary-700 border',
           'peer-checked:bg-primary-700',
-          'peer-checked:[&>img]:opacity-100',
+          'peer-checked:[&>svg]:opacity-100',
         )}
       >
-        <img src="/icons/check.svg" alt="" className="h-3 w-3 opacity-0 transition-opacity" />
+        <CheckIcon className="h-3 w-3 text-gray-50 opacity-0 transition-opacity" />
       </span>
 
       {label ? <span className="text-sm font-normal">{label}</span> : null}
