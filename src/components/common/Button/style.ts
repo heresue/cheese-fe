@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import type { ButtonProps } from './type';
 
 const base =
-  'inline-flex items-center justify-center font-bold disabled:cursor-not-allowed disabled:opacity-50';
+  'inline-flex items-center justify-center font-bold cursor-pointer disabled:cursor-not-allowed disabled:opacity-50';
 
 export function getButtonStyle({
   variant = 'contained',
@@ -20,17 +20,17 @@ export function getButtonStyle({
     const px = size ?? 48;
 
     return {
-      className: clsx(base, 'rounded-full', 'bg-bw-100', className),
+      className: clsx(base, 'rounded-full', 'bg-gray-200', className),
       style: { width: px, height: px },
     };
   }
 
   // contained 버튼
   return {
-    className: clsx(base, 'rounded-[10px]', 'bg-primary-300 text-bw-0', className),
+    className: clsx(base, 'rounded-[10px]', 'bg-primary-800 text-gray-800', className),
     style: {
       width: width ?? '100%',
-      height: height ?? 52,
+      height: height ?? 40,
     },
   };
 }

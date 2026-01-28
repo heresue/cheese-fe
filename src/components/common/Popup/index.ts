@@ -1,2 +1,2 @@
-export { default as Popup } from './Popup';
+export { default as Popup } from './ConfirmPopup';
 export { default as BasePopup } from './BasePopup';

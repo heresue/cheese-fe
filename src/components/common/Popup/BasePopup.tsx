@@ -28,12 +28,14 @@ export default function BasePopup({
 
   return createPortal(
     <div
-      className="bg-bw-900/40 fixed inset-0 z-50 flex items-center justify-center p-5"
+      className="bg-overlay-dim fixed inset-0 z-50 overflow-hidden"
       onClick={handleOverlayClick}
       role="presentation"
     >
-      <div className="relative inline-flex" onClick={(e) => e.stopPropagation()}>
-        {children}
+      <div className="flex h-full w-full items-center justify-center p-5">
+        <div className="max-h-full max-w-full" onClick={(e) => e.stopPropagation()}>
+          {children}
+        </div>
       </div>
     </div>,
     document.body,

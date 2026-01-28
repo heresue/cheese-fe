@@ -13,25 +13,23 @@ export default function Checkbox({ id, label, className, ...rest }: CheckboxProp
 
   return (
     <label
-      htmlFor={inputId}
-      className={clsx('inline-flex cursor-pointer items-center gap-[5px] select-none', className)}
+      className={clsx(
+        'inline-flex w-fit cursor-pointer items-center gap-[5px] select-none',
+        className,
+      )}
     >
       <input id={inputId} type="checkbox" className="peer sr-only" {...rest} />
 
       <span
         className={clsx(
-          'relative flex items-center justify-center',
-          'h-[20px] w-[20px] rounded-[2px]',
-          'border-primary-400 border',
-          'peer-checked:bg-primary-400',
+          'relative inline-flex items-center justify-center',
+          'h-5 w-5 rounded-xs',
+          'border-primary-700 border',
+          'peer-checked:bg-primary-700',
           'peer-checked:[&>img]:opacity-100',
         )}
       >
-        <img
-          src="/icons/check.svg"
-          alt=""
-          className="h-[12px] w-[12px] opacity-0 transition-opacity"
-        />
+        <img src="/icons/check.svg" alt="" className="h-3 w-3 opacity-0 transition-opacity" />
       </span>
 
       {label ? <span className="text-sm font-normal">{label}</span> : null}
