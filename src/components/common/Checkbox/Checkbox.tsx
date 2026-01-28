@@ -15,7 +15,7 @@ export default function Checkbox({ id, label, className, ...rest }: CheckboxProp
   return (
     <label
       className={clsx(
-        'inline-flex w-fit cursor-pointer items-center gap-[5px] select-none',
+        'inline-flex w-fit cursor-pointer items-center gap-[4px] select-none',
         className,
       )}
     >
