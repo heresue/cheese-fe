@@ -2,7 +2,8 @@ import type { CSSProperties } from 'react';
 import clsx from 'clsx';
 import type { ButtonProps } from './type';
 
-const base = 'inline-flex items-center justify-center font-bold disabled:opacity-50';
+const base =
+  'inline-flex items-center justify-center font-bold cursor-pointer disabled:cursor-not-allowed disabled:opacity-50';
 
 export function getButtonStyle({
   variant = 'contained',
