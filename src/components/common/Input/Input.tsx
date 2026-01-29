@@ -61,13 +61,15 @@ export default function Input({
       </div>
 
       {/* message (optional) */}
-      {hasError ? (
-        <p id={messageId} className="text-text-error mt-2 text-left text-[12px] font-medium">
-          {errorMessage}
-        </p>
-      ) : hasSuccess ? (
-        <p className="text-text-success mt-2 text-[12px] font-medium">{successMessage}</p>
-      ) : null}
+      <div className="h-[22px] text-left text-xs font-medium">
+        {hasError ? (
+          <p id={messageId} className="text-text-error pt-2">
+            {errorMessage}
+          </p>
+        ) : hasSuccess ? (
+          <p className="text-text-success mt-2">{successMessage}</p>
+        ) : null}
+      </div>
     </div>
   );
 }
