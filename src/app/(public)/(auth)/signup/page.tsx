@@ -1,15 +1,24 @@
+'use client';
+
+import { useState } from 'react';
+import { Input, InputActionButton } from '@/components/common/Input';
 import { Button } from '@/components/common/Button';
 import { Checkbox } from '@/components/common/Checkbox';
-import { Input, InputActionButton } from '@/components/common/Input';
+import TermsPopup from '@/components/terms/TermsPopup';
 import Chevron from '@/assets/icons/chevron.svg';
 
 export default function SignupPage() {
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+
+  const openTerms = () => setIsTermsOpen(true);
+  const closeTerms = () => setIsTermsOpen(false);
+
   return (
     <div className="flex flex-col gap-10">
       <h2 className="text-[20px] font-bold">회원가입</h2>
 
       <form className="flex flex-col gap-10">
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-5">
           <Input
             label="닉네임"
             placeholder="닉네임 입력"
@@ -42,21 +51,29 @@ export default function SignupPage() {
             successMessage={'비밀번호가 일치합니다.'}
           />
 
-          <div className="flex items-center justify-between">
-            <Checkbox label="치즈 이용약관 동의" name="terms" required />
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={openTerms}
+            className="flex w-full cursor-pointer items-center justify-between"
+          >
+            <div className="flex items-center gap-2">
+              <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
+                <Checkbox name="terms" required />
+              </div>
+              <span className="text-sm">치즈 이용약관 동의</span>
+            </div>
 
-            <button
-              type="button"
-              aria-label="이용약관 자세히 보기"
-              className="flex h-5 w-5 items-center justify-center"
-            >
+            <div className="flex h-5 w-5 items-center justify-center">
               <Chevron width={6} height={10} />
-            </button>
+            </div>
           </div>
         </div>
 
         <Button type="submit">회원가입</Button>
       </form>
+
+      <TermsPopup isOpen={isTermsOpen} onClose={closeTerms} />
     </div>
   );
 }
