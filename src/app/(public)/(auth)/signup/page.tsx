@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { Input, InputActionButton } from '@/components/common/Input';
 import { Button } from '@/components/common/Button';
 import { Checkbox } from '@/components/common/Checkbox';
-import TermsPopup from './_components/TermsPopup';
-import EmailVerifyPopup from './_components/EmailVerifyPopup';
 import Chevron from '@/assets/icons/chevron.svg';
+import TermsPopup from './_components/TermsPopup';
+import EmailVerifyPopup from '../_components/EmailVerifyPopup';
 
 export default function SignupPage() {
   const [isVerifyOpen, setIsVerifyOpen] = useState(false);
@@ -79,7 +79,7 @@ export default function SignupPage() {
         <Button type="submit">회원가입</Button>
       </form>
 
-      <EmailVerifyPopup isOpen={isVerifyOpen} onClose={closeVerify} />
+      <EmailVerifyPopup title="아이디 (이메일) 입력" isOpen={isVerifyOpen} onClose={closeVerify} />
       <TermsPopup isOpen={isTermsOpen} onClose={closeTerms} />
     </div>
   );
