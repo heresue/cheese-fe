@@ -5,10 +5,15 @@ import { Input, InputActionButton } from '@/components/common/Input';
 import { Button } from '@/components/common/Button';
 import { Checkbox } from '@/components/common/Checkbox';
 import TermsPopup from '@/components/terms/TermsPopup';
+import EmailVerifyPopup from './_components/EmailVerifyPopup';
 import Chevron from '@/assets/icons/chevron.svg';
 
 export default function SignupPage() {
+  const [isVerifyOpen, setIsVerifyOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
+
+  const openVerify = () => setIsVerifyOpen(true);
+  const closeVerify = () => setIsVerifyOpen(false);
 
   const openTerms = () => setIsTermsOpen(true);
   const closeTerms = () => setIsTermsOpen(false);
@@ -33,7 +38,8 @@ export default function SignupPage() {
             placeholder="아이디 (이메일) 입력"
             type="email"
             name="email"
-            rightAddon={<InputActionButton>입력하기</InputActionButton>}
+            readOnly
+            rightAddon={<InputActionButton onClick={openVerify}>입력하기</InputActionButton>}
           />
           <Input
             label="비밀번호"
@@ -73,6 +79,7 @@ export default function SignupPage() {
         <Button type="submit">회원가입</Button>
       </form>
 
+      <EmailVerifyPopup isOpen={isVerifyOpen} onClose={closeVerify} />
       <TermsPopup isOpen={isTermsOpen} onClose={closeTerms} />
     </div>
   );
