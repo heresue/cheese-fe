@@ -2,8 +2,8 @@
 
 import clsx from 'clsx';
 import { Panel } from '@/components/common/Panel';
-import BasePopup from './BasePopup';
 import CloseIcon from '@/assets/icons/close.svg';
+import BasePopup from './BasePopup';
 
 type DocumentPopupProps = {
   isOpen: boolean;

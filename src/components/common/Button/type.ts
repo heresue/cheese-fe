@@ -9,7 +9,7 @@ export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
   isLoading?: boolean;
 
   /** circle */
-  size?: number; // default: 48px
+  size?: number;
 
   /**
    * circle 버튼은 접근성을 위해 aria-label을 강력 권장합니다.
@@ -17,6 +17,6 @@ export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
   'aria-label'?: string;
 
   /** contained */
-  width?: number; // default: 100%
-  height?: number; // default: 52px
+  width?: number;
+  height?: number;
 }

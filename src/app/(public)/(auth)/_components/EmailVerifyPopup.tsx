@@ -1,6 +1,6 @@
+import Image from 'next/image';
 import { BasePopup } from '@/components/common/Popup';
 import EmailVerifyForm, { EmailVerifyBaseProps } from './EmailVerifyForm';
-import Image from 'next/image';
 
 type EmailVerifyPopupProps = EmailVerifyBaseProps & {
   isOpen: boolean;

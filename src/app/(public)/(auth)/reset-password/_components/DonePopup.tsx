@@ -1,7 +1,7 @@
 'use client';
 
-import ConfirmPopup from '@/components/common/Popup/ConfirmPopup';
 import { useRouter } from 'next/navigation';
+import ConfirmPopup from '@/components/common/Popup/ConfirmPopup';
 
 type DonePopupProps = {
   isOpen: boolean;
