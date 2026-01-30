@@ -21,9 +21,9 @@ export default function LoginPage() {
         <Button type="submit">로그인</Button>
 
         <div className="flex justify-evenly text-gray-600">
-          <Link href="/">회원가입</Link>
+          <Link href="/signup">회원가입</Link>
           <span>|</span>
-          <Link href="/">ID/PW 찾기</Link>
+          <Link href="/reset-password">비밀번호 재설정</Link>
         </div>
       </form>
 
