@@ -30,7 +30,7 @@ export default function LoginPage() {
       <section>
         <div className="flex items-center gap-4 pb-8">
           <div className="h-px flex-1 bg-gray-400" />
-          <span className="whitespace-nowrap text-gray-500">간편로그인</span>
+          <span className="text-text-muted whitespace-nowrap">간편로그인</span>
           <div className="h-px flex-1 bg-gray-400" />
         </div>
 

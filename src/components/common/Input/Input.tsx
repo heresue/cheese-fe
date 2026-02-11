@@ -49,9 +49,9 @@ export default function Input({
           className={clsx(
             'h-[19px] min-w-0 flex-1',
             'border-0 bg-transparent',
-            'placeholder:text-gray-500',
+            'placeholder:text-text-placeholder',
             'focus:outline-none',
-            isDisabled && 'text-gray-500 placeholder:text-gray-400',
+            isDisabled && 'text-text-muted placeholder:text-text-placeholder',
             inputClassName,
           )}
           {...rest}

@@ -31,7 +31,7 @@ export default function SignupPage() {
             name="nickname"
             rightAddon={<InputActionButton>중복확인</InputActionButton>}
             errorMessage={'중복된 닉네임이 있습니다'}
-            successMessage={'사용 가능한 닉네임 입니다'}
+            successMessage={'사용가능한 닉네임 입니다'}
           />
           <Input
             label="아이디"
@@ -40,13 +40,14 @@ export default function SignupPage() {
             name="email"
             readOnly
             rightAddon={<InputActionButton onClick={openVerify}>입력하기</InputActionButton>}
+            successMessage={'사용가능'}
           />
           <Input
             label="비밀번호"
             placeholder="비밀번호 입력"
             type="password"
             name="password"
-            errorMessage={'영문, 숫자, 특수문자를 포함하여 8자 이상이어야합니다'}
+            errorMessage={'영문, 숫자, 특수문자를 포함하여 8자 이상이어야 합니다'}
           />
           <Input
             label="비밀번호 확인"

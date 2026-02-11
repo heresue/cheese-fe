@@ -51,7 +51,7 @@ export default function EmailVerifyForm({ title, description, onNext }: EmailVer
               {status === 'IDLE' ? '메일발송' : '재발송'}
             </InputActionButton>
           }
-          errorMessage={status === 'SEND_ERROR' ? '이메일이 올바르지 않습니다' : undefined}
+          errorMessage={status === 'SEND_ERROR' ? '이메일 형식이 올바르지 않습니다' : undefined}
         />
 
         <Input
@@ -70,11 +70,13 @@ export default function EmailVerifyForm({ title, description, onNext }: EmailVer
               인증하기
             </InputActionButton>
           }
-          errorMessage={status === 'VERIFY_ERROR' ? '인증번호가 일치하지 않습니다' : undefined}
+          errorMessage={status === 'VERIFY_ERROR' ? '인증번호가 올바르지 않습니다' : undefined}
           successMessage={status === 'VERIFIED' ? '인증번호가 일치합니다' : undefined}
         />
 
-        {description && <div className="text-xs leading-relaxed text-gray-500">{description}</div>}
+        {description && (
+          <div className="text-text-muted text-xs leading-relaxed">{description}</div>
+        )}
 
         <Button type="button" aria-label="다음" disabled={!isVerified} onClick={onNext}>
           다음
