@@ -1,3 +1,26 @@
+'use client';
+
+import { useState } from 'react';
+import EmailStep from './_components/EmailStep';
+import VerifyStep from './_components/VerifyStep';
+import NewPasswordStep from './_components/NewPasswordStep';
+import DonePopup from './_components/DonePopup';
+
+type Step = 'EMAIL' | 'VERIFY' | 'NEW_PASSWORD';
+
 export default function ResetPasswordPage() {
-  return <h1 className="text-4xl">reset-password page</h1>;
+  const [step, setStep] = useState<Step>('EMAIL');
+  const [isDoneOpen, setIsDoneOpen] = useState(false);
+
+  return (
+    <>
+      {step === 'EMAIL' && <EmailStep onNext={() => setStep('VERIFY')} />}
+
+      {step === 'VERIFY' && <VerifyStep onNext={() => setStep('NEW_PASSWORD')} />}
+
+      {step === 'NEW_PASSWORD' && <NewPasswordStep onComplete={() => setIsDoneOpen(true)} />}
+
+      <DonePopup isOpen={isDoneOpen} onClose={() => setIsDoneOpen(false)} />
+    </>
+  );
 }

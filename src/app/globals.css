@@ -90,6 +90,7 @@
 
   --color-text: var(--color-gray-950);
   --color-text-muted: var(--color-gray-500);
+  --color-text-placeholder: var(--color-gray-500);
   --color-text-error: var(--color-error);
   --color-text-success: var(--color-success);
 

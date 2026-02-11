@@ -2,8 +2,8 @@
 
 import clsx from 'clsx';
 import { Panel } from '@/components/common/Panel';
+import CloseIcon from '@/assets/icons/close.svg';
 import BasePopup from './BasePopup';
-import XIcon from '@/components/common/Icon/XIcon';
 
 type DocumentPopupProps = {
   isOpen: boolean;
@@ -36,16 +36,16 @@ export default function DocumentPopup({
       >
         {/* Header */}
         <div className="flex shrink-0 items-center justify-between gap-3 pb-10">
-          <div className="h-8 w-8 shrink-0" aria-hidden="true" />
+          <div className="h-6 w-6 shrink-0" aria-hidden="true" />
           <h2 className="flex-1 text-center text-[24px] font-bold">{title}</h2>
 
           <button
             type="button"
             aria-label="닫기"
             onClick={onClose}
-            className="inline-flex h-8 w-8 shrink-0 items-center justify-center"
+            className="inline-flex h-6 w-6 shrink-0 items-center justify-center"
           >
-            <XIcon className="h-[14px] w-[14px]" />
+            <CloseIcon className="h-3.5 w-3.5" />
           </button>
         </div>
 

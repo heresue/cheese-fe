@@ -49,9 +49,9 @@ export default function Input({
           className={clsx(
             'h-[19px] min-w-0 flex-1',
             'border-0 bg-transparent',
-            'placeholder:text-gray-500',
+            'placeholder:text-text-placeholder',
             'focus:outline-none',
-            isDisabled && 'text-gray-500 placeholder:text-gray-400',
+            isDisabled && 'text-text-muted placeholder:text-text-placeholder',
             inputClassName,
           )}
           {...rest}
@@ -61,13 +61,15 @@ export default function Input({
       </div>
 
       {/* message (optional) */}
-      {hasError ? (
-        <p id={messageId} className="text-text-error mt-2 text-left text-[12px] font-medium">
-          {errorMessage}
-        </p>
-      ) : hasSuccess ? (
-        <p className="text-text-success mt-2 text-[12px] font-medium">{successMessage}</p>
-      ) : null}
+      <div className="h-[22px] text-left text-xs font-medium">
+        {hasError ? (
+          <p id={messageId} className="text-text-error pt-2">
+            {errorMessage}
+          </p>
+        ) : hasSuccess ? (
+          <p className="text-text-success mt-2">{successMessage}</p>
+        ) : null}
+      </div>
     </div>
   );
 }

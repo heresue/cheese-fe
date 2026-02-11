@@ -16,7 +16,7 @@ export default function InputActionButton({
       type={type}
       className={clsx(
         'inline-flex items-center justify-center',
-        'h-[30px] px-2',
+        'h-[30px] px-3 py-2',
         'whitespace-nowrap',
         'rounded-[5px]',
         'bg-primary-700',
