@@ -41,3 +41,4 @@ export const EVENT_COLOR_TOKENS: Record<
     border: 'var(--color-tag-gray-500)',
   },
 };
+export const DEFAULT_EVENT_COLOR: EventColorId = 'tag-gray';

@@ -51,3 +51,8 @@ export interface CalendarEvent {
 export type CalendarEventDraft = Omit<CalendarEvent, 'id'> & {
   id?: string;
 };
+export type CalendarSlot = {
+  start: string; // ISO string or 'YYYY-MM-DD'
+  end: string; // ISO string or 'YYYY-MM-DD'
+  allDay?: boolean;
+};
