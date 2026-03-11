@@ -15,7 +15,7 @@ const items: Array<{ value: CalendarView; label: string }> = [
 
 export function CalendarViewSwitcher({ value, onChange }: Props) {
   return (
-    <div className="inline-flex rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] p-1">
+    <div className="inline-flex items-center rounded-xl bg-[var(--color-bg-subtle)] p-1">
       {items.map((item) => {
         const active = item.value === value;
 
@@ -25,10 +25,10 @@ export function CalendarViewSwitcher({ value, onChange }: Props) {
             type="button"
             onClick={() => onChange(item.value)}
             className={[
-              'h-9 min-w-10 rounded-lg px-3 text-sm transition',
+              'flex h-8 min-w-[36px] items-center justify-center rounded-lg px-3 text-sm font-medium transition',
               active
-                ? 'bg-[var(--color-primary-800)] text-[var(--color-text)]'
-                : 'text-[var(--color-text-muted)] hover:bg-[var(--color-bg-subtle)]',
+                ? 'bg-[var(--color-primary-800)] text-[var(--color-text)] shadow-sm'
+                : 'text-[var(--color-text-muted)] hover:bg-[var(--color-bg-surface)]',
             ].join(' ')}
           >
             {item.label}

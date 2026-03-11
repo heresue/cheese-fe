@@ -5,61 +5,63 @@ import { CalendarViewSwitcher } from './CalendarViewSwitcher';
 
 type Props = {
   view: CalendarView;
+  title?: string;
   onChangeView: (next: CalendarView) => void;
-
   onClickToday: () => void;
   onClickPrev: () => void;
   onClickNext: () => void;
-
-  title?: string;
 };
 
 export function CalendarToolbar({
   view,
+  title = '2026년 2월',
   onChangeView,
   onClickToday,
   onClickPrev,
   onClickNext,
-  title = '2026년 2월',
 }: Props) {
   return (
-    <header className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-4 py-3">
+    <header className="flex items-center justify-between rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-4 py-3">
+      {/* left */}
       <div className="flex items-center gap-2">
         <button
           type="button"
           onClick={onClickToday}
-          className="h-9 rounded-xl border border-[var(--color-border)] px-3 text-sm hover:bg-[var(--color-bg-subtle)]"
+          className="h-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 text-sm font-medium text-[var(--color-text)] transition hover:bg-[var(--color-bg-subtle)]"
         >
           오늘
         </button>
 
-        <div className="flex items-center overflow-hidden rounded-xl border border-[var(--color-border)]">
+        <div className="flex items-center gap-1 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] p-1">
           <button
             type="button"
             onClick={onClickPrev}
-            className="h-9 w-10 hover:bg-[var(--color-bg-subtle)]"
             aria-label="이전"
             title="이전"
+            className="flex h-6 w-6 items-center justify-center rounded-lg text-sm text-[var(--color-text)] transition hover:bg-[var(--color-bg-subtle)]"
           >
             ‹
           </button>
+
           <button
             type="button"
             onClick={onClickNext}
-            className="h-9 w-10 hover:bg-[var(--color-bg-subtle)]"
             aria-label="다음"
             title="다음"
+            className="flex h-6 w-6 items-center justify-center rounded-lg text-sm text-[var(--color-text)] transition hover:bg-[var(--color-bg-subtle)]"
           >
             ›
           </button>
         </div>
       </div>
 
-      <div className="min-w-0 flex-1 text-center">
-        <div className="truncate text-base font-semibold">{title}</div>
+      {/* center */}
+      <div className="flex-1 text-center">
+        <h2 className="text-xl font-semibold text-[var(--color-text)]">{title}</h2>
       </div>
 
-      <div className="shrink-0">
+      {/* right */}
+      <div className="flex items-center">
         <CalendarViewSwitcher value={view} onChange={onChangeView} />
       </div>
     </header>
