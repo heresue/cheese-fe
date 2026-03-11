@@ -21,7 +21,7 @@ export function CalendarToolbar({
   onClickNext,
 }: Props) {
   return (
-    <header className="mb-5 flex items-center justify-between bg-[var(--color-bg-surface)] px-8 pt-6 pb-2">
+    <header className="flex h-[64px] items-center justify-between bg-[var(--color-bg-surface)] px-8">
       <h2 className="text-2xl leading-[30px] font-bold text-[var(--color-gray-800)]">{title}</h2>
 
       <div className="flex items-center gap-[8px]">

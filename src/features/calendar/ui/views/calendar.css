@@ -15,10 +15,7 @@
 .fc .fc-view-harness,
 .fc .fc-view-harness-active,
 .fc .fc-daygrid,
-.fc .fc-scrollgrid,
-.fc .fc-daygrid-body,
-.fc .fc-daygrid-body table,
-.fc .fc-scrollgrid-sync-table {
+.fc .fc-scrollgrid {
   height: 100% !important;
 }
 
@@ -26,9 +23,12 @@
   height: 100% !important;
 }
 
-.fc .fc-scroller-harness,
-.fc .fc-scroller {
+.fc .fc-scroller-harness {
   overflow: hidden !important;
+}
+
+.fc .fc-scroller {
+  overflow: hidden auto !important;
 }
 
 .fc .fc-daygrid-body table,
