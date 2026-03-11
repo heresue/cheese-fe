@@ -1,13 +1,20 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import './calendar.css';
 
-import type { CalendarApi, DateSelectArg, EventClickArg, EventInput } from '@fullcalendar/core';
+import type {
+  CalendarApi,
+  DateSelectArg,
+  DatesSetArg,
+  EventClickArg,
+  EventInput,
+} from '@fullcalendar/core';
 
 import type {
   CalendarEvent,
@@ -16,17 +23,10 @@ import type {
   CalendarView,
 } from '../../model/types';
 
-/**
- * FullCalendar v6 CSS import
- * - 프로젝트 설정에 따라 경로가 다를 수 있어요.
- * - 아래 import에서 에러가 나면, 하단 "CSS import 에러 시" 섹션 참고.
- */
-
 type CalendarCoreProps = {
   view: CalendarView;
   events: CalendarEvent[];
   onTitleChange?: (title: string) => void;
-
   onSelectSlot?: (slot: CalendarSlot) => void;
   onClickEvent?: (event: Partial<CalendarEventDraft>) => void;
 };
@@ -37,10 +37,16 @@ const VIEW_MAP: Record<CalendarView, string> = {
   day: 'timeGridDay',
 };
 
-export function CalendarCore({ view, events, onSelectSlot, onClickEvent }: CalendarCoreProps) {
+export function CalendarCore({
+  view,
+  events,
+  onTitleChange,
+  onSelectSlot,
+  onClickEvent,
+}: CalendarCoreProps) {
   const calendarRef = useRef<FullCalendar | null>(null);
+  const isMonthView = view === 'month';
 
-  // 내부 이벤트 타입 -> FullCalendar EventInput으로 변환
   const fcEvents = useMemo<EventInput[]>(() => {
     return events.map((e) => ({
       id: e.id,
@@ -60,6 +66,15 @@ export function CalendarCore({ view, events, onSelectSlot, onClickEvent }: Calen
 
   const initialView = VIEW_MAP[view];
 
+  const getApi = () => calendarRef.current?.getApi();
+
+  const syncView = (api: CalendarApi) => {
+    const nextView = VIEW_MAP[view];
+    if (api.view.type !== nextView) {
+      api.changeView(nextView);
+    }
+  };
+
   const handleSelect = (arg: DateSelectArg) => {
     onSelectSlot?.({
       start: arg.startStr,
@@ -67,7 +82,6 @@ export function CalendarCore({ view, events, onSelectSlot, onClickEvent }: Calen
       allDay: arg.allDay,
     });
 
-    // 선택 영역 해제(드래그 잔상 제거)
     arg.view.calendar.unselect();
   };
 
@@ -81,7 +95,6 @@ export function CalendarCore({ view, events, onSelectSlot, onClickEvent }: Calen
       start: event.startStr,
       end: event.endStr,
       allDay: event.allDay,
-
       memo: ext?.memo,
       spaceId: ext?.spaceId,
       colorId: ext?.colorId,
@@ -90,21 +103,48 @@ export function CalendarCore({ view, events, onSelectSlot, onClickEvent }: Calen
     });
   };
 
-  // view prop이 바뀌면 FullCalendar view도 전환
-  // (FullCalendar는 내부 상태라서 API로 changeView 해줘야 정확합니다)
-  const syncView = (api: CalendarApi) => {
-    const next = VIEW_MAP[view];
-    if (api.view.type !== next) api.changeView(next);
+  const handleDatesSet = (arg: DatesSetArg) => {
+    syncView(arg.view.calendar);
+    onTitleChange?.(arg.view.title);
   };
 
+  useEffect(() => {
+    const api = getApi();
+    if (!api) return;
+
+    const handleToday = () => api.today();
+    const handlePrev = () => api.prev();
+    const handleNext = () => api.next();
+
+    window.addEventListener('calendar:today', handleToday);
+    window.addEventListener('calendar:prev', handlePrev);
+    window.addEventListener('calendar:next', handleNext);
+
+    return () => {
+      window.removeEventListener('calendar:today', handleToday);
+      window.removeEventListener('calendar:prev', handlePrev);
+      window.removeEventListener('calendar:next', handleNext);
+    };
+  }, []);
+
+  useEffect(() => {
+    const api = getApi();
+    if (!api) return;
+
+    syncView(api);
+    onTitleChange?.(api.view.title);
+  }, [view, onTitleChange]);
   return (
-    <div className="h-full w-full">
+    <div className="h-full min-h-0 w-full">
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView={initialView}
         height="100%"
+        contentHeight="100%"
+        expandRows
         headerToolbar={false}
+        fixedWeekCount={false}
         nowIndicator
         selectable
         selectMirror
@@ -112,18 +152,12 @@ export function CalendarCore({ view, events, onSelectSlot, onClickEvent }: Calen
         select={handleSelect}
         eventClick={handleEventClick}
         events={fcEvents}
-        // 뷰 동기화
-        datesSet={(arg) => {
-          // datesSet은 렌더/뷰 변경 시 자주 불리므로, 현재 view prop과 맞춰줌
-          syncView(arg.view.calendar);
-        }}
-        // timeGrid 설정(주/일 뷰)
+        dayCellContent={(arg) => String(arg.date.getDate())}
+        datesSet={handleDatesSet}
         slotMinTime="08:00:00"
         slotMaxTime="23:00:00"
         slotDuration="00:30:00"
-        // month 뷰 설정
         dayMaxEventRows={3}
-        // locale(원하면 'ko'로 더 정확히)
         locale="ko"
       />
     </div>

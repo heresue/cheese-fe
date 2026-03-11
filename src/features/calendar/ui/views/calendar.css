@@ -1,0 +1,127 @@
+.fc {
+  height: 100%;
+  background: var(--color-bg-surface);
+  color: var(--color-text);
+  font-size: 12px;
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th,
+.fc .fc-scrollgrid,
+.fc .fc-scrollgrid-section > * {
+  border: none;
+}
+
+.fc .fc-view-harness,
+.fc .fc-view-harness-active,
+.fc .fc-daygrid,
+.fc .fc-scrollgrid,
+.fc .fc-daygrid-body,
+.fc .fc-daygrid-body table,
+.fc .fc-scrollgrid-sync-table {
+  height: 100% !important;
+}
+
+.fc .fc-view-harness-active > .fc-view {
+  height: 100% !important;
+}
+
+.fc .fc-scroller-harness,
+.fc .fc-scroller {
+  overflow: hidden !important;
+}
+
+.fc .fc-daygrid-body table,
+.fc .fc-col-header table {
+  width: 100% !important;
+  table-layout: fixed;
+}
+
+.fc .fc-col-header {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.fc .fc-col-header-cell {
+  height: 34px;
+  vertical-align: middle;
+  background: transparent;
+}
+
+.fc .fc-col-header-cell-cushion {
+  padding: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.fc .fc-daygrid-day {
+  vertical-align: top;
+  border-right: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  background: transparent;
+}
+
+.fc .fc-daygrid-day:last-child {
+  border-right: none;
+}
+
+.fc .fc-daygrid-day.fc-day-sun,
+.fc .fc-daygrid-day.fc-day-sat {
+  background: var(--color-gray-200);
+}
+
+.fc .fc-day-today {
+  background: var(--color-primary-100) !important;
+}
+
+.fc .fc-daygrid-day-frame {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+.fc .fc-daygrid-day-top {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  padding: 6px 8px 0 !important;
+}
+
+.fc .fc-daygrid-day-number {
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-gray-950);
+  text-decoration: none;
+}
+
+.fc .fc-day-other .fc-daygrid-day-number {
+  color: var(--color-gray-400);
+}
+
+.fc .fc-daygrid-day-events {
+  margin: 6px 8px 0;
+  min-height: 0 !important;
+}
+
+.fc .fc-daygrid-day-bottom {
+  padding: 0 !important;
+}
+
+.fc .fc-daygrid-event {
+  margin: 0 0 4px;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.fc .fc-daygrid-more-link {
+  margin-top: 2px;
+  color: var(--color-text-muted);
+  text-decoration: none;
+}

@@ -19,6 +19,8 @@ export default function CalendarScreen() {
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [draft, setDraft] = useState<CalendarEventDraft | null>(null);
 
+  const isMonthView = view === 'month';
+
   const openCreateModal = (nextDraft?: Partial<CalendarEventDraft>) => {
     setDraft({
       title: '',
@@ -36,51 +38,65 @@ export default function CalendarScreen() {
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col gap-3 bg-[var(--color-bg)] p-4">
-      <CalendarToolbar
-        view={view}
-        title={title}
-        onChangeView={setView}
-        onClickToday={() => {
-          window.dispatchEvent(new CustomEvent('calendar:today'));
-        }}
-        onClickPrev={() => {
-          window.dispatchEvent(new CustomEvent('calendar:prev'));
-        }}
-        onClickNext={() => {
-          window.dispatchEvent(new CustomEvent('calendar:next'));
-        }}
-      />
-
-      <section className="flex min-h-[720px] flex-1 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-surface)]">
-        <CalendarCore
+    <div className="flex h-full min-h-0 bg-[var(--color-bg)]">
+      <div
+        className={
+          isMonthView
+            ? 'flex min-h-0 w-full flex-col bg-[var(--color-bg-surface)]'
+            : 'flex h-full min-h-0 w-full flex-col bg-[var(--color-bg-surface)]'
+        }
+      >
+        <CalendarToolbar
           view={view}
-          events={events}
-          onTitleChange={setTitle}
-          onSelectSlot={(slot) => {
-            openCreateModal({
-              start: slot.start,
-              end: slot.end,
-              allDay: slot.allDay,
-            });
+          title={title}
+          onChangeView={setView}
+          onClickToday={() => {
+            window.dispatchEvent(new CustomEvent('calendar:today'));
           }}
-          onClickEvent={(event) => {
-            openCreateModal(event);
+          onClickPrev={() => {
+            window.dispatchEvent(new CustomEvent('calendar:prev'));
+          }}
+          onClickNext={() => {
+            window.dispatchEvent(new CustomEvent('calendar:next'));
           }}
         />
-      </section>
 
-      {draft && (
-        <EventFormModal
-          open={isEventModalOpen}
-          draft={draft}
-          onClose={closeModal}
-          onSubmit={(nextDraft) => {
-            console.log('submit', nextDraft);
-            closeModal();
-          }}
-        />
-      )}
+        <section
+          className={
+            isMonthView
+              ? 'h-[934px] shrink-0 bg-[var(--color-bg-surface)]'
+              : 'min-h-0 flex-1 bg-[var(--color-bg-surface)]'
+          }
+        >
+          <CalendarCore
+            view={view}
+            events={events}
+            onTitleChange={setTitle}
+            onSelectSlot={(slot) => {
+              openCreateModal({
+                start: slot.start,
+                end: slot.end,
+                allDay: slot.allDay,
+              });
+            }}
+            onClickEvent={(event) => {
+              openCreateModal(event);
+            }}
+          />
+        </section>
+
+        {draft && (
+          <EventFormModal
+            open={isEventModalOpen}
+            draft={draft}
+            onClose={closeModal}
+            onSubmit={(nextDraft) => {
+              console.log('submit', nextDraft);
+              closeModal();
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 }

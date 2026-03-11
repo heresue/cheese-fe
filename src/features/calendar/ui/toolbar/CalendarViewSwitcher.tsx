@@ -15,26 +15,28 @@ const items: Array<{ value: CalendarView; label: string }> = [
 
 export function CalendarViewSwitcher({ value, onChange }: Props) {
   return (
-    <div className="inline-flex items-center rounded-xl bg-[var(--color-bg-subtle)] p-1">
-      {items.map((item) => {
-        const active = item.value === value;
+    <div className="flex h-8 w-[228px] items-center rounded-[13px] bg-[var(--color-bg-subtle)] p-[4px]">
+      <div className="flex w-full items-center justify-between">
+        {items.map((item) => {
+          const active = item.value === value;
 
-        return (
-          <button
-            key={item.value}
-            type="button"
-            onClick={() => onChange(item.value)}
-            className={[
-              'flex h-8 min-w-[36px] items-center justify-center rounded-lg px-3 text-sm font-medium transition',
-              active
-                ? 'bg-[var(--color-primary-800)] text-[var(--color-text)] shadow-sm'
-                : 'text-[var(--color-text-muted)] hover:bg-[var(--color-bg-surface)]',
-            ].join(' ')}
-          >
-            {item.label}
-          </button>
-        );
-      })}
+          return (
+            <button
+              key={item.value}
+              type="button"
+              onClick={() => onChange(item.value)}
+              className={[
+                'flex h-6 w-[60px] items-center justify-center rounded-[10px] text-xs leading-none font-medium transition',
+                active
+                  ? 'bg-[var(--color-bg-surface)] text-[var(--color-text)]'
+                  : 'bg-transparent text-[var(--color-text-muted)]',
+              ].join(' ')}
+            >
+              {item.label}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
