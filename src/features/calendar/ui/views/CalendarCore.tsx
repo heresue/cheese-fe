@@ -45,7 +45,6 @@ export function CalendarCore({
   onClickEvent,
 }: CalendarCoreProps) {
   const calendarRef = useRef<FullCalendar | null>(null);
-  const isMonthView = view === 'month';
 
   const fcEvents = useMemo<EventInput[]>(() => {
     return events.map((e) => ({
@@ -134,16 +133,17 @@ export function CalendarCore({
     syncView(api);
     onTitleChange?.(api.view.title);
   }, [view, onTitleChange]);
+
   return (
-    <div className="h-full min-h-0 w-full">
+    <div className="h-full min-h-0 w-full overflow-hidden">
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView={initialView}
+        headerToolbar={false}
         height="100%"
         contentHeight="100%"
-        expandRows
-        headerToolbar={false}
+        expandRows={true}
         fixedWeekCount={false}
         nowIndicator
         selectable

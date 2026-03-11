@@ -19,8 +19,6 @@ export default function CalendarScreen() {
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [draft, setDraft] = useState<CalendarEventDraft | null>(null);
 
-  const isMonthView = view === 'month';
-
   const openCreateModal = (nextDraft?: Partial<CalendarEventDraft>) => {
     setDraft({
       title: '',
@@ -39,35 +37,25 @@ export default function CalendarScreen() {
 
   return (
     <div className="flex h-full min-h-0 bg-[var(--color-bg)]">
-      <div
-        className={
-          isMonthView
-            ? 'flex min-h-0 w-full flex-col bg-[var(--color-bg-surface)]'
-            : 'flex h-full min-h-0 w-full flex-col bg-[var(--color-bg-surface)]'
-        }
-      >
-        <CalendarToolbar
-          view={view}
-          title={title}
-          onChangeView={setView}
-          onClickToday={() => {
-            window.dispatchEvent(new CustomEvent('calendar:today'));
-          }}
-          onClickPrev={() => {
-            window.dispatchEvent(new CustomEvent('calendar:prev'));
-          }}
-          onClickNext={() => {
-            window.dispatchEvent(new CustomEvent('calendar:next'));
-          }}
-        />
+      <div className="flex h-full min-h-0 w-full flex-col bg-[var(--color-bg-surface)]">
+        <div className="shrink-0">
+          <CalendarToolbar
+            view={view}
+            title={title}
+            onChangeView={setView}
+            onClickToday={() => {
+              window.dispatchEvent(new CustomEvent('calendar:today'));
+            }}
+            onClickPrev={() => {
+              window.dispatchEvent(new CustomEvent('calendar:prev'));
+            }}
+            onClickNext={() => {
+              window.dispatchEvent(new CustomEvent('calendar:next'));
+            }}
+          />
+        </div>
 
-        <section
-          className={
-            isMonthView
-              ? 'h-[934px] shrink-0 bg-[var(--color-bg-surface)]'
-              : 'min-h-0 flex-1 bg-[var(--color-bg-surface)]'
-          }
-        >
+        <section className="min-h-0 flex-1 overflow-hidden bg-[var(--color-bg-surface)]">
           <CalendarCore
             view={view}
             events={events}
