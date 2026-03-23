@@ -72,9 +72,13 @@
 }
 
 .fc .fc-day-today {
-  background: var(--color-primary-100) !important;
+  background: transparent !important;
 }
 
+.fc .fc-daygrid-day:hover {
+  background: var(--color-background-3) !important;
+  cursor: pointer;
+}
 .fc .fc-daygrid-day-frame {
   height: 100%;
   min-height: 0;

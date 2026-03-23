@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
+import interactionPlugin, { type DateClickArg } from '@fullcalendar/interaction';
 import './calendar.css';
 
 import type {
@@ -29,6 +29,7 @@ type CalendarCoreProps = {
   onTitleChange?: (title: string) => void;
   onSelectSlot?: (slot: CalendarSlot) => void;
   onClickEvent?: (event: Partial<CalendarEventDraft>) => void;
+  onClickDateCell?: (payload: { date: string; rect: DOMRect }) => void;
 };
 
 const VIEW_MAP: Record<CalendarView, string> = {
@@ -43,6 +44,7 @@ export function CalendarCore({
   onTitleChange,
   onSelectSlot,
   onClickEvent,
+  onClickDateCell,
 }: CalendarCoreProps) {
   const calendarRef = useRef<FullCalendar | null>(null);
 
@@ -102,6 +104,17 @@ export function CalendarCore({
     });
   };
 
+  const handleDateClick = (arg: DateClickArg) => {
+    if (view !== 'month') return;
+
+    const rect = arg.dayEl.getBoundingClientRect();
+
+    onClickDateCell?.({
+      date: arg.dateStr,
+      rect,
+    });
+  };
+
   const handleDatesSet = (arg: DatesSetArg) => {
     syncView(arg.view.calendar);
     onTitleChange?.(arg.view.title);
@@ -145,11 +158,12 @@ export function CalendarCore({
         contentHeight="100%"
         expandRows={true}
         fixedWeekCount={false}
-        nowIndicator
+        nowIndicator={false}
         selectable
         selectMirror
         unselectAuto
         select={handleSelect}
+        dateClick={handleDateClick}
         eventClick={handleEventClick}
         events={fcEvents}
         dayCellContent={(arg) => String(arg.date.getDate())}
