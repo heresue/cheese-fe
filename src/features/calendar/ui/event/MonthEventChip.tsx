@@ -1,6 +1,6 @@
 'use client';
 
-import { EVENT_COLOR_TOKENS, DEFAULT_EVENT_COLOR } from '../../model/constants';
+import { DEFAULT_EVENT_COLOR, EVENT_COLOR_TOKENS } from '../../model/constants';
 import type { CalendarEvent } from '../../model/types';
 
 type Props = {
@@ -12,7 +12,7 @@ export function MonthEventChip({ event }: Props) {
 
   return (
     <div
-      className="flex items-center overflow-hidden rounded-md px-2 py-[2px] text-xs font-medium"
+      className="flex h-[18px] w-full items-center overflow-hidden rounded-[7px] px-2 text-[11px] leading-[14px] font-medium"
       style={{
         backgroundColor: color.bg,
         color: color.text,

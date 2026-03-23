@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef } from 'react';
 
-import type { CalendarEventDraft } from '../../model/types';
+import type { CalendarEventDraft, EventColorId, ReminderMinutes } from '../../model/types';
 
 type CalendarEventPopoverProps = {
   open: boolean;
@@ -14,21 +14,21 @@ type CalendarEventPopoverProps = {
   onSave: () => void;
 };
 
-const REMINDER_OPTIONS = [
+const REMINDER_OPTIONS: Array<{ label: string; value: ReminderMinutes | '' }> = [
   { label: '없음', value: '' },
-  { label: '5분 전', value: '5' },
-  { label: '10분 전', value: '10' },
-  { label: '30분 전', value: '30' },
-  { label: '1시간 전', value: '60' },
+  { label: '5분 전', value: 5 },
+  { label: '10분 전', value: 10 },
+  { label: '30분 전', value: 30 },
+  { label: '1시간 전', value: 60 },
 ];
 
-const QUICK_EVENT_COLORS = [
-  { id: 'gray', hex: '#8B99A8' },
-  { id: 'red', hex: '#F26B5E' },
-  { id: 'yellow', hex: '#E9C84A' },
-  { id: 'green', hex: '#8BC34A' },
-  { id: 'blue', hex: '#5B9EF7' },
-  { id: 'purple', hex: '#A96BE3' },
+const QUICK_EVENT_COLORS: Array<{ id: EventColorId; hex: string }> = [
+  { id: 'tag-gray', hex: '#8B99A8' },
+  { id: 'tag-red', hex: '#F26B5E' },
+  { id: 'tag-yellow', hex: '#E9C84A' },
+  { id: 'tag-green', hex: '#8BC34A' },
+  { id: 'tag-blue', hex: '#5B9EF7' },
+  { id: 'tag-purple', hex: '#A96BE3' },
 ];
 
 function toDateInputValue(value?: string) {
@@ -209,13 +209,17 @@ export function CalendarEventPopover({
 
         <div className="grid grid-cols-2 gap-2">
           <select
-            value={draft.reminderMinutes ? String(draft.reminderMinutes) : ''}
-            onChange={(e) =>
+            value={draft.reminderMinutes !== undefined ? String(draft.reminderMinutes) : ''}
+            onChange={(e) => {
+              const nextReminderMinutes = e.target.value
+                ? (Number(e.target.value) as ReminderMinutes)
+                : undefined;
+
               onChangeDraft({
                 ...draft,
-                reminderMinutes: e.target.value ? Number(e.target.value) : undefined,
-              })
-            }
+                reminderMinutes: nextReminderMinutes,
+              });
+            }}
             className="h-9 rounded-[8px] border border-[var(--color-gray-200)] px-3 text-sm outline-none focus:border-[var(--color-gray-400)]"
           >
             {REMINDER_OPTIONS.map((option) => (

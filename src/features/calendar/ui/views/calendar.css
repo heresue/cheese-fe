@@ -1,4 +1,8 @@
 .fc {
+  --calendar-month-day-height: 142px;
+  --calendar-month-chip-height: 18px;
+  --calendar-month-chip-gap: 4px;
+  --calendar-scrollbar-width: 0px;
   height: 100%;
   background: var(--color-bg-surface);
   color: var(--color-text);
@@ -29,10 +33,19 @@
 
 .fc .fc-scroller {
   overflow: hidden auto !important;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.fc .fc-scroller::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .fc .fc-daygrid-body table,
-.fc .fc-col-header table {
+.fc .fc-col-header table,
+.fc .fc-scrollgrid-sync-table {
   width: 100% !important;
   table-layout: fixed;
 }
@@ -79,6 +92,7 @@
   background: var(--color-background-3) !important;
   cursor: pointer;
 }
+
 .fc .fc-daygrid-day-frame {
   height: 100%;
   min-height: 0;
@@ -128,4 +142,83 @@
   margin-top: 2px;
   color: var(--color-text-muted);
   text-decoration: none;
+}
+
+/* month body가 최소 전체 높이는 채우게 */
+.fc .fc-dayGridMonth-view .fc-daygrid-body,
+.fc .fc-dayGridMonth-view .fc-daygrid-body table,
+.fc .fc-dayGridMonth-view .fc-daygrid-body .fc-scrollgrid-sync-table {
+  min-height: 100% !important;
+}
+
+/* row 높이 고정 */
+.fc .fc-dayGridMonth-view .fc-daygrid-body tbody tr {
+  height: var(--calendar-month-day-height) !important;
+}
+
+/* 오른쪽 빈 공간 방지 */
+.fc .fc-dayGridMonth-view .fc-scrollgrid,
+.fc .fc-dayGridMonth-view .fc-scrollgrid-section,
+.fc .fc-dayGridMonth-view .fc-scrollgrid-section-body > td,
+.fc .fc-dayGridMonth-view .fc-scrollgrid-section-header > th,
+.fc .fc-dayGridMonth-view .fc-daygrid-body,
+.fc .fc-dayGridMonth-view .fc-scroller,
+.fc .fc-dayGridMonth-view .fc-scrollgrid-sync-table {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+.fc .fc-dayGridMonth-view .fc-scroller {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+}
+
+.fc .fc-dayGridMonth-view .fc-daygrid-day-frame {
+  height: var(--calendar-month-day-height);
+  min-height: var(--calendar-month-day-height);
+}
+
+.fc .fc-dayGridMonth-view .fc-daygrid-day-top {
+  min-height: 20px;
+  flex-shrink: 0;
+}
+
+.fc .fc-dayGridMonth-view .fc-daygrid-day-events {
+  flex: 1 1 auto;
+  min-height: 0 !important;
+  overflow: hidden;
+}
+
+.fc .fc-dayGridMonth-view .fc-daygrid-event-harness {
+  margin-bottom: var(--calendar-month-chip-gap);
+}
+
+.fc .fc-dayGridMonth-view .fc-daygrid-event-harness:last-child {
+  margin-bottom: 0;
+}
+
+.fc .fc-dayGridMonth-view .fc-daygrid-event {
+  margin: 0;
+}
+
+.fc .fc-dayGridMonth-view .fc-daygrid-day-bottom {
+  margin: 0 8px 8px;
+  flex-shrink: 0;
+}
+
+.fc .fc-dayGridMonth-view .fc-daygrid-more-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--calendar-month-chip-height);
+  padding: 0 4px;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.fc .fc-timegrid-event,
+.fc .fc-timegrid-more-link {
+  border-radius: 8px;
 }
