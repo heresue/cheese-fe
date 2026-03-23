@@ -40,6 +40,7 @@ type MonthLayoutState = {
   density: MonthDensity;
   rowHeight: number;
   scrollbarWidth: number;
+  weekCount: number;
 };
 
 const VIEW_MAP: Record<CalendarView, string> = {
@@ -57,6 +58,7 @@ const DEFAULT_MONTH_LAYOUT: MonthLayoutState = {
   density: 'comfortable',
   rowHeight: MONTH_MIN_ROW_HEIGHT.comfortable,
   scrollbarWidth: 0,
+  weekCount: 5,
 };
 
 const MONTH_LAYOUT_EPSILON = 0.5;
@@ -126,7 +128,8 @@ export function CalendarCore({
         const isSameAsDefault =
           prev.density === DEFAULT_MONTH_LAYOUT.density &&
           Math.abs(prev.rowHeight - DEFAULT_MONTH_LAYOUT.rowHeight) < MONTH_LAYOUT_EPSILON &&
-          prev.scrollbarWidth === DEFAULT_MONTH_LAYOUT.scrollbarWidth;
+          prev.scrollbarWidth === DEFAULT_MONTH_LAYOUT.scrollbarWidth &&
+          prev.weekCount === DEFAULT_MONTH_LAYOUT.weekCount;
 
         return isSameAsDefault ? prev : DEFAULT_MONTH_LAYOUT;
       });
@@ -138,25 +141,30 @@ export function CalendarCore({
 
     const monthViewEl = containerEl.querySelector('.fc-dayGridMonth-view');
     const monthBodyScroller = monthViewEl?.querySelector('.fc-scroller');
+    const monthBody = monthViewEl?.querySelector('.fc-daygrid-body');
     const weekRows = monthViewEl?.querySelectorAll('.fc-daygrid-body tbody tr');
 
-    if (!(monthBodyScroller instanceof HTMLElement) || !weekRows || weekRows.length === 0) {
+    if (
+      !(monthBodyScroller instanceof HTMLElement) ||
+      !(monthBody instanceof HTMLElement) ||
+      !weekRows ||
+      weekRows.length === 0
+    ) {
       return;
     }
 
-    const visibleBodyHeight = monthBodyScroller.clientHeight;
-    if (visibleBodyHeight <= 0) {
-      return;
-    }
+    const weekCount = weekRows.length;
+    const bodyHeight = monthBody.getBoundingClientRect().height;
+    if (bodyHeight <= 0) return;
 
-    const visibleWeekCount = Math.min(weekRows.length, 5);
-    const availablePerWeek = visibleBodyHeight / visibleWeekCount;
+    // 6주 달에서 사용할 기준 높이는 "5주 달이 꽉 찰 때 한 줄 높이"
+    const measuredRowHeight = bodyHeight / 5;
 
     const density: MonthDensity =
-      availablePerWeek >= MONTH_MIN_ROW_HEIGHT.comfortable ? 'comfortable' : 'compact';
+      measuredRowHeight >= MONTH_MIN_ROW_HEIGHT.comfortable ? 'comfortable' : 'compact';
 
     const minRowHeight = MONTH_MIN_ROW_HEIGHT[density];
-    const rowHeight = Math.max(minRowHeight, availablePerWeek);
+    const rowHeight = Math.max(minRowHeight, measuredRowHeight);
 
     const scrollbarWidth = Math.max(
       monthBodyScroller.offsetWidth - monthBodyScroller.clientWidth,
@@ -168,13 +176,17 @@ export function CalendarCore({
         density,
         rowHeight,
         scrollbarWidth,
+        weekCount,
       };
 
       const hasSameDensity = prev.density === next.density;
       const hasSameRowHeight = Math.abs(prev.rowHeight - next.rowHeight) < MONTH_LAYOUT_EPSILON;
       const hasSameScrollbarWidth = prev.scrollbarWidth === next.scrollbarWidth;
+      const hasSameWeekCount = prev.weekCount === next.weekCount;
 
-      return hasSameDensity && hasSameRowHeight && hasSameScrollbarWidth ? prev : next;
+      return hasSameDensity && hasSameRowHeight && hasSameScrollbarWidth && hasSameWeekCount
+        ? prev
+        : next;
     });
   }, [view]);
 
@@ -310,7 +322,7 @@ export function CalendarCore({
   useEffect(() => {
     if (view !== 'month') return;
     scheduleMonthLayoutSync();
-  }, [monthLayout.density, monthLayout.rowHeight, scheduleMonthLayoutSync, view]);
+  }, [monthLayout.rowHeight, scheduleMonthLayoutSync, view]);
 
   useEffect(() => {
     return () => {
@@ -330,6 +342,7 @@ export function CalendarCore({
       className="h-full min-h-0 w-full overflow-hidden"
       data-calendar-view={view}
       data-month-density={monthLayout.density}
+      data-month-week-count={monthLayout.weekCount}
       style={calendarStyle}
     >
       <FullCalendar
