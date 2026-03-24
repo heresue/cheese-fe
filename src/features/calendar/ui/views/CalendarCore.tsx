@@ -30,7 +30,7 @@ type CalendarCoreProps = {
   events: CalendarEvent[];
   onTitleChange?: (title: string) => void;
   onSelectSlot?: (slot: CalendarSlot) => void;
-  onClickEvent?: (event: Partial<CalendarEventDraft>) => void;
+  onClickEvent?: (payload: { event: Partial<CalendarEventDraft>; rect: DOMRect }) => void;
   onClickDateCell?: (payload: { date: string; rect: DOMRect }) => void;
 };
 
@@ -214,18 +214,22 @@ export function CalendarCore({
   const handleEventClick = (arg: EventClickArg) => {
     const event = arg.event;
     const ext = event.extendedProps as Partial<CalendarEventDraft>;
+    const rect = arg.el.getBoundingClientRect();
 
     onClickEvent?.({
-      id: event.id,
-      title: event.title ?? '',
-      start: event.startStr,
-      end: event.endStr,
-      allDay: event.allDay,
-      memo: ext?.memo,
-      spaceId: ext?.spaceId,
-      colorId: ext?.colorId,
-      reminderMinutes: ext?.reminderMinutes,
-      location: ext?.location,
+      rect,
+      event: {
+        id: event.id,
+        title: event.title ?? '',
+        start: event.startStr,
+        end: event.endStr,
+        allDay: event.allDay,
+        memo: ext?.memo,
+        spaceId: ext?.spaceId,
+        colorId: ext?.colorId,
+        reminderMinutes: ext?.reminderMinutes,
+        location: ext?.location,
+      },
     });
   };
 

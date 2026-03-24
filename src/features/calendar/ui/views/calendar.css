@@ -266,3 +266,21 @@
 .fc .fc-timegrid-more-link {
   border-radius: 8px;
 }
+
+/* date input 기본 달력 아이콘 제거 */
+input[type='date']::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  display: none;
+  -webkit-appearance: none;
+}
+
+/* Chrome, Safari */
+input[type='date']::-webkit-inner-spin-button,
+input[type='date']::-webkit-clear-button {
+  display: none;
+}
+
+/* Firefox */
+input[type='date'] {
+  -moz-appearance: textfield;
+}

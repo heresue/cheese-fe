@@ -1,17 +1,16 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { CalendarToolbar } from './toolbar/CalendarToolbar';
 import { CalendarCore } from './views/CalendarCore';
-import { EventFormModal } from './modal/EventFormModal';
 import { CalendarEventPopover } from './popover/CalendarEventPopover';
 
 import type { CalendarEvent, CalendarEventDraft, CalendarView } from '../model/types';
 import { mockEvents } from '../model/mock-events';
 import { DEFAULT_EVENT_COLOR } from '../model/constants';
 
-type CreatePopoverState = {
+type PopoverState = {
   x: number;
   y: number;
   draft: CalendarEventDraft;
@@ -27,46 +26,48 @@ function addOneDay(dateString: string) {
   return date.toISOString().slice(0, 10);
 }
 
+function getPopoverPosition(rect: DOMRect) {
+  let x = rect.right + CREATE_POPOVER_GAP;
+  let y = rect.top;
+
+  if (x + CREATE_POPOVER_WIDTH > window.innerWidth - 12) {
+    x = rect.left - CREATE_POPOVER_WIDTH - CREATE_POPOVER_GAP;
+  }
+
+  const anchorHeight = rect.height;
+
+  if (y + CREATE_POPOVER_HEIGHT > window.innerHeight - 12) {
+    y = rect.top - (CREATE_POPOVER_HEIGHT - anchorHeight);
+  }
+
+  if (y < 12) {
+    y = 12;
+  }
+
+  return { x, y };
+}
+
 export default function CalendarScreen() {
   const [view, setView] = useState<CalendarView>('month');
   const [title, setTitle] = useState('2026년 2월');
-
   const [events, setEvents] = useState<CalendarEvent[]>(() => mockEvents);
 
-  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
-  const [editDraft, setEditDraft] = useState<CalendarEventDraft | null>(null);
-
-  const [createPopover, setCreatePopover] = useState<CreatePopoverState | null>(null);
-
-  const closeEditModal = () => {
-    setIsEventModalOpen(false);
-    setEditDraft(null);
-  };
+  const [createPopover, setCreatePopover] = useState<PopoverState | null>(null);
+  const [editPopover, setEditPopover] = useState<PopoverState | null>(null);
 
   const closeCreatePopover = () => {
     setCreatePopover(null);
   };
 
+  const closeEditPopover = () => {
+    setEditPopover(null);
+  };
+
   const openCreatePopover = (payload: { date: string; rect: DOMRect }) => {
     const { rect, date } = payload;
+    const { x, y } = getPopoverPosition(rect);
 
-    let x = rect.right + CREATE_POPOVER_GAP;
-    let y = rect.top;
-
-    if (x + CREATE_POPOVER_WIDTH > window.innerWidth - 12) {
-      x = rect.left - CREATE_POPOVER_WIDTH - CREATE_POPOVER_GAP;
-    }
-
-    const cellHeight = rect.height;
-
-    if (y + CREATE_POPOVER_HEIGHT > window.innerHeight - 12) {
-      y = rect.top - (CREATE_POPOVER_HEIGHT - cellHeight);
-    }
-
-    if (y < 12) {
-      y = 12;
-    }
-
+    setEditPopover(null);
     setCreatePopover({
       x,
       y,
@@ -82,11 +83,33 @@ export default function CalendarScreen() {
     });
   };
 
+  const openEditPopover = (payload: { event: Partial<CalendarEventDraft>; rect: DOMRect }) => {
+    const { rect, event } = payload;
+    const { x, y } = getPopoverPosition(rect);
+
+    setCreatePopover(null);
+    setEditPopover({
+      x,
+      y,
+      draft: {
+        id: event.id,
+        title: event.title ?? '',
+        start: event.start ?? '',
+        end: event.end ?? event.start ?? '',
+        allDay: event.allDay ?? true,
+        colorId: event.colorId ?? DEFAULT_EVENT_COLOR,
+        memo: event.memo ?? '',
+        location: event.location ?? '',
+        reminderMinutes: event.reminderMinutes,
+        spaceId: event.spaceId,
+      },
+    });
+  };
+
   const handleCreateEvent = () => {
     if (!createPopover) return;
 
     const draft = createPopover.draft;
-
     if (!draft.title?.trim()) return;
 
     const newEvent: CalendarEvent = {
@@ -103,14 +126,16 @@ export default function CalendarScreen() {
     };
 
     setEvents((prev) => [...prev, newEvent]);
-    setCreatePopover(null);
+    closeCreatePopover();
   };
 
-  const handleUpdateEvent = (nextDraft: CalendarEventDraft) => {
-    if (!nextDraft.id) {
-      closeEditModal();
+  const handleUpdateEvent = () => {
+    if (!editPopover?.draft.id) {
+      closeEditPopover();
       return;
     }
+
+    const nextDraft = editPopover.draft;
 
     setEvents((prev) =>
       prev.map((event) =>
@@ -131,7 +156,17 @@ export default function CalendarScreen() {
       ),
     );
 
-    closeEditModal();
+    closeEditPopover();
+  };
+
+  const handleDeleteEvent = () => {
+    if (!editPopover?.draft.id) {
+      closeEditPopover();
+      return;
+    }
+
+    setEvents((prev) => prev.filter((event) => event.id !== editPopover.draft.id));
+    closeEditPopover();
   };
 
   return (
@@ -168,9 +203,8 @@ export default function CalendarScreen() {
             onClickDateCell={({ date, rect }) => {
               openCreatePopover({ date, rect });
             }}
-            onClickEvent={(event) => {
-              setEditDraft(event as CalendarEventDraft);
-              setIsEventModalOpen(true);
+            onClickEvent={({ event, rect }) => {
+              openEditPopover({ event, rect });
             }}
           />
         </section>
@@ -180,6 +214,7 @@ export default function CalendarScreen() {
             open={true}
             x={createPopover.x}
             y={createPopover.y}
+            mode="create"
             draft={createPopover.draft}
             onClose={closeCreatePopover}
             onSave={handleCreateEvent}
@@ -195,12 +230,25 @@ export default function CalendarScreen() {
           />
         )}
 
-        {editDraft && (
-          <EventFormModal
-            open={isEventModalOpen}
-            draft={editDraft}
-            onClose={closeEditModal}
-            onSubmit={handleUpdateEvent}
+        {editPopover && (
+          <CalendarEventPopover
+            open={true}
+            x={editPopover.x}
+            y={editPopover.y}
+            mode="edit"
+            draft={editPopover.draft}
+            onClose={closeEditPopover}
+            onSave={handleUpdateEvent}
+            onDelete={handleDeleteEvent}
+            onChangeDraft={(nextDraft) => {
+              setEditPopover((prev) => {
+                if (!prev) return prev;
+                return {
+                  ...prev,
+                  draft: nextDraft,
+                };
+              });
+            }}
           />
         )}
       </div>
