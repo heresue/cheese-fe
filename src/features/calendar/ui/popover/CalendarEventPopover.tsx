@@ -1,7 +1,17 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
+import {
+  addDaysToCalendarDate,
+  addHoursToCalendarDateTime,
+  combineDateAndTime,
+  formatDisplayDate,
+  hasTimePart,
+  parseCalendarDate,
+  toDateInputValue,
+  toTimeInputValue,
+} from '../../lib/date';
 import type { CalendarEventDraft, EventColorId, ReminderMinutes } from '../../model/types';
 
 type CalendarEventPopoverProps = {
@@ -45,24 +55,6 @@ const QUICK_EVENT_COLORS: Array<{ id: EventColorId; hex: string }> = [
   { id: 'tag-blue', hex: '#5B9EF7' },
   { id: 'tag-purple', hex: '#9B59D0' },
 ];
-
-function toDateInputValue(value?: string) {
-  if (!value) return '';
-  return value.slice(0, 10);
-}
-
-function formatDisplayDate(value?: string) {
-  if (!value) return '';
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '';
-
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  const weekday = new Intl.DateTimeFormat('ko-KR', { weekday: 'short' }).format(date);
-
-  return `${month}월 ${day}일 (${weekday})`;
-}
 
 function FieldIcon({ children }: { children: React.ReactNode }) {
   return (
@@ -121,20 +113,6 @@ function ChevronDownIcon() {
         d="M6 8L10 12L14 8"
         stroke="currentColor"
         strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function CalendarPickerIcon() {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4">
-      <path
-        d="M6.25 3.5V5.25M13.75 3.5V5.25M4 7.25H16M5.75 4.5H14.25C15.2165 4.5 16 5.2835 16 6.25V14.25C16 15.2165 15.2165 16 14.25 16H5.75C4.7835 16 4 15.2165 4 14.25V6.25C4 5.2835 4.7835 4.5 5.75 4.5Z"
-        stroke="currentColor"
-        strokeWidth="1.4"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -258,6 +236,56 @@ function DisplayDateField({ value, onChange }: DisplayDateFieldProps) {
   );
 }
 
+type DisplayTimeFieldProps = {
+  value?: string;
+  onChange: (nextValue: string) => void;
+};
+
+function DisplayTimeField({ value, onChange }: DisplayTimeFieldProps) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const inputValue = toTimeInputValue(value);
+
+  const openPicker = () => {
+    if (!inputRef.current) return;
+
+    if ('showPicker' in HTMLInputElement.prototype) {
+      (inputRef.current as HTMLInputElement & { showPicker?: () => void }).showPicker?.();
+      return;
+    }
+
+    inputRef.current.click();
+  };
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={openPicker}
+        className="flex h-[28px] w-full items-center justify-center rounded-[6px] border border-[#E4E8ED] bg-white px-2 text-[12px] leading-[28px] text-[#4B5563]"
+      >
+        <span className="truncate">{inputValue || '시간 선택'}</span>
+      </button>
+
+      <input
+        ref={inputRef}
+        type="time"
+        value={inputValue}
+        onChange={(e) => onChange(e.target.value)}
+        className="pointer-events-none absolute inset-0 h-full w-full opacity-0"
+        tabIndex={-1}
+      />
+    </div>
+  );
+}
+
+function getAllDayDisplayEndValue(start?: string, end?: string) {
+  if (!start) return '';
+  if (!end) return start;
+
+  const inclusiveEnd = addDaysToCalendarDate(end, -1);
+  return inclusiveEnd || start;
+}
+
 export function CalendarEventPopover({
   open,
   x,
@@ -270,6 +298,13 @@ export function CalendarEventPopover({
   onDelete,
 }: CalendarEventPopoverProps) {
   const popoverRef = useRef<HTMLDivElement | null>(null);
+  const isAllDay = draft.allDay ?? !hasTimePart(draft.start);
+  const timedDateValue = toDateInputValue(draft.start);
+  const timedStartTimeValue = toTimeInputValue(draft.start);
+  const timedEndTimeValue = toTimeInputValue(
+    draft.end || addHoursToCalendarDateTime(draft.start, 1),
+  );
+  const allDayDisplayEndValue = getAllDayDisplayEndValue(draft.start, draft.end);
 
   useEffect(() => {
     if (!open) return;
@@ -293,12 +328,53 @@ export function CalendarEventPopover({
     };
   }, [open, onClose]);
 
+  const updateAllDayStart = (nextStart: string) => {
+    const currentDisplayEnd = getAllDayDisplayEndValue(draft.start, draft.end) || nextStart;
+    const currentEndDate = parseCalendarDate(currentDisplayEnd);
+    const nextStartDate = parseCalendarDate(nextStart);
+
+    const nextDisplayEnd =
+      currentEndDate && nextStartDate && currentEndDate >= nextStartDate
+        ? currentDisplayEnd
+        : nextStart;
+
+    onChangeDraft({
+      ...draft,
+      allDay: true,
+      start: nextStart,
+      end: addDaysToCalendarDate(nextDisplayEnd, 1),
+    });
+  };
+
+  const updateAllDayEnd = (nextEnd: string) => {
+    onChangeDraft({
+      ...draft,
+      allDay: true,
+      end: addDaysToCalendarDate(nextEnd || draft.start, 1),
+    });
+  };
+
+  const updateTimedDraft = (nextDate?: string, nextTime?: string) => {
+    const mergedDate = nextDate ?? timedDateValue;
+    const mergedTime = nextTime ?? timedStartTimeValue;
+    const nextStart = combineDateAndTime(mergedDate, mergedTime);
+
+    if (!nextStart) return;
+
+    onChangeDraft({
+      ...draft,
+      allDay: false,
+      start: nextStart,
+      end: addHoursToCalendarDateTime(nextStart, 1),
+    });
+  };
+
   if (!open) return null;
 
   return (
     <div
       ref={popoverRef}
-      className="fixed z-50 h-[455px] w-[300px] overflow-visible rounded-[12px] border border-[#E8EAEE] bg-white shadow-[0_10px_30px_rgba(15,23,42,0.12)]"
+      className="fixed z-50 min-h-[455px] w-[320px] overflow-visible rounded-[12px] border border-[#E8EAEE] bg-white shadow-[0_10px_30px_rgba(15,23,42,0.12)]"
       style={{ left: x, top: y }}
     >
       <div className="flex items-center justify-between px-3 py-[10px]">
@@ -327,33 +403,41 @@ export function CalendarEventPopover({
           className="h-[28px] w-full border-0 bg-transparent px-0 text-[12px] text-[#2F2F2F] outline-none placeholder:text-[#A8AFB8]"
         />
 
-        <div className="grid grid-cols-[14px_1fr_10px_1fr] items-center gap-2">
-          <FieldIcon>
-            <ClockLineIcon />
-          </FieldIcon>
+        {isAllDay ? (
+          <div className="grid grid-cols-[14px_1fr_10px_1fr] items-center gap-2">
+            <FieldIcon>
+              <ClockLineIcon />
+            </FieldIcon>
 
-          <DisplayDateField
-            value={draft.start}
-            onChange={(nextValue) =>
-              onChangeDraft({
-                ...draft,
-                start: nextValue,
-              })
-            }
-          />
+            <DisplayDateField value={draft.start} onChange={updateAllDayStart} />
 
-          <span className="text-center text-[12px] text-[#A8AFB8]">-</span>
+            <span className="text-center text-[12px] text-[#A8AFB8]">-</span>
 
-          <DisplayDateField
-            value={draft.end}
-            onChange={(nextValue) =>
-              onChangeDraft({
-                ...draft,
-                end: nextValue,
-              })
-            }
-          />
-        </div>
+            <DisplayDateField value={allDayDisplayEndValue} onChange={updateAllDayEnd} />
+          </div>
+        ) : (
+          <div className="space-y-1.5">
+            <div className="grid grid-cols-[14px_1fr_88px] items-center gap-2">
+              <FieldIcon>
+                <ClockLineIcon />
+              </FieldIcon>
+
+              <DisplayDateField
+                value={draft.start}
+                onChange={(nextValue) => updateTimedDraft(nextValue)}
+              />
+
+              <DisplayTimeField
+                value={draft.start}
+                onChange={(nextValue) => updateTimedDraft(undefined, nextValue)}
+              />
+            </div>
+
+            <div className="pl-[22px] text-[10px] leading-[14px] text-[#9CA3AF]">
+              1시간 칸 일정 · 종료 {timedEndTimeValue || '자동 설정'}
+            </div>
+          </div>
+        )}
 
         <textarea
           value={draft.memo ?? ''}

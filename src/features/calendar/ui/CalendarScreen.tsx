@@ -1,14 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
+import { CalendarEventPopover } from './popover/CalendarEventPopover';
 import { CalendarToolbar } from './toolbar/CalendarToolbar';
 import { CalendarCore } from './views/CalendarCore';
-import { CalendarEventPopover } from './popover/CalendarEventPopover';
 
-import type { CalendarEvent, CalendarEventDraft, CalendarView } from '../model/types';
-import { mockEvents } from '../model/mock-events';
+import {
+  addDaysToCalendarDate,
+  addHoursToCalendarDateTime,
+  formatCalendarDate,
+  formatCalendarDateTime,
+  hasTimePart,
+  parseCalendarDate,
+} from '../lib/date';
 import { DEFAULT_EVENT_COLOR } from '../model/constants';
+import { mockEvents } from '../model/mock-events';
+import type { CalendarEvent, CalendarEventDraft, CalendarView } from '../model/types';
 
 type PopoverState = {
   x: number;
@@ -16,38 +24,122 @@ type PopoverState = {
   draft: CalendarEventDraft;
 };
 
-const CREATE_POPOVER_WIDTH = 360;
-const CREATE_POPOVER_HEIGHT = 500;
+const CREATE_POPOVER_WIDTH = 320;
+const CREATE_POPOVER_HEIGHT = 520;
 const CREATE_POPOVER_GAP = 8;
 
-function addOneDay(dateString: string) {
-  const date = new Date(dateString);
-  date.setDate(date.getDate() + 1);
-  return date.toISOString().slice(0, 10);
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
 }
 
-function getPopoverPosition(rect: DOMRect) {
+function getPopoverPosition(
+  rect: DOMRect,
+  options?: {
+    placement?: 'auto' | 'timegrid-center';
+    boundsRect?: DOMRect | null;
+  },
+) {
+  const boundsRect = options?.boundsRect ?? null;
+  const minX = Math.max((boundsRect?.left ?? 0) + 12, 12);
+  const maxX =
+    Math.min(boundsRect?.right ?? window.innerWidth, window.innerWidth) - CREATE_POPOVER_WIDTH - 12;
+  const minY = Math.max((boundsRect?.top ?? 0) + 12, 12);
+  const maxY =
+    Math.min(boundsRect?.bottom ?? window.innerHeight, window.innerHeight) -
+    CREATE_POPOVER_HEIGHT -
+    12;
+
+  if (options?.placement === 'timegrid-center') {
+    const centeredX = rect.left + rect.width / 2 - CREATE_POPOVER_WIDTH / 2;
+    const anchoredY = rect.top - 8;
+
+    return {
+      x: clamp(centeredX, minX, Math.max(minX, maxX)),
+      y: clamp(anchoredY, minY, Math.max(minY, maxY)),
+    };
+  }
+
   let x = rect.right + CREATE_POPOVER_GAP;
   let y = rect.top;
 
-  if (x + CREATE_POPOVER_WIDTH > window.innerWidth - 12) {
+  if (x + CREATE_POPOVER_WIDTH > (boundsRect?.right ?? window.innerWidth) - 12) {
     x = rect.left - CREATE_POPOVER_WIDTH - CREATE_POPOVER_GAP;
   }
 
+  x = clamp(x, minX, Math.max(minX, maxX));
+
   const anchorHeight = rect.height;
 
-  if (y + CREATE_POPOVER_HEIGHT > window.innerHeight - 12) {
+  if (y + CREATE_POPOVER_HEIGHT > (boundsRect?.bottom ?? window.innerHeight) - 12) {
     y = rect.top - (CREATE_POPOVER_HEIGHT - anchorHeight);
   }
 
-  if (y < 12) {
-    y = 12;
-  }
+  y = clamp(y, minY, Math.max(minY, maxY));
 
   return { x, y };
 }
 
+function getTimedSlotKey(value?: string) {
+  return formatCalendarDateTime(value, { seconds: false });
+}
+
+function hasTimedSlotConflict(
+  events: CalendarEvent[],
+  draft: CalendarEventDraft,
+  excludeEventId?: string,
+) {
+  if (draft.allDay) return false;
+
+  const slotKey = getTimedSlotKey(draft.start);
+  if (!slotKey) return false;
+
+  return events.some((event) => {
+    if (event.id === excludeEventId) return false;
+    if (event.allDay) return false;
+
+    return getTimedSlotKey(event.start) === slotKey;
+  });
+}
+
+function normalizeDraftForSave(draft: CalendarEventDraft) {
+  const isAllDay = draft.allDay ?? !hasTimePart(draft.start);
+
+  if (isAllDay) {
+    const normalizedStart = formatCalendarDate(draft.start);
+    if (!normalizedStart) return null;
+
+    const normalizedEndCandidate =
+      formatCalendarDate(draft.end) || addDaysToCalendarDate(normalizedStart, 1);
+    const startDate = parseCalendarDate(normalizedStart);
+    const endDate = parseCalendarDate(normalizedEndCandidate);
+
+    const normalizedEnd =
+      startDate && endDate && endDate > startDate
+        ? normalizedEndCandidate
+        : addDaysToCalendarDate(normalizedStart, 1);
+
+    return {
+      ...draft,
+      start: normalizedStart,
+      end: normalizedEnd,
+      allDay: true,
+    } satisfies CalendarEventDraft;
+  }
+
+  const normalizedStart = formatCalendarDateTime(draft.start);
+  if (!normalizedStart) return null;
+
+  return {
+    ...draft,
+    start: normalizedStart,
+    end: addHoursToCalendarDateTime(normalizedStart, 1),
+    allDay: false,
+  } satisfies CalendarEventDraft;
+}
+
 export default function CalendarScreen() {
+  const screenRef = useRef<HTMLDivElement | null>(null);
+
   const [view, setView] = useState<CalendarView>('month');
   const [title, setTitle] = useState('2026년 2월');
   const [events, setEvents] = useState<CalendarEvent[]>(() => mockEvents);
@@ -63,29 +155,41 @@ export default function CalendarScreen() {
     setEditPopover(null);
   };
 
-  const openCreatePopover = (payload: { date: string; rect: DOMRect }) => {
-    const { rect, date } = payload;
-    const { x, y } = getPopoverPosition(rect);
+  const getViewportBounds = () => {
+    return screenRef.current?.getBoundingClientRect() ?? null;
+  };
+
+  const openCreatePopover = (payload: { draft: CalendarEventDraft; rect: DOMRect }) => {
+    const { rect, draft } = payload;
+    const { x, y } = getPopoverPosition(rect, {
+      placement: view === 'month' ? 'auto' : 'timegrid-center',
+      boundsRect: getViewportBounds(),
+    });
 
     setEditPopover(null);
     setCreatePopover({
       x,
       y,
       draft: {
-        title: '',
-        start: date,
-        end: addOneDay(date),
-        allDay: true,
-        colorId: DEFAULT_EVENT_COLOR,
-        memo: '',
-        location: '',
+        title: draft.title ?? '',
+        start: draft.start,
+        end: draft.end,
+        allDay: draft.allDay ?? true,
+        colorId: draft.colorId ?? DEFAULT_EVENT_COLOR,
+        memo: draft.memo ?? '',
+        location: draft.location ?? '',
+        reminderMinutes: draft.reminderMinutes,
+        spaceId: draft.spaceId,
       },
     });
   };
 
   const openEditPopover = (payload: { event: Partial<CalendarEventDraft>; rect: DOMRect }) => {
     const { rect, event } = payload;
-    const { x, y } = getPopoverPosition(rect);
+    const { x, y } = getPopoverPosition(rect, {
+      placement: view === 'month' ? 'auto' : 'timegrid-center',
+      boundsRect: getViewportBounds(),
+    });
 
     setCreatePopover(null);
     setEditPopover({
@@ -109,20 +213,25 @@ export default function CalendarScreen() {
   const handleCreateEvent = () => {
     if (!createPopover) return;
 
-    const draft = createPopover.draft;
-    if (!draft.title?.trim()) return;
+    const nextDraft = normalizeDraftForSave(createPopover.draft);
+    if (!nextDraft?.title?.trim()) return;
+
+    if (hasTimedSlotConflict(events, nextDraft)) {
+      window.alert('해당 시간 칸에는 이미 일정이 있습니다.');
+      return;
+    }
 
     const newEvent: CalendarEvent = {
       id: crypto.randomUUID(),
-      title: draft.title.trim(),
-      start: draft.start,
-      end: draft.end,
-      allDay: true,
-      memo: draft.memo,
-      spaceId: draft.spaceId,
-      colorId: draft.colorId ?? DEFAULT_EVENT_COLOR,
-      reminderMinutes: draft.reminderMinutes,
-      location: draft.location,
+      title: nextDraft.title.trim(),
+      start: nextDraft.start,
+      end: nextDraft.end,
+      allDay: nextDraft.allDay ?? true,
+      memo: nextDraft.memo,
+      spaceId: nextDraft.spaceId,
+      colorId: nextDraft.colorId ?? DEFAULT_EVENT_COLOR,
+      reminderMinutes: nextDraft.reminderMinutes,
+      location: nextDraft.location,
     };
 
     setEvents((prev) => [...prev, newEvent]);
@@ -135,7 +244,16 @@ export default function CalendarScreen() {
       return;
     }
 
-    const nextDraft = editPopover.draft;
+    const nextDraft = normalizeDraftForSave(editPopover.draft);
+    if (!nextDraft) {
+      closeEditPopover();
+      return;
+    }
+
+    if (hasTimedSlotConflict(events, nextDraft, nextDraft.id)) {
+      window.alert('해당 시간 칸에는 이미 일정이 있습니다.');
+      return;
+    }
 
     setEvents((prev) =>
       prev.map((event) =>
@@ -171,7 +289,10 @@ export default function CalendarScreen() {
 
   return (
     <div className="flex h-full min-h-0 bg-[var(--color-bg)]">
-      <div className="flex h-full min-h-0 w-full flex-col bg-[var(--color-bg-surface)]">
+      <div
+        ref={screenRef}
+        className="flex h-full min-h-0 w-full flex-col bg-[var(--color-bg-surface)]"
+      >
         <div className="shrink-0 pt-[83px]">
           <CalendarToolbar
             view={view}
@@ -200,8 +321,8 @@ export default function CalendarScreen() {
             view={view}
             events={events}
             onTitleChange={setTitle}
-            onClickDateCell={({ date, rect }) => {
-              openCreatePopover({ date, rect });
+            onClickDateCell={({ draft, rect }) => {
+              openCreatePopover({ draft, rect });
             }}
             onClickEvent={({ event, rect }) => {
               openEditPopover({ event, rect });

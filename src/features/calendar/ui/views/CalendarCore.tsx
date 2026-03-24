@@ -2,21 +2,31 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 
-import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin, { type DateClickArg } from '@fullcalendar/interaction';
-import './calendar.css';
+import FullCalendar from '@fullcalendar/react';
+import timeGridPlugin from '@fullcalendar/timegrid';
 
 import type {
   CalendarApi,
   DateSelectArg,
   DatesSetArg,
+  DayCellContentArg,
   EventClickArg,
   EventContentArg,
   EventInput,
 } from '@fullcalendar/core';
 
+import {
+  addDaysToCalendarDate,
+  addHoursToCalendarDateTime,
+  formatCalendarTitle,
+  formatEnglishHourLabel,
+  formatKoreanWeekday,
+  isSameCalendarDate,
+  normalizeCalendarValue,
+} from '../../lib/date';
+import { DEFAULT_EVENT_COLOR, EVENT_COLOR_TOKENS } from '../../model/constants';
 import type {
   CalendarEvent,
   CalendarEventDraft,
@@ -24,6 +34,7 @@ import type {
   CalendarView,
 } from '../../model/types';
 import { MonthEventChip } from '../event/MonthEventChip';
+import './calendar.css';
 
 type CalendarCoreProps = {
   view: CalendarView;
@@ -31,7 +42,11 @@ type CalendarCoreProps = {
   onTitleChange?: (title: string) => void;
   onSelectSlot?: (slot: CalendarSlot) => void;
   onClickEvent?: (payload: { event: Partial<CalendarEventDraft>; rect: DOMRect }) => void;
-  onClickDateCell?: (payload: { date: string; rect: DOMRect }) => void;
+  onClickDateCell?: (payload: {
+    draft: CalendarEventDraft;
+    rect: DOMRect;
+    placement?: 'auto' | 'cell-center';
+  }) => void;
 };
 
 type MonthDensity = 'comfortable' | 'compact';
@@ -62,6 +77,27 @@ const DEFAULT_MONTH_LAYOUT: MonthLayoutState = {
 };
 
 const MONTH_LAYOUT_EPSILON = 0.5;
+const TIMEGRID_SLOT_HEIGHT = 48;
+const TIMEGRID_SLOT_COUNT = 24;
+const TIMEGRID_AXIS_WIDTH = 60;
+
+function resolveDateClickRect(arg: DateClickArg) {
+  const target = arg.jsEvent.target as HTMLElement | null;
+
+  if (target) {
+    const slotLane = target.closest('.fc-timegrid-slot-lane');
+    if (slotLane instanceof HTMLElement) {
+      return slotLane.getBoundingClientRect();
+    }
+
+    const tableCell = target.closest('td');
+    if (tableCell instanceof HTMLElement) {
+      return tableCell.getBoundingClientRect();
+    }
+  }
+
+  return arg.dayEl.getBoundingClientRect();
+}
 
 export function CalendarCore({
   view,
@@ -77,20 +113,21 @@ export function CalendarCore({
   const viewSyncRafRef = useRef<number | null>(null);
 
   const [monthLayout, setMonthLayout] = useState<MonthLayoutState>(DEFAULT_MONTH_LAYOUT);
+  const [timeGridScrollbarWidth, setTimeGridScrollbarWidth] = useState(0);
 
   const fcEvents = useMemo<EventInput[]>(() => {
-    return events.map((e) => ({
-      id: e.id,
-      title: e.title,
-      start: e.start,
-      end: e.end,
-      allDay: e.allDay,
+    return events.map((event) => ({
+      id: event.id,
+      title: event.title,
+      start: event.start,
+      end: event.end,
+      allDay: event.allDay,
       extendedProps: {
-        memo: e.memo,
-        spaceId: e.spaceId,
-        colorId: e.colorId,
-        reminderMinutes: e.reminderMinutes,
-        location: e.location,
+        memo: event.memo,
+        spaceId: event.spaceId,
+        colorId: event.colorId,
+        reminderMinutes: event.reminderMinutes,
+        location: event.location,
       },
     }));
   }, [events]);
@@ -157,9 +194,7 @@ export function CalendarCore({
     const bodyHeight = monthBody.getBoundingClientRect().height;
     if (bodyHeight <= 0) return;
 
-    // 6주 달에서 사용할 기준 높이는 "5주 달이 꽉 찰 때 한 줄 높이"
     const measuredRowHeight = bodyHeight / 5;
-
     const density: MonthDensity =
       measuredRowHeight >= MONTH_MIN_ROW_HEIGHT.comfortable ? 'comfortable' : 'compact';
 
@@ -190,7 +225,28 @@ export function CalendarCore({
     });
   }, [view]);
 
-  const scheduleMonthLayoutSync = useCallback(() => {
+  const syncTimeGridLayout = useCallback(() => {
+    if (view === 'month') {
+      setTimeGridScrollbarWidth((prev) => (prev === 0 ? prev : 0));
+      return;
+    }
+
+    const containerEl = containerRef.current;
+    if (!containerEl) return;
+
+    const timeGridViewEl = containerEl.querySelector(
+      view === 'week' ? '.fc-timeGridWeek-view' : '.fc-timeGridDay-view',
+    );
+    const bodyScroller = timeGridViewEl?.querySelector('.fc-scroller');
+
+    if (!(bodyScroller instanceof HTMLElement)) return;
+
+    const scrollbarWidth = Math.max(bodyScroller.offsetWidth - bodyScroller.clientWidth, 0);
+
+    setTimeGridScrollbarWidth((prev) => (prev === scrollbarWidth ? prev : scrollbarWidth));
+  }, [view]);
+
+  const scheduleLayoutSync = useCallback(() => {
     if (rafRef.current !== null) {
       cancelAnimationFrame(rafRef.current);
     }
@@ -198,8 +254,9 @@ export function CalendarCore({
     rafRef.current = requestAnimationFrame(() => {
       rafRef.current = null;
       syncMonthLayout();
+      syncTimeGridLayout();
     });
-  }, [syncMonthLayout]);
+  }, [syncMonthLayout, syncTimeGridLayout]);
 
   const handleSelect = (arg: DateSelectArg) => {
     onSelectSlot?.({
@@ -212,41 +269,108 @@ export function CalendarCore({
   };
 
   const handleEventClick = (arg: EventClickArg) => {
-    const event = arg.event;
-    const ext = event.extendedProps as Partial<CalendarEventDraft>;
-    const rect = arg.el.getBoundingClientRect();
+    const ext = arg.event.extendedProps as Partial<CalendarEventDraft>;
+    const isAllDay = arg.event.allDay;
+    const start = normalizeCalendarValue(arg.event.start, { allDay: isAllDay });
+    const end = normalizeCalendarValue(arg.event.end ?? arg.event.start, { allDay: isAllDay });
 
     onClickEvent?.({
-      rect,
+      rect: arg.el.getBoundingClientRect(),
       event: {
-        id: event.id,
-        title: event.title ?? '',
-        start: event.startStr,
-        end: event.endStr,
-        allDay: event.allDay,
-        memo: ext?.memo,
-        spaceId: ext?.spaceId,
-        colorId: ext?.colorId,
-        reminderMinutes: ext?.reminderMinutes,
-        location: ext?.location,
+        id: arg.event.id,
+        title: arg.event.title ?? '',
+        start,
+        end,
+        allDay: isAllDay,
+        memo: ext.memo,
+        spaceId: ext.spaceId,
+        colorId: ext.colorId,
+        reminderMinutes: ext.reminderMinutes,
+        location: ext.location,
       },
     });
   };
 
   const handleDateClick = (arg: DateClickArg) => {
-    if (view !== 'month') return;
-
-    const rect = arg.dayEl.getBoundingClientRect();
+    const rect = resolveDateClickRect(arg);
+    const start = normalizeCalendarValue(arg.date, { allDay: true });
+    const end = addDaysToCalendarDate(start, 1);
 
     onClickDateCell?.({
-      date: arg.dateStr,
       rect,
+      draft: {
+        title: '',
+        start,
+        end,
+        allDay: true,
+      },
     });
   };
 
+  const openTimedSlotPopover = useCallback(
+    (date: Date, slotEl: HTMLElement) => {
+      const start = normalizeCalendarValue(date);
+      const end = addHoursToCalendarDateTime(start, 1);
+
+      onClickDateCell?.({
+        rect: slotEl.getBoundingClientRect(),
+        placement: view === 'day' ? 'cell-center' : 'auto',
+        draft: {
+          title: '',
+          start,
+          end,
+          allDay: false,
+        },
+      });
+    },
+    [onClickDateCell, view],
+  );
+
+  const renderTimeGridSlotOverlay = useCallback(
+    (arg: DayCellContentArg) => {
+      const baseDate = new Date(arg.date.getFullYear(), arg.date.getMonth(), arg.date.getDate());
+
+      return (
+        <div className="calendar-timegrid-slot-overlay">
+          <div className="calendar-timegrid-slot-overlay__grid">
+            {Array.from({ length: TIMEGRID_SLOT_COUNT }, (_, hour) => {
+              const slotDate = new Date(
+                baseDate.getFullYear(),
+                baseDate.getMonth(),
+                baseDate.getDate(),
+                hour,
+                0,
+                0,
+                0,
+              );
+
+              return (
+                <button
+                  key={`${arg.date.toISOString()}-${hour}`}
+                  type="button"
+                  tabIndex={-1}
+                  className="calendar-timegrid-slot-overlay__button"
+                  aria-label={`${formatKoreanWeekday(baseDate)} ${baseDate.getDate()}일 ${formatEnglishHourLabel(
+                    slotDate,
+                  )}`}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    openTimedSlotPopover(slotDate, event.currentTarget);
+                  }}
+                />
+              );
+            })}
+          </div>
+        </div>
+      );
+    },
+    [openTimedSlotPopover],
+  );
+
   const handleDatesSet = (arg: DatesSetArg) => {
-    onTitleChange?.(arg.view.title);
-    scheduleMonthLayoutSync();
+    onTitleChange?.(formatCalendarTitle(arg.view.calendar.getDate()));
+    scheduleLayoutSync();
   };
 
   const renderMonthEventContent = (arg: EventContentArg) => {
@@ -255,8 +379,8 @@ export function CalendarCore({
     const monthEvent: CalendarEvent = {
       id: arg.event.id,
       title: arg.event.title,
-      start: arg.event.startStr,
-      end: arg.event.endStr || arg.event.startStr,
+      start: normalizeCalendarValue(arg.event.start, { allDay: arg.event.allDay }),
+      end: normalizeCalendarValue(arg.event.end ?? arg.event.start, { allDay: arg.event.allDay }),
       allDay: arg.event.allDay,
       memo: ext.memo,
       spaceId: ext.spaceId,
@@ -268,12 +392,65 @@ export function CalendarCore({
     return <MonthEventChip event={monthEvent} />;
   };
 
+  const renderTimeGridEventContent = (arg: EventContentArg) => {
+    const ext = arg.event.extendedProps as Partial<CalendarEventDraft>;
+    const colorId = ext.colorId ?? DEFAULT_EVENT_COLOR;
+    const token = EVENT_COLOR_TOKENS[colorId];
+    const color =
+      colorId === 'tag-gray'
+        ? {
+            bg: 'var(--color-bg-surface)',
+            hover: 'var(--color-bg-subtle)',
+            text: 'var(--color-gray-700)',
+            border: 'var(--color-gray-300)',
+          }
+        : token;
+
+    return (
+      <div
+        className="calendar-time-event-chip"
+        style={
+          {
+            '--calendar-event-bg': color.bg,
+            '--calendar-event-hover': color.hover,
+            '--calendar-event-text': color.text,
+            '--calendar-event-border': color.border,
+          } as CSSProperties
+        }
+      >
+        <span className="calendar-time-event-chip__title">{arg.event.title}</span>
+      </div>
+    );
+  };
+
+  const renderTimeGridHeader = (date: Date) => {
+    const currentDate = getApi()?.getDate() ?? new Date();
+    const isActive = isSameCalendarDate(date, currentDate);
+
+    return (
+      <div className="calendar-timegrid-header-label">
+        <span className="calendar-timegrid-header-label__weekday">{formatKoreanWeekday(date)}</span>
+        <span
+          className={
+            isActive
+              ? 'calendar-timegrid-header-label__date calendar-timegrid-header-label__date--active'
+              : 'calendar-timegrid-header-label__date'
+          }
+        >
+          {date.getDate()}
+        </span>
+      </div>
+    );
+  };
+
   const calendarStyle = useMemo(() => {
     return {
       '--calendar-month-day-height': `${monthLayout.rowHeight}px`,
       '--calendar-scrollbar-width': `${monthLayout.scrollbarWidth}px`,
+      '--calendar-time-slot-height': `${TIMEGRID_SLOT_HEIGHT}px`,
+      '--calendar-timegrid-scrollbar-width': `${timeGridScrollbarWidth}px`,
     } as CSSProperties;
-  }, [monthLayout.rowHeight, monthLayout.scrollbarWidth]);
+  }, [monthLayout.rowHeight, monthLayout.scrollbarWidth, timeGridScrollbarWidth]);
 
   useEffect(() => {
     const api = getApi();
@@ -305,15 +482,15 @@ export function CalendarCore({
     const api = getApi();
     if (!api) return;
 
-    onTitleChange?.(api.view.title);
-    scheduleMonthLayoutSync();
-  }, [onTitleChange, scheduleMonthLayoutSync, view]);
+    onTitleChange?.(formatCalendarTitle(api.getDate()));
+    scheduleLayoutSync();
+  }, [onTitleChange, scheduleLayoutSync, view]);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
     const resizeObserver = new ResizeObserver(() => {
-      scheduleMonthLayoutSync();
+      scheduleLayoutSync();
     });
 
     resizeObserver.observe(containerRef.current);
@@ -321,12 +498,12 @@ export function CalendarCore({
     return () => {
       resizeObserver.disconnect();
     };
-  }, [scheduleMonthLayoutSync]);
+  }, [scheduleLayoutSync]);
 
   useEffect(() => {
     if (view !== 'month') return;
-    scheduleMonthLayoutSync();
-  }, [monthLayout.rowHeight, scheduleMonthLayoutSync, view]);
+    scheduleLayoutSync();
+  }, [monthLayout.rowHeight, scheduleLayoutSync, view]);
 
   useEffect(() => {
     return () => {
@@ -343,7 +520,7 @@ export function CalendarCore({
   return (
     <div
       ref={containerRef}
-      className="h-full min-h-0 w-full overflow-hidden"
+      className="relative h-full min-h-0 w-full overflow-hidden"
       data-calendar-view={view}
       data-month-density={monthLayout.density}
       data-month-week-count={monthLayout.weekCount}
@@ -359,22 +536,52 @@ export function CalendarCore({
         expandRows={view !== 'month'}
         fixedWeekCount={false}
         nowIndicator={false}
-        selectable
-        selectMirror
+        selectable={Boolean(onSelectSlot)}
+        selectMirror={Boolean(onSelectSlot)}
         unselectAuto
         select={handleSelect}
-        dateClick={handleDateClick}
+        dateClick={view === 'month' ? handleDateClick : undefined}
         eventClick={handleEventClick}
-        eventContent={view === 'month' ? renderMonthEventContent : undefined}
-        eventDisplay={view === 'month' ? 'block' : 'auto'}
-        displayEventTime={view !== 'month'}
+        eventContent={view === 'month' ? renderMonthEventContent : renderTimeGridEventContent}
+        eventClassNames={view === 'month' ? undefined : () => ['calendar-time-event']}
+        eventDisplay="block"
+        displayEventTime={false}
         events={fcEvents}
-        dayCellContent={(arg) => String(arg.date.getDate())}
+        dayCellContent={
+          view === 'month'
+            ? (arg) => String(arg.date.getDate())
+            : (arg) => {
+                return renderTimeGridSlotOverlay(arg);
+              }
+        }
+        dayHeaderContent={
+          view === 'month'
+            ? undefined
+            : (arg) => {
+                return renderTimeGridHeader(arg.date);
+              }
+        }
         datesSet={handleDatesSet}
-        slotMinTime="08:00:00"
-        slotMaxTime="23:00:00"
-        slotDuration="00:30:00"
-        dayMaxEventRows={view === 'month' ? true : 3}
+        slotMinTime="00:00:00"
+        slotMaxTime="24:00:00"
+        scrollTime="01:00:00"
+        scrollTimeReset={false}
+        slotDuration="01:00:00"
+        slotLabelInterval="01:00:00"
+        slotLabelContent={
+          view === 'month'
+            ? undefined
+            : (arg) => {
+                return (
+                  <span className="calendar-timegrid-axis-label">
+                    {formatEnglishHourLabel(arg.date)}
+                  </span>
+                );
+              }
+        }
+        allDaySlot={false}
+        dayMaxEventRows={view === 'month' ? true : undefined}
+        slotEventOverlap={false}
         locale="ko"
       />
     </div>
