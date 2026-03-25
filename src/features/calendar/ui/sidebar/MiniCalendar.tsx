@@ -30,6 +30,7 @@ function buildMonthGrid(date: Date) {
 
 export function MiniCalendar() {
   const [focusedDate, setFocusedDate] = useState<Date>(() => new Date());
+  const today = useMemo(() => new Date(), []);
 
   useEffect(() => {
     const handleFocusDate = (event: Event) => {
@@ -63,14 +64,14 @@ export function MiniCalendar() {
       <div className="mt-3 grid grid-cols-7 gap-y-2 text-center">
         {days.map((date) => {
           const isCurrentMonth = date.getMonth() === focusedDate.getMonth();
-          const isActive = isSameCalendarDate(date, focusedDate);
+          const isToday = isCurrentMonth && isSameCalendarDate(date, today);
 
           return (
             <div key={date.toISOString()} className="flex h-6 items-center justify-center">
               <span
                 className={[
                   'inline-flex h-5 min-w-5 items-center justify-center rounded-[6px] px-[5px] text-[13px] leading-none font-medium',
-                  isActive
+                  isToday
                     ? 'bg-[var(--color-secondary-500)] text-[var(--color-bg-surface)]'
                     : isCurrentMonth
                       ? 'text-[var(--color-gray-700)]'

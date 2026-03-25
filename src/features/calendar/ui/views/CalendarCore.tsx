@@ -15,6 +15,7 @@ import type {
   EventClickArg,
   EventContentArg,
   EventInput,
+  NowIndicatorContentArg,
 } from '@fullcalendar/core';
 
 import {
@@ -79,7 +80,6 @@ const DEFAULT_MONTH_LAYOUT: MonthLayoutState = {
 const MONTH_LAYOUT_EPSILON = 0.5;
 const TIMEGRID_SLOT_HEIGHT = 48;
 const TIMEGRID_SLOT_COUNT = 24;
-const TIMEGRID_AXIS_WIDTH = 60;
 
 function resolveDateClickRect(arg: DateClickArg) {
   const target = arg.jsEvent.target as HTMLElement | null;
@@ -99,6 +99,14 @@ function resolveDateClickRect(arg: DateClickArg) {
   return arg.dayEl.getBoundingClientRect();
 }
 
+function formatCompactHourLabel(date: Date) {
+  const hours = date.getHours();
+  const meridiem = hours < 12 ? 'AM' : 'PM';
+  const hour12 = hours % 12 || 12;
+
+  return `${hour12}${meridiem}`;
+}
+
 export function CalendarCore({
   view,
   events,
@@ -111,6 +119,7 @@ export function CalendarCore({
   const calendarRef = useRef<FullCalendar | null>(null);
   const rafRef = useRef<number | null>(null);
   const viewSyncRafRef = useRef<number | null>(null);
+  const today = useMemo(() => new Date(), []);
 
   const [monthLayout, setMonthLayout] = useState<MonthLayoutState>(DEFAULT_MONTH_LAYOUT);
   const [timeGridScrollbarWidth, setTimeGridScrollbarWidth] = useState(0);
@@ -330,15 +339,7 @@ export function CalendarCore({
     (arg: DayCellContentArg) => {
       const baseDate = new Date(arg.date.getFullYear(), arg.date.getMonth(), arg.date.getDate());
       return (
-        <div
-          className={[
-            'calendar-timegrid-slot-overlay',
-            view === 'day' ? 'calendar-timegrid-slot-overlay--last' : '',
-            arg.isOther ? '' : '',
-          ]
-            .filter(Boolean)
-            .join(' ')}
-        >
+        <div className="calendar-timegrid-slot-overlay">
           <div className="calendar-timegrid-slot-overlay__grid">
             {Array.from({ length: TIMEGRID_SLOT_COUNT }, (_, hour) => {
               const slotDate = new Date(
@@ -372,7 +373,7 @@ export function CalendarCore({
         </div>
       );
     },
-    [openTimedSlotPopover, view],
+    [openTimedSlotPopover],
   );
 
   const handleDatesSet = (arg: DatesSetArg) => {
@@ -392,8 +393,10 @@ export function CalendarCore({
   };
 
   const renderMonthDayContent = (date: Date) => {
-    const currentDate = getApi()?.getDate() ?? new Date();
-    const isActive = isSameCalendarDate(date, currentDate);
+    const viewDate = getApi()?.getDate() ?? today;
+    const isVisibleMonth =
+      date.getFullYear() === viewDate.getFullYear() && date.getMonth() === viewDate.getMonth();
+    const isActive = isVisibleMonth && isSameCalendarDate(date, today);
 
     return (
       <span
@@ -459,8 +462,7 @@ export function CalendarCore({
   };
 
   const renderTimeGridHeader = (date: Date) => {
-    const currentDate = getApi()?.getDate() ?? new Date();
-    const isActive = isSameCalendarDate(date, currentDate);
+    const isActive = isSameCalendarDate(date, today);
 
     return (
       <div className="calendar-timegrid-header-label">
@@ -476,6 +478,16 @@ export function CalendarCore({
         </span>
       </div>
     );
+  };
+
+  const renderMonthHeader = (date: Date) => {
+    return <span className="calendar-month-header-label">{formatKoreanWeekday(date)}</span>;
+  };
+
+  const renderNowIndicatorContent = (arg: NowIndicatorContentArg) => {
+    if (!arg.isAxis) return null;
+
+    return <span className="calendar-now-indicator-label">{formatCompactHourLabel(arg.date)}</span>;
   };
 
   const calendarStyle = useMemo(() => {
@@ -570,7 +582,9 @@ export function CalendarCore({
         contentHeight="100%"
         expandRows={view !== 'month'}
         fixedWeekCount={false}
-        nowIndicator={false}
+        nowIndicator={view !== 'month'}
+        nowIndicatorSnap={false}
+        nowIndicatorContent={renderNowIndicatorContent}
         selectable={Boolean(onSelectSlot)}
         selectMirror={Boolean(onSelectSlot)}
         unselectAuto
@@ -593,7 +607,9 @@ export function CalendarCore({
         }
         dayHeaderContent={
           view === 'month'
-            ? undefined
+            ? (arg) => {
+                return renderMonthHeader(arg.date);
+              }
             : (arg) => {
                 return renderTimeGridHeader(arg.date);
               }
