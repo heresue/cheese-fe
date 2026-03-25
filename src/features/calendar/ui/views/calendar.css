@@ -122,6 +122,23 @@
   text-decoration: none;
 }
 
+.calendar-month-day-number {
+  display: inline-flex;
+  min-width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  padding: 0 4px;
+  color: inherit;
+}
+
+.calendar-month-day-number--active {
+  background: var(--color-tag-yellow-500);
+  color: var(--color-bg-surface);
+  font-weight: 600;
+}
+
 .fc .fc-day-other .fc-daygrid-day-number {
   color: var(--color-gray-400);
 }
@@ -266,6 +283,14 @@
   line-height: 16px;
 }
 
+[data-calendar-view='week'] {
+  --calendar-timegrid-column-count: 7;
+}
+
+[data-calendar-view='day'] {
+  --calendar-timegrid-column-count: 1;
+}
+
 /* week/day timegrid */
 [data-calendar-view='week'] .fc .fc-col-header-cell,
 [data-calendar-view='day'] .fc .fc-col-header-cell {
@@ -279,6 +304,14 @@
 }
 
 /* timegrid는 fixed로 균등 분할 */
+[data-calendar-view='week'] .fc .fc-timegrid-body,
+[data-calendar-view='week'] .fc .fc-timegrid-cols,
+[data-calendar-view='week'] .fc .fc-timegrid-slots,
+[data-calendar-view='week'] .fc .fc-col-header,
+[data-calendar-view='day'] .fc .fc-timegrid-body,
+[data-calendar-view='day'] .fc .fc-timegrid-cols,
+[data-calendar-view='day'] .fc .fc-timegrid-slots,
+[data-calendar-view='day'] .fc .fc-col-header,
 [data-calendar-view='week'] .fc .fc-timegrid-body table,
 [data-calendar-view='week'] .fc .fc-timegrid-slots table,
 [data-calendar-view='week'] .fc .fc-timegrid-cols table,
@@ -288,7 +321,8 @@
 [data-calendar-view='day'] .fc .fc-timegrid-cols table,
 [data-calendar-view='day'] .fc .fc-col-header table {
   width: 100% !important;
-  min-width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
   table-layout: fixed !important;
 }
 
@@ -321,6 +355,17 @@
   width: 60px !important;
 }
 
+[data-calendar-view='week'] .fc .fc-timegrid-body colgroup col:not(:first-child),
+[data-calendar-view='week'] .fc .fc-timegrid-slots colgroup col:not(:first-child),
+[data-calendar-view='week'] .fc .fc-timegrid-cols colgroup col:not(:first-child),
+[data-calendar-view='week'] .fc .fc-col-header colgroup col:not(:first-child),
+[data-calendar-view='day'] .fc .fc-timegrid-body colgroup col:not(:first-child),
+[data-calendar-view='day'] .fc .fc-timegrid-slots colgroup col:not(:first-child),
+[data-calendar-view='day'] .fc .fc-timegrid-cols colgroup col:not(:first-child),
+[data-calendar-view='day'] .fc .fc-col-header colgroup col:not(:first-child) {
+  width: calc((100% - 60px) / var(--calendar-timegrid-column-count)) !important;
+}
+
 /* 시간축 내부 정렬 */
 [data-calendar-view='week'] .fc .fc-timegrid-slot-label-frame,
 [data-calendar-view='day'] .fc .fc-timegrid-slot-label-frame,
@@ -330,6 +375,8 @@
   width: 60px;
   min-width: 60px;
   max-width: 60px;
+  height: var(--calendar-time-slot-height);
+  align-items: center;
   justify-content: flex-end;
   overflow: visible;
 }
@@ -340,7 +387,9 @@
 [data-calendar-view='day'] .fc .fc-timegrid-axis-cushion {
   display: flex;
   width: 100%;
+  height: 100%;
   max-width: none;
+  align-items: center;
   justify-content: flex-end;
   overflow: visible;
   padding-right: 10px;
@@ -402,9 +451,8 @@
 }
 
 .calendar-timegrid-axis-label {
-  position: relative;
-  top: -6px;
   display: inline-flex;
+  height: 100%;
   align-items: center;
   font-size: 10px;
   line-height: 14px;
@@ -481,6 +529,7 @@
 
 [data-calendar-view='week'] .fc .fc-timegrid-col-frame,
 [data-calendar-view='day'] .fc .fc-timegrid-col-frame {
+  min-width: 0;
   min-height: 100%;
 }
 
@@ -564,8 +613,8 @@
 
 .calendar-time-event-chip {
   display: flex;
-  height: 22px;
-  margin: 8px 8px 0;
+  height: 20px;
+  margin: calc((var(--calendar-time-slot-height) - 20px) / 2) 10px 0;
   align-items: center;
   overflow: hidden;
   border: 1px solid var(--calendar-event-border);

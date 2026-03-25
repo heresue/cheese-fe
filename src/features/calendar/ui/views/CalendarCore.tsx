@@ -329,7 +329,6 @@ export function CalendarCore({
   const renderTimeGridSlotOverlay = useCallback(
     (arg: DayCellContentArg) => {
       const baseDate = new Date(arg.date.getFullYear(), arg.date.getMonth(), arg.date.getDate());
-      const isLastColumn = view === 'day' || (arg.isPast === false && false); // 아래 버전으로 쓰는 게 더 정확
       return (
         <div
           className={[
@@ -377,8 +376,36 @@ export function CalendarCore({
   );
 
   const handleDatesSet = (arg: DatesSetArg) => {
-    onTitleChange?.(formatCalendarTitle(arg.view.calendar.getDate()));
+    const focusedDate = arg.view.calendar.getDate();
+
+    onTitleChange?.(formatCalendarTitle(focusedDate));
+
+    window.dispatchEvent(
+      new CustomEvent('calendar:focus-date', {
+        detail: {
+          date: focusedDate.toISOString(),
+        },
+      }),
+    );
+
     scheduleLayoutSync();
+  };
+
+  const renderMonthDayContent = (date: Date) => {
+    const currentDate = getApi()?.getDate() ?? new Date();
+    const isActive = isSameCalendarDate(date, currentDate);
+
+    return (
+      <span
+        className={
+          isActive
+            ? 'calendar-month-day-number calendar-month-day-number--active'
+            : 'calendar-month-day-number'
+        }
+      >
+        {date.getDate()}
+      </span>
+    );
   };
 
   const renderMonthEventContent = (arg: EventContentArg) => {
@@ -557,7 +584,9 @@ export function CalendarCore({
         events={fcEvents}
         dayCellContent={
           view === 'month'
-            ? (arg) => String(arg.date.getDate())
+            ? (arg) => {
+                return renderMonthDayContent(arg.date);
+              }
             : (arg) => {
                 return renderTimeGridSlotOverlay(arg);
               }
