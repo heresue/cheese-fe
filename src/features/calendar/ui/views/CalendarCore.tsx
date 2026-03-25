@@ -329,9 +329,17 @@ export function CalendarCore({
   const renderTimeGridSlotOverlay = useCallback(
     (arg: DayCellContentArg) => {
       const baseDate = new Date(arg.date.getFullYear(), arg.date.getMonth(), arg.date.getDate());
-
+      const isLastColumn = view === 'day' || (arg.isPast === false && false); // 아래 버전으로 쓰는 게 더 정확
       return (
-        <div className="calendar-timegrid-slot-overlay">
+        <div
+          className={[
+            'calendar-timegrid-slot-overlay',
+            view === 'day' ? 'calendar-timegrid-slot-overlay--last' : '',
+            arg.isOther ? '' : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+        >
           <div className="calendar-timegrid-slot-overlay__grid">
             {Array.from({ length: TIMEGRID_SLOT_COUNT }, (_, hour) => {
               const slotDate = new Date(
@@ -365,7 +373,7 @@ export function CalendarCore({
         </div>
       );
     },
-    [openTimedSlotPopover],
+    [openTimedSlotPopover, view],
   );
 
   const handleDatesSet = (arg: DatesSetArg) => {
