@@ -12,7 +12,7 @@ type Props = {
   onClickNext: () => void;
 };
 
-function ChevronIcon({ direction }: { direction: 'left' | 'right' }) {
+function ChevronIcon({ direction }: { direction: 'left' | 'right' | 'up' | 'down' }) {
   return (
     <svg
       width="14"
@@ -24,7 +24,15 @@ function ChevronIcon({ direction }: { direction: 'left' | 'right' }) {
       aria-hidden="true"
     >
       <path
-        d={direction === 'left' ? 'M8.75 3.5L5.25 7L8.75 10.5' : 'M5.25 3.5L8.75 7L5.25 10.5'}
+        d={
+          direction === 'left'
+            ? 'M8.75 3.5L5.25 7L8.75 10.5'
+            : direction === 'right'
+              ? 'M5.25 3.5L8.75 7L5.25 10.5'
+              : direction === 'up'
+                ? 'M3.5 8.75L7 5.25L10.5 8.75'
+                : 'M3.5 5.25L7 8.75L10.5 5.25'
+        }
         stroke="var(--color-gray-500)"
         strokeWidth="1.5"
         strokeLinecap="round"
@@ -42,6 +50,9 @@ export function CalendarToolbar({
   onClickPrev,
   onClickNext,
 }: Props) {
+  const prevDirection = view === 'day' ? 'left' : 'up';
+  const nextDirection = view === 'day' ? 'right' : 'down';
+
   return (
     <header className="flex h-[64px] items-center justify-between bg-[var(--color-bg-surface)] px-8">
       <h2 className="text-2xl leading-[30px] font-bold text-[var(--color-gray-800)]">{title}</h2>
@@ -61,7 +72,7 @@ export function CalendarToolbar({
           aria-label="이전"
           className="flex h-8 w-8 items-center justify-center rounded-[13px] border border-[var(--color-gray-300)] bg-[var(--color-bg-surface)] transition hover:bg-[var(--color-bg-subtle)]"
         >
-          <ChevronIcon direction="left" />
+          <ChevronIcon direction={prevDirection} />
         </button>
 
         <button
@@ -70,7 +81,7 @@ export function CalendarToolbar({
           aria-label="다음"
           className="flex h-8 w-8 items-center justify-center rounded-[13px] border border-[var(--color-gray-300)] bg-[var(--color-bg-surface)] transition hover:bg-[var(--color-bg-subtle)]"
         >
-          <ChevronIcon direction="right" />
+          <ChevronIcon direction={nextDirection} />
         </button>
 
         <CalendarViewSwitcher value={view} onChange={onChangeView} />

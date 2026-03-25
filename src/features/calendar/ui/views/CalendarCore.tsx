@@ -21,6 +21,7 @@ import type {
 import {
   addDaysToCalendarDate,
   addHoursToCalendarDateTime,
+  combineDateAndTime,
   formatCalendarTitle,
   formatEnglishHourLabel,
   formatKoreanWeekday,
@@ -302,8 +303,11 @@ export function CalendarCore({
 
   const handleDateClick = (arg: DateClickArg) => {
     const rect = resolveDateClickRect(arg);
-    const start = normalizeCalendarValue(arg.date, { allDay: true });
-    const end = addDaysToCalendarDate(start, 1);
+    const dateKey = normalizeCalendarValue(arg.date, { allDay: true });
+    const start = combineDateAndTime(dateKey, '09:00');
+    const end = addHoursToCalendarDateTime(start, 1);
+
+    if (!start || !end) return;
 
     onClickDateCell?.({
       rect,
@@ -311,7 +315,7 @@ export function CalendarCore({
         title: '',
         start,
         end,
-        allDay: true,
+        allDay: false,
       },
     });
   };
@@ -433,16 +437,7 @@ export function CalendarCore({
   const renderTimeGridEventContent = (arg: EventContentArg) => {
     const ext = arg.event.extendedProps as Partial<CalendarEventDraft>;
     const colorId = ext.colorId ?? DEFAULT_EVENT_COLOR;
-    const token = EVENT_COLOR_TOKENS[colorId];
-    const color =
-      colorId === 'tag-gray'
-        ? {
-            bg: 'var(--color-bg-surface)',
-            hover: 'var(--color-bg-subtle)',
-            text: 'var(--color-gray-700)',
-            border: 'var(--color-gray-300)',
-          }
-        : token;
+    const color = EVENT_COLOR_TOKENS[colorId];
 
     return (
       <div

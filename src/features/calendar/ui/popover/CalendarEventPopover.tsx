@@ -20,6 +20,7 @@ type CalendarEventPopoverProps = {
   y: number;
   draft: CalendarEventDraft;
   mode?: 'create' | 'edit';
+  hideTimeFields?: boolean;
   onChangeDraft: (nextDraft: CalendarEventDraft) => void;
   onClose: () => void;
   onSave: () => void;
@@ -292,6 +293,7 @@ export function CalendarEventPopover({
   y,
   draft,
   mode = 'create',
+  hideTimeFields = false,
   onChangeDraft,
   onClose,
   onSave,
@@ -299,6 +301,7 @@ export function CalendarEventPopover({
 }: CalendarEventPopoverProps) {
   const popoverRef = useRef<HTMLDivElement | null>(null);
   const isAllDay = draft.allDay ?? !hasTimePart(draft.start);
+  const showDateOnlyTimedField = hideTimeFields && !isAllDay;
   const timedDateValue = toDateInputValue(draft.start);
   const timedStartTimeValue = toTimeInputValue(draft.start);
   const timedEndTimeValue = toTimeInputValue(
@@ -369,6 +372,19 @@ export function CalendarEventPopover({
     });
   };
 
+  const updateTimedDateOnlyDraft = (nextDate: string) => {
+    const nextStart = combineDateAndTime(nextDate, timedStartTimeValue || '09:00');
+
+    if (!nextStart) return;
+
+    onChangeDraft({
+      ...draft,
+      allDay: false,
+      start: nextStart,
+      end: addHoursToCalendarDateTime(nextStart, 1),
+    });
+  };
+
   if (!open) return null;
 
   return (
@@ -415,6 +431,14 @@ export function CalendarEventPopover({
 
             <DisplayDateField value={allDayDisplayEndValue} onChange={updateAllDayEnd} />
           </div>
+        ) : showDateOnlyTimedField ? (
+          <div className="grid grid-cols-[14px_1fr] items-center gap-2">
+            <FieldIcon>
+              <ClockLineIcon />
+            </FieldIcon>
+
+            <DisplayDateField value={draft.start} onChange={updateTimedDateOnlyDraft} />
+          </div>
         ) : (
           <div className="space-y-1.5">
             <div className="grid grid-cols-[14px_1fr_88px] items-center gap-2">
@@ -431,10 +455,6 @@ export function CalendarEventPopover({
                 value={draft.start}
                 onChange={(nextValue) => updateTimedDraft(undefined, nextValue)}
               />
-            </div>
-
-            <div className="pl-[22px] text-[10px] leading-[14px] text-[#9CA3AF]">
-              1시간 칸 일정 · 종료 {timedEndTimeValue || '자동 설정'}
             </div>
           </div>
         )}

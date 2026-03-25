@@ -9,6 +9,7 @@ import { CalendarCore } from './views/CalendarCore';
 import {
   addDaysToCalendarDate,
   addHoursToCalendarDateTime,
+  combineDateAndTime,
   formatCalendarDate,
   formatCalendarDateTime,
   hasTimePart,
@@ -27,6 +28,9 @@ type PopoverState = {
 const CREATE_POPOVER_WIDTH = 320;
 const CREATE_POPOVER_HEIGHT = 520;
 const CREATE_POPOVER_GAP = 8;
+
+const MONTH_POPOVER_DEFAULT_START_TIME = '09:00';
+const MONTH_POPOVER_DEFAULT_END_TIME = '10:00';
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -129,10 +133,46 @@ function normalizeDraftForSave(draft: CalendarEventDraft) {
   const normalizedStart = formatCalendarDateTime(draft.start);
   if (!normalizedStart) return null;
 
+  const normalizedEndCandidate =
+    formatCalendarDateTime(draft.end) || addHoursToCalendarDateTime(normalizedStart, 1);
+  const startDate = parseCalendarDate(normalizedStart);
+  const endDate = parseCalendarDate(normalizedEndCandidate);
+  const normalizedEnd =
+    startDate && endDate && endDate > startDate
+      ? normalizedEndCandidate
+      : addHoursToCalendarDateTime(normalizedStart, 1);
+
   return {
     ...draft,
     start: normalizedStart,
-    end: addHoursToCalendarDateTime(normalizedStart, 1),
+    end: normalizedEnd,
+    allDay: false,
+  } satisfies CalendarEventDraft;
+}
+
+function normalizeMonthCreateDraft(draft: CalendarEventDraft) {
+  const startDate = formatCalendarDate(draft.start);
+  if (!startDate) return draft;
+
+  const start = hasTimePart(draft.start)
+    ? formatCalendarDateTime(draft.start)
+    : combineDateAndTime(startDate, MONTH_POPOVER_DEFAULT_START_TIME);
+
+  const displayEndDate = hasTimePart(draft.end)
+    ? formatCalendarDate(draft.end) || startDate
+    : addDaysToCalendarDate(
+        formatCalendarDate(draft.end) || addDaysToCalendarDate(startDate, 1),
+        -1,
+      ) || startDate;
+
+  const end = hasTimePart(draft.end)
+    ? formatCalendarDateTime(draft.end)
+    : combineDateAndTime(displayEndDate, MONTH_POPOVER_DEFAULT_END_TIME);
+
+  return {
+    ...draft,
+    start: start || draft.start,
+    end: end || addHoursToCalendarDateTime(start || draft.start, 1),
     allDay: false,
   } satisfies CalendarEventDraft;
 }
@@ -170,17 +210,21 @@ export default function CalendarScreen() {
     setCreatePopover({
       x,
       y,
-      draft: {
-        title: draft.title ?? '',
-        start: draft.start,
-        end: draft.end,
-        allDay: draft.allDay ?? true,
-        colorId: draft.colorId ?? DEFAULT_EVENT_COLOR,
-        memo: draft.memo ?? '',
-        location: draft.location ?? '',
-        reminderMinutes: draft.reminderMinutes,
-        spaceId: draft.spaceId,
-      },
+      draft: (() => {
+        const normalizedDraft = view === 'month' ? normalizeMonthCreateDraft(draft) : draft;
+
+        return {
+          title: normalizedDraft.title ?? '',
+          start: normalizedDraft.start,
+          end: normalizedDraft.end,
+          allDay: normalizedDraft.allDay ?? true,
+          colorId: normalizedDraft.colorId ?? DEFAULT_EVENT_COLOR,
+          memo: normalizedDraft.memo ?? '',
+          location: normalizedDraft.location ?? '',
+          reminderMinutes: normalizedDraft.reminderMinutes,
+          spaceId: normalizedDraft.spaceId,
+        };
+      })(),
     });
   };
 
@@ -339,6 +383,7 @@ export default function CalendarScreen() {
             draft={createPopover.draft}
             onClose={closeCreatePopover}
             onSave={handleCreateEvent}
+            compactDateRange={view === 'month'}
             onChangeDraft={(nextDraft) => {
               setCreatePopover((prev) => {
                 if (!prev) return prev;
@@ -361,6 +406,7 @@ export default function CalendarScreen() {
             onClose={closeEditPopover}
             onSave={handleUpdateEvent}
             onDelete={handleDeleteEvent}
+            compactDateRange={view === 'month'}
             onChangeDraft={(nextDraft) => {
               setEditPopover((prev) => {
                 if (!prev) return prev;
