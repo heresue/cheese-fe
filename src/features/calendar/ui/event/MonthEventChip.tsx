@@ -1,6 +1,8 @@
 'use client';
 
-import { DEFAULT_EVENT_COLOR, EVENT_COLOR_TOKENS } from '../../model/constants';
+import type { CSSProperties } from 'react';
+
+import { getEventColorTokens } from '../../model/constants';
 import type { CalendarEvent } from '../../model/types';
 
 type Props = {
@@ -8,18 +10,25 @@ type Props = {
 };
 
 export function MonthEventChip({ event }: Props) {
-  const color = EVENT_COLOR_TOKENS[event.colorId ?? DEFAULT_EVENT_COLOR];
+  const color = getEventColorTokens(event.colorId);
 
   return (
     <div
-      className="flex h-[18px] w-full items-center overflow-hidden rounded-[7px] px-2 text-[11px] leading-[14px] font-medium"
-      style={{
-        backgroundColor: color.bg,
-        color: color.text,
-        border: `1px solid ${color.border}`,
-      }}
+      className="calendar-event-chip calendar-event-chip--month"
+      style={
+        {
+          '--calendar-event-bg-default': color.defaultBg,
+          '--calendar-event-bg-hover': color.hoverBg,
+          '--calendar-event-bg-selected': color.selectedBg,
+          '--calendar-event-text-default': color.defaultText,
+          '--calendar-event-text-selected': color.selectedText,
+          '--calendar-event-border-default': color.defaultBorder,
+          '--calendar-event-border-hover': color.hoverBorder,
+          '--calendar-event-border-selected': color.selectedBorder,
+        } as CSSProperties
+      }
     >
-      <span className="truncate">{event.title}</span>
+      <span className="calendar-event-chip__title">{event.title}</span>
     </div>
   );
 }

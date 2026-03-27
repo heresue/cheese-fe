@@ -15,11 +15,9 @@ import type {
   EventClickArg,
   EventContentArg,
   EventInput,
-  NowIndicatorContentArg,
 } from '@fullcalendar/core';
 
 import {
-  addDaysToCalendarDate,
   addHoursToCalendarDateTime,
   combineDateAndTime,
   formatCalendarTitle,
@@ -28,7 +26,7 @@ import {
   isSameCalendarDate,
   normalizeCalendarValue,
 } from '../../lib/date';
-import { DEFAULT_EVENT_COLOR, EVENT_COLOR_TOKENS } from '../../model/constants';
+import { getEventColorTokens } from '../../model/constants';
 import type {
   CalendarEvent,
   CalendarEventDraft,
@@ -41,6 +39,7 @@ import './calendar.css';
 type CalendarCoreProps = {
   view: CalendarView;
   events: CalendarEvent[];
+  selectedEventId?: string;
   onTitleChange?: (title: string) => void;
   onSelectSlot?: (slot: CalendarSlot) => void;
   onClickEvent?: (payload: { event: Partial<CalendarEventDraft>; rect: DOMRect }) => void;
@@ -100,17 +99,16 @@ function resolveDateClickRect(arg: DateClickArg) {
   return arg.dayEl.getBoundingClientRect();
 }
 
-function formatCompactHourLabel(date: Date) {
-  const hours = date.getHours();
-  const meridiem = hours < 12 ? 'AM' : 'PM';
-  const hour12 = hours % 12 || 12;
+function isCalendarDateWithinRange(date: Date, start: Date, end: Date) {
+  const time = date.getTime();
 
-  return `${hour12}${meridiem}`;
+  return time >= start.getTime() && time < end.getTime();
 }
 
 export function CalendarCore({
   view,
   events,
+  selectedEventId,
   onTitleChange,
   onSelectSlot,
   onClickEvent,
@@ -120,10 +118,11 @@ export function CalendarCore({
   const calendarRef = useRef<FullCalendar | null>(null);
   const rafRef = useRef<number | null>(null);
   const viewSyncRafRef = useRef<number | null>(null);
-  const today = useMemo(() => new Date(), []);
 
+  const [now, setNow] = useState(() => new Date());
   const [monthLayout, setMonthLayout] = useState<MonthLayoutState>(DEFAULT_MONTH_LAYOUT);
   const [timeGridScrollbarWidth, setTimeGridScrollbarWidth] = useState(0);
+  const today = now;
 
   const fcEvents = useMemo<EventInput[]>(() => {
     return events.map((event) => ({
@@ -436,22 +435,25 @@ export function CalendarCore({
 
   const renderTimeGridEventContent = (arg: EventContentArg) => {
     const ext = arg.event.extendedProps as Partial<CalendarEventDraft>;
-    const colorId = ext.colorId ?? DEFAULT_EVENT_COLOR;
-    const color = EVENT_COLOR_TOKENS[colorId];
+    const color = getEventColorTokens(ext.colorId);
 
     return (
       <div
-        className="calendar-time-event-chip"
+        className="calendar-event-chip calendar-event-chip--timegrid"
         style={
           {
-            '--calendar-event-bg': color.bg,
-            '--calendar-event-hover': color.hover,
-            '--calendar-event-text': color.text,
-            '--calendar-event-border': color.border,
+            '--calendar-event-bg-default': color.defaultBg,
+            '--calendar-event-bg-hover': color.hoverBg,
+            '--calendar-event-bg-selected': color.selectedBg,
+            '--calendar-event-text-default': color.defaultText,
+            '--calendar-event-text-selected': color.selectedText,
+            '--calendar-event-border-default': color.defaultBorder,
+            '--calendar-event-border-hover': color.hoverBorder,
+            '--calendar-event-border-selected': color.selectedBorder,
           } as CSSProperties
         }
       >
-        <span className="calendar-time-event-chip__title">{arg.event.title}</span>
+        <span className="calendar-event-chip__title">{arg.event.title}</span>
       </div>
     );
   };
@@ -479,11 +481,16 @@ export function CalendarCore({
     return <span className="calendar-month-header-label">{formatKoreanWeekday(date)}</span>;
   };
 
-  const renderNowIndicatorContent = (arg: NowIndicatorContentArg) => {
-    if (!arg.isAxis) return null;
-
-    return <span className="calendar-now-indicator-label">{formatCompactHourLabel(arg.date)}</span>;
-  };
+  const getEventClassNames = useCallback(
+    (arg: EventContentArg) => {
+      return [
+        'calendar-event',
+        view === 'month' ? 'calendar-event--month' : 'calendar-event--timegrid',
+        arg.event.id === selectedEventId ? 'calendar-event--selected' : '',
+      ].filter(Boolean);
+    },
+    [selectedEventId, view],
+  );
 
   const calendarStyle = useMemo(() => {
     return {
@@ -493,6 +500,16 @@ export function CalendarCore({
       '--calendar-timegrid-scrollbar-width': `${timeGridScrollbarWidth}px`,
     } as CSSProperties;
   }, [monthLayout.rowHeight, monthLayout.scrollbarWidth, timeGridScrollbarWidth]);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setNow(new Date());
+    }, 15_000);
+
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     const api = getApi();
@@ -575,11 +592,11 @@ export function CalendarCore({
         headerToolbar={false}
         height="100%"
         contentHeight="100%"
+        now={now}
         expandRows={view !== 'month'}
         fixedWeekCount={false}
         nowIndicator={view !== 'month'}
         nowIndicatorSnap={false}
-        nowIndicatorContent={renderNowIndicatorContent}
         selectable={Boolean(onSelectSlot)}
         selectMirror={Boolean(onSelectSlot)}
         unselectAuto
@@ -587,7 +604,7 @@ export function CalendarCore({
         dateClick={view === 'month' ? handleDateClick : undefined}
         eventClick={handleEventClick}
         eventContent={view === 'month' ? renderMonthEventContent : renderTimeGridEventContent}
-        eventClassNames={view === 'month' ? undefined : () => ['calendar-time-event']}
+        eventClassNames={getEventClassNames}
         eventDisplay="block"
         displayEventTime={false}
         events={fcEvents}
@@ -620,15 +637,26 @@ export function CalendarCore({
           view === 'month'
             ? undefined
             : (arg) => {
+                const isActiveHour =
+                  isCalendarDateWithinRange(now, arg.view.activeStart, arg.view.activeEnd) &&
+                  arg.date.getHours() === now.getHours();
+
                 return (
-                  <span className="calendar-timegrid-axis-label">
+                  <span
+                    className={
+                      isActiveHour
+                        ? 'calendar-timegrid-axis-label calendar-timegrid-axis-label--active'
+                        : 'calendar-timegrid-axis-label'
+                    }
+                  >
                     {formatEnglishHourLabel(arg.date)}
                   </span>
                 );
               }
         }
         allDaySlot={false}
-        dayMaxEventRows={view === 'month' ? true : undefined}
+        dayMaxEvents={view === 'month' ? 5 : undefined}
+        eventMaxStack={view === 'month' ? undefined : 1}
         slotEventOverlap={false}
         locale="ko"
       />

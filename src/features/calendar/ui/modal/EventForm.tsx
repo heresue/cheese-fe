@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import type { CalendarEventDraft, ReminderMinutes } from '../../model/types';
-import { DEFAULT_EVENT_COLOR } from '../../model/constants';
 import { mockSpaces } from '../../model/mock-spaves';
 
 type Props = {
@@ -65,7 +64,7 @@ export default function EventForm({ initialValue, onCancel, onSubmit }: Props) {
         onSubmit({
           ...value,
           title,
-          colorId: value.colorId ?? DEFAULT_EVENT_COLOR,
+          colorId: value.colorId,
           reminderMinutes: value.reminderMinutes ?? 0,
         });
       }}

@@ -15,7 +15,6 @@ import {
   hasTimePart,
   parseCalendarDate,
 } from '../lib/date';
-import { DEFAULT_EVENT_COLOR } from '../model/constants';
 import { mockEvents } from '../model/mock-events';
 import type { CalendarEvent, CalendarEventDraft, CalendarView } from '../model/types';
 
@@ -218,7 +217,7 @@ export default function CalendarScreen() {
           start: normalizedDraft.start,
           end: normalizedDraft.end,
           allDay: normalizedDraft.allDay ?? true,
-          colorId: normalizedDraft.colorId ?? DEFAULT_EVENT_COLOR,
+          colorId: normalizedDraft.colorId,
           memo: normalizedDraft.memo ?? '',
           location: normalizedDraft.location ?? '',
           reminderMinutes: normalizedDraft.reminderMinutes,
@@ -245,7 +244,7 @@ export default function CalendarScreen() {
         start: event.start ?? '',
         end: event.end ?? event.start ?? '',
         allDay: event.allDay ?? true,
-        colorId: event.colorId ?? DEFAULT_EVENT_COLOR,
+        colorId: event.colorId,
         memo: event.memo ?? '',
         location: event.location ?? '',
         reminderMinutes: event.reminderMinutes,
@@ -273,7 +272,7 @@ export default function CalendarScreen() {
       allDay: nextDraft.allDay ?? true,
       memo: nextDraft.memo,
       spaceId: nextDraft.spaceId,
-      colorId: nextDraft.colorId ?? DEFAULT_EVENT_COLOR,
+      colorId: nextDraft.colorId,
       reminderMinutes: nextDraft.reminderMinutes,
       location: nextDraft.location,
     };
@@ -310,7 +309,7 @@ export default function CalendarScreen() {
               allDay: nextDraft.allDay ?? event.allDay,
               memo: nextDraft.memo,
               spaceId: nextDraft.spaceId,
-              colorId: nextDraft.colorId ?? event.colorId,
+              colorId: nextDraft.colorId,
               reminderMinutes: nextDraft.reminderMinutes,
               location: nextDraft.location,
             }
@@ -364,6 +363,7 @@ export default function CalendarScreen() {
           <CalendarCore
             view={view}
             events={events}
+            selectedEventId={editPopover?.draft.id}
             onTitleChange={setTitle}
             onClickDateCell={({ draft, rect }) => {
               openCreatePopover({ draft, rect });
@@ -383,7 +383,6 @@ export default function CalendarScreen() {
             draft={createPopover.draft}
             onClose={closeCreatePopover}
             onSave={handleCreateEvent}
-            compactDateRange={view === 'month'}
             onChangeDraft={(nextDraft) => {
               setCreatePopover((prev) => {
                 if (!prev) return prev;
@@ -406,7 +405,6 @@ export default function CalendarScreen() {
             onClose={closeEditPopover}
             onSave={handleUpdateEvent}
             onDelete={handleDeleteEvent}
-            compactDateRange={view === 'month'}
             onChangeDraft={(nextDraft) => {
               setEditPopover((prev) => {
                 if (!prev) return prev;

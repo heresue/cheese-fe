@@ -1,44 +1,96 @@
 import type { EventColorId } from './types';
 
-export const EVENT_COLOR_TOKENS: Record<
-  EventColorId,
-  { bg: string; hover: string; text: string; border: string }
-> = {
+export type EventColorTokens = {
+  defaultBg: string;
+  hoverBg: string;
+  selectedBg: string;
+  defaultText: string;
+  selectedText: string;
+  defaultBorder: string;
+  hoverBorder: string;
+  selectedBorder: string;
+};
+
+const SURFACE_COLOR = 'var(--color-bg-surface)';
+const LIGHT_TEXT_COLOR = 'var(--color-gray-50)';
+const DARK_TEXT_COLOR = 'var(--color-gray-950)';
+
+export const UNASSIGNED_EVENT_COLOR_TOKENS: EventColorTokens = {
+  defaultBg: SURFACE_COLOR,
+  hoverBg: SURFACE_COLOR,
+  selectedBg: 'var(--color-tag-gray-500)',
+  defaultText: DARK_TEXT_COLOR,
+  selectedText: DARK_TEXT_COLOR,
+  defaultBorder: 'var(--color-tag-gray-100)',
+  hoverBorder: 'var(--color-tag-gray-200)',
+  selectedBorder: 'var(--color-tag-gray-500)',
+};
+
+export const EVENT_COLOR_TOKENS: Record<EventColorId, EventColorTokens> = {
   'tag-red': {
-    bg: 'var(--color-tag-red-100)',
-    hover: 'var(--color-tag-red-200)',
-    text: 'var(--color-tag-red-500)',
-    border: 'var(--color-tag-red-500)',
+    defaultBg: 'var(--color-tag-red-100)',
+    hoverBg: 'var(--color-tag-red-200)',
+    selectedBg: 'var(--color-tag-red-500)',
+    defaultText: DARK_TEXT_COLOR,
+    selectedText: LIGHT_TEXT_COLOR,
+    defaultBorder: 'var(--color-tag-red-100)',
+    hoverBorder: 'var(--color-tag-red-200)',
+    selectedBorder: 'var(--color-tag-red-500)',
   },
   'tag-yellow': {
-    bg: 'var(--color-tag-yellow-100)',
-    hover: 'var(--color-tag-yellow-200)',
-    text: 'var(--color-tag-yellow-500)',
-    border: 'var(--color-tag-yellow-500)',
+    defaultBg: 'var(--color-tag-yellow-100)',
+    hoverBg: 'var(--color-tag-yellow-200)',
+    selectedBg: 'var(--color-tag-yellow-500)',
+    defaultText: DARK_TEXT_COLOR,
+    selectedText: DARK_TEXT_COLOR,
+    defaultBorder: 'var(--color-tag-yellow-100)',
+    hoverBorder: 'var(--color-tag-yellow-200)',
+    selectedBorder: 'var(--color-tag-yellow-500)',
   },
   'tag-green': {
-    bg: 'var(--color-tag-green-100)',
-    hover: 'var(--color-tag-green-200)',
-    text: 'var(--color-tag-green-500)',
-    border: 'var(--color-tag-green-500)',
+    defaultBg: 'var(--color-tag-green-100)',
+    hoverBg: 'var(--color-tag-green-200)',
+    selectedBg: 'var(--color-tag-green-500)',
+    defaultText: DARK_TEXT_COLOR,
+    selectedText: LIGHT_TEXT_COLOR,
+    defaultBorder: 'var(--color-tag-green-100)',
+    hoverBorder: 'var(--color-tag-green-200)',
+    selectedBorder: 'var(--color-tag-green-500)',
   },
   'tag-blue': {
-    bg: 'var(--color-tag-blue-100)',
-    hover: 'var(--color-tag-blue-200)',
-    text: 'var(--color-tag-blue-500)',
-    border: 'var(--color-tag-blue-500)',
+    defaultBg: 'var(--color-tag-blue-100)',
+    hoverBg: 'var(--color-tag-blue-200)',
+    selectedBg: 'var(--color-tag-blue-500)',
+    defaultText: DARK_TEXT_COLOR,
+    selectedText: LIGHT_TEXT_COLOR,
+    defaultBorder: 'var(--color-tag-blue-100)',
+    hoverBorder: 'var(--color-tag-blue-200)',
+    selectedBorder: 'var(--color-tag-blue-500)',
   },
   'tag-purple': {
-    bg: 'var(--color-tag-purple-100)',
-    hover: 'var(--color-tag-purple-200)',
-    text: 'var(--color-tag-purple-500)',
-    border: 'var(--color-tag-purple-500)',
+    defaultBg: 'var(--color-tag-purple-100)',
+    hoverBg: 'var(--color-tag-purple-200)',
+    selectedBg: 'var(--color-tag-purple-500)',
+    defaultText: DARK_TEXT_COLOR,
+    selectedText: LIGHT_TEXT_COLOR,
+    defaultBorder: 'var(--color-tag-purple-100)',
+    hoverBorder: 'var(--color-tag-purple-200)',
+    selectedBorder: 'var(--color-tag-purple-500)',
   },
   'tag-gray': {
-    bg: 'var(--color-tag-gray-100)',
-    hover: 'var(--color-tag-gray-200)',
-    text: 'var(--color-tag-gray-500)',
-    border: 'var(--color-tag-gray-500)',
+    defaultBg: 'var(--color-tag-gray-100)',
+    hoverBg: 'var(--color-tag-gray-200)',
+    selectedBg: 'var(--color-tag-gray-500)',
+    defaultText: DARK_TEXT_COLOR,
+    selectedText: LIGHT_TEXT_COLOR,
+    defaultBorder: 'var(--color-tag-gray-100)',
+    hoverBorder: 'var(--color-tag-gray-200)',
+    selectedBorder: 'var(--color-tag-gray-500)',
   },
 };
+
+export function getEventColorTokens(colorId?: EventColorId): EventColorTokens {
+  return colorId ? EVENT_COLOR_TOKENS[colorId] : UNASSIGNED_EVENT_COLOR_TOKENS;
+}
+
 export const DEFAULT_EVENT_COLOR: EventColorId = 'tag-gray';
