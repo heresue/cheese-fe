@@ -90,6 +90,7 @@ const DEFAULT_MONTH_LAYOUT: MonthLayoutState = {
 const MONTH_LAYOUT_EPSILON = 0.5;
 const TIMEGRID_SLOT_HEIGHT = 48;
 const TIMEGRID_SLOT_COUNT = 24;
+const ALL_DAY_SECTION_HEIGHT = 72;
 
 function resolveDateClickRect(arg: DateClickArg) {
   const target = arg.jsEvent.target as HTMLElement | null;
@@ -257,7 +258,9 @@ export function CalendarCore({
     const timeGridViewEl = containerEl.querySelector(
       view === 'week' ? '.fc-timeGridWeek-view' : '.fc-timeGridDay-view',
     );
-    const bodyScroller = timeGridViewEl?.querySelector('.fc-scroller');
+    const timeGridBody = timeGridViewEl?.querySelector('.fc-timegrid-body');
+    const bodyScroller =
+      timeGridBody instanceof HTMLElement ? timeGridBody.closest('.fc-scroller') : null;
 
     if (!(bodyScroller instanceof HTMLElement)) return;
 
@@ -319,32 +322,15 @@ export function CalendarCore({
     const dateKey = normalizeCalendarValue(arg.date, { allDay: true });
 
     if (!dateKey) return;
-
-    if (view === 'month') {
-      onClickDateCell?.({
-        rect,
-        draft: {
-          title: '',
-          start: dateKey,
-          end: addDaysToCalendarDate(dateKey, 1),
-          allDay: true,
-        },
-      });
-      return;
-    }
-
-    const start = combineDateAndTime(dateKey, '09:00');
-    const end = addHoursToCalendarDateTime(start, 1);
-
-    if (!start || !end) return;
+    if (view !== 'month' && !arg.allDay) return;
 
     onClickDateCell?.({
       rect,
       draft: {
         title: '',
-        start,
-        end,
-        allDay: false,
+        start: dateKey,
+        end: addDaysToCalendarDate(dateKey, 1),
+        allDay: true,
       },
     });
   };
@@ -546,11 +532,22 @@ export function CalendarCore({
     return <span className="calendar-month-header-label">{formatKoreanWeekday(date)}</span>;
   };
 
+  const handleAllDayDidMount = useCallback((arg: { el: HTMLElement }) => {
+    arg.el.setAttribute('data-calendar-all-day-axis', 'true');
+
+    const section = arg.el.closest('.fc-scrollgrid-section');
+    if (!(section instanceof HTMLElement)) return;
+
+    section.setAttribute('data-calendar-all-day-section', 'true');
+  }, []);
+
   const getEventClassNames = useCallback(
     (arg: EventContentArg) => {
+      const isAllDayEvent = view === 'month' || arg.event.allDay;
+
       return [
         'calendar-event',
-        view === 'month' ? 'calendar-event--month' : 'calendar-event--timegrid',
+        isAllDayEvent ? 'calendar-event--month' : 'calendar-event--timegrid',
         arg.event.id === selectedEventId ? 'calendar-event--selected' : '',
       ].filter(Boolean);
     },
@@ -563,6 +560,7 @@ export function CalendarCore({
       '--calendar-scrollbar-width': `${monthLayout.scrollbarWidth}px`,
       '--calendar-time-slot-height': `${TIMEGRID_SLOT_HEIGHT}px`,
       '--calendar-timegrid-scrollbar-width': `${timeGridScrollbarWidth}px`,
+      '--calendar-allday-section-height': `${ALL_DAY_SECTION_HEIGHT}px`,
     } as CSSProperties;
   }, [monthLayout.rowHeight, monthLayout.scrollbarWidth, timeGridScrollbarWidth]);
 
@@ -666,9 +664,13 @@ export function CalendarCore({
         selectMirror={Boolean(onSelectSlot)}
         unselectAuto
         select={handleSelect}
-        dateClick={view === 'month' ? handleDateClick : undefined}
+        dateClick={handleDateClick}
         eventClick={handleEventClick}
-        eventContent={view === 'month' ? renderMonthEventContent : renderTimeGridEventContent}
+        eventContent={(arg) => {
+          return view === 'month' || arg.event.allDay
+            ? renderMonthEventContent(arg)
+            : renderTimeGridEventContent(arg);
+        }}
         eventClassNames={getEventClassNames}
         eventDisplay="block"
         displayEventTime={false}
@@ -719,7 +721,23 @@ export function CalendarCore({
                 );
               }
         }
-        allDaySlot={false}
+        allDaySlot={view !== 'month'}
+        allDayText="종일 일정"
+        allDayClassNames={
+          view === 'month'
+            ? undefined
+            : () => {
+                return ['calendar-timegrid-allday-axis-cell'];
+              }
+        }
+        allDayContent={
+          view === 'month'
+            ? undefined
+            : (arg) => {
+                return <span className="calendar-timegrid-allday-label">{arg.text}</span>;
+              }
+        }
+        allDayDidMount={view === 'month' ? undefined : handleAllDayDidMount}
         dayMaxEvents={view === 'month' ? 5 : undefined}
         eventMaxStack={view === 'month' ? undefined : 1}
         slotEventOverlap={false}
