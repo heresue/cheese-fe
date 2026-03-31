@@ -25,7 +25,7 @@ type PopoverState = {
 };
 
 const CREATE_POPOVER_WIDTH = 320;
-const CREATE_POPOVER_HEIGHT = 520;
+const CREATE_POPOVER_HEIGHT = 455;
 const CREATE_POPOVER_GAP = 8;
 
 const MONTH_POPOVER_DEFAULT_START_TIME = '09:00';
@@ -38,7 +38,7 @@ function clamp(value: number, min: number, max: number) {
 function getPopoverPosition(
   rect: DOMRect,
   options?: {
-    placement?: 'auto' | 'timegrid-center';
+    placement?: 'auto' | 'cell-center';
     boundsRect?: DOMRect | null;
   },
 ) {
@@ -52,9 +52,14 @@ function getPopoverPosition(
     CREATE_POPOVER_HEIGHT -
     12;
 
-  if (options?.placement === 'timegrid-center') {
+  if (options?.placement === 'cell-center') {
     const centeredX = rect.left + rect.width / 2 - CREATE_POPOVER_WIDTH / 2;
-    const anchoredY = rect.top - 8;
+    const hasSpaceAbove = rect.top - CREATE_POPOVER_HEIGHT - CREATE_POPOVER_GAP >= minY;
+    const hasSpaceBelow = rect.bottom + CREATE_POPOVER_HEIGHT + CREATE_POPOVER_GAP <= maxY + 12;
+    const anchoredY =
+      hasSpaceAbove || !hasSpaceBelow
+        ? rect.top - CREATE_POPOVER_HEIGHT - CREATE_POPOVER_GAP
+        : rect.bottom + CREATE_POPOVER_GAP;
 
     return {
       x: clamp(centeredX, minX, Math.max(minX, maxX)),
@@ -198,10 +203,14 @@ export default function CalendarScreen() {
     return screenRef.current?.getBoundingClientRect() ?? null;
   };
 
-  const openCreatePopover = (payload: { draft: CalendarEventDraft; rect: DOMRect }) => {
-    const { rect, draft } = payload;
+  const openCreatePopover = (payload: {
+    draft: CalendarEventDraft;
+    rect: DOMRect;
+    placement?: 'auto' | 'cell-center';
+  }) => {
+    const { rect, draft, placement } = payload;
     const { x, y } = getPopoverPosition(rect, {
-      placement: view === 'month' ? 'auto' : 'timegrid-center',
+      placement: placement ?? 'auto',
       boundsRect: getViewportBounds(),
     });
 
@@ -230,7 +239,7 @@ export default function CalendarScreen() {
   const openEditPopover = (payload: { event: Partial<CalendarEventDraft>; rect: DOMRect }) => {
     const { rect, event } = payload;
     const { x, y } = getPopoverPosition(rect, {
-      placement: view === 'month' ? 'auto' : 'timegrid-center',
+      placement: view === 'day' ? 'cell-center' : 'auto',
       boundsRect: getViewportBounds(),
     });
 
@@ -257,7 +266,10 @@ export default function CalendarScreen() {
     if (!createPopover) return;
 
     const nextDraft = normalizeDraftForSave(createPopover.draft);
-    if (!nextDraft?.title?.trim()) return;
+    if (!nextDraft?.title?.trim()) {
+      closeCreatePopover();
+      return;
+    }
 
     if (hasTimedSlotConflict(events, nextDraft)) {
       window.alert('해당 시간 칸에는 이미 일정이 있습니다.');
@@ -303,7 +315,7 @@ export default function CalendarScreen() {
         event.id === nextDraft.id
           ? {
               ...event,
-              title: nextDraft.title ?? event.title,
+              title: nextDraft.title?.trim() || event.title,
               start: nextDraft.start ?? event.start,
               end: nextDraft.end ?? event.end,
               allDay: nextDraft.allDay ?? event.allDay,
@@ -320,14 +332,12 @@ export default function CalendarScreen() {
     closeEditPopover();
   };
 
-  const handleDeleteEvent = () => {
-    if (!editPopover?.draft.id) {
-      closeEditPopover();
-      return;
-    }
-
-    setEvents((prev) => prev.filter((event) => event.id !== editPopover.draft.id));
-    closeEditPopover();
+  const handleDeleteEventById = (eventId: string) => {
+    setEvents((prev) => prev.filter((event) => event.id !== eventId));
+    setEditPopover((prev) => {
+      if (!prev || prev.draft.id !== eventId) return prev;
+      return null;
+    });
   };
 
   return (
@@ -365,12 +375,13 @@ export default function CalendarScreen() {
             events={events}
             selectedEventId={editPopover?.draft.id}
             onTitleChange={setTitle}
-            onClickDateCell={({ draft, rect }) => {
-              openCreatePopover({ draft, rect });
+            onClickDateCell={({ draft, rect, placement }) => {
+              openCreatePopover({ draft, rect, placement });
             }}
             onClickEvent={({ event, rect }) => {
               openEditPopover({ event, rect });
             }}
+            onDeleteEvent={handleDeleteEventById}
           />
         </section>
 
@@ -379,10 +390,9 @@ export default function CalendarScreen() {
             open={true}
             x={createPopover.x}
             y={createPopover.y}
-            mode="create"
             draft={createPopover.draft}
             onClose={closeCreatePopover}
-            onSave={handleCreateEvent}
+            onCommit={handleCreateEvent}
             onChangeDraft={(nextDraft) => {
               setCreatePopover((prev) => {
                 if (!prev) return prev;
@@ -400,11 +410,9 @@ export default function CalendarScreen() {
             open={true}
             x={editPopover.x}
             y={editPopover.y}
-            mode="edit"
             draft={editPopover.draft}
             onClose={closeEditPopover}
-            onSave={handleUpdateEvent}
-            onDelete={handleDeleteEvent}
+            onCommit={handleUpdateEvent}
             onChangeDraft={(nextDraft) => {
               setEditPopover((prev) => {
                 if (!prev) return prev;

@@ -19,12 +19,10 @@ type CalendarEventPopoverProps = {
   x: number;
   y: number;
   draft: CalendarEventDraft;
-  mode?: 'create' | 'edit';
   hideTimeFields?: boolean;
   onChangeDraft: (nextDraft: CalendarEventDraft) => void;
   onClose: () => void;
-  onSave: () => void;
-  onDelete?: () => void;
+  onCommit: () => void;
 };
 
 type DropdownOption<T extends string | number> = {
@@ -292,12 +290,10 @@ export function CalendarEventPopover({
   x,
   y,
   draft,
-  mode = 'create',
   hideTimeFields = false,
   onChangeDraft,
   onClose,
-  onSave,
-  onDelete,
+  onCommit,
 }: CalendarEventPopoverProps) {
   const popoverRef = useRef<HTMLDivElement | null>(null);
   const isAllDay = draft.allDay ?? !hasTimePart(draft.start);
@@ -315,7 +311,7 @@ export function CalendarEventPopover({
     const handlePointerDown = (event: MouseEvent) => {
       if (!popoverRef.current) return;
       if (popoverRef.current.contains(event.target as Node)) return;
-      onClose();
+      onCommit();
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -329,7 +325,7 @@ export function CalendarEventPopover({
       document.removeEventListener('mousedown', handlePointerDown);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [open, onClose]);
+  }, [open, onClose, onCommit]);
 
   const updateAllDayStart = (nextStart: string) => {
     const currentDisplayEnd = getAllDayDisplayEndValue(draft.start, draft.end) || nextStart;
@@ -560,33 +556,6 @@ export function CalendarEventPopover({
             }
           />
         </div>
-
-        {mode === 'create' ? (
-          <button
-            type="button"
-            onClick={onSave}
-            className="h-[34px] w-full rounded-[8px] bg-[#F4C53D] text-[12px] font-semibold text-[#2F2F2F]"
-          >
-            일정 생성
-          </button>
-        ) : (
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={onDelete}
-              className="h-[34px] flex-1 rounded-[8px] border border-[#E5E7EB] text-[12px] font-medium text-[#6B7280]"
-            >
-              삭제
-            </button>
-            <button
-              type="button"
-              onClick={onSave}
-              className="h-[34px] flex-1 rounded-[8px] bg-[#F4C53D] text-[12px] font-semibold text-[#2F2F2F]"
-            >
-              수정
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

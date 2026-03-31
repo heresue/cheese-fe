@@ -1,16 +1,23 @@
 'use client';
 
-import type { CSSProperties } from 'react';
+import type { CSSProperties, MouseEvent } from 'react';
 
 import { getEventColorTokens } from '../../model/constants';
 import type { CalendarEvent } from '../../model/types';
 
 type Props = {
   event: CalendarEvent;
+  onDelete?: () => void;
 };
 
-export function MonthEventChip({ event }: Props) {
+export function MonthEventChip({ event, onDelete }: Props) {
   const color = getEventColorTokens(event.colorId);
+
+  const handleDelete = (clickEvent: MouseEvent<HTMLButtonElement>) => {
+    clickEvent.preventDefault();
+    clickEvent.stopPropagation();
+    onDelete?.();
+  };
 
   return (
     <div
@@ -29,6 +36,24 @@ export function MonthEventChip({ event }: Props) {
       }
     >
       <span className="calendar-event-chip__title">{event.title}</span>
+
+      <button
+        type="button"
+        data-calendar-event-delete
+        onMouseDown={handleDelete}
+        onClick={handleDelete}
+        className="calendar-event-chip__delete"
+        aria-label="일정 삭제"
+      >
+        <svg viewBox="0 0 20 20" fill="none" className="calendar-event-chip__delete-icon">
+          <path
+            d="M6 6L14 14M14 6L6 14"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+          />
+        </svg>
+      </button>
     </div>
   );
 }

@@ -1,6 +1,14 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type MouseEvent,
+} from 'react';
 
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, { type DateClickArg } from '@fullcalendar/interaction';
@@ -43,6 +51,7 @@ type CalendarCoreProps = {
   onTitleChange?: (title: string) => void;
   onSelectSlot?: (slot: CalendarSlot) => void;
   onClickEvent?: (payload: { event: Partial<CalendarEventDraft>; rect: DOMRect }) => void;
+  onDeleteEvent?: (eventId: string) => void;
   onClickDateCell?: (payload: {
     draft: CalendarEventDraft;
     rect: DOMRect;
@@ -112,6 +121,7 @@ export function CalendarCore({
   onTitleChange,
   onSelectSlot,
   onClickEvent,
+  onDeleteEvent,
   onClickDateCell,
 }: CalendarCoreProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -278,6 +288,9 @@ export function CalendarCore({
   };
 
   const handleEventClick = (arg: EventClickArg) => {
+    const clickTarget = arg.jsEvent.target as HTMLElement | null;
+    if (clickTarget?.closest('[data-calendar-event-delete]')) return;
+
     const ext = arg.event.extendedProps as Partial<CalendarEventDraft>;
     const isAllDay = arg.event.allDay;
     const start = normalizeCalendarValue(arg.event.start, { allDay: isAllDay });
@@ -430,12 +443,29 @@ export function CalendarCore({
       location: ext.location,
     };
 
-    return <MonthEventChip event={monthEvent} />;
+    return (
+      <MonthEventChip
+        event={monthEvent}
+        onDelete={
+          onDeleteEvent
+            ? () => {
+                onDeleteEvent(arg.event.id);
+              }
+            : undefined
+        }
+      />
+    );
   };
 
   const renderTimeGridEventContent = (arg: EventContentArg) => {
     const ext = arg.event.extendedProps as Partial<CalendarEventDraft>;
     const color = getEventColorTokens(ext.colorId);
+
+    const handleDelete = (event: MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+      onDeleteEvent?.(arg.event.id);
+    };
 
     return (
       <div
@@ -454,6 +484,24 @@ export function CalendarCore({
         }
       >
         <span className="calendar-event-chip__title">{arg.event.title}</span>
+
+        <button
+          type="button"
+          data-calendar-event-delete
+          onMouseDown={handleDelete}
+          onClick={handleDelete}
+          className="calendar-event-chip__delete"
+          aria-label="일정 삭제"
+        >
+          <svg viewBox="0 0 20 20" fill="none" className="calendar-event-chip__delete-icon">
+            <path
+              d="M6 6L14 14M14 6L6 14"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
       </div>
     );
   };
