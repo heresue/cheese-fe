@@ -78,6 +78,29 @@ function ClockLineIcon() {
   );
 }
 
+function CalendarLineIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+      <rect
+        x="3.75"
+        y="5.25"
+        width="12.5"
+        height="11"
+        rx="1.75"
+        stroke="currentColor"
+        strokeWidth="1.4"
+      />
+      <path d="M3.75 8.5H16.25" stroke="currentColor" strokeWidth="1.4" />
+      <path
+        d="M7 3.75V6.25M13 3.75V6.25"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 function LocationLineIcon() {
   return (
     <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4">
@@ -298,11 +321,10 @@ export function CalendarEventPopover({
   const popoverRef = useRef<HTMLDivElement | null>(null);
   const isAllDay = draft.allDay ?? !hasTimePart(draft.start);
   const showDateOnlyTimedField = hideTimeFields && !isAllDay;
-  const timedDateValue = toDateInputValue(draft.start);
-  const timedStartTimeValue = toTimeInputValue(draft.start);
-  const timedEndTimeValue = toTimeInputValue(
-    draft.end || addHoursToCalendarDateTime(draft.start, 1),
-  );
+  const timedStartDateValue = toDateInputValue(draft.start);
+  const timedStartTimeValue = toTimeInputValue(draft.start) || '09:00';
+  const timedEndTimeValue =
+    toTimeInputValue(draft.end || addHoursToCalendarDateTime(draft.start, 1)) || '10:00';
   const allDayDisplayEndValue = getAllDayDisplayEndValue(draft.start, draft.end);
 
   useEffect(() => {
@@ -353,23 +375,74 @@ export function CalendarEventPopover({
     });
   };
 
-  const updateTimedDraft = (nextDate?: string, nextTime?: string) => {
-    const mergedDate = nextDate ?? timedDateValue;
-    const mergedTime = nextTime ?? timedStartTimeValue;
-    const nextStart = combineDateAndTime(mergedDate, mergedTime);
-
+  const updateTimedStart = (nextDate: string, nextTime: string) => {
+    const nextStart = combineDateAndTime(nextDate, nextTime);
     if (!nextStart) return;
+
+    const nextEnd =
+      combineDateAndTime(nextDate, timedEndTimeValue) || addHoursToCalendarDateTime(nextStart, 1);
 
     onChangeDraft({
       ...draft,
       allDay: false,
       start: nextStart,
-      end: addHoursToCalendarDateTime(nextStart, 1),
+      end: nextEnd,
+    });
+  };
+
+  const updateTimedEnd = (nextTime: string) => {
+    const nextEnd = combineDateAndTime(timedStartDateValue, nextTime);
+    if (!nextEnd) return;
+
+    onChangeDraft({
+      ...draft,
+      allDay: false,
+      end: nextEnd,
     });
   };
 
   const updateTimedDateOnlyDraft = (nextDate: string) => {
-    const nextStart = combineDateAndTime(nextDate, timedStartTimeValue || '09:00');
+    const nextStart = combineDateAndTime(nextDate, timedStartTimeValue);
+    if (!nextStart) return;
+
+    const nextEnd =
+      combineDateAndTime(nextDate, timedEndTimeValue) || addHoursToCalendarDateTime(nextStart, 1);
+
+    onChangeDraft({
+      ...draft,
+      allDay: false,
+      start: nextStart,
+      end: nextEnd,
+    });
+  };
+
+  const handleToggleAllDay = (checked: boolean) => {
+    if (checked) {
+      const start = toDateInputValue(draft.start);
+      if (!start) return;
+
+      const displayEnd = toDateInputValue(draft.end) || start;
+      const normalizedDisplayEnd =
+        parseCalendarDate(displayEnd) &&
+        parseCalendarDate(start) &&
+        parseCalendarDate(displayEnd)! >= parseCalendarDate(start)!
+          ? displayEnd
+          : start;
+
+      onChangeDraft({
+        ...draft,
+        allDay: true,
+        start,
+        end: addDaysToCalendarDate(normalizedDisplayEnd, 1),
+      });
+      return;
+    }
+
+    const baseDate = toDateInputValue(draft.start);
+    if (!baseDate) return;
+
+    const nextStart = combineDateAndTime(baseDate, timedStartTimeValue);
+    const nextEnd = combineDateAndTime(baseDate, timedEndTimeValue || '10:00');
 
     if (!nextStart) return;
 
@@ -377,7 +450,7 @@ export function CalendarEventPopover({
       ...draft,
       allDay: false,
       start: nextStart,
-      end: addHoursToCalendarDateTime(nextStart, 1),
+      end: nextEnd || addHoursToCalendarDateTime(nextStart, 1),
     });
   };
 
@@ -418,7 +491,7 @@ export function CalendarEventPopover({
         {isAllDay ? (
           <div className="grid grid-cols-[14px_1fr_10px_1fr] items-center gap-2">
             <FieldIcon>
-              <ClockLineIcon />
+              <CalendarLineIcon />
             </FieldIcon>
 
             <DisplayDateField value={draft.start} onChange={updateAllDayStart} />
@@ -430,30 +503,50 @@ export function CalendarEventPopover({
         ) : showDateOnlyTimedField ? (
           <div className="grid grid-cols-[14px_1fr] items-center gap-2">
             <FieldIcon>
-              <ClockLineIcon />
+              <CalendarLineIcon />
             </FieldIcon>
 
             <DisplayDateField value={draft.start} onChange={updateTimedDateOnlyDraft} />
           </div>
         ) : (
           <div className="space-y-1.5">
-            <div className="grid grid-cols-[14px_1fr_88px] items-center gap-2">
+            <div className="grid grid-cols-[14px_1fr_10px_1fr] items-center gap-2">
               <FieldIcon>
                 <ClockLineIcon />
               </FieldIcon>
 
-              <DisplayDateField
-                value={draft.start}
-                onChange={(nextValue) => updateTimedDraft(nextValue)}
-              />
-
               <DisplayTimeField
                 value={draft.start}
-                onChange={(nextValue) => updateTimedDraft(undefined, nextValue)}
+                onChange={(nextValue) => updateTimedStart(timedStartDateValue, nextValue)}
               />
+
+              <span className="text-center text-[12px] text-[#A8AFB8]">-</span>
+
+              <DisplayTimeField
+                value={draft.end}
+                onChange={(nextValue) => updateTimedEnd(nextValue)}
+              />
+            </div>
+
+            <div className="grid grid-cols-[14px_1fr] items-center gap-2">
+              <FieldIcon>
+                <CalendarLineIcon />
+              </FieldIcon>
+
+              <DisplayDateField value={draft.start} onChange={updateTimedDateOnlyDraft} />
             </div>
           </div>
         )}
+
+        <label className="flex items-center gap-2 text-[12px] leading-[14px] text-[#6B7280]">
+          <input
+            type="checkbox"
+            checked={isAllDay}
+            onChange={(e) => handleToggleAllDay(e.target.checked)}
+            className="h-[14px] w-[14px] rounded-[4px] border border-[#D4D9E0] accent-[#F59E0B]"
+          />
+          <span>종일</span>
+        </label>
 
         <textarea
           value={draft.memo ?? ''}

@@ -26,6 +26,7 @@ import type {
 } from '@fullcalendar/core';
 
 import {
+  addDaysToCalendarDate,
   addHoursToCalendarDateTime,
   combineDateAndTime,
   formatCalendarTitle,
@@ -316,6 +317,22 @@ export function CalendarCore({
   const handleDateClick = (arg: DateClickArg) => {
     const rect = resolveDateClickRect(arg);
     const dateKey = normalizeCalendarValue(arg.date, { allDay: true });
+
+    if (!dateKey) return;
+
+    if (view === 'month') {
+      onClickDateCell?.({
+        rect,
+        draft: {
+          title: '',
+          start: dateKey,
+          end: addDaysToCalendarDate(dateKey, 1),
+          allDay: true,
+        },
+      });
+      return;
+    }
+
     const start = combineDateAndTime(dateKey, '09:00');
     const end = addHoursToCalendarDateTime(start, 1);
 
