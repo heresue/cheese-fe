@@ -49,7 +49,7 @@ export function MonthEventChip({ event, onDelete }: Props) {
           <path
             d="M6 6L14 14M14 6L6 14"
             stroke="currentColor"
-            strokeWidth="1.6"
+            strokeWidth="4"
             strokeLinecap="round"
           />
         </svg>

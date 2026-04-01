@@ -9,11 +9,16 @@ export function hasTimePart(value?: string | null) {
   return Boolean(value && value.includes('T'));
 }
 
-export function parseCalendarDate(value?: string | Date | null) {
+export function parseCalendarDate(value?: string | number | Date | null) {
   if (!value) return null;
 
   if (value instanceof Date) {
     return Number.isNaN(value.getTime()) ? null : new Date(value.getTime());
+  }
+
+  if (typeof value === 'number') {
+    const parsedNumberDate = new Date(value);
+    return Number.isNaN(parsedNumberDate.getTime()) ? null : parsedNumberDate;
   }
 
   const dateOnlyMatch = DATE_ONLY_PATTERN.exec(value);
@@ -40,7 +45,7 @@ export function parseCalendarDate(value?: string | Date | null) {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
-export function formatCalendarDate(value?: string | Date | null) {
+export function formatCalendarDate(value?: string | number | Date | null) {
   const date = parseCalendarDate(value);
   if (!date) return '';
 
@@ -48,7 +53,7 @@ export function formatCalendarDate(value?: string | Date | null) {
 }
 
 export function formatCalendarDateTime(
-  value?: string | Date | null,
+  value?: string | number | Date | null,
   options?: { seconds?: boolean },
 ) {
   const date = parseCalendarDate(value);
@@ -64,7 +69,7 @@ export function formatCalendarDateTime(
 }
 
 export function normalizeCalendarValue(
-  value?: string | Date | null,
+  value?: string | number | Date | null,
   options?: { allDay?: boolean; seconds?: boolean },
 ) {
   if (options?.allDay) {
@@ -74,7 +79,7 @@ export function normalizeCalendarValue(
   return formatCalendarDateTime(value, options);
 }
 
-export function addDaysToCalendarDate(value: string | Date, amount: number) {
+export function addDaysToCalendarDate(value: string | number | Date, amount: number) {
   const date = parseCalendarDate(value);
   if (!date) return '';
 
@@ -82,7 +87,7 @@ export function addDaysToCalendarDate(value: string | Date, amount: number) {
   return formatCalendarDate(date);
 }
 
-export function addHoursToCalendarDateTime(value: string | Date, amount: number) {
+export function addHoursToCalendarDateTime(value: string | number | Date, amount: number) {
   const date = parseCalendarDate(value);
   if (!date) return '';
 
@@ -117,21 +122,21 @@ export function formatDisplayDate(value?: string | null) {
   return `${date.getMonth() + 1}월 ${date.getDate()}일 (${weekday})`;
 }
 
-export function formatCalendarTitle(value?: string | Date | null) {
+export function formatCalendarTitle(value?: string | number | Date | null) {
   const date = parseCalendarDate(value);
   if (!date) return '';
 
   return `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
 }
 
-export function formatKoreanWeekday(value?: string | Date | null) {
+export function formatKoreanWeekday(value?: string | number | Date | null) {
   const date = parseCalendarDate(value);
   if (!date) return '';
 
   return new Intl.DateTimeFormat('ko-KR', { weekday: 'short' }).format(date);
 }
 
-export function formatEnglishHourLabel(value?: string | Date | null) {
+export function formatEnglishHourLabel(value?: string | number | Date | null) {
   const date = parseCalendarDate(value);
   if (!date) return '';
 
@@ -142,7 +147,10 @@ export function formatEnglishHourLabel(value?: string | Date | null) {
   return `${hour12} ${meridiem}`;
 }
 
-export function isSameCalendarDate(a?: string | Date | null, b?: string | Date | null) {
+export function isSameCalendarDate(
+  a?: string | number | Date | null,
+  b?: string | number | Date | null,
+) {
   const left = parseCalendarDate(a);
   const right = parseCalendarDate(b);
 

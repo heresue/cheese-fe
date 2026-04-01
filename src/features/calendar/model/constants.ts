@@ -89,8 +89,8 @@ export const EVENT_COLOR_TOKENS: Record<EventColorId, EventColorTokens> = {
   },
 };
 
-export function getEventColorTokens(colorId?: EventColorId): EventColorTokens {
-  return colorId ? EVENT_COLOR_TOKENS[colorId] : UNASSIGNED_EVENT_COLOR_TOKENS;
-}
-
 export const DEFAULT_EVENT_COLOR: EventColorId = 'tag-gray';
+
+export function getEventColorTokens(colorId?: EventColorId): EventColorTokens {
+  return EVENT_COLOR_TOKENS[colorId ?? DEFAULT_EVENT_COLOR] ?? UNASSIGNED_EVENT_COLOR_TOKENS;
+}

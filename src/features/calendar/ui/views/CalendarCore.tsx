@@ -20,6 +20,7 @@ import type {
   DateSelectArg,
   DatesSetArg,
   DayCellContentArg,
+  EventApi,
   EventClickArg,
   EventContentArg,
   EventInput,
@@ -28,12 +29,12 @@ import type {
 import {
   addDaysToCalendarDate,
   addHoursToCalendarDateTime,
-  combineDateAndTime,
   formatCalendarTitle,
   formatEnglishHourLabel,
   formatKoreanWeekday,
   isSameCalendarDate,
   normalizeCalendarValue,
+  parseCalendarDate,
 } from '../../lib/date';
 import { getEventColorTokens } from '../../model/constants';
 import type {
@@ -69,6 +70,18 @@ type MonthLayoutState = {
   weekCount: number;
 };
 
+type VisibleDateRange = {
+  start: Date;
+  end: Date;
+};
+
+type CalendarRenderEventExtendedProps = Partial<CalendarEventDraft> & {
+  sourceEventId?: string;
+  sourceStart?: string;
+  sourceEnd?: string;
+  sourceAllDay?: boolean;
+};
+
 const VIEW_MAP: Record<CalendarView, string> = {
   month: 'dayGridMonth',
   week: 'timeGridWeek',
@@ -90,7 +103,171 @@ const DEFAULT_MONTH_LAYOUT: MonthLayoutState = {
 const MONTH_LAYOUT_EPSILON = 0.5;
 const TIMEGRID_SLOT_HEIGHT = 48;
 const TIMEGRID_SLOT_COUNT = 24;
-const ALL_DAY_SECTION_HEIGHT = 72;
+const ALL_DAY_CHIP_HEIGHT = 22;
+const ALL_DAY_CHIP_GAP = 4;
+const ALL_DAY_SECTION_VERTICAL_PADDING = 8;
+const ALL_DAY_SECTION_MIN_ROWS = 1;
+const ALL_DAY_SECTION_MAX_ROWS = 3;
+const MONTH_MAX_VISIBLE_EVENT_ROWS = 5;
+const ALL_DAY_SECTION_HEIGHT = getAllDaySectionHeight(ALL_DAY_SECTION_MIN_ROWS);
+
+function startOfCalendarDay(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function getAllDayEventEndDate(event: Pick<CalendarEvent, 'start' | 'end'>) {
+  const startDate = parseCalendarDate(event.start);
+  if (!startDate) return null;
+
+  const endDate = parseCalendarDate(event.end);
+  if (endDate && endDate > startDate) {
+    return startOfCalendarDay(endDate);
+  }
+
+  const fallbackEnd = parseCalendarDate(addDaysToCalendarDate(event.start, 1));
+  return fallbackEnd ? startOfCalendarDay(fallbackEnd) : null;
+}
+
+function getVisibleChipStackHeight(rowCount: number) {
+  const visibleRows = Math.max(Math.ceil(rowCount), 1);
+  const gapCount = Math.max(visibleRows - 1, 0);
+
+  return visibleRows * ALL_DAY_CHIP_HEIGHT + gapCount * ALL_DAY_CHIP_GAP;
+}
+
+function getAllDaySectionHeight(rowCount: number) {
+  const visibleRows = Math.min(
+    Math.max(rowCount, ALL_DAY_SECTION_MIN_ROWS),
+    ALL_DAY_SECTION_MAX_ROWS,
+  );
+
+  return ALL_DAY_SECTION_VERTICAL_PADDING + getVisibleChipStackHeight(visibleRows);
+}
+
+function countVisibleAllDayRows(events: CalendarEvent[], range: VisibleDateRange | null) {
+  const counts = new Map<string, number>();
+  let maxRows = 0;
+
+  const visibleStart = range ? startOfCalendarDay(range.start) : null;
+  const visibleEnd = range ? startOfCalendarDay(range.end) : null;
+
+  events.forEach((event) => {
+    if (!event.allDay) return;
+
+    const startDate = parseCalendarDate(event.start);
+    const endDate = getAllDayEventEndDate(event);
+
+    if (!startDate || !endDate) return;
+
+    const eventStart = startOfCalendarDay(startDate);
+    const renderStart = visibleStart && eventStart < visibleStart ? visibleStart : eventStart;
+    const renderEnd = visibleEnd && endDate > visibleEnd ? visibleEnd : endDate;
+
+    if (renderEnd <= renderStart) return;
+
+    for (
+      let cursor = new Date(renderStart.getTime());
+      cursor < renderEnd;
+      cursor.setDate(cursor.getDate() + 1)
+    ) {
+      const dateKey = normalizeCalendarValue(cursor, { allDay: true });
+      if (!dateKey) continue;
+
+      const nextCount = (counts.get(dateKey) ?? 0) + 1;
+      counts.set(dateKey, nextCount);
+      maxRows = Math.max(maxRows, nextCount);
+    }
+  });
+
+  return Math.max(maxRows, ALL_DAY_SECTION_MIN_ROWS);
+}
+
+function createCalendarEventInput(
+  event: CalendarEvent,
+  overrides?: {
+    id?: string;
+    start?: string;
+    end?: string;
+    allDay?: boolean;
+  },
+): EventInput {
+  return {
+    id: overrides?.id ?? event.id,
+    title: event.title,
+    start: overrides?.start ?? event.start,
+    end: overrides?.end ?? event.end,
+    allDay: overrides?.allDay ?? event.allDay,
+    extendedProps: {
+      memo: event.memo,
+      spaceId: event.spaceId,
+      colorId: event.colorId,
+      reminderMinutes: event.reminderMinutes,
+      location: event.location,
+      sourceEventId: event.id,
+      sourceStart: event.start,
+      sourceEnd: event.end,
+      sourceAllDay: Boolean(event.allDay),
+    } satisfies CalendarRenderEventExtendedProps,
+  };
+}
+
+function splitAllDayEventByDay(event: CalendarEvent, range: VisibleDateRange | null) {
+  if (!event.allDay) {
+    return [createCalendarEventInput(event)];
+  }
+
+  const startDate = parseCalendarDate(event.start);
+  const endDate = getAllDayEventEndDate(event);
+
+  if (!startDate || !endDate) {
+    return [createCalendarEventInput(event)];
+  }
+
+  const visibleStart = range ? startOfCalendarDay(range.start) : startOfCalendarDay(startDate);
+  const visibleEnd = range ? startOfCalendarDay(range.end) : endDate;
+  const renderStart =
+    startOfCalendarDay(startDate) > visibleStart ? startOfCalendarDay(startDate) : visibleStart;
+  const renderEnd = endDate < visibleEnd ? endDate : visibleEnd;
+
+  if (renderEnd <= renderStart) {
+    return [];
+  }
+
+  const renderedEvents: EventInput[] = [];
+
+  for (
+    let cursor = new Date(renderStart.getTime());
+    cursor < renderEnd;
+    cursor.setDate(cursor.getDate() + 1)
+  ) {
+    const dateKey = normalizeCalendarValue(cursor, { allDay: true });
+    if (!dateKey) continue;
+
+    renderedEvents.push(
+      createCalendarEventInput(event, {
+        id: `${event.id}__allday__${dateKey}`,
+        start: dateKey,
+        end: addDaysToCalendarDate(dateKey, 1),
+        allDay: true,
+      }),
+    );
+  }
+
+  return renderedEvents;
+}
+
+function getRenderedEventSource(event: EventApi) {
+  const ext = event.extendedProps as CalendarRenderEventExtendedProps;
+  const sourceAllDay = ext.sourceAllDay ?? event.allDay;
+
+  return {
+    sourceId: ext.sourceEventId ?? event.id,
+    sourceStart: ext.sourceStart ?? normalizeCalendarValue(event.start, { allDay: sourceAllDay }),
+    sourceEnd:
+      ext.sourceEnd ?? normalizeCalendarValue(event.end ?? event.start, { allDay: sourceAllDay }),
+    sourceAllDay,
+  };
+}
 
 function resolveDateClickRect(arg: DateClickArg) {
   const target = arg.jsEvent.target as HTMLElement | null;
@@ -134,24 +311,24 @@ export function CalendarCore({
   const [now, setNow] = useState(() => new Date());
   const [monthLayout, setMonthLayout] = useState<MonthLayoutState>(DEFAULT_MONTH_LAYOUT);
   const [timeGridScrollbarWidth, setTimeGridScrollbarWidth] = useState(0);
+  const [visibleRange, setVisibleRange] = useState<VisibleDateRange | null>(null);
   const today = now;
 
   const fcEvents = useMemo<EventInput[]>(() => {
-    return events.map((event) => ({
-      id: event.id,
-      title: event.title,
-      start: event.start,
-      end: event.end,
-      allDay: event.allDay,
-      extendedProps: {
-        memo: event.memo,
-        spaceId: event.spaceId,
-        colorId: event.colorId,
-        reminderMinutes: event.reminderMinutes,
-        location: event.location,
-      },
-    }));
-  }, [events]);
+    if (view === 'month') {
+      return events.flatMap((event) => splitAllDayEventByDay(event, visibleRange));
+    }
+
+    return events.flatMap((event) => splitAllDayEventByDay(event, visibleRange));
+  }, [events, view, visibleRange]);
+
+  const allDaySectionHeight = useMemo(() => {
+    if (view === 'month') {
+      return ALL_DAY_SECTION_HEIGHT;
+    }
+
+    return getAllDaySectionHeight(countVisibleAllDayRows(events, visibleRange));
+  }, [events, visibleRange, view]);
 
   const initialView = VIEW_MAP[view];
 
@@ -215,7 +392,7 @@ export function CalendarCore({
     const bodyHeight = monthBody.getBoundingClientRect().height;
     if (bodyHeight <= 0) return;
 
-    const measuredRowHeight = bodyHeight / 5;
+    const measuredRowHeight = bodyHeight / weekCount;
     const density: MonthDensity =
       measuredRowHeight >= MONTH_MIN_ROW_HEIGHT.comfortable ? 'comfortable' : 'compact';
 
@@ -295,19 +472,17 @@ export function CalendarCore({
     const clickTarget = arg.jsEvent.target as HTMLElement | null;
     if (clickTarget?.closest('[data-calendar-event-delete]')) return;
 
-    const ext = arg.event.extendedProps as Partial<CalendarEventDraft>;
-    const isAllDay = arg.event.allDay;
-    const start = normalizeCalendarValue(arg.event.start, { allDay: isAllDay });
-    const end = normalizeCalendarValue(arg.event.end ?? arg.event.start, { allDay: isAllDay });
+    const ext = arg.event.extendedProps as CalendarRenderEventExtendedProps;
+    const sourceEvent = getRenderedEventSource(arg.event);
 
     onClickEvent?.({
       rect: arg.el.getBoundingClientRect(),
       event: {
-        id: arg.event.id,
+        id: sourceEvent.sourceId,
         title: arg.event.title ?? '',
-        start,
-        end,
-        allDay: isAllDay,
+        start: sourceEvent.sourceStart,
+        end: sourceEvent.sourceEnd,
+        allDay: sourceEvent.sourceAllDay,
         memo: ext.memo,
         spaceId: ext.spaceId,
         colorId: ext.colorId,
@@ -398,6 +573,11 @@ export function CalendarCore({
   const handleDatesSet = (arg: DatesSetArg) => {
     const focusedDate = arg.view.calendar.getDate();
 
+    setVisibleRange({
+      start: new Date(arg.start.getTime()),
+      end: new Date(arg.end.getTime()),
+    });
+
     onTitleChange?.(formatCalendarTitle(focusedDate));
 
     window.dispatchEvent(
@@ -431,14 +611,15 @@ export function CalendarCore({
   };
 
   const renderMonthEventContent = (arg: EventContentArg) => {
-    const ext = arg.event.extendedProps as Partial<CalendarEventDraft>;
+    const ext = arg.event.extendedProps as CalendarRenderEventExtendedProps;
+    const sourceEvent = getRenderedEventSource(arg.event);
 
     const monthEvent: CalendarEvent = {
-      id: arg.event.id,
+      id: sourceEvent.sourceId,
       title: arg.event.title,
-      start: normalizeCalendarValue(arg.event.start, { allDay: arg.event.allDay }),
-      end: normalizeCalendarValue(arg.event.end ?? arg.event.start, { allDay: arg.event.allDay }),
-      allDay: arg.event.allDay,
+      start: sourceEvent.sourceStart,
+      end: sourceEvent.sourceEnd,
+      allDay: sourceEvent.sourceAllDay,
       memo: ext.memo,
       spaceId: ext.spaceId,
       colorId: ext.colorId,
@@ -452,7 +633,7 @@ export function CalendarCore({
         onDelete={
           onDeleteEvent
             ? () => {
-                onDeleteEvent(arg.event.id);
+                onDeleteEvent(sourceEvent.sourceId);
               }
             : undefined
         }
@@ -461,13 +642,14 @@ export function CalendarCore({
   };
 
   const renderTimeGridEventContent = (arg: EventContentArg) => {
-    const ext = arg.event.extendedProps as Partial<CalendarEventDraft>;
+    const ext = arg.event.extendedProps as CalendarRenderEventExtendedProps;
+    const sourceEvent = getRenderedEventSource(arg.event);
     const color = getEventColorTokens(ext.colorId);
 
     const handleDelete = (event: MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
       event.stopPropagation();
-      onDeleteEvent?.(arg.event.id);
+      onDeleteEvent?.(sourceEvent.sourceId);
     };
 
     return (
@@ -544,11 +726,12 @@ export function CalendarCore({
   const getEventClassNames = useCallback(
     (arg: EventContentArg) => {
       const isAllDayEvent = view === 'month' || arg.event.allDay;
+      const sourceEvent = getRenderedEventSource(arg.event);
 
       return [
         'calendar-event',
         isAllDayEvent ? 'calendar-event--month' : 'calendar-event--timegrid',
-        arg.event.id === selectedEventId ? 'calendar-event--selected' : '',
+        sourceEvent.sourceId === selectedEventId ? 'calendar-event--selected' : '',
       ].filter(Boolean);
     },
     [selectedEventId, view],
@@ -560,9 +743,15 @@ export function CalendarCore({
       '--calendar-scrollbar-width': `${monthLayout.scrollbarWidth}px`,
       '--calendar-time-slot-height': `${TIMEGRID_SLOT_HEIGHT}px`,
       '--calendar-timegrid-scrollbar-width': `${timeGridScrollbarWidth}px`,
-      '--calendar-allday-section-height': `${ALL_DAY_SECTION_HEIGHT}px`,
+      '--calendar-allday-section-height': `${allDaySectionHeight}px`,
+      '--calendar-month-max-visible-events-height': `${getVisibleChipStackHeight(MONTH_MAX_VISIBLE_EVENT_ROWS)}px`,
     } as CSSProperties;
-  }, [monthLayout.rowHeight, monthLayout.scrollbarWidth, timeGridScrollbarWidth]);
+  }, [
+    allDaySectionHeight,
+    monthLayout.rowHeight,
+    monthLayout.scrollbarWidth,
+    timeGridScrollbarWidth,
+  ]);
 
   useEffect(() => {
     const interval = window.setInterval(() => {
@@ -626,6 +815,11 @@ export function CalendarCore({
     if (view !== 'month') return;
     scheduleLayoutSync();
   }, [monthLayout.rowHeight, scheduleLayoutSync, view]);
+
+  useEffect(() => {
+    if (view === 'month') return;
+    scheduleLayoutSync();
+  }, [allDaySectionHeight, scheduleLayoutSync, view]);
 
   useEffect(() => {
     return () => {
@@ -738,8 +932,8 @@ export function CalendarCore({
               }
         }
         allDayDidMount={view === 'month' ? undefined : handleAllDayDidMount}
-        dayMaxEvents={view === 'month' ? 5 : undefined}
-        eventMaxStack={view === 'month' ? undefined : 1}
+        dayMaxEvents={false}
+        dayMaxEventRows={false}
         slotEventOverlap={false}
         locale="ko"
       />

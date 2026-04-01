@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   addDaysToCalendarDate,
@@ -12,6 +12,7 @@ import {
   toDateInputValue,
   toTimeInputValue,
 } from '../../lib/date';
+import { DEFAULT_EVENT_COLOR } from '../../model/constants';
 import type { CalendarEventDraft, EventColorId, ReminderMinutes } from '../../model/types';
 
 type CalendarEventPopoverProps = {
@@ -54,6 +55,9 @@ const QUICK_EVENT_COLORS: Array<{ id: EventColorId; hex: string }> = [
   { id: 'tag-blue', hex: '#5B9EF7' },
   { id: 'tag-purple', hex: '#9B59D0' },
 ];
+
+const COLOR_SWATCH_SIZE = 20;
+const COLOR_SWATCH_GAP = 8;
 
 function FieldIcon({ children }: { children: React.ReactNode }) {
   return (
@@ -319,6 +323,27 @@ export function CalendarEventPopover({
   onCommit,
 }: CalendarEventPopoverProps) {
   const popoverRef = useRef<HTMLDivElement | null>(null);
+  const colorPickerRef = useRef<HTMLDivElement | null>(null);
+  const [isColorPaletteOpen, setIsColorPaletteOpen] = useState(false);
+
+  const selectedColorId = draft.colorId ?? DEFAULT_EVENT_COLOR;
+  const selectedColor = useMemo(
+    () => QUICK_EVENT_COLORS.find((color) => color.id === selectedColorId) ?? QUICK_EVENT_COLORS[0],
+    [selectedColorId],
+  );
+  const paletteColors = useMemo(
+    () => QUICK_EVENT_COLORS.filter((color) => color.id !== selectedColorId),
+    [selectedColorId],
+  );
+
+  const colorPaletteWidth =
+    COLOR_SWATCH_SIZE +
+    (paletteColors.length > 0
+      ? COLOR_SWATCH_GAP +
+        paletteColors.length * COLOR_SWATCH_SIZE +
+        (paletteColors.length - 1) * COLOR_SWATCH_GAP
+      : 0);
+
   const isAllDay = draft.allDay ?? !hasTimePart(draft.start);
   const showDateOnlyTimedField = hideTimeFields && !isAllDay;
   const timedStartDateValue = toDateInputValue(draft.start);
@@ -337,7 +362,10 @@ export function CalendarEventPopover({
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key === 'Escape') {
+        setIsColorPaletteOpen(false);
+        onClose();
+      }
     };
 
     document.addEventListener('mousedown', handlePointerDown);
@@ -348,6 +376,34 @@ export function CalendarEventPopover({
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [open, onClose, onCommit]);
+
+  useEffect(() => {
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!colorPickerRef.current) return;
+      if (colorPickerRef.current.contains(event.target as Node)) return;
+      setIsColorPaletteOpen(false);
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    return () => document.removeEventListener('mousedown', handlePointerDown);
+  }, []);
+
+  const handleClosePopover = () => {
+    setIsColorPaletteOpen(false);
+    onClose();
+  };
+
+  const handleColorTriggerClick = () => {
+    setIsColorPaletteOpen((prev) => !prev);
+  };
+
+  const handleSelectColor = (colorId: EventColorId) => {
+    onChangeDraft({
+      ...draft,
+      colorId,
+    });
+    setIsColorPaletteOpen(false);
+  };
 
   const updateAllDayStart = (nextStart: string) => {
     const currentDisplayEnd = getAllDayDisplayEndValue(draft.start, draft.end) || nextStart;
@@ -467,7 +523,7 @@ export function CalendarEventPopover({
 
         <button
           type="button"
-          onClick={onClose}
+          onClick={handleClosePopover}
           className="text-[18px] leading-none text-[#BFC5CC]"
           aria-label="닫기"
         >
@@ -563,28 +619,58 @@ export function CalendarEventPopover({
           <div className="mb-2 text-[11px] leading-[14px] font-medium text-[#6B7280]">
             일정 색상
           </div>
-          <div className="flex items-center gap-[8px]">
-            {QUICK_EVENT_COLORS.map((color) => {
-              const selected = draft.colorId === color.id;
 
-              return (
+          <div ref={colorPickerRef} className="flex items-center">
+            <div
+              className="overflow-hidden"
+              style={{
+                width: `${isColorPaletteOpen ? colorPaletteWidth : COLOR_SWATCH_SIZE}px`,
+                transition: 'width 240ms cubic-bezier(0.22, 1, 0.36, 1)',
+              }}
+            >
+              <div className="flex items-center">
                 <button
-                  key={color.id}
                   type="button"
-                  onClick={() =>
-                    onChangeDraft({
-                      ...draft,
-                      colorId: color.id,
-                    })
-                  }
-                  className={`h-[16px] w-[16px] rounded-[4px] border transition ${
-                    selected ? 'scale-110 border-[#59636F]' : 'border-transparent'
-                  }`}
-                  style={{ backgroundColor: color.hex }}
-                  aria-label={color.id}
+                  onClick={handleColorTriggerClick}
+                  className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-[6px] border border-[#C5CCD5] transition-transform duration-200"
+                  style={{
+                    backgroundColor: selectedColor.hex,
+                    boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.68)',
+                    transform: isColorPaletteOpen ? 'scale(1.04)' : 'scale(1)',
+                  }}
+                  aria-label="색상 팔레트 열기"
+                  aria-expanded={isColorPaletteOpen}
                 />
-              );
-            })}
+
+                <div
+                  className="flex min-w-0 items-center gap-[8px]"
+                  style={{
+                    marginLeft: `${COLOR_SWATCH_GAP}px`,
+                    opacity: isColorPaletteOpen ? 1 : 0,
+                    transform: `translateX(${isColorPaletteOpen ? '0px' : '-10px'})`,
+                    pointerEvents: isColorPaletteOpen ? 'auto' : 'none',
+                    transition:
+                      'opacity 180ms ease, transform 240ms cubic-bezier(0.22, 1, 0.36, 1)',
+                  }}
+                >
+                  {paletteColors.map((color) => {
+                    return (
+                      <button
+                        key={color.id}
+                        type="button"
+                        onClick={() => handleSelectColor(color.id)}
+                        className="h-[20px] w-[20px] shrink-0 rounded-[6px] border border-transparent transition-transform duration-150 hover:scale-105 hover:border-[#C5CCD4]"
+                        style={{
+                          backgroundColor: color.hex,
+                          boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.52)',
+                        }}
+                        aria-label={color.id}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

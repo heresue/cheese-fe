@@ -1,14 +1,18 @@
-.fc {
+[data-calendar-view] {
   --calendar-month-day-height: 142px;
   --calendar-month-chip-height: 18px;
   --calendar-month-chip-gap: 4px;
   --calendar-scrollbar-width: 0px;
   --calendar-time-slot-height: 48px;
   --calendar-timegrid-scrollbar-width: 0px;
-  --calendar-allday-section-height: 72px;
+  --calendar-allday-section-height: 24px;
+  --calendar-month-max-visible-events-height: 106px;
   --calendar-accent-color: var(--color-secondary-500);
   --calendar-accent-strong: var(--color-secondary-700);
   --calendar-now-line-color: #eb5b49;
+}
+
+.fc {
   height: 100%;
   background: var(--color-bg-surface);
   color: var(--color-text);
@@ -257,25 +261,33 @@
 [data-calendar-view='month'] .fc .fc-dayGridMonth-view .fc-daygrid-day-events {
   position: relative;
   z-index: 1;
-  margin: 6px 8px 0;
-  flex: 1 1 auto;
+  display: grid;
+  grid-auto-rows: min-content;
+  align-content: start;
+  row-gap: var(--calendar-month-chip-gap);
+  margin: 6px 8px 8px;
+  flex: 0 1 auto;
   min-height: 0 !important;
-  overflow: hidden;
+  max-height: var(--calendar-month-max-visible-events-height);
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+[data-calendar-view='month'] .fc .fc-dayGridMonth-view .fc-daygrid-day-events::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none;
 }
 
 [data-calendar-view='month'] .fc .fc-dayGridMonth-view .fc-daygrid-day-bottom {
-  margin: 0 8px 8px;
-  padding: 0 !important;
-  flex-shrink: 0;
+  display: none;
 }
 
 [data-calendar-view='month'] .fc .fc-dayGridMonth-view .fc-daygrid-event-harness {
   position: relative;
   z-index: 1;
-  margin-bottom: var(--calendar-month-chip-gap);
-}
-
-[data-calendar-view='month'] .fc .fc-dayGridMonth-view .fc-daygrid-event-harness:last-child {
   margin-bottom: 0;
 }
 
@@ -284,12 +296,7 @@
 }
 
 [data-calendar-view='month'] .fc .fc-dayGridMonth-view .fc-daygrid-more-link {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--calendar-month-chip-height);
-  padding: 0 4px;
-  font-size: 11px;
-  line-height: 16px;
+  display: none !important;
 }
 
 [data-calendar-view='week'] {
@@ -525,12 +532,21 @@
 [data-calendar-view='day'] .fc [data-calendar-all-day-section='true'] {
   position: relative;
   z-index: 3;
+  background: var(--color-primary-100);
 }
 
 [data-calendar-view='week'] .fc [data-calendar-all-day-section='true'] > *,
 [data-calendar-view='day'] .fc [data-calendar-all-day-section='true'] > * {
   background: var(--color-primary-100);
   border-bottom: 1px solid var(--color-border) !important;
+}
+
+[data-calendar-view='week'] .fc [data-calendar-all-day-section='true'] .fc-timegrid-axis,
+[data-calendar-view='week'] .fc .calendar-timegrid-allday-axis-cell,
+[data-calendar-view='day'] .fc [data-calendar-all-day-section='true'] .fc-timegrid-axis,
+[data-calendar-view='day'] .fc .calendar-timegrid-allday-axis-cell {
+  background: var(--color-primary-100) !important;
+  border-right: 1px solid var(--color-border) !important;
 }
 
 [data-calendar-view='week'] .fc [data-calendar-all-day-axis='true'] .fc-timegrid-axis-frame,
@@ -541,7 +557,7 @@
   min-height: var(--calendar-allday-section-height);
   align-items: flex-start;
   justify-content: flex-start;
-  padding-top: 6px;
+  padding-top: 4px;
 }
 
 [data-calendar-view='week'] .fc [data-calendar-all-day-axis='true'] .fc-timegrid-axis-cushion,
@@ -563,6 +579,13 @@
 [data-calendar-view='week'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-day,
 [data-calendar-view='day'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-day {
   background: var(--color-primary-100) !important;
+  border-right: 1px solid var(--color-border) !important;
+  border-bottom: none !important;
+}
+
+[data-calendar-view='week'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-day:last-child,
+[data-calendar-view='day'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-day:last-child {
+  border-right: none !important;
 }
 
 [data-calendar-view='week'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-day:hover,
@@ -577,7 +600,7 @@
   min-height: var(--calendar-allday-section-height);
   flex-direction: column;
   overflow: hidden;
-  padding: 4px 8px;
+  padding: 3px 8px;
 }
 
 [data-calendar-view='week'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-day-top,
@@ -589,8 +612,13 @@
 
 [data-calendar-view='week'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-day-events,
 [data-calendar-view='day'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-day-events {
+  display: grid;
+  grid-auto-rows: min-content;
+  align-content: start;
+  row-gap: var(--calendar-month-chip-gap);
   margin: 0 !important;
   min-height: 0 !important;
+  height: 100%;
   flex: 1 1 auto;
   overflow-x: hidden;
   overflow-y: auto;
@@ -613,18 +641,17 @@
 
 [data-calendar-view='week'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-event-harness,
 [data-calendar-view='day'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-event-harness {
-  margin-bottom: var(--calendar-month-chip-gap);
+  margin-bottom: 0;
 }
 
-[data-calendar-view='week']
-  .fc
-  [data-calendar-all-day-section='true']
-  .fc-daygrid-event-harness:last-child,
-[data-calendar-view='day']
-  .fc
-  [data-calendar-all-day-section='true']
-  .fc-daygrid-event-harness:last-child {
-  margin-bottom: 0;
+[data-calendar-view='week'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-event,
+[data-calendar-view='day'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-event {
+  margin: 0;
+}
+
+[data-calendar-view='week'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-more-link,
+[data-calendar-view='day'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-more-link {
+  display: none !important;
 }
 
 [data-calendar-view='week']
@@ -812,9 +839,9 @@
 
 .calendar-event-chip__delete {
   display: inline-flex;
-  height: 14px;
-  width: 14px;
-  flex: 0 0 14px;
+  height: 16px;
+  width: 16px;
+  flex: 0 0 16px;
   align-items: center;
   justify-content: center;
   border: 0;
@@ -846,8 +873,8 @@
 }
 
 .calendar-event-chip__delete-icon {
-  height: 10px;
-  width: 10px;
+  height: 11px;
+  width: 11px;
 }
 
 [data-calendar-view='week'] .fc .fc-timegrid-now-indicator-line,

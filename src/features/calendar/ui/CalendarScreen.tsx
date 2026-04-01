@@ -14,6 +14,7 @@ import {
   hasTimePart,
   parseCalendarDate,
 } from '../lib/date';
+import { DEFAULT_EVENT_COLOR } from '../model/constants';
 import { mockEvents } from '../model/mock-events';
 import type { CalendarEvent, CalendarEventDraft, CalendarView } from '../model/types';
 
@@ -193,7 +194,7 @@ export default function CalendarScreen() {
           start: draft.start,
           end: draft.end,
           allDay: draft.allDay ?? true,
-          colorId: draft.colorId,
+          colorId: draft.colorId ?? DEFAULT_EVENT_COLOR,
           memo: draft.memo ?? '',
           location: draft.location ?? '',
           reminderMinutes: draft.reminderMinutes,
@@ -220,7 +221,7 @@ export default function CalendarScreen() {
         start: event.start ?? '',
         end: event.end ?? event.start ?? '',
         allDay: event.allDay ?? true,
-        colorId: event.colorId,
+        colorId: event.colorId ?? DEFAULT_EVENT_COLOR,
         memo: event.memo ?? '',
         location: event.location ?? '',
         reminderMinutes: event.reminderMinutes,
@@ -251,7 +252,7 @@ export default function CalendarScreen() {
       allDay: nextDraft.allDay ?? true,
       memo: nextDraft.memo,
       spaceId: nextDraft.spaceId,
-      colorId: nextDraft.colorId,
+      colorId: nextDraft.colorId ?? DEFAULT_EVENT_COLOR,
       reminderMinutes: nextDraft.reminderMinutes,
       location: nextDraft.location,
     };
@@ -288,7 +289,7 @@ export default function CalendarScreen() {
               allDay: nextDraft.allDay ?? event.allDay,
               memo: nextDraft.memo,
               spaceId: nextDraft.spaceId,
-              colorId: nextDraft.colorId,
+              colorId: nextDraft.colorId ?? DEFAULT_EVENT_COLOR,
               reminderMinutes: nextDraft.reminderMinutes,
               location: nextDraft.location,
             }
@@ -313,7 +314,7 @@ export default function CalendarScreen() {
         ref={screenRef}
         className="flex h-full min-h-0 w-full flex-col bg-[var(--color-bg-surface)]"
       >
-        <div className="shrink-0 pt-[83px]">
+        <div className="shrink-0 pt-[62px]">
           <CalendarToolbar
             view={view}
             title={title}
@@ -330,13 +331,7 @@ export default function CalendarScreen() {
           />
         </div>
 
-        <section
-          className={
-            view === 'month'
-              ? 'h-[calc(100dvh-147px)] min-h-0 overflow-hidden bg-[var(--color-bg-surface)]'
-              : 'min-h-0 flex-1 overflow-hidden bg-[var(--color-bg-surface)]'
-          }
-        >
+        <section className="min-h-0 flex-1 overflow-hidden bg-[var(--color-bg-surface)]">
           <CalendarCore
             view={view}
             events={events}
