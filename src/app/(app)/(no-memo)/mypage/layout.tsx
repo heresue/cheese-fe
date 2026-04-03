@@ -1,4 +1,4 @@
-import MyPageSidebar from '@/app/(app)/(no-memo)/mypage/_components/Mypage-Sidebar';
+import MyPageSidebar from '@/app/(app)/(no-memo)/mypage/_components/MypageSidebar';
 
 export default function MyPageLayout({ children }: { children: React.ReactNode }) {
   return (
