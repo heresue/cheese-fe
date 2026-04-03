@@ -1,4 +1,5 @@
-import MyPageSidebar from '@/app/(app)/(no-memo)/mypage/_components/MypageSidebar';
+import MypageHeaderTitle from './_components/MypageHeaderTitle';
+import MyPageSidebar from './_components/MypageSidebar';
 
 export default function MyPageLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -8,7 +9,12 @@ export default function MyPageLayout({ children }: { children: React.ReactNode }
           <aside className="w-[240px] shrink-0 border-r border-gray-300">
             <MyPageSidebar />
           </aside>
-          <div className="min-w-0 flex-1 overflow-y-auto">{children}</div>
+          <div className="flex min-w-0 flex-1 flex-col gap-8 overflow-y-auto p-10">
+            <div>
+              <MypageHeaderTitle />
+            </div>
+            {children}
+          </div>
         </div>
       </div>
     </div>
