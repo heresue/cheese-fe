@@ -1,19 +1,20 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import clsx from 'clsx';
+import { MYPAGE_MENU_ITEMS } from '@/constants/mypageMenu';
 import MypageIcon from '@/assets/icons/mypage.svg';
 import BookmarksIcon from '@/assets/icons/like.svg';
 import ApplicationsIcon from '@/assets/icons/applications.svg';
 import SettingsIcon from '@/assets/icons/settings.svg';
-import { usePathname } from 'next/navigation';
-import clsx from 'clsx';
 
-const MYPAGE_MENU_ITEMS = [
-  { label: '마이페이지', href: '/mypage', icon: <MypageIcon /> },
-  { label: '내 관심글', href: '/mypage/bookmarks', icon: <BookmarksIcon /> },
-  { label: '지원현황', href: '/mypage/applications', icon: <ApplicationsIcon /> },
-  { label: '설정', href: '/mypage/settings', icon: <SettingsIcon /> },
-];
+const ICON_MAP = {
+  mypage: <MypageIcon />,
+  bookmarks: <BookmarksIcon />,
+  applications: <ApplicationsIcon />,
+  settings: <SettingsIcon />,
+};
 
 export default function MyPageSidebar() {
   const pathname = usePathname();
@@ -40,7 +41,7 @@ export default function MyPageSidebar() {
                         isActive ? 'text-sidebar-icon-active' : '',
                       )}
                     >
-                      {item.icon}
+                      {ICON_MAP[item.icon]}
                     </span>
                     {item.label}
                   </div>
