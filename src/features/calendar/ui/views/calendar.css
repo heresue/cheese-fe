@@ -1,5 +1,6 @@
 [data-calendar-view] {
   --calendar-month-day-height: 142px;
+  --calendar-month-week-count: 5;
   --calendar-month-chip-height: 18px;
   --calendar-month-chip-gap: 4px;
   --calendar-scrollbar-width: 0px;
@@ -185,39 +186,19 @@
   padding-right: 0 !important;
 }
 
-[data-calendar-view='month'] .fc .fc-dayGridMonth-view .fc-daygrid-body,
+[data-calendar-view='month'] .fc .fc-dayGridMonth-view .fc-daygrid-body {
+  min-height: 100% !important;
+  height: 100% !important;
+}
+
 [data-calendar-view='month'] .fc .fc-dayGridMonth-view .fc-daygrid-body table,
 [data-calendar-view='month'] .fc .fc-dayGridMonth-view .fc-daygrid-body .fc-scrollgrid-sync-table {
-  min-height: 100% !important;
+  min-height: calc(var(--calendar-month-day-height) * var(--calendar-month-week-count)) !important;
+  height: calc(var(--calendar-month-day-height) * var(--calendar-month-week-count)) !important;
 }
 
-[data-month-week-count='4'] .fc .fc-dayGridMonth-view .fc-daygrid-body,
-[data-month-week-count='4'] .fc .fc-dayGridMonth-view .fc-daygrid-body table,
-[data-month-week-count='4'] .fc .fc-dayGridMonth-view .fc-daygrid-body .fc-scrollgrid-sync-table {
-  height: 100% !important;
-}
-
-[data-month-week-count='4'] .fc .fc-dayGridMonth-view .fc-daygrid-body tbody tr {
-  height: 25% !important;
-}
-
-[data-month-week-count='5'] .fc .fc-dayGridMonth-view .fc-daygrid-body,
-[data-month-week-count='5'] .fc .fc-dayGridMonth-view .fc-daygrid-body table,
-[data-month-week-count='5'] .fc .fc-dayGridMonth-view .fc-daygrid-body .fc-scrollgrid-sync-table {
-  height: 100% !important;
-}
-
-[data-month-week-count='5'] .fc .fc-dayGridMonth-view .fc-daygrid-body tbody tr {
-  height: 20% !important;
-}
-
-[data-month-week-count='6'] .fc .fc-dayGridMonth-view .fc-daygrid-body,
-[data-month-week-count='6'] .fc .fc-dayGridMonth-view .fc-daygrid-body table,
-[data-month-week-count='6'] .fc .fc-dayGridMonth-view .fc-daygrid-body .fc-scrollgrid-sync-table {
-  height: auto !important;
-}
-
-[data-month-week-count='6'] .fc .fc-dayGridMonth-view .fc-daygrid-body tbody tr {
+[data-calendar-view='month'] .fc .fc-dayGridMonth-view .fc-daygrid-body tbody tr,
+[data-calendar-view='month'] .fc .fc-dayGridMonth-view .fc-daygrid-body tbody td {
   height: var(--calendar-month-day-height) !important;
   min-height: var(--calendar-month-day-height) !important;
 }
@@ -226,18 +207,9 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  padding: 0;
-}
-
-[data-month-week-count='4'] .fc .fc-dayGridMonth-view .fc-daygrid-day-frame,
-[data-month-week-count='5'] .fc .fc-dayGridMonth-view .fc-daygrid-day-frame {
   height: 100%;
   min-height: 100%;
-}
-
-[data-month-week-count='6'] .fc .fc-dayGridMonth-view .fc-daygrid-day-frame {
-  height: var(--calendar-month-day-height);
-  min-height: var(--calendar-month-day-height);
+  padding: 0;
 }
 
 [data-calendar-view='month'] .fc .fc-dayGridMonth-view .fc-daygrid-day-top {
@@ -812,7 +784,7 @@
 }
 
 .calendar-event-chip--month {
-  height: 18px;
+  height: 20px;
   width: 100%;
   border-radius: 7px;
   padding: 0 4px 0 8px;

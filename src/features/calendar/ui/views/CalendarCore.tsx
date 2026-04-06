@@ -375,13 +375,17 @@ export function CalendarCore({
     if (!containerEl) return;
 
     const monthViewEl = containerEl.querySelector('.fc-dayGridMonth-view');
-    const monthBodyScroller = monthViewEl?.querySelector('.fc-scroller');
+    const monthScrollGrid = monthViewEl?.querySelector('.fc-scrollgrid');
+    const monthHeader = monthViewEl?.querySelector('.fc-col-header');
     const monthBody = monthViewEl?.querySelector('.fc-daygrid-body');
+    const monthBodyScroller =
+      monthBody instanceof HTMLElement ? monthBody.closest('.fc-scroller') : null;
     const weekRows = monthViewEl?.querySelectorAll('.fc-daygrid-body tbody tr');
 
     if (
-      !(monthBodyScroller instanceof HTMLElement) ||
+      !(monthViewEl instanceof HTMLElement) ||
       !(monthBody instanceof HTMLElement) ||
+      !(monthBodyScroller instanceof HTMLElement) ||
       !weekRows ||
       weekRows.length === 0
     ) {
@@ -389,15 +393,18 @@ export function CalendarCore({
     }
 
     const weekCount = weekRows.length;
-    const bodyHeight = monthBody.getBoundingClientRect().height;
-    if (bodyHeight <= 0) return;
+    const monthViewHeight = monthViewEl.getBoundingClientRect().height;
+    const scrollGridHeight =
+      monthScrollGrid instanceof HTMLElement ? monthScrollGrid.getBoundingClientRect().height : 0;
+    const headerHeight =
+      monthHeader instanceof HTMLElement ? monthHeader.getBoundingClientRect().height : 0;
+    const bodyViewportHeight = Math.max(monthViewHeight, scrollGridHeight) - headerHeight;
 
-    const measuredRowHeight = bodyHeight / weekCount;
+    if (bodyViewportHeight <= 0) return;
+
+    const rowHeight = Math.round((bodyViewportHeight / 4) * 100) / 100;
     const density: MonthDensity =
-      measuredRowHeight >= MONTH_MIN_ROW_HEIGHT.comfortable ? 'comfortable' : 'compact';
-
-    const minRowHeight = MONTH_MIN_ROW_HEIGHT[density];
-    const rowHeight = Math.max(minRowHeight, measuredRowHeight);
+      rowHeight >= MONTH_MIN_ROW_HEIGHT.comfortable ? 'comfortable' : 'compact';
 
     const scrollbarWidth = Math.max(
       monthBodyScroller.offsetWidth - monthBodyScroller.clientWidth,
@@ -740,6 +747,7 @@ export function CalendarCore({
   const calendarStyle = useMemo(() => {
     return {
       '--calendar-month-day-height': `${monthLayout.rowHeight}px`,
+      '--calendar-month-week-count': `${monthLayout.weekCount}`,
       '--calendar-scrollbar-width': `${monthLayout.scrollbarWidth}px`,
       '--calendar-time-slot-height': `${TIMEGRID_SLOT_HEIGHT}px`,
       '--calendar-timegrid-scrollbar-width': `${timeGridScrollbarWidth}px`,
@@ -750,6 +758,7 @@ export function CalendarCore({
     allDaySectionHeight,
     monthLayout.rowHeight,
     monthLayout.scrollbarWidth,
+    monthLayout.weekCount,
     timeGridScrollbarWidth,
   ]);
 
