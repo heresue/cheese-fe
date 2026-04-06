@@ -103,7 +103,8 @@ const DEFAULT_MONTH_LAYOUT: MonthLayoutState = {
 const MONTH_LAYOUT_EPSILON = 0.5;
 const TIMEGRID_SLOT_HEIGHT = 48;
 const TIMEGRID_SLOT_COUNT = 24;
-const ALL_DAY_CHIP_HEIGHT = 22;
+const CALENDAR_CHIP_STACK_HEIGHT = 22;
+const MONTH_CHIP_GAP = 8;
 const ALL_DAY_CHIP_GAP = 4;
 const ALL_DAY_SECTION_VERTICAL_PADDING = 8;
 const ALL_DAY_SECTION_MIN_ROWS = 1;
@@ -128,11 +129,11 @@ function getAllDayEventEndDate(event: Pick<CalendarEvent, 'start' | 'end'>) {
   return fallbackEnd ? startOfCalendarDay(fallbackEnd) : null;
 }
 
-function getVisibleChipStackHeight(rowCount: number) {
+function getVisibleChipStackHeight(rowCount: number, gap: number) {
   const visibleRows = Math.max(Math.ceil(rowCount), 1);
   const gapCount = Math.max(visibleRows - 1, 0);
 
-  return visibleRows * ALL_DAY_CHIP_HEIGHT + gapCount * ALL_DAY_CHIP_GAP;
+  return visibleRows * CALENDAR_CHIP_STACK_HEIGHT + gapCount * gap;
 }
 
 function getAllDaySectionHeight(rowCount: number) {
@@ -141,7 +142,9 @@ function getAllDaySectionHeight(rowCount: number) {
     ALL_DAY_SECTION_MAX_ROWS,
   );
 
-  return ALL_DAY_SECTION_VERTICAL_PADDING + getVisibleChipStackHeight(visibleRows);
+  return (
+    ALL_DAY_SECTION_VERTICAL_PADDING + getVisibleChipStackHeight(visibleRows, ALL_DAY_CHIP_GAP)
+  );
 }
 
 function countVisibleAllDayRows(events: CalendarEvent[], range: VisibleDateRange | null) {
@@ -256,6 +259,76 @@ function splitAllDayEventByDay(event: CalendarEvent, range: VisibleDateRange | n
   return renderedEvents;
 }
 
+function startOfCalendarHour(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), 0, 0, 0);
+}
+
+function getTimedEventEndDate(event: Pick<CalendarEvent, 'start' | 'end'>) {
+  const startDate = parseCalendarDate(event.start);
+  if (!startDate) return null;
+
+  const endDate = parseCalendarDate(event.end);
+  if (endDate && endDate > startDate) {
+    return endDate;
+  }
+
+  const fallbackEnd = parseCalendarDate(addHoursToCalendarDateTime(event.start, 1));
+  return fallbackEnd && fallbackEnd > startDate ? fallbackEnd : null;
+}
+
+function splitTimedEventByHour(event: CalendarEvent, range: VisibleDateRange | null) {
+  if (event.allDay) {
+    return [createCalendarEventInput(event)];
+  }
+
+  const startDate = parseCalendarDate(event.start);
+  const endDate = getTimedEventEndDate(event);
+
+  if (!startDate || !endDate) {
+    return [createCalendarEventInput(event)];
+  }
+
+  const visibleStart = range ? range.start : startDate;
+  const visibleEnd = range ? range.end : endDate;
+  const renderStart = startDate > visibleStart ? startDate : visibleStart;
+  const renderEnd = endDate < visibleEnd ? endDate : visibleEnd;
+
+  if (renderEnd <= renderStart) {
+    return [];
+  }
+
+  const renderedEvents: EventInput[] = [];
+
+  for (
+    let cursor = startOfCalendarHour(renderStart);
+    cursor < renderEnd;
+    cursor.setHours(cursor.getHours() + 1, 0, 0, 0)
+  ) {
+    const slotStart = new Date(cursor.getTime());
+    const slotEnd = new Date(cursor.getTime());
+    slotEnd.setHours(slotEnd.getHours() + 1, 0, 0, 0);
+
+    if (slotEnd <= renderStart) continue;
+
+    const slotKey = normalizeCalendarValue(slotStart, { seconds: false });
+    const normalizedStart = normalizeCalendarValue(slotStart);
+    const normalizedEnd = normalizeCalendarValue(slotEnd);
+
+    if (!slotKey || !normalizedStart || !normalizedEnd) continue;
+
+    renderedEvents.push(
+      createCalendarEventInput(event, {
+        id: `${event.id}__timed__${slotKey}`,
+        start: normalizedStart,
+        end: normalizedEnd,
+        allDay: false,
+      }),
+    );
+  }
+
+  return renderedEvents.length > 0 ? renderedEvents : [createCalendarEventInput(event)];
+}
+
 function getRenderedEventSource(event: EventApi) {
   const ext = event.extendedProps as CalendarRenderEventExtendedProps;
   const sourceAllDay = ext.sourceAllDay ?? event.allDay;
@@ -315,11 +388,17 @@ export function CalendarCore({
   const today = now;
 
   const fcEvents = useMemo<EventInput[]>(() => {
-    if (view === 'month') {
-      return events.flatMap((event) => splitAllDayEventByDay(event, visibleRange));
-    }
+    return events.flatMap((event) => {
+      if (event.allDay) {
+        return splitAllDayEventByDay(event, visibleRange);
+      }
 
-    return events.flatMap((event) => splitAllDayEventByDay(event, visibleRange));
+      if (view === 'month') {
+        return [createCalendarEventInput(event)];
+      }
+
+      return splitTimedEventByHour(event, visibleRange);
+    });
   }, [events, view, visibleRange]);
 
   const allDaySectionHeight = useMemo(() => {
@@ -749,10 +828,12 @@ export function CalendarCore({
       '--calendar-month-day-height': `${monthLayout.rowHeight}px`,
       '--calendar-month-week-count': `${monthLayout.weekCount}`,
       '--calendar-scrollbar-width': `${monthLayout.scrollbarWidth}px`,
+      '--calendar-month-chip-gap': `${MONTH_CHIP_GAP}px`,
+      '--calendar-allday-chip-gap': `${ALL_DAY_CHIP_GAP}px`,
       '--calendar-time-slot-height': `${TIMEGRID_SLOT_HEIGHT}px`,
       '--calendar-timegrid-scrollbar-width': `${timeGridScrollbarWidth}px`,
       '--calendar-allday-section-height': `${allDaySectionHeight}px`,
-      '--calendar-month-max-visible-events-height': `${getVisibleChipStackHeight(MONTH_MAX_VISIBLE_EVENT_ROWS)}px`,
+      '--calendar-month-max-visible-events-height': `${getVisibleChipStackHeight(MONTH_MAX_VISIBLE_EVENT_ROWS, MONTH_CHIP_GAP)}px`,
     } as CSSProperties;
   }, [
     allDaySectionHeight,

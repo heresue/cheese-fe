@@ -88,6 +88,47 @@ function getTimedSlotKey(value?: string) {
   return formatCalendarDateTime(value, { seconds: false });
 }
 
+function startOfCalendarHour(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), 0, 0, 0);
+}
+
+function getOccupiedTimedSlotKeys(startValue?: string, endValue?: string) {
+  const startDate = parseCalendarDate(startValue);
+  if (!startDate) return [];
+
+  const parsedEndDate = parseCalendarDate(endValue);
+  const fallbackEndDate = parseCalendarDate(addHoursToCalendarDateTime(startValue ?? '', 1));
+  const endDate =
+    parsedEndDate && parsedEndDate > startDate
+      ? parsedEndDate
+      : fallbackEndDate && fallbackEndDate > startDate
+        ? fallbackEndDate
+        : null;
+
+  if (!endDate) return [];
+
+  const slotKeys: string[] = [];
+
+  for (
+    let cursor = startOfCalendarHour(startDate);
+    cursor < endDate;
+    cursor.setHours(cursor.getHours() + 1, 0, 0, 0)
+  ) {
+    const slotStart = new Date(cursor.getTime());
+    const slotEnd = new Date(cursor.getTime());
+    slotEnd.setHours(slotEnd.getHours() + 1, 0, 0, 0);
+
+    if (slotEnd <= startDate) continue;
+
+    const slotKey = getTimedSlotKey(formatCalendarDateTime(slotStart));
+    if (!slotKey) continue;
+
+    slotKeys.push(slotKey);
+  }
+
+  return slotKeys;
+}
+
 function hasTimedSlotConflict(
   events: CalendarEvent[],
   draft: CalendarEventDraft,
@@ -95,14 +136,16 @@ function hasTimedSlotConflict(
 ) {
   if (draft.allDay) return false;
 
-  const slotKey = getTimedSlotKey(draft.start);
-  if (!slotKey) return false;
+  const occupiedSlotKeys = new Set(getOccupiedTimedSlotKeys(draft.start, draft.end));
+  if (occupiedSlotKeys.size === 0) return false;
 
   return events.some((event) => {
     if (event.id === excludeEventId) return false;
     if (event.allDay) return false;
 
-    return getTimedSlotKey(event.start) === slotKey;
+    return getOccupiedTimedSlotKeys(event.start, event.end).some((slotKey) => {
+      return occupiedSlotKeys.has(slotKey);
+    });
   });
 }
 

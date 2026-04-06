@@ -2,12 +2,13 @@
   --calendar-month-day-height: 142px;
   --calendar-month-week-count: 5;
   --calendar-month-chip-height: 18px;
-  --calendar-month-chip-gap: 4px;
+  --calendar-month-chip-gap: 8px;
+  --calendar-allday-chip-gap: 4px;
   --calendar-scrollbar-width: 0px;
   --calendar-time-slot-height: 48px;
   --calendar-timegrid-scrollbar-width: 0px;
   --calendar-allday-section-height: 24px;
-  --calendar-month-max-visible-events-height: 106px;
+  --calendar-month-max-visible-events-height: 142px;
   --calendar-accent-color: var(--color-secondary-500);
   --calendar-accent-strong: var(--color-secondary-700);
   --calendar-now-line-color: #eb5b49;
@@ -587,7 +588,7 @@
   display: grid;
   grid-auto-rows: min-content;
   align-content: start;
-  row-gap: var(--calendar-month-chip-gap);
+  row-gap: var(--calendar-allday-chip-gap);
   margin: 0 !important;
   min-height: 0 !important;
   height: 100%;
