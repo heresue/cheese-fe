@@ -1,30 +1,19 @@
 'use client';
 
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type CSSProperties,
-  type MouseEvent,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin, { type DateClickArg } from '@fullcalendar/interaction';
-import FullCalendar from '@fullcalendar/react';
-import timeGridPlugin from '@fullcalendar/timegrid';
-
 import type {
   CalendarApi,
   DateSelectArg,
   DatesSetArg,
   DayCellContentArg,
-  EventApi,
   EventClickArg,
   EventContentArg,
-  EventInput,
 } from '@fullcalendar/core';
+import interactionPlugin, { type DateClickArg } from '@fullcalendar/interaction';
+import FullCalendar from '@fullcalendar/react';
+import timeGridPlugin from '@fullcalendar/timegrid';
 
 import {
   addDaysToCalendarDate,
@@ -34,338 +23,40 @@ import {
   formatKoreanWeekday,
   isSameCalendarDate,
   normalizeCalendarValue,
-  parseCalendarDate,
 } from '../../lib/date';
-import { getEventColorTokens } from '../../model/constants';
-import type {
-  CalendarEvent,
-  CalendarEventDraft,
-  CalendarSlot,
-  CalendarView,
-} from '../../model/types';
+import type { CalendarEvent } from '../../model/types';
 import { MonthEventChip } from '../event/MonthEventChip';
+import { TimeGridEventChip } from '../event/TimeGridEventChip';
+import {
+  ALL_DAY_SECTION_HEIGHT,
+  DEFAULT_MONTH_LAYOUT,
+  VIEW_MAP,
+  getAllDaySectionHeight,
+} from './calendar-core.constants';
+import type {
+  CalendarCoreProps,
+  CalendarRenderEventExtendedProps,
+  VisibleDateRange,
+} from './calendar-core.types';
+import {
+  buildCalendarStyleVariables,
+  buildFullCalendarEvents,
+  countVisibleAllDayRows,
+  getRenderedEventSource,
+  isCalendarDateWithinRange,
+  isSameMonthLayout,
+  measureMonthLayout,
+  measureTimeGridScrollbarWidth,
+  resolveDateClickRect,
+} from './calendar-core.utils';
+import { CalendarTimeGridSlotOverlay } from './CalendarTimeGridSlotOverlay';
 import './calendar.css';
 
-type CalendarCoreProps = {
-  view: CalendarView;
-  events: CalendarEvent[];
-  selectedEventId?: string;
-  onTitleChange?: (title: string) => void;
-  onSelectSlot?: (slot: CalendarSlot) => void;
-  onClickEvent?: (payload: { event: Partial<CalendarEventDraft>; rect: DOMRect }) => void;
-  onDeleteEvent?: (eventId: string) => void;
-  onClickDateCell?: (payload: {
-    draft: CalendarEventDraft;
-    rect: DOMRect;
-    placement?: 'auto' | 'cell-center';
-  }) => void;
-};
-
-type MonthDensity = 'comfortable' | 'compact';
-
-type MonthLayoutState = {
-  density: MonthDensity;
-  rowHeight: number;
-  scrollbarWidth: number;
-  weekCount: number;
-};
-
-type VisibleDateRange = {
-  start: Date;
-  end: Date;
-};
-
-type CalendarRenderEventExtendedProps = Partial<CalendarEventDraft> & {
-  sourceEventId?: string;
-  sourceStart?: string;
-  sourceEnd?: string;
-  sourceAllDay?: boolean;
-};
-
-const VIEW_MAP: Record<CalendarView, string> = {
-  month: 'dayGridMonth',
-  week: 'timeGridWeek',
-  day: 'timeGridDay',
-};
-
-const MONTH_MIN_ROW_HEIGHT: Record<MonthDensity, number> = {
-  comfortable: 142,
-  compact: 120,
-};
-
-const DEFAULT_MONTH_LAYOUT: MonthLayoutState = {
-  density: 'comfortable',
-  rowHeight: MONTH_MIN_ROW_HEIGHT.comfortable,
-  scrollbarWidth: 0,
-  weekCount: 5,
-};
-
-const MONTH_LAYOUT_EPSILON = 0.5;
-const TIMEGRID_SLOT_HEIGHT = 48;
-const TIMEGRID_SLOT_COUNT = 24;
-const CALENDAR_CHIP_STACK_HEIGHT = 22;
-const MONTH_CHIP_GAP = 8;
-const ALL_DAY_CHIP_GAP = 4;
-const ALL_DAY_SECTION_VERTICAL_PADDING = 8;
-const ALL_DAY_SECTION_MIN_ROWS = 1;
-const ALL_DAY_SECTION_MAX_ROWS = 3;
-const MONTH_MAX_VISIBLE_EVENT_ROWS = 5;
-const ALL_DAY_SECTION_HEIGHT = getAllDaySectionHeight(ALL_DAY_SECTION_MIN_ROWS);
-
-function startOfCalendarDay(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
-function getAllDayEventEndDate(event: Pick<CalendarEvent, 'start' | 'end'>) {
-  const startDate = parseCalendarDate(event.start);
-  if (!startDate) return null;
-
-  const endDate = parseCalendarDate(event.end);
-  if (endDate && endDate > startDate) {
-    return startOfCalendarDay(endDate);
-  }
-
-  const fallbackEnd = parseCalendarDate(addDaysToCalendarDate(event.start, 1));
-  return fallbackEnd ? startOfCalendarDay(fallbackEnd) : null;
-}
-
-function getVisibleChipStackHeight(rowCount: number, gap: number) {
-  const visibleRows = Math.max(Math.ceil(rowCount), 1);
-  const gapCount = Math.max(visibleRows - 1, 0);
-
-  return visibleRows * CALENDAR_CHIP_STACK_HEIGHT + gapCount * gap;
-}
-
-function getAllDaySectionHeight(rowCount: number) {
-  const visibleRows = Math.min(
-    Math.max(rowCount, ALL_DAY_SECTION_MIN_ROWS),
-    ALL_DAY_SECTION_MAX_ROWS,
-  );
-
-  return (
-    ALL_DAY_SECTION_VERTICAL_PADDING + getVisibleChipStackHeight(visibleRows, ALL_DAY_CHIP_GAP)
-  );
-}
-
-function countVisibleAllDayRows(events: CalendarEvent[], range: VisibleDateRange | null) {
-  const counts = new Map<string, number>();
-  let maxRows = 0;
-
-  const visibleStart = range ? startOfCalendarDay(range.start) : null;
-  const visibleEnd = range ? startOfCalendarDay(range.end) : null;
-
-  events.forEach((event) => {
-    if (!event.allDay) return;
-
-    const startDate = parseCalendarDate(event.start);
-    const endDate = getAllDayEventEndDate(event);
-
-    if (!startDate || !endDate) return;
-
-    const eventStart = startOfCalendarDay(startDate);
-    const renderStart = visibleStart && eventStart < visibleStart ? visibleStart : eventStart;
-    const renderEnd = visibleEnd && endDate > visibleEnd ? visibleEnd : endDate;
-
-    if (renderEnd <= renderStart) return;
-
-    for (
-      let cursor = new Date(renderStart.getTime());
-      cursor < renderEnd;
-      cursor.setDate(cursor.getDate() + 1)
-    ) {
-      const dateKey = normalizeCalendarValue(cursor, { allDay: true });
-      if (!dateKey) continue;
-
-      const nextCount = (counts.get(dateKey) ?? 0) + 1;
-      counts.set(dateKey, nextCount);
-      maxRows = Math.max(maxRows, nextCount);
-    }
-  });
-
-  return Math.max(maxRows, ALL_DAY_SECTION_MIN_ROWS);
-}
-
-function createCalendarEventInput(
-  event: CalendarEvent,
-  overrides?: {
-    id?: string;
-    start?: string;
-    end?: string;
-    allDay?: boolean;
-  },
-): EventInput {
-  return {
-    id: overrides?.id ?? event.id,
-    title: event.title,
-    start: overrides?.start ?? event.start,
-    end: overrides?.end ?? event.end,
-    allDay: overrides?.allDay ?? event.allDay,
-    extendedProps: {
-      memo: event.memo,
-      spaceId: event.spaceId,
-      colorId: event.colorId,
-      reminderMinutes: event.reminderMinutes,
-      location: event.location,
-      sourceEventId: event.id,
-      sourceStart: event.start,
-      sourceEnd: event.end,
-      sourceAllDay: Boolean(event.allDay),
-    } satisfies CalendarRenderEventExtendedProps,
-  };
-}
-
-function splitAllDayEventByDay(event: CalendarEvent, range: VisibleDateRange | null) {
-  if (!event.allDay) {
-    return [createCalendarEventInput(event)];
-  }
-
-  const startDate = parseCalendarDate(event.start);
-  const endDate = getAllDayEventEndDate(event);
-
-  if (!startDate || !endDate) {
-    return [createCalendarEventInput(event)];
-  }
-
-  const visibleStart = range ? startOfCalendarDay(range.start) : startOfCalendarDay(startDate);
-  const visibleEnd = range ? startOfCalendarDay(range.end) : endDate;
-  const renderStart =
-    startOfCalendarDay(startDate) > visibleStart ? startOfCalendarDay(startDate) : visibleStart;
-  const renderEnd = endDate < visibleEnd ? endDate : visibleEnd;
-
-  if (renderEnd <= renderStart) {
-    return [];
-  }
-
-  const renderedEvents: EventInput[] = [];
-
-  for (
-    let cursor = new Date(renderStart.getTime());
-    cursor < renderEnd;
-    cursor.setDate(cursor.getDate() + 1)
-  ) {
-    const dateKey = normalizeCalendarValue(cursor, { allDay: true });
-    if (!dateKey) continue;
-
-    renderedEvents.push(
-      createCalendarEventInput(event, {
-        id: `${event.id}__allday__${dateKey}`,
-        start: dateKey,
-        end: addDaysToCalendarDate(dateKey, 1),
-        allDay: true,
-      }),
-    );
-  }
-
-  return renderedEvents;
-}
-
-function startOfCalendarHour(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), 0, 0, 0);
-}
-
-function getTimedEventEndDate(event: Pick<CalendarEvent, 'start' | 'end'>) {
-  const startDate = parseCalendarDate(event.start);
-  if (!startDate) return null;
-
-  const endDate = parseCalendarDate(event.end);
-  if (endDate && endDate > startDate) {
-    return endDate;
-  }
-
-  const fallbackEnd = parseCalendarDate(addHoursToCalendarDateTime(event.start, 1));
-  return fallbackEnd && fallbackEnd > startDate ? fallbackEnd : null;
-}
-
-function splitTimedEventByHour(event: CalendarEvent, range: VisibleDateRange | null) {
-  if (event.allDay) {
-    return [createCalendarEventInput(event)];
-  }
-
-  const startDate = parseCalendarDate(event.start);
-  const endDate = getTimedEventEndDate(event);
-
-  if (!startDate || !endDate) {
-    return [createCalendarEventInput(event)];
-  }
-
-  const visibleStart = range ? range.start : startDate;
-  const visibleEnd = range ? range.end : endDate;
-  const renderStart = startDate > visibleStart ? startDate : visibleStart;
-  const renderEnd = endDate < visibleEnd ? endDate : visibleEnd;
-
-  if (renderEnd <= renderStart) {
-    return [];
-  }
-
-  const renderedEvents: EventInput[] = [];
-
-  for (
-    let cursor = startOfCalendarHour(renderStart);
-    cursor < renderEnd;
-    cursor.setHours(cursor.getHours() + 1, 0, 0, 0)
-  ) {
-    const slotStart = new Date(cursor.getTime());
-    const slotEnd = new Date(cursor.getTime());
-    slotEnd.setHours(slotEnd.getHours() + 1, 0, 0, 0);
-
-    if (slotEnd <= renderStart) continue;
-
-    const slotKey = normalizeCalendarValue(slotStart, { seconds: false });
-    const normalizedStart = normalizeCalendarValue(slotStart);
-    const normalizedEnd = normalizeCalendarValue(slotEnd);
-
-    if (!slotKey || !normalizedStart || !normalizedEnd) continue;
-
-    renderedEvents.push(
-      createCalendarEventInput(event, {
-        id: `${event.id}__timed__${slotKey}`,
-        start: normalizedStart,
-        end: normalizedEnd,
-        allDay: false,
-      }),
-    );
-  }
-
-  return renderedEvents.length > 0 ? renderedEvents : [createCalendarEventInput(event)];
-}
-
-function getRenderedEventSource(event: EventApi) {
-  const ext = event.extendedProps as CalendarRenderEventExtendedProps;
-  const sourceAllDay = ext.sourceAllDay ?? event.allDay;
-
-  return {
-    sourceId: ext.sourceEventId ?? event.id,
-    sourceStart: ext.sourceStart ?? normalizeCalendarValue(event.start, { allDay: sourceAllDay }),
-    sourceEnd:
-      ext.sourceEnd ?? normalizeCalendarValue(event.end ?? event.start, { allDay: sourceAllDay }),
-    sourceAllDay,
-  };
-}
-
-function resolveDateClickRect(arg: DateClickArg) {
-  const target = arg.jsEvent.target as HTMLElement | null;
-
-  if (target) {
-    const slotLane = target.closest('.fc-timegrid-slot-lane');
-    if (slotLane instanceof HTMLElement) {
-      return slotLane.getBoundingClientRect();
-    }
-
-    const tableCell = target.closest('td');
-    if (tableCell instanceof HTMLElement) {
-      return tableCell.getBoundingClientRect();
-    }
-  }
-
-  return arg.dayEl.getBoundingClientRect();
-}
-
-function isCalendarDateWithinRange(date: Date, start: Date, end: Date) {
-  const time = date.getTime();
-
-  return time >= start.getTime() && time < end.getTime();
-}
-
+/**
+ * CalendarCore
+ * - FullCalendar와 프로젝트 UI를 연결하는 실제 캘린더 렌더링 레이어
+ * - 화면별 이벤트 변환, 날짜/이벤트 클릭 처리, DOM 기반 레이아웃 보정을 담당한다.
+ */
 export function CalendarCore({
   view,
   events,
@@ -376,31 +67,25 @@ export function CalendarCore({
   onDeleteEvent,
   onClickDateCell,
 }: CalendarCoreProps) {
+  // FullCalendar API와 DOM 측정에 필요한 레퍼런스
   const containerRef = useRef<HTMLDivElement | null>(null);
   const calendarRef = useRef<FullCalendar | null>(null);
   const rafRef = useRef<number | null>(null);
   const viewSyncRafRef = useRef<number | null>(null);
 
+  // 화면 표시용 상태
   const [now, setNow] = useState(() => new Date());
-  const [monthLayout, setMonthLayout] = useState<MonthLayoutState>(DEFAULT_MONTH_LAYOUT);
+  const [monthLayout, setMonthLayout] = useState(DEFAULT_MONTH_LAYOUT);
   const [timeGridScrollbarWidth, setTimeGridScrollbarWidth] = useState(0);
   const [visibleRange, setVisibleRange] = useState<VisibleDateRange | null>(null);
   const today = now;
 
-  const fcEvents = useMemo<EventInput[]>(() => {
-    return events.flatMap((event) => {
-      if (event.allDay) {
-        return splitAllDayEventByDay(event, visibleRange);
-      }
-
-      if (view === 'month') {
-        return [createCalendarEventInput(event)];
-      }
-
-      return splitTimedEventByHour(event, visibleRange);
-    });
+  // FullCalendar에 전달할 이벤트 배열을 현재 뷰 기준으로 변환한다.
+  const fcEvents = useMemo(() => {
+    return buildFullCalendarEvents(events, view, visibleRange);
   }, [events, view, visibleRange]);
 
+  // 주간/일간의 종일 영역 높이는 실제 보이는 일정 개수에 따라 달라진다.
   const allDaySectionHeight = useMemo(() => {
     if (view === 'month') {
       return ALL_DAY_SECTION_HEIGHT;
@@ -411,8 +96,13 @@ export function CalendarCore({
 
   const initialView = VIEW_MAP[view];
 
-  const getApi = () => calendarRef.current?.getApi();
+  const getApi = useCallback(() => {
+    return calendarRef.current?.getApi();
+  }, []);
 
+  /**
+   * React state의 view와 FullCalendar 내부 view를 맞춘다.
+   */
   const syncView = useCallback(
     (api: CalendarApi) => {
       const nextView = VIEW_MAP[view];
@@ -433,19 +123,16 @@ export function CalendarCore({
         latestApi.changeView(nextView);
       });
     },
-    [view],
+    [getApi, view],
   );
 
+  /**
+   * 월간 화면의 행 높이, 스크롤바 너비 등을 측정해 CSS 변수로 반영한다.
+   */
   const syncMonthLayout = useCallback(() => {
     if (view !== 'month') {
       setMonthLayout((prev) => {
-        const isSameAsDefault =
-          prev.density === DEFAULT_MONTH_LAYOUT.density &&
-          Math.abs(prev.rowHeight - DEFAULT_MONTH_LAYOUT.rowHeight) < MONTH_LAYOUT_EPSILON &&
-          prev.scrollbarWidth === DEFAULT_MONTH_LAYOUT.scrollbarWidth &&
-          prev.weekCount === DEFAULT_MONTH_LAYOUT.weekCount;
-
-        return isSameAsDefault ? prev : DEFAULT_MONTH_LAYOUT;
+        return isSameMonthLayout(prev, DEFAULT_MONTH_LAYOUT) ? prev : DEFAULT_MONTH_LAYOUT;
       });
       return;
     }
@@ -453,62 +140,17 @@ export function CalendarCore({
     const containerEl = containerRef.current;
     if (!containerEl) return;
 
-    const monthViewEl = containerEl.querySelector('.fc-dayGridMonth-view');
-    const monthScrollGrid = monthViewEl?.querySelector('.fc-scrollgrid');
-    const monthHeader = monthViewEl?.querySelector('.fc-col-header');
-    const monthBody = monthViewEl?.querySelector('.fc-daygrid-body');
-    const monthBodyScroller =
-      monthBody instanceof HTMLElement ? monthBody.closest('.fc-scroller') : null;
-    const weekRows = monthViewEl?.querySelectorAll('.fc-daygrid-body tbody tr');
-
-    if (
-      !(monthViewEl instanceof HTMLElement) ||
-      !(monthBody instanceof HTMLElement) ||
-      !(monthBodyScroller instanceof HTMLElement) ||
-      !weekRows ||
-      weekRows.length === 0
-    ) {
-      return;
-    }
-
-    const weekCount = weekRows.length;
-    const monthViewHeight = monthViewEl.getBoundingClientRect().height;
-    const scrollGridHeight =
-      monthScrollGrid instanceof HTMLElement ? monthScrollGrid.getBoundingClientRect().height : 0;
-    const headerHeight =
-      monthHeader instanceof HTMLElement ? monthHeader.getBoundingClientRect().height : 0;
-    const bodyViewportHeight = Math.max(monthViewHeight, scrollGridHeight) - headerHeight;
-
-    if (bodyViewportHeight <= 0) return;
-
-    const rowHeight = Math.round((bodyViewportHeight / 4) * 100) / 100;
-    const density: MonthDensity =
-      rowHeight >= MONTH_MIN_ROW_HEIGHT.comfortable ? 'comfortable' : 'compact';
-
-    const scrollbarWidth = Math.max(
-      monthBodyScroller.offsetWidth - monthBodyScroller.clientWidth,
-      0,
-    );
+    const nextLayout = measureMonthLayout(containerEl);
+    if (!nextLayout) return;
 
     setMonthLayout((prev) => {
-      const next: MonthLayoutState = {
-        density,
-        rowHeight,
-        scrollbarWidth,
-        weekCount,
-      };
-
-      const hasSameDensity = prev.density === next.density;
-      const hasSameRowHeight = Math.abs(prev.rowHeight - next.rowHeight) < MONTH_LAYOUT_EPSILON;
-      const hasSameScrollbarWidth = prev.scrollbarWidth === next.scrollbarWidth;
-      const hasSameWeekCount = prev.weekCount === next.weekCount;
-
-      return hasSameDensity && hasSameRowHeight && hasSameScrollbarWidth && hasSameWeekCount
-        ? prev
-        : next;
+      return isSameMonthLayout(prev, nextLayout) ? prev : nextLayout;
     });
   }, [view]);
 
+  /**
+   * 주간/일간 화면에서 스크롤바 너비를 읽어 헤더와 본문 정렬이 어긋나지 않게 맞춘다.
+   */
   const syncTimeGridLayout = useCallback(() => {
     if (view === 'month') {
       setTimeGridScrollbarWidth((prev) => (prev === 0 ? prev : 0));
@@ -518,20 +160,15 @@ export function CalendarCore({
     const containerEl = containerRef.current;
     if (!containerEl) return;
 
-    const timeGridViewEl = containerEl.querySelector(
-      view === 'week' ? '.fc-timeGridWeek-view' : '.fc-timeGridDay-view',
-    );
-    const timeGridBody = timeGridViewEl?.querySelector('.fc-timegrid-body');
-    const bodyScroller =
-      timeGridBody instanceof HTMLElement ? timeGridBody.closest('.fc-scroller') : null;
-
-    if (!(bodyScroller instanceof HTMLElement)) return;
-
-    const scrollbarWidth = Math.max(bodyScroller.offsetWidth - bodyScroller.clientWidth, 0);
+    const scrollbarWidth = measureTimeGridScrollbarWidth(containerEl, view);
+    if (scrollbarWidth === null) return;
 
     setTimeGridScrollbarWidth((prev) => (prev === scrollbarWidth ? prev : scrollbarWidth));
   }, [view]);
 
+  /**
+   * DOM reflow가 잦은 구간은 requestAnimationFrame으로 묶어서 한 프레임 뒤에 측정한다.
+   */
   const scheduleLayoutSync = useCallback(() => {
     if (rafRef.current !== null) {
       cancelAnimationFrame(rafRef.current);
@@ -544,58 +181,76 @@ export function CalendarCore({
     });
   }, [syncMonthLayout, syncTimeGridLayout]);
 
-  const handleSelect = (arg: DateSelectArg) => {
-    onSelectSlot?.({
-      start: arg.startStr,
-      end: arg.endStr,
-      allDay: arg.allDay,
-    });
+  const handleSelect = useCallback(
+    (arg: DateSelectArg) => {
+      onSelectSlot?.({
+        start: arg.startStr,
+        end: arg.endStr,
+        allDay: arg.allDay,
+      });
 
-    arg.view.calendar.unselect();
-  };
+      arg.view.calendar.unselect();
+    },
+    [onSelectSlot],
+  );
 
-  const handleEventClick = (arg: EventClickArg) => {
-    const clickTarget = arg.jsEvent.target as HTMLElement | null;
-    if (clickTarget?.closest('[data-calendar-event-delete]')) return;
+  /**
+   * 렌더링용으로 분해된 이벤트를 눌러도, 외부에는 항상 원본 일정 정보를 전달한다.
+   */
+  const handleEventClick = useCallback(
+    (arg: EventClickArg) => {
+      const clickTarget = arg.jsEvent.target as HTMLElement | null;
+      if (clickTarget?.closest('[data-calendar-event-delete]')) return;
 
-    const ext = arg.event.extendedProps as CalendarRenderEventExtendedProps;
-    const sourceEvent = getRenderedEventSource(arg.event);
+      const ext = arg.event.extendedProps as CalendarRenderEventExtendedProps;
+      const sourceEvent = getRenderedEventSource(arg.event);
 
-    onClickEvent?.({
-      rect: arg.el.getBoundingClientRect(),
-      event: {
-        id: sourceEvent.sourceId,
-        title: arg.event.title ?? '',
-        start: sourceEvent.sourceStart,
-        end: sourceEvent.sourceEnd,
-        allDay: sourceEvent.sourceAllDay,
-        memo: ext.memo,
-        spaceId: ext.spaceId,
-        colorId: ext.colorId,
-        reminderMinutes: ext.reminderMinutes,
-        location: ext.location,
-      },
-    });
-  };
+      onClickEvent?.({
+        rect: arg.el.getBoundingClientRect(),
+        event: {
+          id: sourceEvent.sourceId,
+          title: arg.event.title ?? '',
+          start: sourceEvent.sourceStart,
+          end: sourceEvent.sourceEnd,
+          allDay: sourceEvent.sourceAllDay,
+          memo: ext.memo,
+          spaceId: ext.spaceId,
+          colorId: ext.colorId,
+          reminderMinutes: ext.reminderMinutes,
+          location: ext.location,
+        },
+      });
+    },
+    [onClickEvent],
+  );
 
-  const handleDateClick = (arg: DateClickArg) => {
-    const rect = resolveDateClickRect(arg);
-    const dateKey = normalizeCalendarValue(arg.date, { allDay: true });
+  /**
+   * 월간/종일 영역 날짜 클릭은 종일 draft 생성으로 연결한다.
+   */
+  const handleDateClick = useCallback(
+    (arg: DateClickArg) => {
+      const rect = resolveDateClickRect(arg);
+      const dateKey = normalizeCalendarValue(arg.date, { allDay: true });
 
-    if (!dateKey) return;
-    if (view !== 'month' && !arg.allDay) return;
+      if (!dateKey) return;
+      if (view !== 'month' && !arg.allDay) return;
 
-    onClickDateCell?.({
-      rect,
-      draft: {
-        title: '',
-        start: dateKey,
-        end: addDaysToCalendarDate(dateKey, 1),
-        allDay: true,
-      },
-    });
-  };
+      onClickDateCell?.({
+        rect,
+        draft: {
+          title: '',
+          start: dateKey,
+          end: addDaysToCalendarDate(dateKey, 1),
+          allDay: true,
+        },
+      });
+    },
+    [onClickDateCell, view],
+  );
 
+  /**
+   * 시간 셀 오버레이 클릭은 1시간짜리 시간형 draft 생성으로 연결한다.
+   */
   const openTimedSlotPopover = useCallback(
     (date: Date, slotEl: HTMLElement) => {
       const start = normalizeCalendarValue(date);
@@ -617,188 +272,136 @@ export function CalendarCore({
 
   const renderTimeGridSlotOverlay = useCallback(
     (arg: DayCellContentArg) => {
-      const baseDate = new Date(arg.date.getFullYear(), arg.date.getMonth(), arg.date.getDate());
-      return (
-        <div className="calendar-timegrid-slot-overlay">
-          <div className="calendar-timegrid-slot-overlay__grid">
-            {Array.from({ length: TIMEGRID_SLOT_COUNT }, (_, hour) => {
-              const slotDate = new Date(
-                baseDate.getFullYear(),
-                baseDate.getMonth(),
-                baseDate.getDate(),
-                hour,
-                0,
-                0,
-                0,
-              );
-
-              return (
-                <button
-                  key={`${arg.date.toISOString()}-${hour}`}
-                  type="button"
-                  tabIndex={-1}
-                  className="calendar-timegrid-slot-overlay__button"
-                  aria-label={`${formatKoreanWeekday(baseDate)} ${baseDate.getDate()}일 ${formatEnglishHourLabel(
-                    slotDate,
-                  )}`}
-                  onClick={(event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    openTimedSlotPopover(slotDate, event.currentTarget);
-                  }}
-                />
-              );
-            })}
-          </div>
-        </div>
-      );
+      return <CalendarTimeGridSlotOverlay date={arg.date} onClickSlot={openTimedSlotPopover} />;
     },
     [openTimedSlotPopover],
   );
 
-  const handleDatesSet = (arg: DatesSetArg) => {
-    const focusedDate = arg.view.calendar.getDate();
+  const handleDatesSet = useCallback(
+    (arg: DatesSetArg) => {
+      const focusedDate = arg.view.calendar.getDate();
 
-    setVisibleRange({
-      start: new Date(arg.start.getTime()),
-      end: new Date(arg.end.getTime()),
-    });
+      setVisibleRange({
+        start: new Date(arg.start.getTime()),
+        end: new Date(arg.end.getTime()),
+      });
 
-    onTitleChange?.(formatCalendarTitle(focusedDate));
+      onTitleChange?.(formatCalendarTitle(focusedDate));
 
-    window.dispatchEvent(
-      new CustomEvent('calendar:focus-date', {
-        detail: {
-          date: focusedDate.toISOString(),
-        },
-      }),
-    );
+      window.dispatchEvent(
+        new CustomEvent('calendar:focus-date', {
+          detail: {
+            date: focusedDate.toISOString(),
+          },
+        }),
+      );
 
-    scheduleLayoutSync();
-  };
+      scheduleLayoutSync();
+    },
+    [onTitleChange, scheduleLayoutSync],
+  );
 
-  const renderMonthDayContent = (date: Date) => {
-    const viewDate = getApi()?.getDate() ?? today;
-    const isVisibleMonth =
-      date.getFullYear() === viewDate.getFullYear() && date.getMonth() === viewDate.getMonth();
-    const isActive = isVisibleMonth && isSameCalendarDate(date, today);
+  const renderMonthDayContent = useCallback(
+    (date: Date) => {
+      const viewDate = getApi()?.getDate() ?? today;
+      const isVisibleMonth =
+        date.getFullYear() === viewDate.getFullYear() && date.getMonth() === viewDate.getMonth();
+      const isActive = isVisibleMonth && isSameCalendarDate(date, today);
 
-    return (
-      <span
-        className={
-          isActive
-            ? 'calendar-month-day-number calendar-month-day-number--active'
-            : 'calendar-month-day-number'
-        }
-      >
-        {date.getDate()}
-      </span>
-    );
-  };
-
-  const renderMonthEventContent = (arg: EventContentArg) => {
-    const ext = arg.event.extendedProps as CalendarRenderEventExtendedProps;
-    const sourceEvent = getRenderedEventSource(arg.event);
-
-    const monthEvent: CalendarEvent = {
-      id: sourceEvent.sourceId,
-      title: arg.event.title,
-      start: sourceEvent.sourceStart,
-      end: sourceEvent.sourceEnd,
-      allDay: sourceEvent.sourceAllDay,
-      memo: ext.memo,
-      spaceId: ext.spaceId,
-      colorId: ext.colorId,
-      reminderMinutes: ext.reminderMinutes,
-      location: ext.location,
-    };
-
-    return (
-      <MonthEventChip
-        event={monthEvent}
-        onDelete={
-          onDeleteEvent
-            ? () => {
-                onDeleteEvent(sourceEvent.sourceId);
-              }
-            : undefined
-        }
-      />
-    );
-  };
-
-  const renderTimeGridEventContent = (arg: EventContentArg) => {
-    const ext = arg.event.extendedProps as CalendarRenderEventExtendedProps;
-    const sourceEvent = getRenderedEventSource(arg.event);
-    const color = getEventColorTokens(ext.colorId);
-
-    const handleDelete = (event: MouseEvent<HTMLButtonElement>) => {
-      event.preventDefault();
-      event.stopPropagation();
-      onDeleteEvent?.(sourceEvent.sourceId);
-    };
-
-    return (
-      <div
-        className="calendar-event-chip calendar-event-chip--timegrid"
-        style={
-          {
-            '--calendar-event-bg-default': color.defaultBg,
-            '--calendar-event-bg-hover': color.hoverBg,
-            '--calendar-event-bg-selected': color.selectedBg,
-            '--calendar-event-text-default': color.defaultText,
-            '--calendar-event-text-selected': color.selectedText,
-            '--calendar-event-border-default': color.defaultBorder,
-            '--calendar-event-border-hover': color.hoverBorder,
-            '--calendar-event-border-selected': color.selectedBorder,
-          } as CSSProperties
-        }
-      >
-        <span className="calendar-event-chip__title">{arg.event.title}</span>
-
-        <button
-          type="button"
-          data-calendar-event-delete
-          onMouseDown={handleDelete}
-          onClick={handleDelete}
-          className="calendar-event-chip__delete"
-          aria-label="일정 삭제"
-        >
-          <svg viewBox="0 0 20 20" fill="none" className="calendar-event-chip__delete-icon">
-            <path
-              d="M6 6L14 14M14 6L6 14"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-            />
-          </svg>
-        </button>
-      </div>
-    );
-  };
-
-  const renderTimeGridHeader = (date: Date) => {
-    const isActive = isSameCalendarDate(date, today);
-
-    return (
-      <div className="calendar-timegrid-header-label">
-        <span className="calendar-timegrid-header-label__weekday">{formatKoreanWeekday(date)}</span>
+      return (
         <span
           className={
             isActive
-              ? 'calendar-timegrid-header-label__date calendar-timegrid-header-label__date--active'
-              : 'calendar-timegrid-header-label__date'
+              ? 'calendar-month-day-number calendar-month-day-number--active'
+              : 'calendar-month-day-number'
           }
         >
           {date.getDate()}
         </span>
-      </div>
-    );
-  };
+      );
+    },
+    [getApi, today],
+  );
 
-  const renderMonthHeader = (date: Date) => {
+  const renderMonthEventContent = useCallback(
+    (arg: EventContentArg) => {
+      const ext = arg.event.extendedProps as CalendarRenderEventExtendedProps;
+      const sourceEvent = getRenderedEventSource(arg.event);
+
+      const monthEvent: CalendarEvent = {
+        id: sourceEvent.sourceId,
+        title: arg.event.title,
+        start: sourceEvent.sourceStart,
+        end: sourceEvent.sourceEnd,
+        allDay: sourceEvent.sourceAllDay,
+        memo: ext.memo,
+        spaceId: ext.spaceId,
+        colorId: ext.colorId,
+        reminderMinutes: ext.reminderMinutes,
+        location: ext.location,
+      };
+
+      return (
+        <MonthEventChip
+          event={monthEvent}
+          onDelete={
+            onDeleteEvent
+              ? () => {
+                  onDeleteEvent(sourceEvent.sourceId);
+                }
+              : undefined
+          }
+        />
+      );
+    },
+    [onDeleteEvent],
+  );
+
+  const renderTimeGridEventContent = useCallback(
+    (arg: EventContentArg) => {
+      const ext = arg.event.extendedProps as CalendarRenderEventExtendedProps;
+      const sourceEvent = getRenderedEventSource(arg.event);
+
+      return (
+        <TimeGridEventChip
+          title={arg.event.title}
+          colorId={ext.colorId}
+          onDelete={() => {
+            onDeleteEvent?.(sourceEvent.sourceId);
+          }}
+        />
+      );
+    },
+    [onDeleteEvent],
+  );
+
+  const renderTimeGridHeader = useCallback(
+    (date: Date) => {
+      const isActive = isSameCalendarDate(date, today);
+
+      return (
+        <div className="calendar-timegrid-header-label">
+          <span className="calendar-timegrid-header-label__weekday">
+            {formatKoreanWeekday(date)}
+          </span>
+          <span
+            className={
+              isActive
+                ? 'calendar-timegrid-header-label__date calendar-timegrid-header-label__date--active'
+                : 'calendar-timegrid-header-label__date'
+            }
+          >
+            {date.getDate()}
+          </span>
+        </div>
+      );
+    },
+    [today],
+  );
+
+  const renderMonthHeader = useCallback((date: Date) => {
     return <span className="calendar-month-header-label">{formatKoreanWeekday(date)}</span>;
-  };
+  }, []);
 
   const handleAllDayDidMount = useCallback((arg: { el: HTMLElement }) => {
     arg.el.setAttribute('data-calendar-all-day-axis', 'true');
@@ -824,25 +427,14 @@ export function CalendarCore({
   );
 
   const calendarStyle = useMemo(() => {
-    return {
-      '--calendar-month-day-height': `${monthLayout.rowHeight}px`,
-      '--calendar-month-week-count': `${monthLayout.weekCount}`,
-      '--calendar-scrollbar-width': `${monthLayout.scrollbarWidth}px`,
-      '--calendar-month-chip-gap': `${MONTH_CHIP_GAP}px`,
-      '--calendar-allday-chip-gap': `${ALL_DAY_CHIP_GAP}px`,
-      '--calendar-time-slot-height': `${TIMEGRID_SLOT_HEIGHT}px`,
-      '--calendar-timegrid-scrollbar-width': `${timeGridScrollbarWidth}px`,
-      '--calendar-allday-section-height': `${allDaySectionHeight}px`,
-      '--calendar-month-max-visible-events-height': `${getVisibleChipStackHeight(MONTH_MAX_VISIBLE_EVENT_ROWS, MONTH_CHIP_GAP)}px`,
-    } as CSSProperties;
-  }, [
-    allDaySectionHeight,
-    monthLayout.rowHeight,
-    monthLayout.scrollbarWidth,
-    monthLayout.weekCount,
-    timeGridScrollbarWidth,
-  ]);
+    return buildCalendarStyleVariables({
+      monthLayout,
+      allDaySectionHeight,
+      timeGridScrollbarWidth,
+    });
+  }, [allDaySectionHeight, monthLayout, timeGridScrollbarWidth]);
 
+  // 현재 시각 강조선과 시간 라벨을 갱신하기 위한 주기적 업데이트
   useEffect(() => {
     const interval = window.setInterval(() => {
       setNow(new Date());
@@ -853,6 +445,7 @@ export function CalendarCore({
     };
   }, []);
 
+  // 상단 툴바에서 보내는 이동 이벤트를 FullCalendar API에 연결한다.
   useEffect(() => {
     const api = getApi();
     if (!api) return;
@@ -870,14 +463,14 @@ export function CalendarCore({
       window.removeEventListener('calendar:prev', handlePrev);
       window.removeEventListener('calendar:next', handleNext);
     };
-  }, []);
+  }, [getApi]);
 
   useEffect(() => {
     const api = getApi();
     if (!api) return;
 
     syncView(api);
-  }, [syncView]);
+  }, [getApi, syncView]);
 
   useEffect(() => {
     const api = getApi();
@@ -885,7 +478,7 @@ export function CalendarCore({
 
     onTitleChange?.(formatCalendarTitle(api.getDate()));
     scheduleLayoutSync();
-  }, [onTitleChange, scheduleLayoutSync, view]);
+  }, [getApi, onTitleChange, scheduleLayoutSync, view]);
 
   useEffect(() => {
     if (!containerRef.current) return;
