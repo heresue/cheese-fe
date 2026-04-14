@@ -12,6 +12,13 @@ import {
   toDateInputValue,
   toTimeInputValue,
 } from '../../lib/date';
+import {
+  CalendarLineIcon,
+  ChevronDownIcon,
+  ClockLineIcon,
+  LinkLineIcon,
+  LocationLineIcon,
+} from '../../assets/icons';
 import { DEFAULT_EVENT_COLOR } from '../../model/constants';
 import type { CalendarEventDraft, EventColorId, ReminderMinutes } from '../../model/types';
 
@@ -64,85 +71,6 @@ function FieldIcon({ children }: { children: React.ReactNode }) {
     <span className="flex h-4 w-4 shrink-0 items-center justify-center text-[#C1C7CF]">
       {children}
     </span>
-  );
-}
-
-function ClockLineIcon() {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4">
-      <circle cx="10" cy="10" r="6.25" stroke="currentColor" strokeWidth="1.4" />
-      <path
-        d="M10 6.75V10L12.25 11.5"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function CalendarLineIcon() {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4">
-      <rect
-        x="3.75"
-        y="5.25"
-        width="12.5"
-        height="11"
-        rx="1.75"
-        stroke="currentColor"
-        strokeWidth="1.4"
-      />
-      <path d="M3.75 8.5H16.25" stroke="currentColor" strokeWidth="1.4" />
-      <path
-        d="M7 3.75V6.25M13 3.75V6.25"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function LocationLineIcon() {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4">
-      <path
-        d="M10 16.25C12.9167 13.1667 14.5 10.875 14.5 8.75C14.5 6.26472 12.4853 4.25 10 4.25C7.51472 4.25 5.5 6.26472 5.5 8.75C5.5 10.875 7.08333 13.1667 10 16.25Z"
-        stroke="currentColor"
-        strokeWidth="1.4"
-      />
-      <circle cx="10" cy="8.75" r="1.5" stroke="currentColor" strokeWidth="1.4" />
-    </svg>
-  );
-}
-
-function LinkLineIcon() {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4">
-      <path
-        d="M8.25 10.75L11.75 7.25M7.25 7.75H6.75C5.50736 7.75 4.5 8.75736 4.5 10V12.25C4.5 13.4926 5.50736 14.5 6.75 14.5H9C10.2426 14.5 11.25 13.4926 11.25 12.25V11.75M12.25 8.25H12.75C13.9926 8.25 15 7.24264 15 6V5.75C15 4.50736 13.9926 3.5 12.75 3.5H10.5C9.25736 3.5 8.25 4.50736 8.25 5.75V6.25"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function ChevronDownIcon() {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4">
-      <path
-        d="M6 8L10 12L14 8"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }
 

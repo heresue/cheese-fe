@@ -33,6 +33,7 @@ const CREATE_POPOVER_WIDTH = 320;
 const CREATE_POPOVER_HEIGHT = 455;
 const CREATE_POPOVER_GAP = 8;
 const VIEWPORT_PADDING = 12;
+const CELL_CENTER_BOTTOM_OFFSET = 12;
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -81,7 +82,8 @@ export function getPopoverPosition(
   if (options?.placement === 'cell-center') {
     const centeredX = rect.left + rect.width / 2 - CREATE_POPOVER_WIDTH / 2;
     const hasSpaceAbove = rect.top - CREATE_POPOVER_HEIGHT - CREATE_POPOVER_GAP >= minY;
-    const hasSpaceBelow = rect.bottom + CREATE_POPOVER_HEIGHT + CREATE_POPOVER_GAP <= maxY + 12;
+    const hasSpaceBelow =
+      rect.bottom + CREATE_POPOVER_HEIGHT + CREATE_POPOVER_GAP <= maxY + CELL_CENTER_BOTTOM_OFFSET;
     const anchoredY =
       hasSpaceAbove || !hasSpaceBelow
         ? rect.top - CREATE_POPOVER_HEIGHT - CREATE_POPOVER_GAP

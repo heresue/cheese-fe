@@ -2,6 +2,7 @@
 
 import type { CSSProperties, MouseEvent } from 'react';
 
+import { DeleteIcon } from '../../assets/icons';
 import { getEventColorTokens } from '../../model/constants';
 import type { CalendarEvent } from '../../model/types';
 
@@ -45,14 +46,7 @@ export function MonthEventChip({ event, onDelete }: Props) {
         className="calendar-event-chip__delete"
         aria-label="일정 삭제"
       >
-        <svg viewBox="0 0 20 20" fill="none" className="calendar-event-chip__delete-icon">
-          <path
-            d="M6 6L14 14M14 6L6 14"
-            stroke="currentColor"
-            strokeWidth="4"
-            strokeLinecap="round"
-          />
-        </svg>
+        <DeleteIcon className="calendar-event-chip__delete-icon" />
       </button>
     </div>
   );
