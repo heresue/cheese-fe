@@ -51,7 +51,12 @@ export function TimeGridEventChip({ title, colorId, onDelete }: Props) {
         className="calendar-event-chip__delete"
         aria-label="일정 삭제"
       >
-        <DeleteIcon className="calendar-event-chip__delete-icon" strokeWidth={1.6} />
+        <DeleteIcon
+          width={11}
+          height={11}
+          className="calendar-event-chip__delete-icon"
+          strokeWidth={1.6}
+        />
       </button>
     </div>
   );

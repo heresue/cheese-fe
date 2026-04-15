@@ -2,16 +2,7 @@ import type { SVGProps } from 'react';
 
 export function ScheduleManagementIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg
-      width="16"
-      height="18"
-      viewBox="0 0 16 18"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      focusable="false"
-      {...props}
-    >
+    <svg viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path
         d="M4.43907 12.4775C4.89879 12.4815 5.32264 12.8972 5.32266 13.3408C5.32266 13.8206 4.89502 14.2276 4.40313 14.2197C3.9434 14.2116 3.56407 13.8044 3.56407 13.3205C3.56821 12.8649 3.97945 12.4696 4.43907 12.4736V12.4775Z"
         fill="currentColor"

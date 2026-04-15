@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 
 import {
   AlarmIcon,
-  ScheduleManagementIcon,
+  CalendarIcon,
   CommunityIcon,
   MemoIcon,
   ProblemSolvingIcon,
@@ -30,18 +30,22 @@ const navigationItems: NavigationItem[] = [
 function SidebarIcon({ type }: { type: NavigationItem['icon'] }) {
   switch (type) {
     case 'bell':
-      return <AlarmIcon aria-hidden="true" />;
+      return <AlarmIcon width={16} height={20} aria-hidden="true" className="shrink-0" />;
     case 'calendar':
-      return <ScheduleManagementIcon aria-hidden="true" />;
+      return <CalendarIcon width={16} height={18} aria-hidden="true" className="shrink-0" />;
     case 'memo':
-      return <MemoIcon aria-hidden="true" />;
+      return <MemoIcon width={16} height={16} aria-hidden="true" className="shrink-0" />;
     case 'pencil':
-      return <ProblemSolvingIcon aria-hidden="true" />;
+      return <ProblemSolvingIcon width={16} height={18} aria-hidden="true" className="shrink-0" />;
     case 'community':
-      return <CommunityIcon aria-hidden="true" />;
+      return <CommunityIcon width={16} height={15} aria-hidden="true" className="shrink-0" />;
     default:
       return null;
   }
+}
+
+function isItemActive(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export default function AppSidebar() {
@@ -68,7 +72,7 @@ export default function AppSidebar() {
       <nav className="mt-5 px-[10px]">
         <ul className="flex flex-col gap-1">
           {navigationItems.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+            const isActive = isItemActive(pathname, item.href);
 
             return (
               <li key={item.label}>

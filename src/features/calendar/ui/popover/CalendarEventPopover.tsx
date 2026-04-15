@@ -116,7 +116,7 @@ function CustomDropdown<T extends string | number>({
           {getLabel(options, value)}
         </span>
         <span className="text-[#8E96A3]">
-          <ChevronDownIcon />
+          <ChevronDownIcon width={16} height={16} />
         </span>
       </button>
 
@@ -475,7 +475,7 @@ export function CalendarEventPopover({
         {isAllDay ? (
           <div className="grid grid-cols-[14px_1fr_10px_1fr] items-center gap-2">
             <FieldIcon>
-              <CalendarLineIcon />
+              <CalendarLineIcon width={16} height={16} />
             </FieldIcon>
 
             <DisplayDateField value={draft.start} onChange={updateAllDayStart} />
@@ -487,7 +487,7 @@ export function CalendarEventPopover({
         ) : showDateOnlyTimedField ? (
           <div className="grid grid-cols-[14px_1fr] items-center gap-2">
             <FieldIcon>
-              <CalendarLineIcon />
+              <CalendarLineIcon width={16} height={16} />
             </FieldIcon>
 
             <DisplayDateField value={draft.start} onChange={updateTimedDateOnlyDraft} />
@@ -496,7 +496,7 @@ export function CalendarEventPopover({
           <div className="space-y-1.5">
             <div className="grid grid-cols-[14px_1fr_10px_1fr] items-center gap-2">
               <FieldIcon>
-                <ClockLineIcon />
+                <ClockLineIcon width={16} height={16} />
               </FieldIcon>
 
               <DisplayTimeField
@@ -514,7 +514,7 @@ export function CalendarEventPopover({
 
             <div className="grid grid-cols-[14px_1fr] items-center gap-2">
               <FieldIcon>
-                <CalendarLineIcon />
+                <CalendarLineIcon width={16} height={16} />
               </FieldIcon>
 
               <DisplayDateField value={draft.start} onChange={updateTimedDateOnlyDraft} />
@@ -605,7 +605,7 @@ export function CalendarEventPopover({
         <div className="space-y-1.5">
           <div className="grid grid-cols-[14px_1fr] items-center gap-2 rounded-[8px] border border-[#E5E7EB] px-2.5">
             <FieldIcon>
-              <LocationLineIcon />
+              <LocationLineIcon width={16} height={16} />
             </FieldIcon>
 
             <input
@@ -623,7 +623,7 @@ export function CalendarEventPopover({
 
           <div className="grid grid-cols-[14px_1fr] items-center gap-2 rounded-[8px] border border-[#E5E7EB] px-2.5">
             <FieldIcon>
-              <LinkLineIcon />
+              <LinkLineIcon width={16} height={16} />
             </FieldIcon>
 
             <input

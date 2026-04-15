@@ -43,7 +43,7 @@ export function CalendarToolbar({
           aria-label="이전"
           className="flex h-8 w-8 items-center justify-center rounded-[13px] border border-[var(--color-gray-300)] bg-[var(--color-bg-surface)] transition hover:bg-[var(--color-bg-subtle)]"
         >
-          <ChevronIcon direction={prevDirection} className="block" />
+          <ChevronIcon direction={prevDirection} width={14} height={14} className="block" />
         </button>
 
         <button
@@ -52,7 +52,7 @@ export function CalendarToolbar({
           aria-label="다음"
           className="flex h-8 w-8 items-center justify-center rounded-[13px] border border-[var(--color-gray-300)] bg-[var(--color-bg-surface)] transition hover:bg-[var(--color-bg-subtle)]"
         >
-          <ChevronIcon direction={nextDirection} className="block" />
+          <ChevronIcon direction={nextDirection} width={14} height={14} className="block" />
         </button>
 
         <CalendarViewSwitcher value={view} onChange={onChangeView} />

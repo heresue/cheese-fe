@@ -46,7 +46,7 @@ export function MonthEventChip({ event, onDelete }: Props) {
         className="calendar-event-chip__delete"
         aria-label="일정 삭제"
       >
-        <DeleteIcon className="calendar-event-chip__delete-icon" />
+        <DeleteIcon width={11} height={11} className="calendar-event-chip__delete-icon" />
       </button>
     </div>
   );

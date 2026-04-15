@@ -2,15 +2,7 @@ import type { SVGProps } from 'react';
 
 export function CalendarLineIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 20 20"
-      fill="none"
-      aria-hidden="true"
-      focusable="false"
-      {...props}
-    >
+    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false" {...props}>
       <rect
         x="3.75"
         y="5.25"
