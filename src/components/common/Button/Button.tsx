@@ -2,12 +2,14 @@ import type { ButtonProps } from './type';
 import { getButtonStyle } from './style';
 
 export default function Button({
-  variant = 'contained',
+  variant = 'default',
+  size = 40,
+  paddingX,
   width,
-  height,
-  size,
+  fullWidth = false,
   isLoading = false,
-  disabled,
+  disabled = false,
+  circleSize = 48,
   children,
   className,
   type = 'button',
@@ -17,10 +19,13 @@ export default function Button({
 
   const buttonStyle = getButtonStyle({
     variant,
-    width,
-    height,
     size,
+    width,
+    fullWidth,
+    disabled: isDisabled,
+    paddingX,
     className,
+    circleSize,
   });
 
   return (
