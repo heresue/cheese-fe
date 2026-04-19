@@ -113,11 +113,8 @@ export default function CalendarScreen() {
   };
 
   return (
-    <div className="flex h-full min-h-0 bg-[var(--color-bg-1)]">
-      <div
-        ref={screenRef}
-        className="flex h-full min-h-0 w-full flex-col bg-[var(--color-bg-white)]"
-      >
+    <div className="flex h-full min-h-0">
+      <div ref={screenRef} className="flex h-full min-h-0 w-full flex-col">
         <div className="shrink-0 pt-[62px]">
           <CalendarToolbar
             view={view}
@@ -129,7 +126,7 @@ export default function CalendarScreen() {
           />
         </div>
 
-        <section className="min-h-0 flex-1 overflow-hidden bg-[var(--color-bg-white)]">
+        <section className="min-h-0 flex-1 overflow-hidden">
           <CalendarCore
             view={view}
             events={events}
