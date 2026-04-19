@@ -1,22 +1,27 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-export type ButtonVariant = 'contained' | 'circle';
+export type ButtonSize = 30 | 38 | 40 | 44 | 46 | 54;
+
+export type ButtonVariant =
+  | 'default'
+  | 'light'
+  | 'outline'
+  | 'outlineGray'
+  | 'outlineLightGray'
+  | 'gray'
+  | 'circle';
 
 export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
-  children?: ReactNode;
-
   variant?: ButtonVariant;
+  size?: ButtonSize;
+  paddingX?: number;
+  width?: number | string;
+  fullWidth?: boolean;
   isLoading?: boolean;
-
-  /** circle */
-  size?: number;
-
+  circleSize?: number;
+  children?: ReactNode;
   /**
    * circle 버튼은 접근성을 위해 aria-label을 강력 권장합니다.
    */
   'aria-label'?: string;
-
-  /** contained */
-  width?: number;
-  height?: number;
 }
