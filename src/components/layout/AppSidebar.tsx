@@ -52,7 +52,7 @@ export default function AppSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="flex h-dvh w-[254px] shrink-0 flex-col border-r border-[var(--color-border)] bg-[var(--color-bg-1)]">
+    <aside className="border-border bg-bg-1 flex h-dvh w-[254px] shrink-0 flex-col border-r">
       <div className="px-4 pt-8 pb-14">
         <Link href="/calendar" aria-label="Cheese 홈" className="inline-flex">
           <Image src="/brands/cheese-logo.svg" alt="CHEESE" width={137} height={38} priority />
@@ -61,11 +61,11 @@ export default function AppSidebar() {
 
       <div className="px-4">
         <div className="flex items-center gap-3 px-2 py-1">
-          <div className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--color-tag-blue-100)] text-[11px] font-semibold text-[var(--color-tag-blue-500)]">
+          <div className="bg-tag-blue-100 text-tag-blue-500 relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold">
             김
-            <span className="absolute -top-[1px] -right-[1px] h-[9px] w-[9px] rounded-full border border-[var(--color-bg-1)] bg-[var(--color-secondary-500)]" />
+            <span className="border-bg-1 bg-secondary-500 absolute -top-[1px] -right-[1px] h-[9px] w-[9px] rounded-full border" />
           </div>
-          <span className="text-sm font-semibold text-[var(--color-gray-800)]">김치즈님</span>
+          <span className="text-sm font-semibold text-gray-800">김치즈님</span>
         </div>
       </div>
 
@@ -81,15 +81,15 @@ export default function AppSidebar() {
                   aria-current={isActive ? 'page' : undefined}
                   className={`group flex h-9 items-center gap-3 rounded-[10px] px-3 text-sm font-medium transition-colors duration-200 ${
                     isActive
-                      ? 'bg-[var(--color-primary-300)] text-[var(--color-gray-900)]'
-                      : 'text-[var(--color-gray-700)] hover:bg-[var(--color-primary-300)] hover:text-[var(--color-gray-900)]'
+                      ? 'bg-primary-300 text-gray-900'
+                      : 'hover:bg-primary-300 text-gray-700 hover:text-gray-900'
                   }`}
                 >
                   <span
                     className={`flex h-[18px] w-[18px] items-center justify-center transition-colors duration-200 ${
                       isActive
-                        ? 'text-[var(--color-secondary-700)]'
-                        : 'text-[var(--color-gray-600)] group-hover:text-[var(--color-secondary-700)]'
+                        ? 'text-secondary-700'
+                        : 'group-hover:text-secondary-700 text-gray-600'
                     }`}
                   >
                     <SidebarIcon type={item.icon} />

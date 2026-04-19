@@ -71,9 +71,9 @@ export default function EventForm({ initialValue, onCancel, onSubmit }: Props) {
     >
       {/* 제목 */}
       <label className="flex flex-col gap-1">
-        <span className="text-sm text-[var(--color-text-muted)]">제목</span>
+        <span className="text-text-muted text-sm">제목</span>
         <input
-          className="h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-white)] px-3"
+          className="border-border bg-bg-white h-10 rounded-xl border px-3"
           placeholder="일정 제목"
           value={value.title ?? ''}
           onChange={(e) => setValue((p) => ({ ...p, title: e.target.value }))}
@@ -83,20 +83,20 @@ export default function EventForm({ initialValue, onCancel, onSubmit }: Props) {
       {/* 시작/종료 */}
       <div className="grid grid-cols-2 gap-3">
         <label className="flex flex-col gap-1">
-          <span className="text-sm text-[var(--color-text-muted)]">시작</span>
+          <span className="text-text-muted text-sm">시작</span>
           <input
             type="datetime-local"
-            className="h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-white)] px-3"
+            className="border-border bg-bg-white h-10 rounded-xl border px-3"
             value={toInputDateTime(value.start)}
             onChange={(e) => setValue((p) => ({ ...p, start: fromInputDateTime(e.target.value) }))}
           />
         </label>
 
         <label className="flex flex-col gap-1">
-          <span className="text-sm text-[var(--color-text-muted)]">종료</span>
+          <span className="text-text-muted text-sm">종료</span>
           <input
             type="datetime-local"
-            className="h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-white)] px-3"
+            className="border-border bg-bg-white h-10 rounded-xl border px-3"
             value={toInputDateTime(value.end)}
             onChange={(e) => setValue((p) => ({ ...p, end: fromInputDateTime(e.target.value) }))}
           />
@@ -105,9 +105,9 @@ export default function EventForm({ initialValue, onCancel, onSubmit }: Props) {
 
       {/* 공간(일정공간구분) */}
       <label className="flex flex-col gap-1">
-        <span className="text-sm text-[var(--color-text-muted)]">일정 공간</span>
+        <span className="text-text-muted text-sm">일정 공간</span>
         <select
-          className="h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-white)] px-3"
+          className="border-border bg-bg-white h-10 rounded-xl border px-3"
           value={value.spaceId ?? ''}
           onChange={(e) => setValue((p) => ({ ...p, spaceId: e.target.value || undefined }))}
         >
@@ -122,9 +122,9 @@ export default function EventForm({ initialValue, onCancel, onSubmit }: Props) {
 
       {/* 리마인더 */}
       <label className="flex flex-col gap-1">
-        <span className="text-sm text-[var(--color-text-muted)]">리마인더</span>
+        <span className="text-text-muted text-sm">리마인더</span>
         <select
-          className="h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-white)] px-3"
+          className="border-border bg-bg-white h-10 rounded-xl border px-3"
           value={value.reminderMinutes ?? 0}
           onChange={(e) =>
             setValue((p) => ({
@@ -143,9 +143,9 @@ export default function EventForm({ initialValue, onCancel, onSubmit }: Props) {
 
       {/* 메모 */}
       <label className="flex flex-col gap-1">
-        <span className="text-sm text-[var(--color-text-muted)]">메모</span>
+        <span className="text-text-muted text-sm">메모</span>
         <textarea
-          className="min-h-[96px] resize-none rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-white)] px-3 py-2"
+          className="bg-bg-white border-border min-h-[96px] resize-none rounded-xl border px-3 py-2"
           placeholder="메모"
           value={value.memo ?? ''}
           onChange={(e) => setValue((p) => ({ ...p, memo: e.target.value }))}
@@ -156,15 +156,12 @@ export default function EventForm({ initialValue, onCancel, onSubmit }: Props) {
       <div className="flex justify-end gap-2 pt-2">
         <button
           type="button"
-          className="h-10 rounded-xl border border-[var(--color-border)] px-4 hover:bg-[var(--color-bg-bg-2)]"
+          className="border-border hover:bg-bg-2 h-10 rounded-xl border px-4"
           onClick={onCancel}
         >
           취소
         </button>
-        <button
-          type="submit"
-          className="h-10 rounded-xl bg-[var(--color-primary-800)] px-4 text-[var(--color-text)]"
-        >
+        <button type="submit" className="bg-primary-800 text-text h-10 rounded-xl px-4">
           저장
         </button>
       </div>
