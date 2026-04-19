@@ -4,7 +4,7 @@ import AppSidebar from '@/components/layout/AppSidebar';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex h-dvh overflow-hidden bg-[var(--color-bg)]">
+    <div className="flex h-dvh overflow-hidden bg-[var(--color-bg-1)]">
       <AppSidebar />
       <main className="min-w-0 flex-1 overflow-hidden">{children}</main>
     </div>

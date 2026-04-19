@@ -72,7 +72,7 @@ export function MiniCalendar() {
                 className={[
                   'inline-flex h-5 min-w-5 items-center justify-center rounded-[6px] px-[5px] text-[13px] leading-none font-medium',
                   isToday
-                    ? 'bg-[var(--color-secondary-500)] text-[var(--color-bg-surface)]'
+                    ? 'bg-[var(--color-secondary-500)] text-[var(--color-bg-white)]'
                     : isCurrentMonth
                       ? 'text-[var(--color-gray-700)]'
                       : 'text-[var(--color-gray-400)]',

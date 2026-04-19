@@ -14,12 +14,12 @@ type EventFormModalProps = {
 export function EventFormModal({ open, draft, onClose, onSubmit }: EventFormModalProps) {
   return (
     <BasePopup isOpen={open} onClose={onClose}>
-      <div className="w-[520px] max-w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-surface)]">
+      <div className="w-[520px] max-w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-white)]">
         <div className="flex items-center justify-between border-b border-[var(--color-border)] px-5 py-4">
           <h2 className="text-base font-semibold">일정 생성</h2>
           <button
             type="button"
-            className="h-9 w-9 rounded-xl hover:bg-[var(--color-bg-subtle)]"
+            className="h-9 w-9 rounded-xl hover:bg-[var(--color-bg-bg-2)]"
             onClick={onClose}
             aria-label="닫기"
             title="닫기"

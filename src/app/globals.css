@@ -81,10 +81,10 @@
   /* ================================
      Semantic Tokens
      ================================ */
-  --color-bg: var(--color-background-1);
-  --color-bg-surface: var(--color-gray-50);
-  --color-bg-subtle: var(--color-background-2);
-  --color-bg-accent: var(--color-background-3);
+  --color-bg-1: var(--color-background-1);
+  --color-bg-2: var(--color-background-2);
+  --color-bg-3: var(--color-background-3);
+  --color-bg-white: var(--color-gray-50);
 
   --color-overlay-dim: rgb(var(--color-gray-500-rgb) / 0.6);
 
@@ -116,7 +116,7 @@
   body {
     margin: 0;
     padding: 0;
-    background-color: var(--color-bg);
+    background-color: var(--color-bg-white);
     color: var(--color-text);
   }
 

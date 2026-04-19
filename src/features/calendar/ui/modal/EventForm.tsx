@@ -73,7 +73,7 @@ export default function EventForm({ initialValue, onCancel, onSubmit }: Props) {
       <label className="flex flex-col gap-1">
         <span className="text-sm text-[var(--color-text-muted)]">제목</span>
         <input
-          className="h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3"
+          className="h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-white)] px-3"
           placeholder="일정 제목"
           value={value.title ?? ''}
           onChange={(e) => setValue((p) => ({ ...p, title: e.target.value }))}
@@ -86,7 +86,7 @@ export default function EventForm({ initialValue, onCancel, onSubmit }: Props) {
           <span className="text-sm text-[var(--color-text-muted)]">시작</span>
           <input
             type="datetime-local"
-            className="h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3"
+            className="h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-white)] px-3"
             value={toInputDateTime(value.start)}
             onChange={(e) => setValue((p) => ({ ...p, start: fromInputDateTime(e.target.value) }))}
           />
@@ -96,7 +96,7 @@ export default function EventForm({ initialValue, onCancel, onSubmit }: Props) {
           <span className="text-sm text-[var(--color-text-muted)]">종료</span>
           <input
             type="datetime-local"
-            className="h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3"
+            className="h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-white)] px-3"
             value={toInputDateTime(value.end)}
             onChange={(e) => setValue((p) => ({ ...p, end: fromInputDateTime(e.target.value) }))}
           />
@@ -107,7 +107,7 @@ export default function EventForm({ initialValue, onCancel, onSubmit }: Props) {
       <label className="flex flex-col gap-1">
         <span className="text-sm text-[var(--color-text-muted)]">일정 공간</span>
         <select
-          className="h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3"
+          className="h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-white)] px-3"
           value={value.spaceId ?? ''}
           onChange={(e) => setValue((p) => ({ ...p, spaceId: e.target.value || undefined }))}
         >
@@ -124,7 +124,7 @@ export default function EventForm({ initialValue, onCancel, onSubmit }: Props) {
       <label className="flex flex-col gap-1">
         <span className="text-sm text-[var(--color-text-muted)]">리마인더</span>
         <select
-          className="h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3"
+          className="h-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-white)] px-3"
           value={value.reminderMinutes ?? 0}
           onChange={(e) =>
             setValue((p) => ({
@@ -145,7 +145,7 @@ export default function EventForm({ initialValue, onCancel, onSubmit }: Props) {
       <label className="flex flex-col gap-1">
         <span className="text-sm text-[var(--color-text-muted)]">메모</span>
         <textarea
-          className="min-h-[96px] resize-none rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] px-3 py-2"
+          className="min-h-[96px] resize-none rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-white)] px-3 py-2"
           placeholder="메모"
           value={value.memo ?? ''}
           onChange={(e) => setValue((p) => ({ ...p, memo: e.target.value }))}
@@ -156,7 +156,7 @@ export default function EventForm({ initialValue, onCancel, onSubmit }: Props) {
       <div className="flex justify-end gap-2 pt-2">
         <button
           type="button"
-          className="h-10 rounded-xl border border-[var(--color-border)] px-4 hover:bg-[var(--color-bg-subtle)]"
+          className="h-10 rounded-xl border border-[var(--color-border)] px-4 hover:bg-[var(--color-bg-bg-2)]"
           onClick={onCancel}
         >
           취소

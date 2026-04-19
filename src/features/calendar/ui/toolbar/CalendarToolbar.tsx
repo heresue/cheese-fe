@@ -25,14 +25,14 @@ export function CalendarToolbar({
   const nextDirection = view === 'day' ? 'right' : 'down';
 
   return (
-    <header className="flex h-[64px] items-center justify-between bg-[var(--color-bg-surface)] px-8">
+    <header className="flex h-[64px] items-center justify-between bg-[var(--color-bg-white)] px-8">
       <h2 className="text-2xl leading-[30px] font-bold text-[var(--color-gray-800)]">{title}</h2>
 
       <div className="flex items-center gap-[8px]">
         <button
           type="button"
           onClick={onClickToday}
-          className="flex h-8 w-[60px] items-center justify-center rounded-[13px] border border-[var(--color-gray-300)] bg-[var(--color-bg-surface)] text-xs font-medium text-[var(--color-text)] transition hover:bg-[var(--color-bg-subtle)]"
+          className="flex h-8 w-[60px] items-center justify-center rounded-[13px] border border-[var(--color-gray-300)] bg-[var(--color-bg-white)] text-xs font-medium text-[var(--color-text)] transition hover:bg-[var(--color-bg-bg-2)]"
         >
           오늘
         </button>
@@ -41,7 +41,7 @@ export function CalendarToolbar({
           type="button"
           onClick={onClickPrev}
           aria-label="이전"
-          className="flex h-8 w-8 items-center justify-center rounded-[13px] border border-[var(--color-gray-300)] bg-[var(--color-bg-surface)] transition hover:bg-[var(--color-bg-subtle)]"
+          className="flex h-8 w-8 items-center justify-center rounded-[13px] border border-[var(--color-gray-300)] bg-[var(--color-bg-white)] transition hover:bg-[var(--color-bg-bg-2)]"
         >
           <ChevronIcon direction={prevDirection} width={14} height={14} className="block" />
         </button>
@@ -50,7 +50,7 @@ export function CalendarToolbar({
           type="button"
           onClick={onClickNext}
           aria-label="다음"
-          className="flex h-8 w-8 items-center justify-center rounded-[13px] border border-[var(--color-gray-300)] bg-[var(--color-bg-surface)] transition hover:bg-[var(--color-bg-subtle)]"
+          className="flex h-8 w-8 items-center justify-center rounded-[13px] border border-[var(--color-gray-300)] bg-[var(--color-bg-white)] transition hover:bg-[var(--color-bg-bg-2)]"
         >
           <ChevronIcon direction={nextDirection} width={14} height={14} className="block" />
         </button>
