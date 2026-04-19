@@ -52,7 +52,7 @@ export default function AppSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="border-border bg-bg-1 flex h-dvh w-[254px] shrink-0 flex-col border-r">
+    <aside className="border-border bg-primary-100 flex h-dvh w-[254px] shrink-0 flex-col border-r">
       <div className="px-4 pt-8 pb-14">
         <Link href="/calendar" aria-label="Cheese 홈" className="inline-flex">
           <Image src="/brands/cheese-logo.svg" alt="CHEESE" width={137} height={38} priority />
