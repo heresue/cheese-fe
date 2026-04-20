@@ -12,7 +12,7 @@ export default function Panel({ children, className, rounded = true, ...rest }: 
     <div
       className={clsx(
         rounded ? 'rounded-lg' : 'rounded-none',
-        'bg-bg-surface',
+        'bg-bg-white',
         'shadow-[0_0_4px_rgba(0,0,0,0.25)]',
         className,
       )}

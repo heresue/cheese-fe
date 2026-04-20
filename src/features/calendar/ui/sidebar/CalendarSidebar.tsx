@@ -9,19 +9,19 @@ type Props = {
 
 export function CalendarSidebar({ events, onCreateClick }: Props) {
   return (
-    <div className="h-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-surface)] p-4">
+    <div className="border-border bg-bg-white h-full rounded-2xl border p-4">
       <div className="mb-3 flex items-center justify-between">
         <div className="text-base font-semibold">일정</div>
         <button
           type="button"
           onClick={onCreateClick}
-          className="h-9 rounded-xl border border-[var(--color-border)] px-3 text-sm hover:bg-[var(--color-bg-subtle)]"
+          className="border-border hover:bg-bg-2 h-9 rounded-xl border px-3 text-sm"
         >
           추가
         </button>
       </div>
 
-      <div className="text-sm text-[var(--color-text-muted)]">총 {events.length}개</div>
+      <div className="text-text-muted text-sm">총 {events.length}개</div>
     </div>
   );
 }
