@@ -6,15 +6,15 @@ const base = 'inline-flex items-center justify-center font-medium whitespace-now
 
 const disabledStateClass = 'cursor-not-allowed pointer-events-none';
 const filledDisabled = 'bg-gray-400 text-gray-50';
-const outlineDisabled = 'border-gray-400 text-gray-400 bg-gray-50';
+const outlineDisabled = 'border-gray-400 text-gray-400 bg-white';
 
 const variantClassMap: Record<Exclude<ButtonVariant, 'circle'>, string> = {
   default: 'bg-secondary-600 text-gray-50',
   light: 'bg-secondary-400 text-gray-50',
 
-  outline: 'border-2 border-secondary-200 bg-gray-50 text-gray-700',
-  outlineGray: 'border border-gray-500 bg-gray-50 text-gray-950',
-  outlineLightGray: 'border border-gray-500 bg-gray-50 text-gray-600',
+  outline: 'border-2 border-secondary-200 bg-white text-gray-700',
+  outlineGray: 'border border-gray-500 bg-white text-gray-950',
+  outlineLightGray: 'border border-gray-500 bg-white text-gray-600',
 
   gray: 'bg-gray-500 text-gray-50',
 };

@@ -16,7 +16,7 @@ export default function EmailVerifyPopup({
 }: EmailVerifyPopupProps) {
   return (
     <BasePopup isOpen={isOpen} onClose={onClose}>
-      <div className="flex w-[457px] flex-col gap-10 rounded-[25px] bg-gray-50 px-14 py-10">
+      <div className="flex w-[457px] flex-col gap-10 rounded-[25px] bg-white px-14 py-10">
         <div>
           <Image src="/brands/cheese-logo.svg" alt="CHEESE" width={125} height={34} priority />
         </div>

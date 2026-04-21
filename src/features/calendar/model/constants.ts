@@ -11,7 +11,7 @@ export type EventColorTokens = {
   selectedBorder: string;
 };
 
-const SURFACE_COLOR = 'var(--color-bg-surface)';
+const SURFACE_COLOR = 'var(--color-bg-white)';
 const LIGHT_TEXT_COLOR = 'var(--color-gray-50)';
 const DARK_TEXT_COLOR = 'var(--color-gray-950)';
 

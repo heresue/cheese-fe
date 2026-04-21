@@ -51,11 +51,11 @@ export function MiniCalendar() {
 
   return (
     <section aria-label="미니 캘린더" className="w-full">
-      <div className="mb-3 text-sm font-semibold text-[var(--color-gray-800)]">
+      <div className="mb-3 text-sm font-semibold text-gray-800">
         {focusedDate.getFullYear()}년 {focusedDate.getMonth() + 1}월
       </div>
 
-      <div className="grid grid-cols-7 gap-y-2 text-center text-[11px] leading-none text-[var(--color-gray-500)]">
+      <div className="grid grid-cols-7 gap-y-2 text-center text-[11px] leading-none text-gray-500">
         {WEEKDAY_LABELS.map((label) => (
           <span key={label}>{label}</span>
         ))}
@@ -72,10 +72,10 @@ export function MiniCalendar() {
                 className={[
                   'inline-flex h-5 min-w-5 items-center justify-center rounded-[6px] px-[5px] text-[13px] leading-none font-medium',
                   isToday
-                    ? 'bg-[var(--color-secondary-500)] text-[var(--color-bg-surface)]'
+                    ? 'bg-secondary-500 text-bg-white'
                     : isCurrentMonth
-                      ? 'text-[var(--color-gray-700)]'
-                      : 'text-[var(--color-gray-400)]',
+                      ? 'text-gray-700'
+                      : 'text-gray-400',
                 ].join(' ')}
               >
                 {date.getDate()}
