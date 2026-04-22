@@ -117,6 +117,7 @@
     padding: 0;
     background-color: var(--color-bg-white);
     color: var(--color-text);
+    letter-spacing: -0.02em;
   }
 
   a {
