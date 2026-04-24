@@ -12,5 +12,5 @@ export default function TabPanel({ value, children }: TabPanelProps) {
 
   if (active !== value) return null;
 
-  return <div className="mt-4">{children}</div>;
+  return <div>{children}</div>;
 }
