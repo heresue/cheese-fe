@@ -4,10 +4,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import { MYPAGE_MENU_ITEMS } from '@/constants/mypageMenu';
-import MypageIcon from '@/assets/icons/mypage.svg';
-import BookmarksIcon from '@/assets/icons/like.svg';
-import ApplicationsIcon from '@/assets/icons/applications.svg';
-import SettingsIcon from '@/assets/icons/settings.svg';
+
+import MypageIcon from '@/assets/icons/common/user.svg';
+import BookmarksIcon from '@/assets/icons/common/like.svg';
+import ApplicationsIcon from '@/assets/icons/common/applications.svg';
+import SettingsIcon from '@/assets/icons/ui/settings.svg';
 
 const ICON_MAP = {
   mypage: <MypageIcon />,

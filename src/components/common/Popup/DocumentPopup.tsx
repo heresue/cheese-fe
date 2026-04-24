@@ -2,7 +2,7 @@
 
 import clsx from 'clsx';
 import { Panel } from '@/components/common/Panel';
-import CloseIcon from '@/assets/icons/close.svg';
+import CloseIcon from '@/assets/icons/ui/close.svg';
 import BasePopup from './BasePopup';
 
 type DocumentPopupProps = {
