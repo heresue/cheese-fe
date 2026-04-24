@@ -2,10 +2,11 @@ import Image from 'next/image';
 import { Button } from '@/components/common/Button';
 import { Tab, TabList, TabPanel, Tabs } from '@/components/common/Tabs';
 
+import PersonalProfiles from './_components/PersonalProfiles/PersonalProfiles';
+
 import PersonalIcon from '@/assets/icons/common/personal.svg';
 import CompanyIcon from '@/assets/icons/common/company.svg';
 import ProfileMockImage from 'public/profile_default.png';
-import PersonalProfiles from './_components/PersonalProfiles';
 
 const mockProfile = {
   nickname: '김치즈',
