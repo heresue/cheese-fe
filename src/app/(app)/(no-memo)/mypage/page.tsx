@@ -1,20 +1,36 @@
 import Image from 'next/image';
+
 import { Button } from '@/components/common/Button';
 import { Tab, TabList, TabPanel, Tabs } from '@/components/common/Tabs';
-
-import PersonalProfiles from './_components/PersonalProfiles/PersonalProfiles';
+import PersonalProfiles from './_components/Profiles/PersonalProfiles';
+import AccountSettings from './_components/Profiles/AccountSettings';
 
 import PersonalIcon from '@/assets/icons/common/personal.svg';
 import CompanyIcon from '@/assets/icons/common/company.svg';
 import ProfileMockImage from 'public/profile_default.png';
+import CompanyProfiles from '@/app/(app)/(no-memo)/mypage/_components/Profiles/CompanyProfiles';
 
-const mockProfile = {
+const mockPersonalProfile = {
   nickname: '김치즈',
   interestedJob: 'FE (프론트엔드)',
   coverLetterFileName: '',
   resumeFileName: '',
   skills: ['HTML5', 'CSS3', 'JavaScript'],
   interests: ['Redux', 'Zustand', 'Recoil', 'Context API'],
+};
+
+const mockCompanyProfile = {
+  nickname: '김치즈',
+  representativeName: '변대환',
+  companyType: '스타트업',
+  resumeTemplateFileName: 'cheese_resume_template.pdf',
+  companyWebsiteUrl: 'https://cheese-company.com',
+  industryType: ['솔루션 SI', 'CRM', 'ERP'],
+  employeeCount: 10,
+  foundedAt: '2020-05-15',
+};
+
+const mockAccountSettings = {
   contact: '이메일/오픈카카오톡',
   email: 'test@test.com',
   passwordUpdatedAt: '2026-01-30',
@@ -23,6 +39,7 @@ const mockProfile = {
 
 export default function MyPage() {
   const profileImage = ProfileMockImage;
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between px-3">
@@ -54,11 +71,15 @@ export default function MyPage() {
           </TabList>
 
           <TabPanel value="personal">
-            <PersonalProfiles profile={mockProfile} />
+            <PersonalProfiles profile={mockPersonalProfile} />
           </TabPanel>
 
-          <TabPanel value="company">기업 프로필 영역</TabPanel>
+          <TabPanel value="company">
+            <CompanyProfiles profile={mockCompanyProfile} />
+          </TabPanel>
         </Tabs>
+
+        <AccountSettings profile={mockAccountSettings} />
       </div>
     </div>
   );
