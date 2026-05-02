@@ -1,5 +1,6 @@
-import GroupBookmarkList from '@/app/(app)/(no-memo)/mypage/bookmarks/_components/GroupBookmarkList';
 import JobBookmarkList from '@/app/(app)/(no-memo)/mypage/bookmarks/_components/JobBookmarkList';
+import GroupBookmarkList from '@/app/(app)/(no-memo)/mypage/bookmarks/_components/GroupBookmarkList';
+import InfoBookmarkList from '@/app/(app)/(no-memo)/mypage/bookmarks/_components/InfoBookmarkList';
 import { Tab, TabList, TabPanel, Tabs } from '@/components/common/Tabs';
 
 export default function BookmarksPage() {
@@ -23,7 +24,11 @@ export default function BookmarksPage() {
             <GroupBookmarkList />
           </div>
         </TabPanel>
-        <TabPanel value="infos">정보/자료공유</TabPanel>
+        <TabPanel value="infos">
+          <div className="mt-5">
+            <InfoBookmarkList />
+          </div>
+        </TabPanel>
       </Tabs>
     </div>
   );
