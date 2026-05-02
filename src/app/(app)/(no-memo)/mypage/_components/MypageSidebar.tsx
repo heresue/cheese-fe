@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import { MYPAGE_MENU_ITEMS } from '@/constants/mypageMenu';
 
 import MypageIcon from '@/assets/icons/common/user.svg';
-import BookmarksIcon from '@/assets/icons/common/like.svg';
+import BookmarksIcon from '@/assets/icons/common/like-outline.svg';
 import ApplicationsIcon from '@/assets/icons/common/applications.svg';
 import SettingsIcon from '@/assets/icons/ui/settings.svg';
 

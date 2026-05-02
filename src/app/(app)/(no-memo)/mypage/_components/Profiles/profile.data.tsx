@@ -3,7 +3,7 @@ import StarIcon from '@/assets/icons/common/star.svg';
 import CoverLetterIcon from '@/assets/icons/common/cover-letter.svg';
 import CompanyIcon from '@/assets/icons/common/company.svg';
 import SkillsIcon from '@/assets/icons/common/skills.svg';
-import InterestsIcon from '@/assets/icons/common/like.svg';
+import InterestsIcon from '@/assets/icons/common/like-outline.svg';
 
 import IndustryIcon from '@/assets/icons/common/industry.svg';
 import EmployeeIcon from '@/assets/icons/common/users.svg';
