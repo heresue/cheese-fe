@@ -4,6 +4,9 @@ import Link from 'next/link';
 import JobApplyAction from '@/components/boards/jobs/JobApplyAction';
 import { JobPost } from './types';
 
+import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
+import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
+
 type JobPostCardProps = {
   post: JobPost;
   onDirectApply: () => void;
@@ -13,8 +16,17 @@ export default function JobPostCard({ post, onDirectApply }: JobPostCardProps) {
   const jobConditions = [post.career, post.education, post.location, post.employmentType];
 
   return (
-    <article className="flex items-center justify-between border-b border-gray-300 p-5">
-      <div className="w-[130px] leading-5 font-bold break-words">{post.companyName}</div>
+    <article className="flex h-[146px] items-center justify-between border-b border-gray-300 p-5">
+      <div className="flex w-[150px] items-center gap-1">
+        <span className="w-fit max-w-[130px] leading-5 font-bold break-all">
+          {post.companyName}
+        </span>
+        {post.isLiked ? (
+          <LikeFilledIcon className="text-error-subtle w-[14px]" />
+        ) : (
+          <LikeOutlineIcon className="w-[14px] text-gray-500" />
+        )}
+      </div>
 
       <div className="mx-7 flex flex-1 flex-col gap-2">
         {/* 게시글 링크 연결 필요 */}

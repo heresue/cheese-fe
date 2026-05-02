@@ -18,4 +18,5 @@ export type JobPost = {
   employmentType: string;
   deadline: string;
   apply: ApplyInfo;
+  isLiked: boolean;
 };
