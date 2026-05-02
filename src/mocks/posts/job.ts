@@ -1,4 +1,4 @@
-import type { JobPost } from '@/types/post';
+import { JobPost } from '@/components/boards/jobs/types';
 
 export const jobPosts: JobPost[] = [
   {
@@ -13,7 +13,6 @@ export const jobPosts: JobPost[] = [
     deadline: '02.03(화) 마감',
     apply: {
       type: 'homepage',
-      label: '홈페이지 지원',
       url: 'https://google.com',
     },
   },
@@ -29,7 +28,6 @@ export const jobPosts: JobPost[] = [
     deadline: '02.14(토) 마감',
     apply: {
       type: 'direct',
-      label: '직접지원',
     },
   },
 ];

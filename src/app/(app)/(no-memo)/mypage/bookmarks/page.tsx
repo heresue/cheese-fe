@@ -1,3 +1,25 @@
+import JobBookmarkList from '@/app/(app)/(no-memo)/mypage/bookmarks/_components/JobBookmarkList';
+import { Tab, TabList, TabPanel, Tabs } from '@/components/common/Tabs';
+
 export default function BookmarksPage() {
-  return <div>Bookmarks</div>;
+  return (
+    <div>
+      <Tabs defaultValue="jobs">
+        <TabList>
+          <Tab value="jobs">채용공고</Tab>
+          <Tab value="groups">그룹모집</Tab>
+          <Tab value="infos">정보/자료공유</Tab>
+        </TabList>
+
+        <TabPanel value="jobs">
+          <div className="mt-5 flex flex-col gap-5">
+            <JobBookmarkList />
+          </div>
+        </TabPanel>
+
+        <TabPanel value="groups">그룹모집</TabPanel>
+        <TabPanel value="infos">정보/자료공유</TabPanel>
+      </Tabs>
+    </div>
+  );
 }
