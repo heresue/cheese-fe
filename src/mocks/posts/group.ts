@@ -12,6 +12,7 @@ export const groupPosts = [
     deadline: '02.10(화) 마감',
     likeCount: 24,
     commentCount: 8,
+    isLiked: true,
   },
   {
     id: 2,
@@ -26,6 +27,7 @@ export const groupPosts = [
     deadline: '상시모집',
     likeCount: 17,
     commentCount: 5,
+    isLiked: false,
   },
   {
     id: 3,
@@ -40,6 +42,7 @@ export const groupPosts = [
     deadline: '02.15(일) 마감',
     likeCount: 32,
     commentCount: 12,
+    isLiked: true,
   },
   {
     id: 4,
@@ -54,6 +57,7 @@ export const groupPosts = [
     deadline: '02.20(목) 마감',
     likeCount: 21,
     commentCount: 9,
+    isLiked: false,
   },
   {
     id: 5,
@@ -68,6 +72,7 @@ export const groupPosts = [
     deadline: '상시모집',
     likeCount: 14,
     commentCount: 6,
+    isLiked: true,
   },
   {
     id: 6,
@@ -82,5 +87,6 @@ export const groupPosts = [
     deadline: '02.28(금) 마감',
     likeCount: 45,
     commentCount: 18,
+    isLiked: true,
   },
 ] as const;

@@ -11,4 +11,5 @@ export type GroupPost = {
   deadline: string;
   likeCount: number;
   commentCount: number;
+  isLiked: boolean;
 };

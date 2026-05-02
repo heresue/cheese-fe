@@ -1,7 +1,8 @@
 import Image from 'next/image';
 import { GroupPost } from '@/components/boards/groups/types';
 
-import LikeIcon from '@/assets/icons/common/like.svg';
+import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
+import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 import CommentIcon from '@/assets/icons/common/comment.svg';
 
 type GroupPostCardProps = {
@@ -45,7 +46,11 @@ export default function GroupPostCard({ post }: GroupPostCardProps) {
 
         <div className="flex gap-2">
           <div className="flex items-center gap-1">
-            <LikeIcon className="w-[13px] text-gray-500" />
+            {post.isLiked ? (
+              <LikeFilledIcon className="text-error-subtle w-[13px]" />
+            ) : (
+              <LikeOutlineIcon className="w-[13px] text-gray-500" />
+            )}
             <span>{post.likeCount}</span>
           </div>
           <div className="flex items-center gap-1">
