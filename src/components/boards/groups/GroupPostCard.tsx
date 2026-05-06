@@ -4,6 +4,7 @@ import { GroupPost } from '@/components/boards/groups/types';
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 import CommentIcon from '@/assets/icons/common/comment.svg';
+import { Chip } from '@/components/common/Chip';
 
 type GroupPostCardProps = {
   post: GroupPost;
@@ -16,10 +17,7 @@ export default function GroupPostCard({ post }: GroupPostCardProps) {
     <article className="flex h-[236px] w-full flex-col gap-2 rounded-[9px] border border-gray-300 p-5">
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          {/* 임시 chip: 공통 컴포넌트로 사용 예정 (대시보드, 문제풀이) */}
-          <div className="bg-primary-600 inline-flex h-6 items-center rounded-[50px] px-3 text-[12px] font-bold">
-            {post.field}
-          </div>
+          <Chip variant={post.field}>{post.field}</Chip>
 
           <span className="text-[12px] text-gray-600">{post.deadline}</span>
         </div>

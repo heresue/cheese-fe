@@ -1,6 +1,6 @@
 export type GroupPost = {
   id: number;
-  field: string;
+  field: 'FE' | 'BE';
   title: string;
   recruitCount: number;
   expectedPeriod: string;
