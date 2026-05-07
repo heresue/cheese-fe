@@ -31,7 +31,9 @@ function CategoryTabs<TValue extends string = string>({
               styles.buttonSize[size],
               isActive ? styles.active : styles.inactive,
             )}
-            onClick={() => onChange(item.value)}
+            onClick={() => {
+              onChange(item.value);
+            }}
           >
             {item.label}
           </button>
