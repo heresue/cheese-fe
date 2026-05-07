@@ -10,7 +10,7 @@ export type ListFilterActionButton = {
   label: string;
   onClick: () => void;
   disabled?: boolean;
-  icon?: ReactNode;
+  icon?: ReactNode | false;
 };
 
 export type ListFilterBarProps<TSortValue extends string = string> = {
