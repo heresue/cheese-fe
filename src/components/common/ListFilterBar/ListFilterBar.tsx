@@ -2,6 +2,11 @@
 
 import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 
+import ChevronIcon from '@/assets/icons/chevron.svg';
+import CloseIcon from '@/assets/icons/close.svg';
+import CreateIcon from '@/assets/icons/create.svg';
+import { Button } from '@/components/common/Button';
+
 import { listFilterBarClassNames as styles } from './style';
 import type { ListFilterBarProps } from './type';
 
@@ -12,25 +17,11 @@ function cn(...classNames: Array<string | false | null | undefined>) {
 function SortIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M3 4h7M3 8h5M3 12h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M3 4h7M3 8h5M3 12h3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
       <path
         d="M12 5v6M10 9l2 2 2-2"
         stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function ChevronDownIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-      <path
-        d="M3 4.5L6 7.5L9 4.5"
-        stroke="currentColor"
-        strokeWidth="1.4"
+        strokeWidth="1.3"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -44,34 +35,8 @@ function SearchIcon() {
       <path
         d="M7.2 12.4a5.2 5.2 0 1 0 0-10.4 5.2 5.2 0 0 0 0 10.4ZM11 11l3 3"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="1.3"
         strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-      <path d="M3 3L9 9M9 3L3 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function CreateIcon() {
-  return (
-    <svg
-      className={styles.actionButtonIcon}
-      viewBox="0 0 16 17"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path
-        d="M1.56098 16.0195C1.13171 16.0195 0.764097 15.8665 0.458146 15.5606C0.152715 15.2552 0 14.8878 0 14.4585V3.53171C0 3.10244 0.152715 2.73483 0.458146 2.42888C0.764097 2.12345 1.13171 1.97073 1.56098 1.97073H8.52683L6.96585 3.53171H1.56098V14.4585H12.4878V9.03415L14.0488 7.47317V14.4585C14.0488 14.8878 13.8961 15.2552 13.5906 15.5606C13.2847 15.8665 12.9171 16.0195 12.4878 16.0195H1.56098ZM10.2829 2.41951L11.3951 3.51219L6.2439 8.66341V9.77561H7.33658L12.5073 4.60488L13.6195 5.69756L8 11.3366H4.68293V8.01951L10.2829 2.41951ZM13.6195 5.69756L10.2829 2.41951L12.2341 0.468293C12.5463 0.156098 12.9205 0 13.3565 0C13.792 0 14.1593 0.156098 14.4585 0.468293L15.5512 1.58049C15.8504 1.87967 16 2.2439 16 2.67317C16 3.10244 15.8504 3.46667 15.5512 3.76585L13.6195 5.69756Z"
-        fill="currentColor"
       />
     </svg>
   );
@@ -110,7 +75,10 @@ function ListFilterBar<TSortValue extends string = string>({
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSearchSubmit?.(searchValue.trim());
+
+    const trimmedSearchValue = searchValue.trim();
+
+    onSearchSubmit?.(trimmedSearchValue);
     setIsSearchHistoryOpen(false);
   };
 
@@ -126,8 +94,15 @@ function ListFilterBar<TSortValue extends string = string>({
   };
 
   const handleSearchHistorySelect = (history: string) => {
-    onSearchChange?.(history);
-    onSearchHistorySelect?.(history);
+    const trimmedHistory = history.trim();
+
+    if (!trimmedHistory) {
+      return;
+    }
+
+    onSearchChange?.(trimmedHistory);
+    onSearchHistorySelect?.(trimmedHistory);
+    onSearchSubmit?.(trimmedHistory);
     setIsSearchHistoryOpen(false);
   };
 
@@ -138,7 +113,9 @@ function ListFilterBar<TSortValue extends string = string>({
   };
 
   const handleSearchHistoryToggle = () => {
-    if (!hasSearchHistories) return;
+    if (!hasSearchHistories) {
+      return;
+    }
 
     setIsSearchHistoryOpen((prev) => !prev);
   };
@@ -187,7 +164,8 @@ function ListFilterBar<TSortValue extends string = string>({
             onClick={() => setIsSortOpen((prev) => !prev)}
           >
             <SortIcon />
-            <ChevronDownIcon />
+
+            <ChevronIcon className={styles.sortChevronIcon} aria-hidden="true" focusable="false" />
           </button>
 
           {isSortOpen && (
@@ -241,7 +219,7 @@ function ListFilterBar<TSortValue extends string = string>({
               aria-label="검색어 삭제"
               onClick={handleSearchClear}
             >
-              <CloseIcon />
+              <CloseIcon className={styles.searchClearIcon} aria-hidden="true" focusable="false" />
             </button>
           )}
 
@@ -254,7 +232,11 @@ function ListFilterBar<TSortValue extends string = string>({
             aria-controls={searchHistoryListId}
             onClick={handleSearchHistoryToggle}
           >
-            <ChevronDownIcon />
+            <ChevronIcon
+              className={styles.searchHistoryChevronIcon}
+              aria-hidden="true"
+              focusable="false"
+            />
           </button>
         </div>
 
@@ -265,38 +247,55 @@ function ListFilterBar<TSortValue extends string = string>({
             role="listbox"
             aria-label="검색 기록"
           >
-            {searchHistoryItems.map((history, index) => (
-              <button
-                key={`${history}-${index}`}
-                type="button"
-                className={styles.searchHistoryItem}
-                role="option"
-                onClick={() => handleSearchHistorySelect(history)}
-              >
-                {history}
-              </button>
-            ))}
+            {searchHistoryItems.map((history, index) => {
+              const isSelected = history === searchValue;
+
+              return (
+                <button
+                  key={`${history}-${index}`}
+                  type="button"
+                  className={styles.searchHistoryItem}
+                  role="option"
+                  aria-selected={isSelected}
+                  onClick={() => handleSearchHistorySelect(history)}
+                >
+                  {history}
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
 
       {actionButton && (
-        <button
+        <Button
           type="button"
+          variant="default"
+          size={44}
+          width={76}
+          paddingX={0}
           className={styles.actionButton}
           disabled={actionButton.disabled}
-          onClick={actionButton.onClick}
+          onClick={() => {
+            actionButton.onClick();
+          }}
         >
-          <span className={styles.actionButtonIconWrapper}>
-            {actionButton.icon === undefined || actionButton.icon === false ? (
-              <CreateIcon />
-            ) : (
-              actionButton.icon
-            )}
-          </span>
+          {actionButton.icon !== false && (
+            <span className={styles.actionButtonIconWrapper}>
+              {actionButton.icon === undefined ? (
+                <CreateIcon
+                  className={styles.actionButtonIcon}
+                  aria-hidden="true"
+                  focusable="false"
+                />
+              ) : (
+                actionButton.icon
+              )}
+            </span>
+          )}
 
           <span>{actionButton.label}</span>
-        </button>
+        </Button>
       )}
     </form>
   );
