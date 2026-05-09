@@ -16,12 +16,17 @@ function cn(...classNames: Array<string | false | null | undefined>) {
 
 function SortIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M3 4h7M3 8h5M3 12h3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
-        d="M12 5v6M10 9l2 2 2-2"
+        d="M5 6h9M5 10h7M5 14h5"
         stroke="currentColor"
-        strokeWidth="1.3"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M17 7v9M14.5 13.5L17 16l2.5-2.5"
+        stroke="currentColor"
+        strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -31,11 +36,11 @@ function SortIcon() {
 
 function SearchIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
       <path
-        d="M7.2 12.4a5.2 5.2 0 1 0 0-10.4 5.2 5.2 0 0 0 0 10.4ZM11 11l3 3"
+        d="M9.16667 15.8333a6.66667 6.66667 0 1 0 0-13.3333 6.66667 6.66667 0 0 0 0 13.3333ZM14.1667 14.1667 17.5 17.5"
         stroke="currentColor"
-        strokeWidth="1.3"
+        strokeWidth="1.8"
         strokeLinecap="round"
       />
     </svg>
@@ -161,7 +166,9 @@ function ListFilterBar<TSortValue extends string = string>({
             aria-label={`정렬: ${selectedOption.label}`}
             aria-haspopup="listbox"
             aria-expanded={isSortOpen}
-            onClick={() => setIsSortOpen((prev) => !prev)}
+            onClick={() => {
+              setIsSortOpen((prev) => !prev);
+            }}
           >
             <SortIcon />
 
@@ -184,7 +191,9 @@ function ListFilterBar<TSortValue extends string = string>({
                       styles.sortMenuItem,
                       isActive ? styles.sortMenuItemActive : styles.sortMenuItemInactive,
                     )}
-                    onClick={() => handleSortSelect(option.value)}
+                    onClick={() => {
+                      handleSortSelect(option.value);
+                    }}
                   >
                     {option.label}
                   </button>
@@ -208,7 +217,9 @@ function ListFilterBar<TSortValue extends string = string>({
           aria-label="검색어"
           autoComplete="off"
           onFocus={handleSearchFocus}
-          onChange={(event) => onSearchChange?.(event.target.value)}
+          onChange={(event) => {
+            onSearchChange?.(event.target.value);
+          }}
         />
 
         <div className={styles.searchRightControls}>
@@ -257,7 +268,9 @@ function ListFilterBar<TSortValue extends string = string>({
                   className={styles.searchHistoryItem}
                   role="option"
                   aria-selected={isSelected}
-                  onClick={() => handleSearchHistorySelect(history)}
+                  onClick={() => {
+                    handleSearchHistorySelect(history);
+                  }}
                 >
                   {history}
                 </button>
@@ -280,21 +293,23 @@ function ListFilterBar<TSortValue extends string = string>({
             actionButton.onClick();
           }}
         >
-          {actionButton.icon !== false && (
-            <span className={styles.actionButtonIconWrapper}>
-              {actionButton.icon === undefined ? (
-                <CreateIcon
-                  className={styles.actionButtonIcon}
-                  aria-hidden="true"
-                  focusable="false"
-                />
-              ) : (
-                actionButton.icon
-              )}
-            </span>
-          )}
+          <span className={styles.actionButtonContent}>
+            {actionButton.icon !== false && (
+              <span className={styles.actionButtonIconWrapper}>
+                {actionButton.icon === undefined ? (
+                  <CreateIcon
+                    className={styles.actionButtonIcon}
+                    aria-hidden="true"
+                    focusable="false"
+                  />
+                ) : (
+                  actionButton.icon
+                )}
+              </span>
+            )}
 
-          <span>{actionButton.label}</span>
+            <span className={styles.actionButtonLabel}>{actionButton.label}</span>
+          </span>
         </Button>
       )}
     </form>
