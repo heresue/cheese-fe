@@ -1,14 +1,17 @@
+'use client';
+
 import Image from 'next/image';
+import { useState } from 'react';
 
 import { Button } from '@/components/common/Button';
-import { Tab, TabList, TabPanel, Tabs } from '@/components/common/Tabs';
 import PersonalProfiles from './_components/Profiles/PersonalProfiles';
+import CompanyProfiles from './_components/Profiles/CompanyProfiles';
 import AccountSettings from './_components/Profiles/AccountSettings';
 
 import PersonalIcon from '@/assets/icons/common/personal.svg';
 import CompanyIcon from '@/assets/icons/common/company.svg';
+import CategoryTabs from '@/components/common/CategoryTabs';
 import ProfileMockImage from 'public/profile_default.png';
-import CompanyProfiles from '@/app/(app)/(no-memo)/mypage/_components/Profiles/CompanyProfiles';
 
 const mockPersonalProfile = {
   nickname: '김치즈',
@@ -37,7 +40,25 @@ const mockAccountSettings = {
   address: '서울특별시',
 };
 
+const MYPAGE_PROFILE_CATEGORY_TABS = [
+  {
+    label: '개인 프로필',
+    value: 'personal',
+    icon: PersonalIcon,
+  },
+  {
+    label: '기업 프로필',
+    value: 'company',
+    icon: CompanyIcon,
+  },
+];
+
+type MypageCategoryTabValue = (typeof MYPAGE_PROFILE_CATEGORY_TABS)[number]['value'];
+
 export default function MyPage() {
+  const [mypageTabs, setMypageTabs] = useState<MypageCategoryTabValue>(
+    MYPAGE_PROFILE_CATEGORY_TABS[0].value,
+  );
   const profileImage = ProfileMockImage;
 
   return (
@@ -58,26 +79,16 @@ export default function MyPage() {
       <div className="flex flex-col gap-5">
         <h2 className="text-[20px] font-medium text-gray-700">프로필 설정</h2>
 
-        <Tabs defaultValue="personal">
-          <TabList>
-            <Tab value="personal">
-              <PersonalIcon width={14} height={14} />
-              개인 프로필
-            </Tab>
-            <Tab value="company">
-              <CompanyIcon width={14} height={14} />
-              기업 프로필
-            </Tab>
-          </TabList>
+        <CategoryTabs
+          items={MYPAGE_PROFILE_CATEGORY_TABS}
+          activeValue={mypageTabs}
+          onChange={setMypageTabs}
+          className="[&>button]:h-[46px] [&>button]:px-3"
+        />
 
-          <TabPanel value="personal">
-            <PersonalProfiles profile={mockPersonalProfile} />
-          </TabPanel>
+        {mypageTabs === 'personal' && <PersonalProfiles profile={mockPersonalProfile} />}
 
-          <TabPanel value="company">
-            <CompanyProfiles profile={mockCompanyProfile} />
-          </TabPanel>
-        </Tabs>
+        {mypageTabs === 'company' && <CompanyProfiles profile={mockCompanyProfile} />}
 
         <AccountSettings profile={mockAccountSettings} />
       </div>
