@@ -13,6 +13,7 @@ export const groupPosts = [
     likeCount: 24,
     commentCount: 8,
     isLiked: true,
+    isApplied: true,
   },
   {
     id: 2,
@@ -28,6 +29,7 @@ export const groupPosts = [
     likeCount: 17,
     commentCount: 5,
     isLiked: false,
+    isApplied: true,
   },
   {
     id: 3,
@@ -43,6 +45,7 @@ export const groupPosts = [
     likeCount: 32,
     commentCount: 12,
     isLiked: true,
+    isApplied: false,
   },
   {
     id: 4,
@@ -58,6 +61,7 @@ export const groupPosts = [
     likeCount: 21,
     commentCount: 9,
     isLiked: false,
+    isApplied: true,
   },
   {
     id: 5,
@@ -73,6 +77,7 @@ export const groupPosts = [
     likeCount: 14,
     commentCount: 6,
     isLiked: true,
+    isApplied: false,
   },
   {
     id: 6,
@@ -88,5 +93,6 @@ export const groupPosts = [
     likeCount: 45,
     commentCount: 18,
     isLiked: true,
+    isApplied: false,
   },
 ] as const;

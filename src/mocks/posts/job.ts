@@ -16,6 +16,7 @@ export const jobPosts: JobPost[] = [
       url: 'https://google.com',
     },
     isLiked: false,
+    isApplied: true,
   },
   {
     id: 2,
@@ -31,6 +32,7 @@ export const jobPosts: JobPost[] = [
       type: 'direct',
     },
     isLiked: true,
+    isApplied: true,
   },
   {
     id: 3,
@@ -47,6 +49,7 @@ export const jobPosts: JobPost[] = [
       url: 'https://naver.com',
     },
     isLiked: false,
+    isApplied: false,
   },
   {
     id: 4,
@@ -62,6 +65,7 @@ export const jobPosts: JobPost[] = [
       type: 'direct',
     },
     isLiked: true,
+    isApplied: false,
   },
   {
     id: 5,
@@ -78,6 +82,7 @@ export const jobPosts: JobPost[] = [
       url: 'https://github.com',
     },
     isLiked: true,
+    isApplied: false,
   },
   {
     id: 6,
@@ -94,5 +99,6 @@ export const jobPosts: JobPost[] = [
       url: 'https://aws.amazon.com',
     },
     isLiked: true,
+    isApplied: false,
   },
 ];
