@@ -9,12 +9,12 @@ export default function SettingsPage() {
   return (
     <div>
       <div>
-        {SETTINGS_ITEMS.map(({ options, ...profileItem }) => (
-          <div key={profileItem.label} className="border-b border-gray-300 p-3 last:border-b-0">
+        {SETTINGS_ITEMS.map(({ options, key, ...profileItem }) => (
+          <div key={key} className="border-b border-gray-300 p-3 last:border-b-0">
             <ProfileItem
               {...profileItem}
               // TODO: (드롭다운 구현 시) 추후 선택된 옵션으로 buttonText 변경 필요
-              buttonText={'시스템 설정'}
+              buttonText={options[0]}
               buttonIcon={<ChevronIcon className="h-[10px] rotate-90" />}
               buttonIconPosition="right"
             />
