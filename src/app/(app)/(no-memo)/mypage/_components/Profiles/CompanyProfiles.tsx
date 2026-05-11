@@ -1,6 +1,6 @@
+import ProfileItem from '../SettingItem';
 import { CompanyProfilesProps } from './types';
 import { getCompanyProfileItems } from './profile.data';
-import ProfileItem from './ProfileItem';
 
 export default function CompanyProfiles({ profile }: CompanyProfilesProps) {
   const profileItems = getCompanyProfileItems(profile);

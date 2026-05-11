@@ -1,5 +1,5 @@
+import ProfileItem from '../SettingItem';
 import { getPersonalProfileItems } from './profile.data';
-import ProfileItem from './ProfileItem';
 import { PersonalProfilesProps } from './types';
 
 export default function PersonalProfiles({ profile }: PersonalProfilesProps) {

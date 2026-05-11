@@ -1,6 +1,6 @@
+import ProfileItem from '../SettingItem';
 import { AccountSettingsProps } from './types';
 import { getAccountItems } from './profile.data';
-import ProfileItem from './ProfileItem';
 
 export default function AccountSettings({ profile }: AccountSettingsProps) {
   const accountItems = getAccountItems(profile);

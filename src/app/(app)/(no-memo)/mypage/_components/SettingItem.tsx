@@ -5,6 +5,7 @@ type ProfileItemProps = {
   value?: string;
   icon?: React.ReactNode;
   buttonIcon?: React.ReactNode;
+  buttonIconPosition?: 'left' | 'right';
   buttonText?: string;
   buttonClassName?: string;
   onClick?: () => void;
@@ -15,6 +16,7 @@ export default function ProfileItem({
   value,
   icon,
   buttonIcon,
+  buttonIconPosition = 'left',
   buttonText,
   buttonClassName,
   onClick,
@@ -39,8 +41,15 @@ export default function ProfileItem({
         className={`gap-[7px] ${buttonClassName ?? ''}`}
         onClick={onClick}
       >
-        <span className="inline-flex h-[14px] w-[14px] justify-center">{buttonIcon}</span>
+        {buttonIcon && buttonIconPosition === 'left' && (
+          <span className="inline-flex items-center justify-center">{buttonIcon}</span>
+        )}
+
         {buttonText}
+
+        {buttonIcon && buttonIconPosition === 'right' && (
+          <span className="inline-flex items-center justify-center">{buttonIcon}</span>
+        )}
       </Button>
     </div>
   );
