@@ -1,22 +1,26 @@
-import ProfileItem from '@/app/(app)/(no-memo)/mypage/_components/Profiles/ProfileItem';
+'use client';
 
 import ChevronIcon from '@/assets/icons/chevron.svg';
-import ThemeIcon from '@/assets/icons/settings/theme.svg';
 
-const SETTINGS = [
-  {
-    label: '테마',
-    value: '사용하실 테마를 선택해주세요',
-    icon: <ThemeIcon className="h-6" />,
-    buttonIcon: <ChevronIcon className="h-[10px]" />,
-    buttonText: '시스템 설정',
-  },
-];
+import ProfileItem from '../_components/SettingItem';
+import { SETTINGS_ITEMS } from './_constants/settingsItems';
 
 export default function SettingsPage() {
   return (
     <div>
-      <ProfileItem label="" />
+      <div>
+        {SETTINGS_ITEMS.map(({ options, ...profileItem }) => (
+          <div key={profileItem.label} className="border-b border-gray-300 p-3 last:border-b-0">
+            <ProfileItem
+              {...profileItem}
+              // TODO: (드롭다운 구현 시) 추후 선택된 옵션으로 buttonText 변경 필요
+              buttonText={'시스템 설정'}
+              buttonIcon={<ChevronIcon className="h-[10px] rotate-90" />}
+              buttonIconPosition="right"
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
