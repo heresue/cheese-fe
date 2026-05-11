@@ -23,7 +23,7 @@ const mockPersonalProfile = {
 };
 
 const mockCompanyProfile = {
-  nickname: '김치즈',
+  nickname: '치즈공장',
   representativeName: '변대환',
   companyType: '스타트업',
   resumeTemplateFileName: 'cheese_resume_template.pdf',

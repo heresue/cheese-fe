@@ -76,7 +76,7 @@ export function getPersonalProfileItems(profile: PersonalProfile): ProfileItemDa
 export function getCompanyProfileItems(profile: CompanyProfile): ProfileItemData[] {
   return [
     {
-      label: '닉네임',
+      label: '기업명',
       value: profile.nickname,
       icon: <NicknameIcon className="h-6" />,
       buttonIcon: <EditIcon className="h-[14px]" />,
