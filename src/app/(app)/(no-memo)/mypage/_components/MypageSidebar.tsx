@@ -5,10 +5,10 @@ import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import { MYPAGE_MENU_ITEMS } from '@/constants/mypageMenu';
 
-import MypageIcon from '@/assets/icons/common/user.svg';
-import BookmarksIcon from '@/assets/icons/common/like-outline.svg';
-import ApplicationsIcon from '@/assets/icons/common/applications.svg';
-import SettingsIcon from '@/assets/icons/ui/settings.svg';
+import MypageIcon from '@/assets/icons/settings/user.svg';
+import BookmarksIcon from '@/assets/icons/like-outline.svg';
+import ApplicationsIcon from '@/assets/icons/settings/applications.svg';
+import SettingsIcon from '@/assets/icons/settings/settings.svg';
 
 const ICON_MAP = {
   mypage: <MypageIcon />,

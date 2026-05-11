@@ -8,8 +8,8 @@ import PersonalProfiles from './_components/Profiles/PersonalProfiles';
 import CompanyProfiles from './_components/Profiles/CompanyProfiles';
 import AccountSettings from './_components/Profiles/AccountSettings';
 
-import PersonalIcon from '@/assets/icons/common/personal.svg';
-import CompanyIcon from '@/assets/icons/common/company.svg';
+import PersonalIcon from '@/assets/icons/settings/personal.svg';
+import CompanyIcon from '@/assets/icons/settings/company.svg';
 import CategoryTabs from '@/components/common/CategoryTabs';
 import ProfileMockImage from 'public/profile_default.png';
 

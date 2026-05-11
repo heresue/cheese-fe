@@ -4,8 +4,8 @@ import Link from 'next/link';
 import JobApplyAction from '@/components/boards/jobs/JobApplyAction';
 import { JobPost } from './types';
 
-import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
-import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
+import LikeOutlineIcon from '@/assets/icons/like-outline.svg';
+import LikeFilledIcon from '@/assets/icons/like-filled.svg';
 
 type JobPostCardProps = {
   post: JobPost;

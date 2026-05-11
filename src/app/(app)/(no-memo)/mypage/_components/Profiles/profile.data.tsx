@@ -1,23 +1,24 @@
-import NicknameIcon from '@/assets/icons/common/user.svg';
-import StarIcon from '@/assets/icons/common/star.svg';
-import CoverLetterIcon from '@/assets/icons/common/cover-letter.svg';
-import CompanyIcon from '@/assets/icons/common/company.svg';
-import SkillsIcon from '@/assets/icons/common/skills.svg';
-import InterestsIcon from '@/assets/icons/common/like-outline.svg';
+import NicknameIcon from '@/assets/icons/settings/user.svg';
+import StarIcon from '@/assets/icons/settings/star.svg';
+import CoverLetterIcon from '@/assets/icons/settings/documents.svg';
+import CompanyIcon from '@/assets/icons/settings/company.svg';
+import SkillsIcon from '@/assets/icons/settings/skills.svg';
+import InterestsIcon from '@/assets/icons/like-outline.svg';
 
-import IndustryIcon from '@/assets/icons/common/industry.svg';
-import EmployeeIcon from '@/assets/icons/common/users.svg';
-import CalendarIcon from '@/assets/icons/common/calendar.svg';
+import IndustryIcon from '@/assets/icons/settings/industry.svg';
+import EmployeeIcon from '@/assets/icons/settings/users.svg';
+import CalendarIcon from '@/assets/icons/calendar.svg';
 
-import ContactIcon from '@/assets/icons/common/contact.svg';
-import EmailIcon from '@/assets/icons/common/email.svg';
-import PasswordIcon from '@/assets/icons/common/password.svg';
-import AddressIcon from '@/assets/icons/common/location.svg';
-import LogoutIcon from '@/assets/icons/action/logout.svg';
-import DeleteIcon from '@/assets/icons/action/delete.svg';
+import ContactIcon from '@/assets/icons/contact.svg';
+import EmailIcon from '@/assets/icons/settings/email.svg';
+import PasswordIcon from '@/assets/icons/settings/password.svg';
+import AddressIcon from '@/assets/icons/settings/location.svg';
 
-import EditIcon from '@/assets/icons/ui/edit.svg';
-import PlusIcon from '@/assets/icons/ui/plus.svg';
+import LogoutIcon from '@/assets/icons/settings/logout.svg';
+import DeleteIcon from '@/assets/icons/delete.svg';
+
+import EditIcon from '@/assets/icons/edit.svg';
+import PlusIcon from '@/assets/icons/plus.svg';
 import { ProfileItemData, PersonalProfile, CompanyProfile, AccountSettings } from './types';
 
 function formatDate(dateString: string) {
