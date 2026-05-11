@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
+
 import { MYPAGE_MENU_ITEMS } from '@/constants/mypageMenu';
 
 import MypageIcon from '@/assets/icons/settings/user.svg';

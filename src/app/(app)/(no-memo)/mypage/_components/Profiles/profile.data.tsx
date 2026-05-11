@@ -1,3 +1,5 @@
+import { ProfileItemData, PersonalProfile, CompanyProfile, AccountSettings } from './types';
+
 import NicknameIcon from '@/assets/icons/settings/user.svg';
 import StarIcon from '@/assets/icons/settings/star.svg';
 import DocumentIcon from '@/assets/icons/settings/documents.svg';
@@ -19,7 +21,6 @@ import DeleteIcon from '@/assets/icons/delete.svg';
 
 import EditIcon from '@/assets/icons/edit.svg';
 import PlusIcon from '@/assets/icons/plus.svg';
-import { ProfileItemData, PersonalProfile, CompanyProfile, AccountSettings } from './types';
 
 function formatDate(dateString: string) {
   const date = new Date(dateString);
