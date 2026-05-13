@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { Button } from '@/components/common/Button';
 import { ApplyInfo } from './types';
 
@@ -16,9 +15,14 @@ export default function JobApplyAction({
 }) {
   if (apply.type === 'homepage') {
     return (
-      <Link href={apply.url}>
-        <Button width={100}>{APPLY_LABEL[apply.type]}</Button>
-      </Link>
+      // <Link href={apply.url}>
+      //   <Button width={100}>{APPLY_LABEL[apply.type]}</Button>
+      // </Link>
+      <Button asChild width={100}>
+        <a href={apply.url} target="_blank" rel="noopener noreferrer">
+          {APPLY_LABEL[apply.type]}
+        </a>
+      </Button>
     );
   }
 
