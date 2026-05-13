@@ -35,7 +35,7 @@
   --color-gray-300: #e2e2e2;
   --color-gray-400: #d2d2d2;
   --color-gray-500: #a8a8a8;
-  --color-gray-500-rgb: 168 168 168; /* overlay */
+  --color-gray-500-rgb: 168 168 168;
   --color-gray-600: #7f7f7f;
   --color-gray-700: #555555;
   --color-gray-800: #404040;
@@ -86,7 +86,7 @@
   --color-bg-3: var(--color-background-3);
   --color-bg-white: var(--color-gray-50);
 
-  --color-overlay-dim: rgb(var(--color-gray-500-rgb) / 0.6);
+  --color-overlay-dim: rgb(0 0 0 / 0.5);
 
   --color-text: var(--color-gray-950);
   --color-text-muted: var(--color-gray-500);
@@ -118,6 +118,7 @@
     padding: 0;
     background-color: var(--color-bg-white);
     color: var(--color-text);
+    letter-spacing: -0.02em;
   }
 
   a {

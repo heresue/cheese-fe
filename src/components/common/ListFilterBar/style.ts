@@ -24,7 +24,7 @@ export const listFilterBarClassNames = {
     'pointer-events-none absolute left-[12px] flex h-[20px] w-[20px] items-center justify-center text-gray-500',
 
   searchInput:
-    'h-full w-full rounded-[10px] border border-gray-400 bg-bg-white px-[12px] pl-[44px] pr-[64px] font-sans text-[14px] font-medium leading-[20px] tracking-[-0.02em] text-text outline-none placeholder:font-medium placeholder:text-gray-500 focus:!border-gray-400 focus:!ring-0',
+    'h-full w-full rounded-[10px] border border-gray-400 bg-bg-white px-[12px] pl-[44px] pr-[64px] font-sans text-[14px] font-medium leading-[20px] text-text outline-none placeholder:font-medium placeholder:text-gray-500 focus:!border-gray-400 focus:!ring-0',
 
   searchRightControls: 'absolute right-[12px] flex items-center justify-center gap-[12px]',
 
@@ -42,7 +42,7 @@ export const listFilterBarClassNames = {
     'absolute left-0 top-[calc(100%+8px)] z-50 flex w-full flex-col rounded-[10px] border border-gray-300 bg-bg-white py-2 shadow-[0_4px_20px_rgb(var(--color-gray-500-rgb)/0.25)]',
 
   searchHistoryItem:
-    'flex h-[40px] w-full items-center rounded-[10px] px-[14px] text-left text-[14px] font-medium leading-[20px] tracking-[-0.02em] text-text hover:!bg-transparent focus:!bg-transparent active:!bg-transparent',
+    'flex h-[40px] w-full items-center rounded-[10px] px-[14px] text-left text-[14px] font-medium leading-[20px] text-text hover:!bg-transparent focus:!bg-transparent active:!bg-transparent',
 
   actionButton:
     'inline-flex !items-center !justify-center !gap-0 rounded-[10px] border border-secondary-600 bg-secondary-600 !p-0 font-sans text-gray-50 hover:!border-secondary-600 hover:!bg-secondary-600 hover:!text-gray-50 active:!border-secondary-600 active:!bg-secondary-600 active:!text-gray-50 focus:!border-secondary-600 focus:!bg-secondary-600 focus:!text-gray-50 focus-visible:!outline-none disabled:cursor-not-allowed disabled:opacity-50',
@@ -55,5 +55,5 @@ export const listFilterBarClassNames = {
   actionButtonIcon: 'block h-[17px] w-[16px] shrink-0 [&_*]:fill-current',
 
   actionButtonLabel:
-    'inline-flex h-[24px] items-center font-sans text-[14px] font-medium leading-[24px] tracking-[-0.02em] text-gray-50',
+    'inline-flex h-[24px] items-center font-sans text-[14px] font-medium leading-[24px] text-gray-50',
 };

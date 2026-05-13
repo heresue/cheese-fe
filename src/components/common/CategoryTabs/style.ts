@@ -4,11 +4,11 @@ export const categoryTabsClassNames = {
   list: 'flex flex-wrap items-center gap-[10px]',
 
   buttonBase:
-    'inline-flex items-center justify-center whitespace-nowrap rounded-[10px] bg-bg-white outline-none disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-100 disabled:text-text-muted',
+    'inline-flex items-center justify-center gap-3 whitespace-nowrap rounded-[10px] bg-bg-white outline-none disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-100 disabled:text-text-muted',
 
   buttonSize: {
-    sm: 'h-[44px]  px-[18px] text-[14px] leading-[24px] tracking-[-0.02em]',
-    md: 'h-[54px]  px-[20px] text-[16px] leading-[30px] tracking-[-0.02em]',
+    sm: 'h-[44px] px-[18px] text-[14px] leading-[24px]',
+    md: 'h-[54px] px-[20px] text-[16px] leading-[30px]',
   } satisfies Record<CategoryTabsSize, string>,
 
   active:

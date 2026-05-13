@@ -17,6 +17,7 @@ function CategoryTabs<TValue extends string = string>({
   return (
     <div className={cn(styles.list, className)} role="tablist">
       {items.map((item) => {
+        const Icon = item.icon;
         const isActive = item.value === activeValue;
 
         return (
@@ -35,6 +36,7 @@ function CategoryTabs<TValue extends string = string>({
               onChange(item.value);
             }}
           >
+            {Icon && <Icon className={cn('h-[14px] w-[14px]', !isActive && 'text-gray-500')} />}
             {item.label}
           </button>
         );

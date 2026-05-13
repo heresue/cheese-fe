@@ -1,7 +1,10 @@
+import { Slot } from '@radix-ui/react-slot';
+
 import type { ButtonProps } from './type';
 import { getButtonStyle } from './style';
 
 export default function Button({
+  asChild = false,
   variant = 'default',
   size = 40,
   paddingX,
@@ -28,15 +31,22 @@ export default function Button({
     circleSize,
   });
 
+  const Component = asChild ? Slot : 'button';
+  const componentProps = asChild
+    ? {}
+    : {
+        type,
+        disabled: isDisabled,
+      };
+
   return (
-    <button
-      type={type}
-      disabled={isDisabled}
+    <Component
+      {...componentProps}
       className={buttonStyle.className}
       style={buttonStyle.style}
       {...rest}
     >
       {children}
-    </button>
+    </Component>
   );
 }

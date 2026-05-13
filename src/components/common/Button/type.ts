@@ -12,6 +12,7 @@ export type ButtonVariant =
   | 'circle';
 
 export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
+  asChild?: boolean;
   variant?: ButtonVariant;
   size?: ButtonSize;
   paddingX?: number;
