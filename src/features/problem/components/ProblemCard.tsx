@@ -20,32 +20,32 @@ export default function ProblemCard({ problemSet }: ProblemCardProps) {
   return (
     <Link
       href={`/problem/${problemSet.id}`}
-      className="bg-bg-white block h-[250px] w-[226px] overflow-hidden rounded-[8px] border border-gray-300 transition-shadow hover:shadow-[0_4px_16px_rgb(var(--color-gray-500-rgb)/0.25)]"
+      className="bg-bg-white block h-[250px] w-[231px] overflow-hidden rounded-[8px] shadow-[0_4px_10px_rgba(0,0,0,0.10)]"
     >
       <div className="relative h-[140px] w-full overflow-hidden">
         <Image
           src={thumbnailSrcMap[problemSet.thumbnailType]}
           alt={`${problemSet.title} 썸네일`}
           fill
-          sizes="226px"
+          sizes="231px"
           className="object-cover"
         />
 
-        <span className="bg-bg-white absolute top-[14px] left-[14px] flex h-[26px] min-w-[40px] items-center justify-center rounded-full px-[10px] font-sans text-[12px] leading-none font-bold text-gray-900">
+        <span className="bg-bg-white absolute top-[12px] left-[12px] flex h-[24px] w-[38px] items-center justify-center rounded-[50px] font-sans text-[12px] leading-[24px] font-bold tracking-[-0.02em] text-gray-950">
           {problemSet.badge}
         </span>
       </div>
 
-      <div className="px-[18px] pt-[14px]">
-        <h3 className="text-text truncate font-sans text-[15px] leading-[22px] font-semibold tracking-[-0.02em]">
+      <div className="flex h-[110px] flex-col pt-[12px] pr-[22px] pb-[12px] pl-[20px]">
+        <h3 className="h-[30px] w-full truncate font-sans text-[16px] leading-[30px] font-medium tracking-[-0.02em] text-gray-950">
           {problemSet.title}
         </h3>
 
-        <p className="text-text-muted mt-[6px] font-sans text-[12px] leading-[18px] font-medium tracking-[-0.02em]">
+        <p className="font-sans text-[12px] leading-[20px] font-normal tracking-[-0.02em] text-gray-600">
           {problemSet.lastProgressDate} 진행
         </p>
 
-        <div className="mt-[14px]">
+        <div className="mt-auto">
           <div className="h-[4px] w-full overflow-hidden rounded-full bg-gray-200">
             <div
               className="bg-secondary-600 h-full rounded-full"
@@ -53,7 +53,7 @@ export default function ProblemCard({ problemSet }: ProblemCardProps) {
             />
           </div>
 
-          <div className="mt-[5px] flex justify-end font-sans text-[12px] leading-[18px] font-medium tracking-[-0.02em] text-gray-600">
+          <div className="mt-[6px] flex justify-end font-sans text-[12px] leading-[20px] font-normal tracking-[-0.02em] text-gray-600">
             {problemSet.solvedCount}/{problemSet.totalCount}
           </div>
         </div>

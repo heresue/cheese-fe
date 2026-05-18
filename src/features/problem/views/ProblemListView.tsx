@@ -125,7 +125,7 @@ export default function ProblemListView() {
   return (
     <main className="bg-bg-white min-h-0">
       <div ref={scrollAreaRef} className="h-dvh min-h-0 overflow-y-auto overscroll-contain">
-        <section className="mx-auto w-[1038px] max-w-full py-[40px] pb-[80px]">
+        <section className="mx-auto w-[1100px] max-w-full py-[40px] pb-[100px]">
           <div className="flex flex-col gap-[14px]">
             <ListFilterBar
               sortOptions={PROBLEM_SORT_OPTIONS}
