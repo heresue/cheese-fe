@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 import type { ProblemSet, ProblemThumbnailType } from '../types/problem';
@@ -6,49 +7,11 @@ type ProblemCardProps = {
   problemSet: ProblemSet;
 };
 
-function cn(...classNames: Array<string | false | null | undefined>) {
-  return classNames.filter(Boolean).join(' ');
-}
-
-const thumbnailClassNameMap: Record<ProblemThumbnailType, string> = {
-  css: 'bg-[linear-gradient(135deg,#13A8E8_0%,#0668B7_100%)]',
-  html: 'bg-[linear-gradient(135deg,#FF9B3D_0%,#E9581A_100%)]',
-  js: 'bg-[#FFE058]',
+const thumbnailSrcMap: Record<ProblemThumbnailType, string> = {
+  css: '/images/problem/css.png',
+  html: '/images/problem/html.png',
+  js: '/images/problem/js.png',
 };
-
-function ProblemThumbnail({ type }: { type: ProblemThumbnailType }) {
-  if (type === 'js') {
-    return (
-      <div
-        className={cn(
-          'flex h-full w-full items-center justify-center',
-          thumbnailClassNameMap[type],
-        )}
-      >
-        <span className="font-sans text-[44px] leading-none font-bold tracking-[-0.02em] text-black">
-          JS
-        </span>
-      </div>
-    );
-  }
-
-  const label = type === 'css' ? 'CSS' : 'HTML';
-  const number = type === 'css' ? '3' : '5';
-
-  return (
-    <div
-      className={cn(
-        'relative flex h-full w-full items-center justify-center overflow-hidden',
-        thumbnailClassNameMap[type],
-      )}
-    >
-      <span className="absolute top-[16px] left-[20px] font-sans text-[24px] leading-none font-bold text-white">
-        {label}
-      </span>
-      <span className="font-sans text-[92px] leading-none font-black text-white/90">{number}</span>
-    </div>
-  );
-}
 
 export default function ProblemCard({ problemSet }: ProblemCardProps) {
   const progressPercent =
@@ -60,7 +23,13 @@ export default function ProblemCard({ problemSet }: ProblemCardProps) {
       className="bg-bg-white block h-[250px] w-[226px] overflow-hidden rounded-[8px] border border-gray-300 transition-shadow hover:shadow-[0_4px_16px_rgb(var(--color-gray-500-rgb)/0.25)]"
     >
       <div className="relative h-[140px] w-full overflow-hidden">
-        <ProblemThumbnail type={problemSet.thumbnailType} />
+        <Image
+          src={thumbnailSrcMap[problemSet.thumbnailType]}
+          alt={`${problemSet.title} 썸네일`}
+          fill
+          sizes="226px"
+          className="object-cover"
+        />
 
         <span className="bg-bg-white absolute top-[14px] left-[14px] flex h-[26px] min-w-[40px] items-center justify-center rounded-full px-[10px] font-sans text-[12px] leading-none font-bold text-gray-900">
           {problemSet.badge}

@@ -17,7 +17,7 @@ export default function ProblemCardGrid({ problemSets }: ProblemCardGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-4 gap-x-[34px] gap-y-[42px]">
+    <div className="grid grid-cols-[repeat(4,226px)] gap-x-[34px] gap-y-[42px]">
       {problemSets.map((problemSet) => (
         <ProblemCard key={problemSet.id} problemSet={problemSet} />
       ))}

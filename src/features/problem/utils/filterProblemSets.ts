@@ -30,12 +30,13 @@ export function filterProblemSets({
     const isKeywordMatched =
       normalizedKeyword.length === 0 ||
       problemSet.title.toLowerCase().includes(normalizedKeyword) ||
-      problemSet.subCategory.toLowerCase().includes(normalizedKeyword);
+      problemSet.category.toLowerCase().includes(normalizedKeyword) ||
+      problemSet.subCategory?.toLowerCase().includes(normalizedKeyword);
 
     return isMainCategoryMatched && isSubCategoryMatched && isKeywordMatched;
   });
 
-  return filteredProblemSets.sort((a, b) => {
+  return [...filteredProblemSets].sort((a, b) => {
     if (sort === 'name') {
       return a.title.localeCompare(b.title);
     }
@@ -44,6 +45,6 @@ export function filterProblemSets({
       return b.lastProgressDate.localeCompare(a.lastProgressDate);
     }
 
-    return b.id.localeCompare(a.id);
+    return b.createdAt.localeCompare(a.createdAt);
   });
 }

@@ -10,7 +10,10 @@ export type ProblemSubCategory =
   | 'java'
   | 'mysql'
   | 'python'
-  | 'nodejs';
+  | 'nodejs'
+  | 'network'
+  | 'os'
+  | 'database';
 
 export type ProblemSortValue = 'latest' | 'progressDate' | 'name';
 
@@ -22,10 +25,11 @@ export type ProblemSet = {
   id: string;
   title: string;
   category: Exclude<ProblemMainCategory, 'all'>;
-  subCategory: Exclude<ProblemSubCategory, 'all'>;
+  subCategory?: Exclude<ProblemSubCategory, 'all'>;
   badge: ProblemBadge;
   thumbnailType: ProblemThumbnailType;
   lastProgressDate: string;
+  createdAt: string;
   solvedCount: number;
   totalCount: number;
 };
