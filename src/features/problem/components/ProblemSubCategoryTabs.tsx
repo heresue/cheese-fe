@@ -25,7 +25,7 @@ export default function ProblemSubCategoryTabs({
   }
 
   return (
-    <div className="flex items-center gap-[28px]">
+    <div className="flex h-[30px] items-center gap-[28px] pl-[20px]">
       {items.map((item) => {
         const isActive = item.value === activeValue;
 
@@ -34,8 +34,8 @@ export default function ProblemSubCategoryTabs({
             key={item.value}
             type="button"
             className={cn(
-              'font-sans text-[13px] leading-[20px] tracking-[-0.02em]',
-              isActive ? 'text-secondary-800 font-semibold' : 'font-medium text-gray-700',
+              'h-[30px] font-sans text-[14px] leading-[30px] font-medium tracking-[-0.02em]',
+              isActive ? 'text-secondary-800' : 'text-gray-700',
             )}
             onClick={() => {
               onChange(item.value);
