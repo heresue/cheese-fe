@@ -123,7 +123,7 @@ export default function ProblemListView() {
   }, [filteredProblemSets.length, hasMoreProblemSets]);
 
   return (
-    <main className="bg-bg-white min-h-0">
+    <main className="min-h-0">
       <div ref={scrollAreaRef} className="h-dvh min-h-0 overflow-y-auto overscroll-contain">
         <section className="mx-auto w-[1100px] max-w-full py-[40px] pb-[100px]">
           <div className="flex flex-col gap-[10px]">
@@ -162,9 +162,7 @@ export default function ProblemListView() {
 
           {hasMoreProblemSets && (
             <div ref={loadMoreRef} className="flex h-[96px] items-center justify-center">
-              <span className="text-text-muted font-sans text-[13px] font-medium">
-                더 불러오는 중...
-              </span>
+              <span className="text-text-muted text-[13px] font-medium">더 불러오는 중...</span>
             </div>
           )}
         </section>

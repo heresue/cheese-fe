@@ -15,7 +15,9 @@ const thumbnailSrcMap: Record<ProblemThumbnailType, string> = {
 
 export default function ProblemCard({ problemSet }: ProblemCardProps) {
   const progressPercent =
-    problemSet.totalCount === 0 ? 0 : (problemSet.solvedCount / problemSet.totalCount) * 100;
+    problemSet.totalCount <= 0
+      ? 0
+      : Math.min(100, Math.max(0, (problemSet.solvedCount / problemSet.totalCount) * 100));
 
   return (
     <Link
@@ -31,17 +33,17 @@ export default function ProblemCard({ problemSet }: ProblemCardProps) {
           className="object-cover"
         />
 
-        <span className="bg-bg-white absolute top-[12px] left-[12px] flex h-[24px] w-[38px] items-center justify-center rounded-[50px] font-sans text-[12px] leading-[24px] font-bold tracking-[-0.02em] text-gray-950">
+        <span className="bg-bg-white absolute top-[12px] left-[12px] flex h-[24px] w-[38px] items-center justify-center rounded-[50px] text-[12px] leading-[24px] font-bold">
           {problemSet.badge}
         </span>
       </div>
 
       <div className="flex h-[110px] flex-col pt-[12px] pr-[22px] pb-[12px] pl-[20px]">
-        <h3 className="h-[30px] w-full truncate font-sans text-[16px] leading-[30px] font-medium tracking-[-0.02em] text-gray-950">
+        <h3 className="h-[30px] w-full truncate text-[16px] leading-[30px] font-medium">
           {problemSet.title}
         </h3>
 
-        <p className="font-sans text-[12px] leading-[20px] font-normal tracking-[-0.02em] text-gray-600">
+        <p className="text-[12px] leading-[20px] font-normal text-gray-600">
           {problemSet.lastProgressDate} 진행
         </p>
 
@@ -53,7 +55,7 @@ export default function ProblemCard({ problemSet }: ProblemCardProps) {
             />
           </div>
 
-          <div className="mt-[6px] flex justify-end font-sans text-[12px] leading-[20px] font-normal tracking-[-0.02em] text-gray-600">
+          <div className="mt-[6px] flex justify-end text-[12px] leading-[20px] font-normal text-gray-600">
             {problemSet.solvedCount}/{problemSet.totalCount}
           </div>
         </div>

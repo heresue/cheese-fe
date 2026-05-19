@@ -34,7 +34,7 @@ export default function ProblemSubCategoryTabs({
             key={item.value}
             type="button"
             className={cn(
-              'h-[30px] font-sans text-[14px] leading-[30px] font-medium tracking-[-0.02em]',
+              'h-[30px] text-[14px] leading-[30px] font-medium',
               isActive ? 'text-secondary-800' : 'text-gray-700',
             )}
             onClick={() => {
