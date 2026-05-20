@@ -1,22 +1,22 @@
 'use client';
 
 import { createPortal } from 'react-dom';
-import { usePopupBehavior } from '@/hooks/usePopupBehavior';
+import { useModalBehavior } from '@/hooks/useModalBehavior';
 
-type BasePopupProps = {
+type BaseModalProps = {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
   closeOnDimClick?: boolean;
 };
 
-export default function BasePopup({
+export default function BaseModal({
   isOpen,
   onClose,
   children,
   closeOnDimClick = true,
-}: BasePopupProps) {
-  usePopupBehavior({ isOpen, onClose });
+}: BaseModalProps) {
+  useModalBehavior({ isOpen, onClose });
 
   if (!isOpen) return null;
   if (typeof window === 'undefined') return null;

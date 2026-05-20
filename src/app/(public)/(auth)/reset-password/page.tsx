@@ -4,7 +4,7 @@ import { useState } from 'react';
 import EmailStep from './_components/EmailStep';
 import VerifyStep from './_components/VerifyStep';
 import NewPasswordStep from './_components/NewPasswordStep';
-import DonePopup from './_components/DonePopup';
+import DoneModal from './_components/DoneModal';
 
 type Step = 'EMAIL' | 'VERIFY' | 'NEW_PASSWORD';
 
@@ -20,7 +20,7 @@ export default function ResetPasswordPage() {
 
       {step === 'NEW_PASSWORD' && <NewPasswordStep onComplete={() => setIsDoneOpen(true)} />}
 
-      <DonePopup isOpen={isDoneOpen} onClose={() => setIsDoneOpen(false)} />
+      <DoneModal isOpen={isDoneOpen} onClose={() => setIsDoneOpen(false)} />
     </>
   );
 }

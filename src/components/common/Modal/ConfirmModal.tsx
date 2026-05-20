@@ -3,9 +3,9 @@
 import clsx from 'clsx';
 import { Button } from '@/components/common/Button';
 import { Panel } from '@/components/common/Panel';
-import BasePopup from './BasePopup';
+import BaseModal from './BaseModal';
 
-type ConfirmPopupProps = {
+type ConfirmModalProps = {
   isOpen: boolean;
   onClose: () => void;
 
@@ -18,7 +18,7 @@ type ConfirmPopupProps = {
   children?: React.ReactNode;
 };
 
-export default function ConfirmPopup({
+export default function ConfirmModal({
   isOpen,
   onClose,
   title,
@@ -26,9 +26,9 @@ export default function ConfirmPopup({
   primaryText,
   onPrimaryClick,
   children,
-}: ConfirmPopupProps) {
+}: ConfirmModalProps) {
   return (
-    <BasePopup isOpen={isOpen} onClose={onClose}>
+    <BaseModal isOpen={isOpen} onClose={onClose}>
       <Panel
         role="dialog"
         aria-modal="true"
@@ -56,6 +56,6 @@ export default function ConfirmPopup({
           </div>
         </div>
       </Panel>
-    </BasePopup>
+    </BaseModal>
   );
 }

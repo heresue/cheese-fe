@@ -3,9 +3,9 @@
 import clsx from 'clsx';
 import { Panel } from '@/components/common/Panel';
 import CloseIcon from '@/assets/icons/close.svg';
-import BasePopup from './BasePopup';
+import BaseModal from './BaseModal';
 
-type DocumentPopupProps = {
+type DocumentModalProps = {
   isOpen: boolean;
   onClose: () => void;
   title: string;
@@ -13,15 +13,15 @@ type DocumentPopupProps = {
   className?: string;
 };
 
-export default function DocumentPopup({
+export default function DocumentModal({
   isOpen,
   onClose,
   title,
   children,
   className,
-}: DocumentPopupProps) {
+}: DocumentModalProps) {
   return (
-    <BasePopup isOpen={isOpen} onClose={onClose}>
+    <BaseModal isOpen={isOpen} onClose={onClose}>
       <Panel
         role="dialog"
         aria-modal="true"
@@ -52,6 +52,6 @@ export default function DocumentPopup({
         {/* Body */}
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">{children}</div>
       </Panel>
-    </BasePopup>
+    </BaseModal>
   );
 }

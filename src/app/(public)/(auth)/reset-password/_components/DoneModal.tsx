@@ -1,18 +1,18 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import ConfirmPopup from '@/components/common/Popup/ConfirmPopup';
+import ConfirmModal from '@/components/common/Modal/ConfirmModal';
 
-type DonePopupProps = {
+type DoneModalProps = {
   isOpen: boolean;
   onClose: () => void;
 };
 
-export default function DonePopup({ isOpen, onClose }: DonePopupProps) {
+export default function DoneModal({ isOpen, onClose }: DoneModalProps) {
   const router = useRouter();
 
   return (
-    <ConfirmPopup
+    <ConfirmModal
       isOpen={isOpen}
       onClose={onClose}
       title="비밀번호 변경 완료"
