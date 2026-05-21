@@ -50,7 +50,7 @@ export default function AuthConfirmModal({
           {children ? <div className="mt-[29px] w-full">{children}</div> : null}
 
           <div className="mt-6 w-full">
-            <Button onClick={onPrimaryClick ?? onClose} className="font-bold">
+            <Button onClick={onPrimaryClick ?? onClose} paddingX={20} className="font-bold">
               {primaryText}
             </Button>
           </div>
