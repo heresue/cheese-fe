@@ -1,6 +1,6 @@
 'use client';
 
-import DocumentModal from '@/components/common/Modal/DocumentModal';
+import DocumentModal from '../../_components/DocumentModal';
 import TermsContent from './TermsContent';
 
 type TermsModalProps = {

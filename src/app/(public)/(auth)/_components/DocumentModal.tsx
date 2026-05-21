@@ -3,7 +3,7 @@
 import clsx from 'clsx';
 import { Panel } from '@/components/common/Panel';
 import CloseIcon from '@/assets/icons/close.svg';
-import BaseModal from './BaseModal';
+import BaseModal from '@/components/common/Modal/BaseModal';
 
 type DocumentModalProps = {
   isOpen: boolean;

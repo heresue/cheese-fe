@@ -3,9 +3,9 @@
 import clsx from 'clsx';
 import { Button } from '@/components/common/Button';
 import { Panel } from '@/components/common/Panel';
-import BaseModal from './BaseModal';
+import BaseModal from '@/components/common/Modal/BaseModal';
 
-type ConfirmModalProps = {
+type AuthConfirmModalProps = {
   isOpen: boolean;
   onClose: () => void;
 
@@ -18,7 +18,7 @@ type ConfirmModalProps = {
   children?: React.ReactNode;
 };
 
-export default function ConfirmModal({
+export default function AuthConfirmModal({
   isOpen,
   onClose,
   title,
@@ -26,7 +26,7 @@ export default function ConfirmModal({
   primaryText,
   onPrimaryClick,
   children,
-}: ConfirmModalProps) {
+}: AuthConfirmModalProps) {
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
       <Panel

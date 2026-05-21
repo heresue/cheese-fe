@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import ConfirmModal from '@/components/common/Modal/ConfirmModal';
+import ConfirmModal from '../../_components/AuthConfirmModal';
 
 type DoneModalProps = {
   isOpen: boolean;
