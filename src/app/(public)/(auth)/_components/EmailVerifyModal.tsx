@@ -15,7 +15,7 @@ export default function EmailVerifyModal({
   onNext,
 }: EmailVerifyPopupProps) {
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose}>
+    <BaseModal isOpen={isOpen} onClose={onClose} hasOverlay>
       <div className="flex w-[457px] flex-col gap-10 rounded-[25px] bg-white px-14 py-10">
         <div>
           <Image src="/brands/cheese-logo.svg" alt="CHEESE" width={125} height={34} priority />

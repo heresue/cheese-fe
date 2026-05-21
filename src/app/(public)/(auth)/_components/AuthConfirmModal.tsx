@@ -27,7 +27,7 @@ export default function AuthConfirmModal({
   children,
 }: AuthConfirmModalProps) {
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose}>
+    <BaseModal isOpen={isOpen} onClose={onClose} hasOverlay>
       <div
         role="dialog"
         aria-modal="true"

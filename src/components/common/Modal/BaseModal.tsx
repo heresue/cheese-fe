@@ -8,13 +8,19 @@ type BaseModalProps = {
   onClose: () => void;
   children: React.ReactNode;
   closeOnDimClick?: boolean;
+  hasOverlay?: boolean;
 };
+
+function cn(...classNames: Array<string | false | null | undefined>) {
+  return classNames.filter(Boolean).join(' ');
+}
 
 export default function BaseModal({
   isOpen,
   onClose,
   children,
   closeOnDimClick = true,
+  hasOverlay = false,
 }: BaseModalProps) {
   useModalBehavior({ isOpen, onClose });
 
@@ -28,7 +34,8 @@ export default function BaseModal({
 
   return createPortal(
     <div
-      className="bg-overlay-dim fixed inset-0 z-50 overflow-hidden"
+      // className="bg-overlay-dim fixed inset-0 z-50 overflow-hidden"
+      className={cn('fixed inset-0 z-50 overflow-hidden', hasOverlay ? 'bg-overlay-dim' : '')}
       onClick={handleOverlayClick}
       role="presentation"
     >

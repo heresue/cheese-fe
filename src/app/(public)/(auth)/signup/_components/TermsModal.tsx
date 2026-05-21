@@ -11,7 +11,7 @@ type TermsModalProps = {
 
 export default function TermsModal({ isOpen, onClose }: TermsModalProps) {
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose}>
+    <BaseModal isOpen={isOpen} onClose={onClose} hasOverlay>
       <div
         role="dialog"
         aria-modal="true"
