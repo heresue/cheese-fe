@@ -2,7 +2,6 @@
 
 import clsx from 'clsx';
 import { Button } from '@/components/common/Button';
-import { Panel } from '@/components/common/Panel';
 import BaseModal from '@/components/common/Modal/BaseModal';
 
 type AuthConfirmModalProps = {
@@ -29,10 +28,11 @@ export default function AuthConfirmModal({
 }: AuthConfirmModalProps) {
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
-      <Panel
+      <div
         role="dialog"
         aria-modal="true"
         className={clsx(
+          'bg-bg-white rounded-lg shadow-[0_0_4px_rgba(0,0,0,0.25)]',
           'w-[min(385px,calc(100vw-32px))]',
           'max-h-[calc(100dvh-160px)] md:max-h-[calc(100dvh-316px)]',
           'flex flex-col overflow-hidden',
@@ -55,7 +55,7 @@ export default function AuthConfirmModal({
             </Button>
           </div>
         </div>
-      </Panel>
+      </div>
     </BaseModal>
   );
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import clsx from 'clsx';
-import { Panel } from '@/components/common/Panel';
 import CloseIcon from '@/assets/icons/close.svg';
 import BaseModal from '@/components/common/Modal/BaseModal';
 
@@ -22,11 +21,9 @@ export default function DocumentModal({
 }: DocumentModalProps) {
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
-      <Panel
-        role="dialog"
-        aria-modal="true"
-        rounded={false}
+      <div
         className={clsx(
+          'bg-bg-white shadow-[0_0_4px_rgba(0,0,0,0.25)]',
           'w-[min(640px,calc(100vw-32px))] sm:w-[min(630px,calc(100vw-48px))]',
           'max-h-[calc(100dvh-160px)] md:max-h-[calc(100dvh-316px)]',
           'flex flex-col overflow-hidden',
@@ -51,7 +48,7 @@ export default function DocumentModal({
 
         {/* Body */}
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">{children}</div>
-      </Panel>
+      </div>
     </BaseModal>
   );
 }
