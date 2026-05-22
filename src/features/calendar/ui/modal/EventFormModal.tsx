@@ -1,6 +1,6 @@
 'use client';
 
-import BasePopup from '@/components/common/Popup/BasePopup';
+import BaseModal from '@/components/common/Modal/BaseModal';
 import type { CalendarEventDraft } from '../../model/types';
 import EventForm from './EventForm';
 
@@ -13,7 +13,7 @@ type EventFormModalProps = {
 
 export function EventFormModal({ open, draft, onClose, onSubmit }: EventFormModalProps) {
   return (
-    <BasePopup isOpen={open} onClose={onClose}>
+    <BaseModal isOpen={open} onClose={onClose}>
       <div className="border-border bg-bg-white w-[520px] max-w-full rounded-2xl border">
         <div className="border-border flex items-center justify-between border-b px-5 py-4">
           <h2 className="text-base font-semibold">일정 생성</h2>
@@ -32,6 +32,6 @@ export function EventFormModal({ open, draft, onClose, onSubmit }: EventFormModa
           <EventForm initialValue={draft} onCancel={onClose} onSubmit={onSubmit} />
         </div>
       </div>
-    </BasePopup>
+    </BaseModal>
   );
 }

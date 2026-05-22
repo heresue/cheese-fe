@@ -2,10 +2,9 @@
 
 import clsx from 'clsx';
 import { Button } from '@/components/common/Button';
-import { Panel } from '@/components/common/Panel';
-import BasePopup from './BasePopup';
+import BaseModal from '@/components/common/Modal/BaseModal';
 
-type ConfirmPopupProps = {
+type AuthConfirmModalProps = {
   isOpen: boolean;
   onClose: () => void;
 
@@ -18,7 +17,7 @@ type ConfirmPopupProps = {
   children?: React.ReactNode;
 };
 
-export default function ConfirmPopup({
+export default function AuthConfirmModal({
   isOpen,
   onClose,
   title,
@@ -26,13 +25,14 @@ export default function ConfirmPopup({
   primaryText,
   onPrimaryClick,
   children,
-}: ConfirmPopupProps) {
+}: AuthConfirmModalProps) {
   return (
-    <BasePopup isOpen={isOpen} onClose={onClose}>
-      <Panel
+    <BaseModal isOpen={isOpen} onClose={onClose} hasOverlay>
+      <div
         role="dialog"
         aria-modal="true"
         className={clsx(
+          'bg-bg-white rounded-lg shadow-[0_0_4px_rgba(0,0,0,0.25)]',
           'w-[min(385px,calc(100vw-32px))]',
           'max-h-[calc(100dvh-160px)] md:max-h-[calc(100dvh-316px)]',
           'flex flex-col overflow-hidden',
@@ -50,12 +50,12 @@ export default function ConfirmPopup({
           {children ? <div className="mt-[29px] w-full">{children}</div> : null}
 
           <div className="mt-6 w-full">
-            <Button onClick={onPrimaryClick ?? onClose} className="font-bold">
+            <Button onClick={onPrimaryClick ?? onClose} paddingX={20} className="font-bold">
               {primaryText}
             </Button>
           </div>
         </div>
-      </Panel>
-    </BasePopup>
+      </div>
+    </BaseModal>
   );
 }

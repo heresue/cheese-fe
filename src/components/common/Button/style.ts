@@ -2,7 +2,8 @@ import type { CSSProperties } from 'react';
 import clsx from 'clsx';
 import type { ButtonProps, ButtonSize, ButtonVariant } from './type';
 
-const base = 'inline-flex items-center justify-center font-medium whitespace-nowrap';
+const base =
+  'inline-flex items-center justify-center font-medium whitespace-nowrap hover:!opacity-80';
 
 const disabledStateClass = 'cursor-not-allowed pointer-events-none';
 const filledDisabled = 'bg-gray-400 text-gray-50';

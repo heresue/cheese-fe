@@ -1,16 +1,16 @@
 import { useEffect } from 'react';
 
-type UsePopupBehaviorProps = {
+type UseModalBehaviorProps = {
   isOpen: boolean;
   onClose: () => void;
 };
 
 /**
- * 팝업 열림 상태에서
+ * 모달 열림 상태에서
  * - ESC 키 닫기
  * - body 스크롤 차단
  */
-export function usePopupBehavior({ isOpen, onClose }: UsePopupBehaviorProps) {
+export function useModalBehavior({ isOpen, onClose }: UseModalBehaviorProps) {
   // ESC 키 닫기
   useEffect(() => {
     if (!isOpen) return;

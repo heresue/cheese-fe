@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { BasePopup } from '@/components/common/Popup';
+import { BaseModal } from '@/components/common/Modal';
 import EmailVerifyForm, { EmailVerifyBaseProps } from './EmailVerifyForm';
 
 type EmailVerifyPopupProps = EmailVerifyBaseProps & {
@@ -7,7 +7,7 @@ type EmailVerifyPopupProps = EmailVerifyBaseProps & {
   onClose: () => void;
 };
 
-export default function EmailVerifyPopup({
+export default function EmailVerifyModal({
   isOpen,
   onClose,
   title,
@@ -15,7 +15,7 @@ export default function EmailVerifyPopup({
   onNext,
 }: EmailVerifyPopupProps) {
   return (
-    <BasePopup isOpen={isOpen} onClose={onClose}>
+    <BaseModal isOpen={isOpen} onClose={onClose} hasOverlay>
       <div className="flex w-[457px] flex-col gap-10 rounded-[25px] bg-white px-14 py-10">
         <div>
           <Image src="/brands/cheese-logo.svg" alt="CHEESE" width={125} height={34} priority />
@@ -30,6 +30,6 @@ export default function EmailVerifyPopup({
           }}
         />
       </div>
-    </BasePopup>
+    </BaseModal>
   );
 }
