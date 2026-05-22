@@ -20,6 +20,7 @@ export default function ProblemResultView({ problemSetId }: ProblemResultViewPro
   const [isTocOpen, setIsTocOpen] = useState(false);
 
   const firstQuestion = mockProblemQuestions[0];
+  const lastQuestion = mockProblemQuestions[mockProblemQuestions.length - 1];
 
   return (
     <main className="bg-bg-1 min-h-dvh">
@@ -53,6 +54,14 @@ export default function ProblemResultView({ problemSetId }: ProblemResultViewPro
         isOpen={isTocOpen}
         onClose={() => {
           setIsTocOpen(false);
+        }}
+        navigation={{
+          previousHref: lastQuestion
+            ? `/problem/${problemSetId}/questions/${lastQuestion.id}`
+            : undefined,
+          nextDisabled: true,
+          exitHref: '/problem',
+          previousDisabled: !lastQuestion,
         }}
       />
     </main>

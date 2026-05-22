@@ -27,6 +27,7 @@ export default function ProblemQuestionView({
   const [isTocOpen, setIsTocOpen] = useState(false);
 
   const isLastQuestion = questionIndex === mockProblemQuestions.length - 1;
+  const previousQuestion = mockProblemQuestions[questionIndex - 1];
   const nextQuestion = mockProblemQuestions[questionIndex + 1];
 
   useEffect(() => {
@@ -80,6 +81,17 @@ export default function ProblemQuestionView({
         isOpen={isTocOpen}
         onClose={() => {
           setIsTocOpen(false);
+        }}
+        navigation={{
+          previousHref: previousQuestion
+            ? `/problem/${problemSetId}/questions/${previousQuestion.id}`
+            : undefined,
+          nextHref: nextQuestion
+            ? `/problem/${problemSetId}/questions/${nextQuestion.id}`
+            : `/problem/${problemSetId}/result`,
+          exitHref: `/problem/${problemSetId}`,
+          previousDisabled: !previousQuestion,
+          nextDisabled: false,
         }}
       />
     </main>

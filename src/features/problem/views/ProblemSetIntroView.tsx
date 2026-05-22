@@ -50,6 +50,14 @@ export default function ProblemSetIntroView({ problemSetId }: ProblemSetIntroVie
         onClose={() => {
           setIsTocOpen(false);
         }}
+        navigation={{
+          previousDisabled: true,
+          nextHref: firstQuestion
+            ? `/problem/${problemSetId}/questions/${firstQuestion.id}`
+            : undefined,
+          exitHref: '/problem',
+          nextDisabled: !firstQuestion,
+        }}
       />
     </main>
   );
