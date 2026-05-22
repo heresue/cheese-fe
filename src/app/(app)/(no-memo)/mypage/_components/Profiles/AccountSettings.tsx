@@ -1,4 +1,4 @@
-import ProfileItem from '../SettingItem';
+import SettingItem from '../Layout/SettingItem';
 import { AccountSettingsProps } from './types';
 import { getAccountItems } from './profile.data';
 
@@ -12,7 +12,7 @@ export default function AccountSettings({ profile }: AccountSettingsProps) {
       <div className="mt-5">
         {accountItems.map((item) => (
           <div key={item.label} className="border-b border-gray-300 p-3 last:border-b-0">
-            <ProfileItem {...item} buttonClassName={item.danger ? '!text-error-subtle' : ''} />
+            <SettingItem {...item} buttonClassName={item.danger ? '!text-error-subtle' : ''} />
           </div>
         ))}
       </div>

@@ -1,6 +1,6 @@
 import { Button } from '@/components/common/Button';
 
-type ProfileItemProps = {
+type SettingItemProps = {
   label: string;
   value?: string;
   icon?: React.ReactNode;
@@ -11,7 +11,7 @@ type ProfileItemProps = {
   onClick?: () => void;
 };
 
-export default function ProfileItem({
+export default function SettingItem({
   label,
   value,
   icon,
@@ -20,7 +20,7 @@ export default function ProfileItem({
   buttonText,
   buttonClassName,
   onClick,
-}: ProfileItemProps) {
+}: SettingItemProps) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-[15px]">

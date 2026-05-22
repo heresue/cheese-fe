@@ -1,4 +1,4 @@
-import { ProfileItemData, PersonalProfile, CompanyProfile, AccountSettings } from './types';
+import { SettingItemData, PersonalProfile, CompanyProfile, AccountSettings } from './types';
 
 import NicknameIcon from '@/assets/icons/settings/user.svg';
 import StarIcon from '@/assets/icons/settings/star.svg';
@@ -27,7 +27,7 @@ function formatDate(dateString: string) {
   return `${date.getFullYear()}. ${String(date.getMonth() + 1).padStart(2, '0')}. ${String(date.getDate()).padStart(2, '0')}`;
 }
 
-export function getPersonalProfileItems(profile: PersonalProfile): ProfileItemData[] {
+export function getPersonalProfileItems(profile: PersonalProfile): SettingItemData[] {
   return [
     {
       label: '닉네임',
@@ -74,7 +74,7 @@ export function getPersonalProfileItems(profile: PersonalProfile): ProfileItemDa
   ];
 }
 
-export function getCompanyProfileItems(profile: CompanyProfile): ProfileItemData[] {
+export function getCompanyProfileItems(profile: CompanyProfile): SettingItemData[] {
   return [
     {
       label: '기업명',
@@ -132,7 +132,7 @@ export function getCompanyProfileItems(profile: CompanyProfile): ProfileItemData
   ];
 }
 
-export function getAccountItems(profile: AccountSettings): ProfileItemData[] {
+export function getAccountItems(profile: AccountSettings): SettingItemData[] {
   return [
     {
       label: '선호하는 연락방식',

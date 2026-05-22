@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export type ProfileItemData = {
+export type SettingItemData = {
   label: string;
   value: string;
   icon: ReactNode;

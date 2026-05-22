@@ -1,6 +1,6 @@
 'use client';
 
-import { MYPAGE_MENU_ITEMS } from '@/app/(app)/(no-memo)/mypage/_constants/mypageMenu';
+import { MYPAGE_MENU_ITEMS } from '../../_constants/mypageMenu';
 import { usePathname } from 'next/navigation';
 
 export default function MypageHeaderTitle() {

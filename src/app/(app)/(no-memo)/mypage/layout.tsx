@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 
 import MypageHeaderTitle from './_components/Layout/MypageHeaderTitle';
-import MyPageSidebar from './_components/MypageSidebar';
+import MyPageSidebar from './_components/Layout/MypageSidebar';
 
 export default function MyPageLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

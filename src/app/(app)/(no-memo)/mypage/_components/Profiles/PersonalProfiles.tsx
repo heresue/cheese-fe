@@ -1,4 +1,4 @@
-import ProfileItem from '../SettingItem';
+import SettingItem from '../Layout/SettingItem';
 import { getPersonalProfileItems } from './profile.data';
 import { PersonalProfilesProps } from './types';
 
@@ -10,7 +10,7 @@ export default function PersonalProfiles({ profile }: PersonalProfilesProps) {
       <div>
         {profileItems.map((item) => (
           <div key={item.label} className="border-b border-gray-300 p-3 last:border-b-0">
-            <ProfileItem {...item} />
+            <SettingItem {...item} />
           </div>
         ))}
       </div>

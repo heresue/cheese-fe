@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { cn } from '@/lib/cn';
-import { MYPAGE_MENU_ITEMS } from '../_constants/mypageMenu';
+import { MYPAGE_MENU_ITEMS } from '../../_constants/mypageMenu';
 
 import MypageIcon from '@/assets/icons/settings/user.svg';
 import BookmarksIcon from '@/assets/icons/like-outline.svg';
