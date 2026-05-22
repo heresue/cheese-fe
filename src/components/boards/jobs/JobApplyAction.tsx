@@ -15,9 +15,6 @@ export default function JobApplyAction({
 }) {
   if (apply.type === 'homepage') {
     return (
-      // <Link href={apply.url}>
-      //   <Button width={100}>{APPLY_LABEL[apply.type]}</Button>
-      // </Link>
       <Button asChild width={100}>
         <a href={apply.url} target="_blank" rel="noopener noreferrer">
           {APPLY_LABEL[apply.type]}

@@ -34,7 +34,6 @@ export default function BaseModal({
 
   return createPortal(
     <div
-      // className="bg-overlay-dim fixed inset-0 z-50 overflow-hidden"
       className={cn('fixed inset-0 z-50 overflow-hidden', hasOverlay ? 'bg-overlay-dim' : '')}
       onClick={handleOverlayClick}
       role="presentation"
