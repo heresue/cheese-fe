@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { cn } from '@/lib/cn';
 
 type ChipVariant = 'default' | 'FE' | 'BE' | 'interview' | 'document' | 'personal';
 
@@ -33,7 +33,7 @@ const sizeStyles: Record<ChipSize, string> = {
 export default function Chip({ children, variant = 'default', size = 'sm', className }: ChipProps) {
   return (
     <span
-      className={clsx(
+      className={cn(
         'inline-flex items-center justify-center rounded-full px-3 text-[12px] font-bold whitespace-nowrap',
         variantStyles[variant],
         sizeStyles[size],

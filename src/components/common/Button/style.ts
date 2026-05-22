@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import clsx from 'clsx';
+import { cn } from '@/lib/cn';
 import type { ButtonProps, ButtonSize, ButtonVariant } from './type';
 
 const base =
@@ -56,7 +56,7 @@ export function getButtonStyle({
 } {
   if (variant === 'circle') {
     return {
-      className: clsx(
+      className: cn(
         base,
         'rounded-full',
         'bg-gray-200',
@@ -74,7 +74,7 @@ export function getButtonStyle({
     : variantClassMap[variant];
 
   return {
-    className: clsx(
+    className: cn(
       base,
       sizeClassMap[size],
       finalVariantClass,
