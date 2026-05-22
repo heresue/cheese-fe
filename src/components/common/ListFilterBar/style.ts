@@ -12,7 +12,7 @@ export const listFilterBarClassNames = {
     'absolute left-0 top-[calc(100%+8px)] z-50 flex w-[200px] flex-col gap-[10px] rounded-[10px] border border-gray-300 bg-bg-white p-[12px] shadow-[0_4px_20px_rgb(var(--color-gray-500-rgb)/0.25)]',
 
   sortMenuItem:
-    'flex h-[20px] w-full items-center rounded-[10px] px-[8px] text-left text-[14px] font-medium leading-5 text-text outline-none hover:!bg-transparent focus:!bg-transparent active:!bg-transparent disabled:cursor-not-allowed disabled:text-text-muted',
+    'flex h-[20px] w-full items-center rounded-[10px] px-[8px] text-left text-[14px] font-medium leading-5 text-text outline-none focus:!bg-transparent active:!bg-transparent disabled:cursor-not-allowed disabled:text-text-muted',
 
   sortMenuItemActive: 'bg-gray-200',
 
