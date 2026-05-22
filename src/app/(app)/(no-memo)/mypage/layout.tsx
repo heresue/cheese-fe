@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 
-import MypageHeaderTitle from './_components/MypageHeaderTitle';
+import MypageHeaderTitle from './_components/Layout/MypageHeaderTitle';
 import MyPageSidebar from './_components/MypageSidebar';
 
 export default function MyPageLayout({ children }: { children: React.ReactNode }) {
