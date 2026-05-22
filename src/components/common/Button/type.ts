@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-export type ButtonSize = 30 | 38 | 40 | 44 | 46 | 54;
+export type ButtonSize = 28 | 30 | 38 | 40 | 44 | 46 | 54;
 
 export type ButtonVariant =
   | 'default'
