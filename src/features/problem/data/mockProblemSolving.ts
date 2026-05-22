@@ -17,7 +17,7 @@ export const mockProblemQuestions: ProblemQuestion[] = [
     question:
       '표준모드(standards mode)와 쿼크모드(quirks mode)의 차이와 동작 조건에 대해 설명하시오.',
     type: 'shortAnswer',
-    gradingMode: 'auto',
+    gradingMode: 'self',
     correctAnswer: '쿼크모드는 구버전 브라우저 호환을 위해 사용됩니다.',
     hint: '구버전 브라우저 호환을 위해 사용',
   },

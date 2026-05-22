@@ -1,0 +1,56 @@
+'use client';
+
+import { useState } from 'react';
+
+import ProblemSetSummaryCard from '../components/ProblemSetSummaryCard';
+import ProblemSideToc from '../components/ProblemSideToc';
+import ProblemSolvingHeader from '../components/ProblemSolvingHeader';
+import ProblemTocCard from '../components/ProblemTocCard';
+import { mockProblemQuestions, mockProblemSetSummary } from '../data/mockProblemSolving';
+
+type ProblemSetIntroViewProps = {
+  problemSetId: string;
+};
+
+export default function ProblemSetIntroView({ problemSetId }: ProblemSetIntroViewProps) {
+  const [isTocOpen, setIsTocOpen] = useState(false);
+
+  const firstQuestion = mockProblemQuestions[0];
+
+  return (
+    <main className="bg-bg-1 min-h-dvh">
+      <ProblemSolvingHeader
+        title="문제풀이 홈으로 나가기"
+        backHref="/problem"
+        elapsedTime="00:00"
+        current={0}
+        total={mockProblemQuestions.length}
+        onMenuClick={() => {
+          setIsTocOpen(true);
+        }}
+      />
+
+      <div className="h-[calc(100dvh-80px)] overflow-y-auto">
+        <div className="mx-auto w-[1060px] pt-[28px] pb-[68px]">
+          <ProblemSetSummaryCard
+            problemSetId={problemSetId}
+            summary={mockProblemSetSummary}
+            actionLabel="이어서 시작"
+            actionHref={`/problem/${problemSetId}/questions/${firstQuestion.id}`}
+          />
+
+          <ProblemTocCard problemSetId={problemSetId} questions={mockProblemQuestions} />
+        </div>
+      </div>
+
+      <ProblemSideToc
+        problemSetId={problemSetId}
+        questions={mockProblemQuestions}
+        isOpen={isTocOpen}
+        onClose={() => {
+          setIsTocOpen(false);
+        }}
+      />
+    </main>
+  );
+}
