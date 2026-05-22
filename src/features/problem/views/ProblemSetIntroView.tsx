@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
+import ProblemExitConfirmModal from '../components/ProblemExitConfirmModal';
 import ProblemSetSummaryCard from '../components/ProblemSetSummaryCard';
 import ProblemSideToc from '../components/ProblemSideToc';
 import ProblemSolvingHeader from '../components/ProblemSolvingHeader';
@@ -13,9 +15,25 @@ type ProblemSetIntroViewProps = {
 };
 
 export default function ProblemSetIntroView({ problemSetId }: ProblemSetIntroViewProps) {
+  const router = useRouter();
+
   const [isTocOpen, setIsTocOpen] = useState(false);
+  const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
   const firstQuestion = mockProblemQuestions[0];
+
+  const firstQuestionHref = firstQuestion
+    ? `/problem/${problemSetId}/questions/${firstQuestion.id}`
+    : `/problem/${problemSetId}`;
+
+  const handleOpenExitModal = () => {
+    setIsTocOpen(false);
+    setIsExitModalOpen(true);
+  };
+
+  const handleExit = () => {
+    router.push('/problem');
+  };
 
   return (
     <main className="bg-bg-1 min-h-dvh">
@@ -36,7 +54,7 @@ export default function ProblemSetIntroView({ problemSetId }: ProblemSetIntroVie
             problemSetId={problemSetId}
             summary={mockProblemSetSummary}
             actionLabel="이어서 시작"
-            actionHref={`/problem/${problemSetId}/questions/${firstQuestion.id}`}
+            actionHref={firstQuestionHref}
           />
 
           <ProblemTocCard problemSetId={problemSetId} questions={mockProblemQuestions} />
@@ -52,12 +70,19 @@ export default function ProblemSetIntroView({ problemSetId }: ProblemSetIntroVie
         }}
         navigation={{
           previousDisabled: true,
-          nextHref: firstQuestion
-            ? `/problem/${problemSetId}/questions/${firstQuestion.id}`
-            : undefined,
-          exitHref: '/problem',
+          nextHref: firstQuestionHref,
           nextDisabled: !firstQuestion,
+          onExitClick: handleOpenExitModal,
         }}
+      />
+
+      <ProblemExitConfirmModal
+        isOpen={isExitModalOpen}
+        onClose={() => {
+          setIsExitModalOpen(false);
+        }}
+        onSaveAndExit={handleExit}
+        onExitWithoutSave={handleExit}
       />
     </main>
   );

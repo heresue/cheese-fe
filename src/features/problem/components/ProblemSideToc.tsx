@@ -5,9 +5,9 @@ import type { ProblemQuestion } from '../types/problemSolving';
 type ProblemSideTocNavigation = {
   previousHref?: string;
   nextHref?: string;
-  exitHref: string;
   previousDisabled?: boolean;
   nextDisabled?: boolean;
+  onExitClick?: () => void;
 };
 
 type ProblemSideTocProps = {
@@ -132,12 +132,13 @@ export default function ProblemSideToc({
             </SideNavigationButton>
           </div>
 
-          <Link
-            href={navigation.exitHref}
+          <button
+            type="button"
             className="bg-secondary-600 mt-[10px] flex h-[48px] w-full items-center justify-center rounded-[8px] text-[14px] font-medium text-white"
+            onClick={navigation.onExitClick}
           >
             저장하고 종료하기
-          </Link>
+          </button>
         </div>
       )}
     </aside>

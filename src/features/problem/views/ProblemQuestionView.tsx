@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import ProblemExitConfirmModal from '../components/ProblemExitConfirmModal';
 import ProblemQuestionCard from '../components/ProblemQuestionCard';
 import ProblemSideToc from '../components/ProblemSideToc';
 import ProblemSolvingHeader from '../components/ProblemSolvingHeader';
@@ -25,6 +26,7 @@ export default function ProblemQuestionView({
 
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [isTocOpen, setIsTocOpen] = useState(false);
+  const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
   const isLastQuestion = questionIndex === mockProblemQuestions.length - 1;
   const previousQuestion = mockProblemQuestions[questionIndex - 1];
@@ -51,6 +53,20 @@ export default function ProblemQuestionView({
 
   const handleRetry = () => {
     setElapsedSeconds(0);
+  };
+
+  const handleOpenExitModal = () => {
+    setIsTocOpen(false);
+    setIsExitModalOpen(true);
+  };
+
+  const handleSaveAndExit = () => {
+    // TODO: 진행도 저장 API 연결 예정
+    router.push(`/problem/${problemSetId}`);
+  };
+
+  const handleExitWithoutSave = () => {
+    router.push(`/problem/${problemSetId}`);
   };
 
   return (
@@ -89,10 +105,19 @@ export default function ProblemQuestionView({
           nextHref: nextQuestion
             ? `/problem/${problemSetId}/questions/${nextQuestion.id}`
             : `/problem/${problemSetId}/result`,
-          exitHref: `/problem/${problemSetId}`,
           previousDisabled: !previousQuestion,
           nextDisabled: false,
+          onExitClick: handleOpenExitModal,
         }}
+      />
+
+      <ProblemExitConfirmModal
+        isOpen={isExitModalOpen}
+        onClose={() => {
+          setIsExitModalOpen(false);
+        }}
+        onSaveAndExit={handleSaveAndExit}
+        onExitWithoutSave={handleExitWithoutSave}
       />
     </main>
   );

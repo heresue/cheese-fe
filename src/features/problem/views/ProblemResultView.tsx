@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
+import ProblemExitConfirmModal from '../components/ProblemExitConfirmModal';
 import ProblemResultTable from '../components/ProblemResultTable';
 import ProblemSetSummaryCard from '../components/ProblemSetSummaryCard';
 import ProblemSideToc from '../components/ProblemSideToc';
@@ -17,10 +19,30 @@ type ProblemResultViewProps = {
 };
 
 export default function ProblemResultView({ problemSetId }: ProblemResultViewProps) {
+  const router = useRouter();
+
   const [isTocOpen, setIsTocOpen] = useState(false);
+  const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
   const firstQuestion = mockProblemQuestions[0];
   const lastQuestion = mockProblemQuestions[mockProblemQuestions.length - 1];
+
+  const firstQuestionHref = firstQuestion
+    ? `/problem/${problemSetId}/questions/${firstQuestion.id}`
+    : `/problem/${problemSetId}`;
+
+  const lastQuestionHref = lastQuestion
+    ? `/problem/${problemSetId}/questions/${lastQuestion.id}`
+    : undefined;
+
+  const handleOpenExitModal = () => {
+    setIsTocOpen(false);
+    setIsExitModalOpen(true);
+  };
+
+  const handleExit = () => {
+    router.push('/problem');
+  };
 
   return (
     <main className="bg-bg-1 min-h-dvh">
@@ -41,7 +63,7 @@ export default function ProblemResultView({ problemSetId }: ProblemResultViewPro
             problemSetId={problemSetId}
             summary={mockProblemSetSummary}
             actionLabel="처음부터 시작"
-            actionHref={`/problem/${problemSetId}/questions/${firstQuestion.id}`}
+            actionHref={firstQuestionHref}
           />
 
           <ProblemResultTable problemSetId={problemSetId} rows={mockProblemResultRows} />
@@ -56,13 +78,20 @@ export default function ProblemResultView({ problemSetId }: ProblemResultViewPro
           setIsTocOpen(false);
         }}
         navigation={{
-          previousHref: lastQuestion
-            ? `/problem/${problemSetId}/questions/${lastQuestion.id}`
-            : undefined,
-          nextDisabled: true,
-          exitHref: '/problem',
+          previousHref: lastQuestionHref,
           previousDisabled: !lastQuestion,
+          nextDisabled: true,
+          onExitClick: handleOpenExitModal,
         }}
+      />
+
+      <ProblemExitConfirmModal
+        isOpen={isExitModalOpen}
+        onClose={() => {
+          setIsExitModalOpen(false);
+        }}
+        onSaveAndExit={handleExit}
+        onExitWithoutSave={handleExit}
       />
     </main>
   );
