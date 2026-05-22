@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import clsx from 'clsx';
 
+import { cn } from '@/lib/cn';
 import { MYPAGE_MENU_ITEMS } from '../_constants/mypageMenu';
 
 import MypageIcon from '@/assets/icons/settings/user.svg';
@@ -30,15 +30,15 @@ export default function MyPageSidebar() {
             return (
               <li
                 key={item.href}
-                className={clsx(
+                className={cn(
                   'text-sidebar-text hover:bg-sidebar-bg-hover flex items-center rounded-[10px] font-medium',
                   isActive ? 'bg-sidebar-bg-active text-sidebar-text-active' : '',
                 )}
               >
                 <Link href={item.href} className="w-full py-3">
-                  <div className={clsx('inline-flex w-full items-center gap-2 pl-2')}>
+                  <div className={cn('inline-flex w-full items-center gap-2 pl-2')}>
                     <span
-                      className={clsx(
+                      className={cn(
                         'inline-flex h-4 w-4 items-center justify-center',
                         isActive ? 'text-sidebar-icon-active' : '',
                       )}

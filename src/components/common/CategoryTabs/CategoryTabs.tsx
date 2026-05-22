@@ -1,11 +1,8 @@
 'use client';
 
+import { cn } from '@/lib/cn';
 import { categoryTabsClassNames as styles } from './style';
 import type { CategoryTabsProps } from './type';
-
-function cn(...classNames: Array<string | false | null | undefined>) {
-  return classNames.filter(Boolean).join(' ');
-}
 
 function CategoryTabs<TValue extends string = string>({
   items,

@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 
+import { cn } from '@/lib/cn';
 import ChevronIcon from '@/assets/icons/chevron.svg';
 import CloseIcon from '@/assets/icons/close.svg';
 import CreateIcon from '@/assets/icons/create.svg';
@@ -9,10 +10,6 @@ import { Button } from '@/components/common/Button';
 
 import { listFilterBarClassNames as styles } from './style';
 import type { ListFilterBarProps } from './type';
-
-function cn(...classNames: Array<string | false | null | undefined>) {
-  return classNames.filter(Boolean).join(' ');
-}
 
 function SortIcon() {
   return (

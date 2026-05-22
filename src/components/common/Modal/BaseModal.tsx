@@ -2,6 +2,7 @@
 
 import { createPortal } from 'react-dom';
 import { useModalBehavior } from '@/hooks/useModalBehavior';
+import { cn } from '@/lib/cn';
 
 type BaseModalProps = {
   isOpen: boolean;
@@ -10,10 +11,6 @@ type BaseModalProps = {
   closeOnDimClick?: boolean;
   hasOverlay?: boolean;
 };
-
-function cn(...classNames: Array<string | false | null | undefined>) {
-  return classNames.filter(Boolean).join(' ');
-}
 
 export default function BaseModal({
   isOpen,

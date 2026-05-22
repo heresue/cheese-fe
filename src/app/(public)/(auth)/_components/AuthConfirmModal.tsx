@@ -1,6 +1,6 @@
 'use client';
 
-import clsx from 'clsx';
+import { cn } from '@/lib/cn';
 import { Button } from '@/components/common/Button';
 import BaseModal from '@/components/common/Modal/BaseModal';
 
@@ -31,7 +31,7 @@ export default function AuthConfirmModal({
       <div
         role="dialog"
         aria-modal="true"
-        className={clsx(
+        className={cn(
           'bg-bg-white rounded-lg shadow-[0_0_4px_rgba(0,0,0,0.25)]',
           'w-[min(385px,calc(100vw-32px))]',
           'max-h-[calc(100dvh-160px)] md:max-h-[calc(100dvh-316px)]',
@@ -42,7 +42,7 @@ export default function AuthConfirmModal({
         <div className="flex flex-col items-center text-center">
           {title ? <h2 className="text-[20px] font-bold text-gray-950">{title}</h2> : null}
           {description ? (
-            <p className={clsx('text-[20px] font-normal text-gray-950', title && 'mt-3')}>
+            <p className={cn('text-[20px] font-normal text-gray-950', title && 'mt-3')}>
               {description}
             </p>
           ) : null}

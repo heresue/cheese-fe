@@ -1,7 +1,7 @@
 'use client';
 
 import { useId } from 'react';
-import clsx from 'clsx';
+import { cn } from '@/lib/cn';
 import type { UnderlinedInputProps } from './type';
 
 export default function Input({
@@ -32,7 +32,7 @@ export default function Input({
       ) : null}
 
       <div
-        className={clsx(
+        className={cn(
           'flex items-center',
           'gap-2 px-2 py-[5px]',
           'border-b transition-[border-color] duration-150',
@@ -46,7 +46,7 @@ export default function Input({
           id={inputId}
           aria-invalid={hasError}
           aria-describedby={hasError ? messageId : undefined}
-          className={clsx(
+          className={cn(
             'h-[19px] min-w-0 flex-1',
             'border-0 bg-transparent',
             'placeholder:text-text-placeholder',

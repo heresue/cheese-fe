@@ -1,7 +1,7 @@
 'use client';
 
 import type { ButtonHTMLAttributes } from 'react';
-import clsx from 'clsx';
+import { cn } from '@/lib/cn';
 
 export type InputActionButtonProps = ButtonHTMLAttributes<HTMLButtonElement>;
 
@@ -14,7 +14,7 @@ export default function InputActionButton({
   return (
     <button
       type={type}
-      className={clsx(
+      className={cn(
         'inline-flex items-center justify-center',
         'h-[30px] px-3 py-2',
         'whitespace-nowrap',

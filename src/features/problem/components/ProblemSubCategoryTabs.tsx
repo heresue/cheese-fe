@@ -1,3 +1,4 @@
+import { cn } from '@/lib/cn';
 import type { ProblemSubCategory } from '../types/problem';
 
 type ProblemSubCategoryTabItem = {
@@ -10,10 +11,6 @@ type ProblemSubCategoryTabsProps = {
   activeValue: ProblemSubCategory;
   onChange: (value: ProblemSubCategory) => void;
 };
-
-function cn(...classNames: Array<string | false | null | undefined>) {
-  return classNames.filter(Boolean).join(' ');
-}
 
 export default function ProblemSubCategoryTabs({
   items,
