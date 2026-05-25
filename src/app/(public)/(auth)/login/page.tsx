@@ -7,7 +7,7 @@ export default function LoginPage() {
   return (
     <div>
       <form className="flex flex-col gap-5 pb-10">
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-5">
           <Input label="아이디" placeholder="아이디" type="email" name="email" />
           <Input
             label="비밀번호"

@@ -9,6 +9,7 @@ export default function Input({
   errorMessage,
   successMessage,
   rightAddon,
+  hideMessageSpace = false,
   id,
   className,
   inputClassName,
@@ -47,7 +48,7 @@ export default function Input({
           aria-invalid={hasError}
           aria-describedby={hasError ? messageId : undefined}
           className={cn(
-            'h-[19px] min-w-0 flex-1',
+            'my-[5.5px] h-[19px] min-w-0 flex-1',
             'border-0 bg-transparent',
             'placeholder:text-text-placeholder',
             'focus:outline-none',
@@ -61,15 +62,17 @@ export default function Input({
       </div>
 
       {/* message (optional) */}
-      <div className="h-[22px] text-left text-xs font-medium">
-        {hasError ? (
-          <p id={messageId} className="text-text-error pt-2">
-            {errorMessage}
-          </p>
-        ) : hasSuccess ? (
-          <p className="text-text-success mt-2">{successMessage}</p>
-        ) : null}
-      </div>
+      {(hasError || hasSuccess || !hideMessageSpace) && (
+        <div className={cn(!hideMessageSpace && 'h-[22px]', 'text-left text-xs font-medium')}>
+          {hasError ? (
+            <p id={messageId} className="text-text-error pt-2">
+              {errorMessage}
+            </p>
+          ) : hasSuccess ? (
+            <p className="text-text-success mt-2">{successMessage}</p>
+          ) : null}
+        </div>
+      )}
     </div>
   );
 }
