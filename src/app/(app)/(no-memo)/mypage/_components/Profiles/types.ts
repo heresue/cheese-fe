@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { MypageModalType } from '../Modal/types';
 
 export type SettingItemData = {
   label: string;
@@ -6,6 +7,7 @@ export type SettingItemData = {
   icon: ReactNode;
   buttonIcon: ReactNode;
   buttonText: string;
+  modalType?: MypageModalType;
   danger?: boolean;
 };
 

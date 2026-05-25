@@ -35,6 +35,7 @@ export function getPersonalProfileItems(profile: PersonalProfile): SettingItemDa
       icon: <NicknameIcon className="h-6" />,
       buttonIcon: <EditIcon className="h-[14px]" />,
       buttonText: '변경',
+      modalType: 'text',
     },
     {
       label: '관심직무',
@@ -42,6 +43,7 @@ export function getPersonalProfileItems(profile: PersonalProfile): SettingItemDa
       icon: <StarIcon className="h-6" />,
       buttonIcon: <EditIcon className="h-[14px]" />,
       buttonText: '변경',
+      modalType: 'text',
     },
     {
       label: '자기소개서',
@@ -49,6 +51,7 @@ export function getPersonalProfileItems(profile: PersonalProfile): SettingItemDa
       icon: <DocumentIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
+      modalType: 'document',
     },
     {
       label: '이력서 및 기타문서',
@@ -56,6 +59,7 @@ export function getPersonalProfileItems(profile: PersonalProfile): SettingItemDa
       icon: <CompanyIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
+      modalType: 'document',
     },
     {
       label: '내 스킬',
@@ -63,6 +67,7 @@ export function getPersonalProfileItems(profile: PersonalProfile): SettingItemDa
       icon: <SkillsIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
+      modalType: 'tag',
     },
     {
       label: '내 관심분야',
@@ -70,6 +75,7 @@ export function getPersonalProfileItems(profile: PersonalProfile): SettingItemDa
       icon: <InterestsIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
+      modalType: 'tag',
     },
   ];
 }
@@ -82,6 +88,7 @@ export function getCompanyProfileItems(profile: CompanyProfile): SettingItemData
       icon: <NicknameIcon className="h-6" />,
       buttonIcon: <EditIcon className="h-[14px]" />,
       buttonText: '변경',
+      modalType: 'text',
     },
     {
       label: '대표자명',
@@ -89,6 +96,7 @@ export function getCompanyProfileItems(profile: CompanyProfile): SettingItemData
       icon: <StarIcon className="h-6" />,
       buttonIcon: <EditIcon className="h-[14px]" />,
       buttonText: '변경',
+      modalType: 'text',
     },
     {
       label: '기업구분',
@@ -96,6 +104,7 @@ export function getCompanyProfileItems(profile: CompanyProfile): SettingItemData
       icon: <DocumentIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
+      modalType: 'select',
     },
     {
       label: '이력서 양식 및 기업 홈페이지',
@@ -107,6 +116,7 @@ export function getCompanyProfileItems(profile: CompanyProfile): SettingItemData
       icon: <CompanyIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
+      modalType: 'document',
     },
     {
       label: '산업구분',
@@ -114,6 +124,7 @@ export function getCompanyProfileItems(profile: CompanyProfile): SettingItemData
       icon: <IndustryIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
+      modalType: 'text',
     },
     {
       label: '사원수',
@@ -121,6 +132,7 @@ export function getCompanyProfileItems(profile: CompanyProfile): SettingItemData
       icon: <EmployeeIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
+      modalType: 'text',
     },
     {
       label: '설립일',
@@ -128,6 +140,7 @@ export function getCompanyProfileItems(profile: CompanyProfile): SettingItemData
       icon: <CalendarIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
+      modalType: 'text',
     },
   ];
 }
@@ -140,6 +153,7 @@ export function getAccountItems(profile: AccountSettings): SettingItemData[] {
       icon: <ContactIcon className="h-6" />,
       buttonIcon: <EditIcon className="h-[14px]" />,
       buttonText: '변경',
+      modalType: 'select',
     },
     {
       label: '이메일',
@@ -147,6 +161,7 @@ export function getAccountItems(profile: AccountSettings): SettingItemData[] {
       icon: <EmailIcon className="h-6" />,
       buttonIcon: <EditIcon className="h-[14px]" />,
       buttonText: '변경',
+      modalType: 'text',
     },
     {
       label: '비밀번호',
@@ -161,6 +176,7 @@ export function getAccountItems(profile: AccountSettings): SettingItemData[] {
       icon: <AddressIcon className="h-6" />,
       buttonIcon: <EditIcon className="h-[14px]" />,
       buttonText: '변경',
+      modalType: 'text',
     },
     {
       label: '로그아웃',
@@ -168,6 +184,7 @@ export function getAccountItems(profile: AccountSettings): SettingItemData[] {
       icon: <LogoutIcon className="h-6" />,
       buttonIcon: <LogoutIcon className="h-[14px]" />,
       buttonText: '로그아웃',
+      modalType: 'confirm',
     },
     {
       label: '내 계정 삭제',
@@ -175,6 +192,7 @@ export function getAccountItems(profile: AccountSettings): SettingItemData[] {
       icon: <DeleteIcon className="h-6" />,
       buttonIcon: <DeleteIcon className="h-[14px]" />,
       buttonText: '계정삭제',
+      modalType: 'confirm',
       danger: true,
     },
   ];
