@@ -66,7 +66,7 @@ export const mockProblemQuestions: ProblemQuestion[] = [
     title: 'Vercel 배포 및 스토리지 설명',
     question: 'Vercel 배포와 스토리지 사용 목적을 설명하시오.',
     type: 'shortAnswer',
-    gradingMode: 'auto',
+    gradingMode: 'self',
     correctAnswer: 'Vercel은 프론트엔드 배포와 서버리스 실행 환경을 제공합니다.',
     hint: '프론트엔드 배포와 서버리스 실행 환경',
   },

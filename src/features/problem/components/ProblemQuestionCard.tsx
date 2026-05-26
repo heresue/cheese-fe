@@ -2,12 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import CheckIcon from '@/assets/icons/check.svg';
-import CloseIcon from '@/assets/icons/close.svg';
+import ProblemStatusIcon from './ProblemStatusIcon';
+import DoubleArrowIcon from '@/assets/icons/settings/double-arrow.svg';
 import CorrectCircleIcon from '@/assets/icons/settings/cancel-circle.svg';
 import IncorrectCircleIcon from '@/assets/icons/settings/check-circle.svg';
 import DocumentsIcon from '@/assets/icons/settings/documents.svg';
-import DoubleArrowIcon from '@/assets/icons/settings/double-arrow.svg';
 import ReturnIcon from '@/assets/icons/settings/return.svg';
 import SkillsIcon from '@/assets/icons/settings/skills.svg';
 
@@ -32,31 +31,12 @@ function normalizeAnswer(value: string) {
   return value.replace(/\s+/g, '').toLowerCase();
 }
 
-function AnswerResultMessage({ status }: { status: Exclude<SelfCheckStatus, ''> }) {
+function AnswerResultMessage({ status }: { status: 'correct' | 'incorrect' }) {
   const isCorrect = status === 'correct';
 
   return (
     <div className="mt-[28px] flex items-center gap-[10px]">
-      <span
-        className={cn(
-          'flex h-[24px] w-[24px] items-center justify-center rounded-[4px] text-white',
-          isCorrect ? 'bg-tag-green-500' : 'bg-error',
-        )}
-      >
-        {isCorrect ? (
-          <CheckIcon
-            className="h-[16px] w-[16px] [&_*]:!fill-current [&_*]:!stroke-current"
-            aria-hidden="true"
-            focusable="false"
-          />
-        ) : (
-          <CloseIcon
-            className="h-[14px] w-[14px] [&_*]:!fill-current [&_*]:!stroke-current"
-            aria-hidden="true"
-            focusable="false"
-          />
-        )}
-      </span>
+      <ProblemStatusIcon type={isCorrect ? 'correct' : 'incorrect'} />
 
       <p
         className={cn(
@@ -69,7 +49,6 @@ function AnswerResultMessage({ status }: { status: Exclude<SelfCheckStatus, ''> 
     </div>
   );
 }
-
 export default function ProblemQuestionCard({
   question,
   isLastQuestion,
@@ -163,7 +142,7 @@ export default function ProblemQuestionCard({
           <input
             value={textAnswer}
             disabled={isSubmitted}
-            placeholder="내가 원래 썼던 답"
+            placeholder=""
             className="h-[38px] w-full bg-transparent px-[12px] text-[16px] leading-[24px] font-medium outline-none placeholder:text-gray-700 disabled:text-gray-900"
             onChange={(event) => {
               setTextAnswer(event.target.value);

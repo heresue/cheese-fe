@@ -1,10 +1,7 @@
 import Link from 'next/link';
 
-import CheckIcon from '@/assets/icons/check.svg';
-import CloseIcon from '@/assets/icons/close.svg';
-import DoubleArrowIcon from '@/assets/icons/settings/double-arrow.svg';
-
 import ProblemActionIcon from './ProblemActionIcon';
+import ProblemStatusIcon from './ProblemStatusIcon';
 import type { ProblemResultRow } from '../types/problemSolving';
 
 type ProblemResultTableProps = {
@@ -14,38 +11,14 @@ type ProblemResultTableProps = {
 
 function ResultStatusIcon({ status }: { status: ProblemResultRow['status'] }) {
   if (status === 'correct') {
-    return (
-      <span className="bg-tag-green-500 flex h-[24px] w-[24px] items-center justify-center rounded-[4px] text-white">
-        <CheckIcon
-          className="h-[16px] w-[16px] [&_*]:!fill-current [&_*]:!stroke-current"
-          aria-hidden="true"
-          focusable="false"
-        />
-      </span>
-    );
+    return <ProblemStatusIcon type="correct" />;
   }
 
   if (status === 'incorrect') {
-    return (
-      <span className="bg-error flex h-[24px] w-[24px] items-center justify-center rounded-[4px] text-white">
-        <CloseIcon
-          className="h-[14px] w-[14px] [&_*]:!fill-current [&_*]:!stroke-current"
-          aria-hidden="true"
-          focusable="false"
-        />
-      </span>
-    );
+    return <ProblemStatusIcon type="incorrect" />;
   }
 
-  return (
-    <span className="flex h-[24px] w-[24px] items-center justify-center rounded-[4px] bg-gray-500">
-      <DoubleArrowIcon
-        className="h-[24px] w-[24px] text-white [&_*]:!fill-current [&_*]:!stroke-current"
-        aria-hidden="true"
-        focusable="false"
-      />
-    </span>
-  );
+  return <ProblemStatusIcon type="skipped" />;
 }
 
 export default function ProblemResultTable({ problemSetId, rows }: ProblemResultTableProps) {
@@ -80,7 +53,7 @@ export default function ProblemResultTable({ problemSetId, rows }: ProblemResult
               <span className="truncate font-medium">{row.title}</span>
             </Link>
 
-            <div className="absolute top-[11px] left-[446px]">
+            <div className="absolute top-0 left-[446px] flex h-[46px] w-[24px] items-center justify-center">
               <ResultStatusIcon status={row.status} />
             </div>
 
