@@ -9,6 +9,7 @@ type ProblemSetSummaryCardProps = {
   summary: ProblemSetSummary;
   actionLabel: string;
   actionHref: string;
+  showProgress?: boolean;
 };
 
 export default function ProblemSetSummaryCard({
@@ -16,6 +17,7 @@ export default function ProblemSetSummaryCard({
   summary,
   actionLabel,
   actionHref,
+  showProgress = true,
 }: ProblemSetSummaryCardProps) {
   const progressPercent =
     summary.totalCount <= 0
@@ -38,23 +40,25 @@ export default function ProblemSetSummaryCard({
         </span>
       </div>
 
-      <div className="flex flex-1 items-center pr-[28px] pl-[40px]">
-        <div className="flex-1">
+      <div className="flex flex-1 items-center pr-[28px] pl-[32px]">
+        <div className="flex flex-1 flex-col justify-center">
           <h1 className="text-[20px] leading-[30px] font-bold">{summary.title}</h1>
 
           <p className="mt-[12px] text-[14px] leading-[20px] font-medium text-gray-600">
             마지막 진행일 : {summary.lastProgressDate}
           </p>
 
-          <div className="mt-[12px] flex w-[500px] flex-col items-end">
-            <div className="h-[16px] w-full rounded-full bg-gray-300">
-              <div className="bg-secondary-600 h-full" style={{ width: `${progressPercent}%` }} />
-            </div>
+          {showProgress && (
+            <div className="mt-[12px] flex w-[500px] flex-col items-end">
+              <div className="h-[16px] w-full rounded-full bg-gray-300">
+                <div className="bg-secondary-600 h-full" style={{ width: `${progressPercent}%` }} />
+              </div>
 
-            <span className="mt-[4px] text-[14px] leading-[20px] font-medium text-gray-700">
-              {summary.solvedCount}/{summary.totalCount} 완료
-            </span>
-          </div>
+              <span className="mt-[4px] text-[14px] leading-[20px] font-medium text-gray-700">
+                {summary.solvedCount}/{summary.totalCount} 완료
+              </span>
+            </div>
+          )}
         </div>
 
         <Link

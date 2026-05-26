@@ -64,6 +64,7 @@ export default function ProblemResultView({ problemSetId }: ProblemResultViewPro
             summary={mockProblemSetSummary}
             actionLabel="처음부터 시작"
             actionHref={firstQuestionHref}
+            showProgress={false}
           />
 
           <ProblemResultTable problemSetId={problemSetId} rows={mockProblemResultRows} />
