@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import ProblemActionIcon from './ProblemActionIcon';
 import type { ProblemQuestion } from '../types/problemSolving';
 
 type ProblemTocCardProps = {
@@ -7,30 +8,45 @@ type ProblemTocCardProps = {
   questions: ProblemQuestion[];
 };
 
+function TocDotLine() {
+  return (
+    <div
+      className="h-[6px] flex-1 bg-repeat-x"
+      style={{
+        backgroundImage: 'radial-gradient(circle, var(--color-gray-500) 1.5px, transparent 1.6px)',
+        backgroundSize: '16px 6px',
+        backgroundPosition: 'center',
+      }}
+    />
+  );
+}
+
 export default function ProblemTocCard({ problemSetId, questions }: ProblemTocCardProps) {
   return (
     <section className="bg-bg-white mt-[32px] h-[720px] w-[1060px] rounded-[15px] px-[40px] py-[40px]">
       <h2 className="text-[24px] leading-[30px] font-bold">목차</h2>
 
-      <div className="mt-[28px] border-t border-gray-300 pt-[24px]">
-        <div className="flex flex-col gap-[24px]">
-          {questions.map((question) => (
-            <div key={question.id} className="flex h-[44px] items-center">
-              <p className="shrink-0 text-[18px] leading-[24px] font-semibold">
-                {String(question.no).padStart(2, '0')}. {question.title}
-              </p>
+      <div className="mt-[28px] h-px w-full bg-gray-300" />
 
-              <div className="mx-[22px] h-px flex-1 border-t border-dotted border-gray-500" />
+      <div className="mx-auto mt-[24px] flex w-[893px] flex-col gap-[24px]">
+        {questions.map((question) => (
+          <div key={question.id} className="flex h-[46px] w-[893px] items-center gap-[30px]">
+            <p className="flex shrink-0 items-center gap-[8px] text-[18px] leading-[30px] font-semibold">
+              <span>{String(question.no).padStart(2, '0')}.</span>
+              <span>{question.title}</span>
+            </p>
 
-              <Link
-                href={`/problem/${problemSetId}/questions/${question.id}`}
-                className="bg-secondary-600 flex h-[44px] w-[96px] shrink-0 items-center justify-center rounded-[8px] text-[15px] font-medium text-white"
-              >
-                문제 선택
-              </Link>
-            </div>
-          ))}
-        </div>
+            <TocDotLine />
+
+            <Link
+              href={`/problem/${problemSetId}/questions/${question.id}`}
+              className="bg-secondary-600 flex h-[46px] w-[114px] shrink-0 items-center justify-center gap-[16px] rounded-[10px] text-[14px] leading-[24px] font-medium text-white"
+            >
+              <ProblemActionIcon className="h-[16px] w-[16px] shrink-0" />
+              <span>문제 선택</span>
+            </Link>
+          </div>
+        ))}
       </div>
     </section>
   );

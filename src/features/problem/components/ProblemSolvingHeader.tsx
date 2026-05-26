@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import ArrowLeftIcon from '@/assets/icons/arrow-left.svg';
+
 type ProblemSolvingHeaderProps = {
   title: string;
   backHref: string;
@@ -17,34 +19,37 @@ export default function ProblemSolvingHeader({
   total,
   onMenuClick,
 }: ProblemSolvingHeaderProps) {
-  const progressPercent = total <= 0 ? 0 : Math.min(100, (current / total) * 100);
+  const progressPercent = total <= 0 ? 0 : Math.min(100, Math.max(0, (current / total) * 100));
 
   return (
     <header className="bg-bg-1 flex h-[80px] items-center justify-between border-b border-gray-300 px-[32px]">
-      <Link href={backHref} className="flex items-center gap-[18px] text-[20px] font-medium">
-        <span aria-hidden="true" className="text-[32px] leading-none text-gray-700">
-          ‹
+      <Link
+        href={backHref}
+        className="flex items-center gap-[20px] text-[20px] leading-[30px] font-medium"
+      >
+        <span className="flex h-[50px] w-[30px] shrink-0 items-center justify-center">
+          <ArrowLeftIcon className="h-[24px] w-[14px]" aria-hidden="true" focusable="false" />
         </span>
+
         <span>{title}</span>
       </Link>
 
-      <div className="flex items-center gap-[28px]">
-        <span className="text-[24px] leading-[30px] font-semibold">{elapsedTime}</span>
+      <div className="flex h-full items-center gap-[24px]">
+        <span className="text-[24px] leading-[30px] font-medium">{elapsedTime}</span>
 
-        <div className="h-[40px] w-px bg-gray-300" />
+        <div className="h-[50px] w-px bg-gray-300" />
 
         <div className="flex items-center gap-[12px]">
-          <div className="h-[6px] w-[300px] overflow-hidden rounded-full border border-gray-400 bg-gray-200">
-            <div
-              className="bg-secondary-600 h-full rounded-full"
-              style={{ width: `${progressPercent}%` }}
-            />
+          <div className="h-[6px] w-[300px] overflow-hidden rounded-full bg-gray-300">
+            <div className="bg-secondary-600 h-full" style={{ width: `${progressPercent}%` }} />
           </div>
 
-          <span className="text-[12px] font-medium text-gray-700">
+          <span className="text-[12px] leading-[18px] font-medium whitespace-nowrap text-gray-700">
             {current}/{total} 진행중
           </span>
         </div>
+
+        <div className="h-[50px] w-px bg-gray-300" />
 
         <button
           type="button"

@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import ProblemActionIcon from './ProblemActionIcon';
 import type { ProblemSetSummary } from '../types/problemSolving';
 
 type ProblemSetSummaryCardProps = {
@@ -22,8 +23,8 @@ export default function ProblemSetSummaryCard({
       : Math.min(100, Math.max(0, (summary.solvedCount / summary.totalCount) * 100));
 
   return (
-    <section className="bg-bg-white mx-auto flex h-[151.52px] w-[1060px] items-center rounded-[15px] px-[20px]">
-      <div className="relative h-[120px] w-[250px] overflow-hidden rounded-[8px]">
+    <section className="bg-bg-white mx-auto flex h-[151.52px] w-[1060px] overflow-hidden rounded-[15px]">
+      <div className="relative h-[151.52px] w-[250px] shrink-0 overflow-hidden">
         <Image
           src={summary.thumbnailSrc}
           alt={`${summary.title} 썸네일`}
@@ -37,33 +38,33 @@ export default function ProblemSetSummaryCard({
         </span>
       </div>
 
-      <div className="ml-[32px] flex h-[120px] flex-1 flex-col justify-center">
-        <h1 className="text-[20px] leading-[30px] font-bold">{summary.title}</h1>
+      <div className="flex flex-1 items-center pr-[28px] pl-[40px]">
+        <div className="flex-1">
+          <h1 className="text-[20px] leading-[30px] font-bold">{summary.title}</h1>
 
-        <p className="mt-[14px] text-[14px] leading-[20px] font-medium text-gray-600">
-          마지막 진행일 : {summary.lastProgressDate}
-        </p>
+          <p className="mt-[12px] text-[14px] leading-[20px] font-medium text-gray-600">
+            마지막 진행일 : {summary.lastProgressDate}
+          </p>
 
-        <div className="mt-[14px] flex w-[500px] flex-col items-end">
-          <div className="h-[8px] w-full overflow-hidden rounded-full bg-gray-300">
-            <div
-              className="bg-secondary-600 h-full rounded-full"
-              style={{ width: `${progressPercent}%` }}
-            />
+          <div className="mt-[12px] flex w-[500px] flex-col items-end">
+            <div className="h-[16px] w-full rounded-full bg-gray-300">
+              <div className="bg-secondary-600 h-full" style={{ width: `${progressPercent}%` }} />
+            </div>
+
+            <span className="mt-[4px] text-[14px] leading-[20px] font-medium text-gray-700">
+              {summary.solvedCount}/{summary.totalCount} 완료
+            </span>
           </div>
-
-          <span className="mt-[4px] text-[13px] leading-[18px] font-medium text-gray-700">
-            {summary.solvedCount}/{summary.totalCount} 완료
-          </span>
         </div>
-      </div>
 
-      <Link
-        href={actionHref}
-        className="bg-secondary-600 flex h-[54px] min-w-[128px] items-center justify-center rounded-[10px] px-[20px] text-[16px] font-bold text-white"
-      >
-        {actionLabel}
-      </Link>
+        <Link
+          href={actionHref}
+          className="bg-secondary-600 ml-[32px] flex h-[46px] w-[128px] shrink-0 items-center justify-center gap-[16px] rounded-[10px] text-[14px] leading-[24px] font-medium text-white"
+        >
+          <ProblemActionIcon className="h-[16px] w-[16px] shrink-0" />
+          <span>{actionLabel}</span>
+        </Link>
+      </div>
 
       <span className="sr-only">문제 세트 ID: {problemSetId}</span>
     </section>

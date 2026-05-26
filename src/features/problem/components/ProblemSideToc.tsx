@@ -1,13 +1,14 @@
 import Link from 'next/link';
 
+import ProblemActionIcon from './ProblemActionIcon';
 import type { ProblemQuestion } from '../types/problemSolving';
 
 type ProblemSideTocNavigation = {
-  previousHref?: string;
-  nextHref?: string;
+  previousHref?: string | undefined;
+  nextHref?: string | undefined;
   previousDisabled?: boolean;
   nextDisabled?: boolean;
-  onExitClick?: () => void;
+  onExitClick: () => void;
 };
 
 type ProblemSideTocProps = {
@@ -19,7 +20,7 @@ type ProblemSideTocProps = {
 };
 
 type SideNavigationButtonProps = {
-  href?: string;
+  href?: string | undefined;
   disabled?: boolean;
   children: string;
   direction: 'previous' | 'next';
@@ -97,15 +98,17 @@ export default function ProblemSideToc({
         <div className="flex flex-col gap-[24px]">
           {questions.map((question) => (
             <div key={question.id} className="flex items-center justify-between gap-[12px]">
-              <p className="truncate text-[15px] font-medium">
-                {String(question.no).padStart(2, '0')}. {question.title}
+              <p className="flex min-w-0 flex-1 items-center gap-[6px] truncate text-[15px] font-medium">
+                <span className="shrink-0">{String(question.no).padStart(2, '0')}.</span>
+                <span className="truncate">{question.title}</span>
               </p>
 
               <Link
                 href={`/problem/${problemSetId}/questions/${question.id}`}
-                className="bg-secondary-600 flex h-[38px] w-[72px] shrink-0 items-center justify-center rounded-[8px] text-[13px] font-medium text-white"
+                className="bg-secondary-600 flex h-[46px] w-[114px] shrink-0 items-center justify-center gap-[16px] rounded-[10px] text-[14px] leading-[24px] font-medium text-white"
               >
-                문제 선택
+                <ProblemActionIcon className="h-[16px] w-[16px] shrink-0" />
+                <span>문제 선택</span>
               </Link>
             </div>
           ))}
