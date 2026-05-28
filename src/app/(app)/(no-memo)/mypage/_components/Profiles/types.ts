@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { MypageModalItem, MypageModalType } from '../Modal/types';
+
+import type { MypageModalItem, MypageModalType } from '../Modal/types';
 
 export type ProfileDocument = {
   fileName: string;

@@ -1,6 +1,7 @@
 'use client';
 
 import JobPostCard from '@/components/boards/jobs/JobPostCard';
+
 import { jobPosts } from '@/mocks/posts';
 
 export default function AppliedJobList() {

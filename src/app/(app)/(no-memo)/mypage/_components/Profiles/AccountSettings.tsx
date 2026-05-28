@@ -1,6 +1,8 @@
 import SettingItem from '../Layout/SettingItem';
-import { AccountSettingsProps } from './types';
+
 import { getAccountItems } from './profile.data';
+
+import type { AccountSettingsProps } from './types';
 
 export default function AccountSettings({ profile, onOpenModal }: AccountSettingsProps) {
   const accountItems = getAccountItems(profile);

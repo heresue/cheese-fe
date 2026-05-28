@@ -1,4 +1,4 @@
-import { ProfileDocument } from '@/app/(app)/(no-memo)/mypage/_components/Profiles/types';
+import { ProfileDocument } from '../Profiles/types';
 
 export type MypageModalType = 'text' | 'document' | 'confirm' | 'select';
 

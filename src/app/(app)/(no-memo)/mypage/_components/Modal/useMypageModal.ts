@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+
 import type { MypageModalItem } from './types';
 
 export function useMypageModal() {

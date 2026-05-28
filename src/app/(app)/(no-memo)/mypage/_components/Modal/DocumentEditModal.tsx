@@ -1,12 +1,14 @@
 'use client';
 
 import { useId, useRef, useState } from 'react';
+
 import { Input } from '@/components/common/Input';
-import MypageModalLayout from './MypageModalLayout';
 import { Button } from '@/components/common/Button';
+import MypageModalLayout from './MypageModalLayout';
 
 import PlusIcon from '@/assets/icons/plus.svg';
-import { ProfileDocument } from '@/app/(app)/(no-memo)/mypage/_components/Profiles/types';
+
+import type { ProfileDocument } from '../Profiles/types';
 
 type DocumentEditModalProps = {
   title: string;

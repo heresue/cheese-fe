@@ -1,9 +1,11 @@
 'use client';
 
 import { useId, useState } from 'react';
+
 import { Input } from '@/components/common/Input';
-import ChevronIcon from '@/assets/icons/chevron.svg';
 import MypageModalLayout from './MypageModalLayout';
+
+import ChevronIcon from '@/assets/icons/chevron.svg';
 
 type SelectEditModalProps = {
   title: string;

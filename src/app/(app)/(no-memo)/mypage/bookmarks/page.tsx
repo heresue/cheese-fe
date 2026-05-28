@@ -4,7 +4,6 @@ import { useState } from 'react';
 
 import CategoryTabs from '@/components/common/CategoryTabs';
 import ListFilterBar from '@/components/common/ListFilterBar';
-
 import JobBookmarkList from './_components/JobBookmarkList';
 import GroupBookmarkList from './_components/GroupBookmarkList';
 import InfoBookmarkList from './_components/InfoBookmarkList';

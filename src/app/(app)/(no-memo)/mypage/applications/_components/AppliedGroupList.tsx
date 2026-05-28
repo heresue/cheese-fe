@@ -1,4 +1,5 @@
 import GroupPostCard from '@/components/boards/groups/GroupPostCard';
+
 import { groupPosts } from '@/mocks/posts';
 
 export default function AppliedGroupList() {

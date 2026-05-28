@@ -1,7 +1,8 @@
 import SettingItem from '../Layout/SettingItem';
 
 import { getPersonalProfileItems } from './profile.data';
-import { PersonalProfilesProps } from './types';
+
+import type { PersonalProfilesProps } from './types';
 
 export default function PersonalProfiles({ profile, onOpenModal }: PersonalProfilesProps) {
   const profileItems = getPersonalProfileItems(profile);

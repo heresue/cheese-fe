@@ -12,8 +12,7 @@ import AccountSettings from './_components/Profiles/AccountSettings';
 import MypageModalRenderer from './_components/Profiles/MypageModalRenderer';
 import { useMypageModal } from './_components/Modal/useMypageModal';
 
-import PersonalIcon from '@/assets/icons/settings/personal.svg';
-import CompanyIcon from '@/assets/icons/settings/company.svg';
+import { CompanyIcon, PersonalIcon } from '@/assets/icons/settings';
 
 import ProfileMockImage from 'public/profile_default.png';
 

@@ -1,24 +1,22 @@
 import { SettingItemData, PersonalProfile, CompanyProfile, AccountSettings } from './types';
 
-import NicknameIcon from '@/assets/icons/settings/user.svg';
-import StarIcon from '@/assets/icons/settings/star.svg';
-import DocumentIcon from '@/assets/icons/settings/documents.svg';
-import CompanyIcon from '@/assets/icons/settings/company.svg';
-import SkillsIcon from '@/assets/icons/settings/skills.svg';
+import {
+  CompanyIcon,
+  DocumentsIcon,
+  EmailIcon,
+  IndustryIcon,
+  LocationIcon,
+  LogoutIcon,
+  PasswordIcon,
+  SkillsIcon,
+  StarIcon,
+  UserIcon as NicknameIcon,
+  UsersIcon as EmployeeIcon,
+} from '@/assets/icons/settings';
 import InterestsIcon from '@/assets/icons/like-outline.svg';
-
-import IndustryIcon from '@/assets/icons/settings/industry.svg';
-import EmployeeIcon from '@/assets/icons/settings/users.svg';
 import CalendarIcon from '@/assets/icons/calendar.svg';
-
 import ContactIcon from '@/assets/icons/contact.svg';
-import EmailIcon from '@/assets/icons/settings/email.svg';
-import PasswordIcon from '@/assets/icons/settings/password.svg';
-import AddressIcon from '@/assets/icons/settings/location.svg';
-
-import LogoutIcon from '@/assets/icons/settings/logout.svg';
 import DeleteIcon from '@/assets/icons/delete.svg';
-
 import EditIcon from '@/assets/icons/edit.svg';
 import PlusIcon from '@/assets/icons/plus.svg';
 
@@ -48,7 +46,7 @@ export function getPersonalProfileItems(profile: PersonalProfile): SettingItemDa
     {
       label: '자기소개서',
       document: { ...profile.coverLetter, urlLabel: `${profile.nickname} 자기소개서 URL` },
-      icon: <DocumentIcon className="h-6" />,
+      icon: <DocumentsIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
       modalType: 'document',
@@ -101,7 +99,7 @@ export function getCompanyProfileItems(profile: CompanyProfile): SettingItemData
     {
       label: '기업구분',
       value: profile.companyType,
-      icon: <DocumentIcon className="h-6" />,
+      icon: <DocumentsIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
       options: ['스타트업', '중소기업', '중견기업', '대기업'],
@@ -171,7 +169,7 @@ export function getAccountItems(profile: AccountSettings): SettingItemData[] {
     {
       label: '주소',
       value: profile.address,
-      icon: <AddressIcon className="h-6" />,
+      icon: <LocationIcon className="h-6" />,
       buttonIcon: <EditIcon className="h-[14px]" />,
       buttonText: '변경',
       modalType: 'text',

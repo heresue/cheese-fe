@@ -1,7 +1,8 @@
 'use client';
 
-import { MYPAGE_MENU_ITEMS } from '../../_constants/mypageMenu';
 import { usePathname } from 'next/navigation';
+
+import { MYPAGE_MENU_ITEMS } from '../../_constants/mypageMenu';
 
 export default function MypageHeaderTitle() {
   const pathname = usePathname();

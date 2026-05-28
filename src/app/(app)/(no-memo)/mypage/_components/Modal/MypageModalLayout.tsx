@@ -1,8 +1,9 @@
 import { BaseModal } from '@/components/common/Modal';
 import { Button } from '@/components/common/Button';
 
-import CloseIcon from '@/assets/icons/close.svg';
 import { cn } from '@/lib/cn';
+
+import CloseIcon from '@/assets/icons/close.svg';
 
 type MypageModalLayoutProps = {
   isOpen: boolean;

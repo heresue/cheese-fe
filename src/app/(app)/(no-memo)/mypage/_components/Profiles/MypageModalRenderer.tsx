@@ -1,9 +1,9 @@
-import { MypageModalItem } from '../Modal/types';
-
-import DocumentEditModal from '../Modal/DocumentEditModal';
 import TextEditModal from '../Modal/TextEditModal';
+import DocumentEditModal from '../Modal/DocumentEditModal';
 import SelectEditModal from '../Modal/SelectEditModal';
 import ConfirmModal from '../Modal/ConfirmModal';
+
+import type { MypageModalItem } from '../Modal/types';
 
 type MypageModalRendererProps = {
   editingItem: MypageModalItem | null;
