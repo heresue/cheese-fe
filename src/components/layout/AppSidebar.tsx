@@ -23,7 +23,7 @@ const navigationItems: NavigationItem[] = [
   { label: '알림', href: '/notifications', icon: 'bell' },
   { label: '일정 관리', href: '/calendar', icon: 'calendar' },
   { label: '메모', href: '/memo', icon: 'memo' },
-  { label: '문제 풀이', href: '/problems', icon: 'pencil' },
+  { label: '문제 풀이', href: '/problem', icon: 'pencil' },
   { label: '커뮤니티', href: '/community', icon: 'community' },
 ];
 
