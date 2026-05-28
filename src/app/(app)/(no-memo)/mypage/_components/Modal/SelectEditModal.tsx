@@ -50,6 +50,7 @@ export default function SelectEditModal({
           {inputLabel}
         </label>
 
+        {/* TODO: custom option으로 교체 (공통 컴포넌트) */}
         <div className="flex w-full items-center gap-2 border-b border-gray-400 px-2 py-[10.5px]">
           <select
             id={`${formId}-select`}
@@ -66,7 +67,6 @@ export default function SelectEditModal({
 
           <ChevronIcon className="pointer-events-none h-[10px] rotate-90 text-gray-500" />
         </div>
-
         {isOpenKakaoSelected && (
           <Input
             label="오픈 카카오톡 URL"
