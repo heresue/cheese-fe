@@ -47,7 +47,7 @@ export function getPersonalProfileItems(profile: PersonalProfile): SettingItemDa
     },
     {
       label: '자기소개서',
-      value: profile.coverLetterFileName || '첨부된 파일 없음',
+      document: { ...profile.coverLetter, urlLabel: `${profile.nickname} 자기소개서 URL` },
       icon: <DocumentIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
@@ -55,7 +55,7 @@ export function getPersonalProfileItems(profile: PersonalProfile): SettingItemDa
     },
     {
       label: '이력서 및 기타문서',
-      value: profile.resumeFileName || '첨부된 파일 없음',
+      document: { ...profile.resume, urlLabel: `${profile.nickname} 이력서 및 기타문서 URL` },
       icon: <CompanyIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
@@ -67,7 +67,7 @@ export function getPersonalProfileItems(profile: PersonalProfile): SettingItemDa
       icon: <SkillsIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
-      modalType: 'tag',
+      modalType: 'text',
     },
     {
       label: '내 관심분야',
@@ -75,7 +75,7 @@ export function getPersonalProfileItems(profile: PersonalProfile): SettingItemDa
       icon: <InterestsIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
-      modalType: 'tag',
+      modalType: 'text',
     },
   ];
 }
@@ -104,15 +104,12 @@ export function getCompanyProfileItems(profile: CompanyProfile): SettingItemData
       icon: <DocumentIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
+      options: ['스타트업', '중소기업', '중견기업', '대기업'],
       modalType: 'select',
     },
     {
       label: '이력서 양식 및 기업 홈페이지',
-      // TODO: 파일 첨부 및 URL 등록 기능 구현 시 링크 UI로 분리
-      value: [
-        profile.resumeTemplateFileName || '첨부된 양식 없음',
-        profile.companyWebsiteUrl || '등록된 홈페이지 없음',
-      ].join(' / '),
+      document: { ...profile.resumeTemplate, urlLabel: `${profile.nickname} 기업 홈페이지 URL` },
       icon: <CompanyIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
@@ -153,6 +150,7 @@ export function getAccountItems(profile: AccountSettings): SettingItemData[] {
       icon: <ContactIcon className="h-6" />,
       buttonIcon: <EditIcon className="h-[14px]" />,
       buttonText: '변경',
+      options: ['이메일', '오픈 카카오톡'],
       modalType: 'select',
     },
     {

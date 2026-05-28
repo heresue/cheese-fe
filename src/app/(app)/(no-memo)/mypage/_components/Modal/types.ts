@@ -1,7 +1,13 @@
-export type MypageModalType = 'text' | 'document' | 'tag' | 'confirm' | 'select';
+import { ProfileDocument } from '@/app/(app)/(no-memo)/mypage/_components/Profiles/types';
+
+export type MypageModalType = 'text' | 'document' | 'confirm' | 'select';
 
 export type MypageModalItem = {
   label: string;
   value?: string;
+  document?: ProfileDocument;
+  buttonText?: string;
+  options?: string[];
   modalType: MypageModalType;
+  onConfirm?: () => void;
 };

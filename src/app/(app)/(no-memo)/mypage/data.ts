@@ -1,8 +1,16 @@
 export const mockPersonalProfile = {
   nickname: '김치즈',
   interestedJob: 'FE (프론트엔드)',
-  coverLetterFileName: '',
-  resumeFileName: '',
+  coverLetter: {
+    fileName: '자기소개서_김치즈.pdf',
+    fileUrl: 'https://google.com',
+    url: 'https://google.com',
+  },
+  resume: {
+    fileName: '이력서_김치즈.pdf',
+    fileUrl: 'https://google.com',
+    url: 'https://google.com',
+  },
   skills: ['HTML5', 'CSS3', 'JavaScript'],
   interests: ['Redux', 'Zustand', 'Recoil', 'Context API'],
 };
@@ -11,8 +19,11 @@ export const mockCompanyProfile = {
   nickname: '치즈공장',
   representativeName: '변대환',
   companyType: '스타트업',
-  resumeTemplateFileName: 'cheese_resume_template.pdf',
-  companyWebsiteUrl: 'https://cheese-company.com',
+  resumeTemplate: {
+    fileName: 'cheese_resume_template.pdf',
+    fileUrl: 'https://google.com',
+    url: 'https://google.com',
+  },
   industryType: ['솔루션 SI', 'CRM', 'ERP'],
   employeeCount: 10,
   foundedAt: '2020-05-15',

@@ -2,7 +2,7 @@ import SettingItem from '../Layout/SettingItem';
 import { AccountSettingsProps } from './types';
 import { getAccountItems } from './profile.data';
 
-export default function AccountSettings({ profile }: AccountSettingsProps) {
+export default function AccountSettings({ profile, onOpenModal }: AccountSettingsProps) {
   const accountItems = getAccountItems(profile);
 
   return (
@@ -12,7 +12,21 @@ export default function AccountSettings({ profile }: AccountSettingsProps) {
       <div className="mt-5">
         {accountItems.map((item) => (
           <div key={item.label} className="border-b border-gray-300 p-3 last:border-b-0">
-            <SettingItem {...item} buttonClassName={item.danger ? '!text-error-subtle' : ''} />
+            <SettingItem
+              {...item}
+              buttonClassName={item.danger ? '!text-error-subtle' : ''}
+              onClick={() => {
+                if (!item.modalType) return;
+
+                onOpenModal({
+                  label: item.label,
+                  buttonText: item.buttonText,
+                  value: item.value,
+                  options: item.options,
+                  modalType: item.modalType,
+                });
+              }}
+            />
           </div>
         ))}
       </div>
