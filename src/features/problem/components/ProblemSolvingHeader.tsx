@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import ArrowLeftIcon from '@/assets/icons/arrow-left.svg';
+import ArrowIcon from '@/assets/icons/arrow.svg';
 
 type ProblemSolvingHeaderProps = {
   title: string;
@@ -28,7 +28,11 @@ export default function ProblemSolvingHeader({
         className="flex items-center gap-[20px] text-[20px] leading-[30px] font-medium"
       >
         <span className="flex h-[50px] w-[30px] shrink-0 items-center justify-center">
-          <ArrowLeftIcon className="h-[24px] w-[14px]" aria-hidden="true" focusable="false" />
+          <ArrowIcon
+            className="block h-[24px] w-[14px] shrink-0 text-gray-700"
+            aria-hidden="true"
+            focusable="false"
+          />
         </span>
 
         <span>{title}</span>
@@ -37,7 +41,7 @@ export default function ProblemSolvingHeader({
       <div className="flex h-full items-center gap-[24px]">
         <span className="text-[24px] leading-[30px] font-medium">{elapsedTime}</span>
 
-        <div className="h-[50px] w-px bg-gray-300" />
+        <div className="h-[70px] w-px bg-gray-300" />
 
         <div className="flex items-center gap-[12px]">
           <div className="h-[6px] w-[300px] overflow-hidden rounded-full bg-gray-300">
@@ -49,7 +53,7 @@ export default function ProblemSolvingHeader({
           </span>
         </div>
 
-        <div className="h-[50px] w-px bg-gray-300" />
+        <div className="h-[70px] w-px bg-gray-300" />
 
         <button
           type="button"

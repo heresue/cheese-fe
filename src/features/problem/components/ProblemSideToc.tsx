@@ -1,7 +1,6 @@
 import Link from 'next/link';
 
-import ArrowLeftIcon from '@/assets/icons/arrow-left2.svg';
-import ArrowRightIcon from '@/assets/icons/arrow-right.svg';
+import ArrowIcon from '@/assets/icons/arrow.svg';
 
 import type { ProblemQuestion } from '../types/problemSolving';
 
@@ -21,16 +20,33 @@ type ProblemSideTocProps = {
   navigation?: ProblemSideTocNavigation;
 };
 
-function cn(...classNames: Array<string | false | null | undefined>) {
-  return classNames.filter(Boolean).join(' ');
-}
-
 type SideNavigationButtonProps = {
   href?: string;
   disabled?: boolean;
   direction: 'previous' | 'next';
   label: string;
 };
+
+function cn(...classNames: Array<string | false | null | undefined>) {
+  return classNames.filter(Boolean).join(' ');
+}
+
+function SideNavigationArrow({ direction }: { direction: 'previous' | 'next' }) {
+  return (
+    <span
+      className="flex h-[16px] w-[16px] shrink-0 items-center justify-center overflow-visible text-gray-500"
+      aria-hidden="true"
+    >
+      <ArrowIcon
+        className={cn(
+          'block h-[24px] w-[14px] shrink-0 origin-center scale-[0.6667]',
+          direction === 'next' && 'rotate-180',
+        )}
+        focusable="false"
+      />
+    </span>
+  );
+}
 
 function SideNavigationButton({
   href,
@@ -39,38 +55,25 @@ function SideNavigationButton({
   label,
 }: SideNavigationButtonProps) {
   const isDisabled = disabled || !href;
-  const Icon = direction === 'previous' ? ArrowLeftIcon : ArrowRightIcon;
 
   const content = (
     <>
-      {direction === 'previous' && (
-        <Icon
-          className="h-[16px] w-[16px] shrink-0 text-gray-500"
-          aria-hidden="true"
-          focusable="false"
-        />
-      )}
+      {direction === 'previous' && <SideNavigationArrow direction="previous" />}
 
       <span>{label}</span>
 
-      {direction === 'next' && (
-        <Icon
-          className="h-[16px] w-[16px] shrink-0 text-gray-500"
-          aria-hidden="true"
-          focusable="false"
-        />
-      )}
+      {direction === 'next' && <SideNavigationArrow direction="next" />}
     </>
   );
 
   const className = cn(
-    'flex h-[46px] items-center justify-center gap-[10px] rounded-[10px] border text-[14px] font-medium leading-[24px]',
+    'flex h-[46px] items-center justify-center gap-[5px] rounded-[10px] border text-[16px] font-medium leading-[24px]',
     isDisabled
       ? 'border-gray-300 bg-gray-100 text-gray-500'
       : 'border-secondary-600 bg-bg-white text-gray-900',
   );
 
-  if (isDisabled) {
+  if (isDisabled || !href) {
     return (
       <button type="button" disabled className={className}>
         {content}
