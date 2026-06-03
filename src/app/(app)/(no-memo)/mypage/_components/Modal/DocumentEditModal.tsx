@@ -55,6 +55,7 @@ export default function DocumentEditModal({
           <input
             ref={fileInputRef}
             type="file"
+            accept=".pdf,.doc,.docx,.hwp"
             className="hidden"
             onChange={(e) => {
               const selectedFile = e.target.files?.[0] ?? null;
@@ -92,7 +93,7 @@ export default function DocumentEditModal({
           label={`${inputLabel} URL`}
           placeholder="URL 입력"
           value={url}
-          hideMessageSpace
+          // hideMessageSpace
           onChange={(e) => setUrl(e.target.value)}
         />
       </form>
