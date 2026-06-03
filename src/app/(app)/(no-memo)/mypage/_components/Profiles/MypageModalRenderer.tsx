@@ -11,6 +11,10 @@ type MypageModalRendererProps = {
 };
 
 export default function MypageModalRenderer({ editingItem, onClose }: MypageModalRendererProps) {
+  if (!editingItem) return null;
+
+  const modalKey = `${editingItem.modalType}-${editingItem.label}`;
+
   const isTextModal = editingItem?.modalType === 'text';
   const isDocumentModal = editingItem?.modalType === 'document';
   const isSelectModal = editingItem?.modalType === 'select';
@@ -33,11 +37,10 @@ export default function MypageModalRenderer({ editingItem, onClose }: MypageModa
 
   const confirmTitleClassName = isDeleteAccount ? 'text-error' : '';
 
-  if (!editingItem) return null;
-
   if (isTextModal) {
     return (
       <TextEditModal
+        key={modalKey}
         isOpen
         title={`${editingItem.label} ${editingItem.buttonText}`}
         inputLabel={editingItem.label}
@@ -55,6 +58,7 @@ export default function MypageModalRenderer({ editingItem, onClose }: MypageModa
   if (isDocumentModal) {
     return (
       <DocumentEditModal
+        key={modalKey}
         isOpen
         title={`${editingItem.label} 추가`}
         inputLabel={editingItem.label}
@@ -67,6 +71,7 @@ export default function MypageModalRenderer({ editingItem, onClose }: MypageModa
   if (isSelectModal) {
     return (
       <SelectEditModal
+        key={modalKey}
         isOpen
         title={`${editingItem.label} ${editingItem.buttonText}`}
         inputLabel={editingItem.label}
@@ -81,6 +86,7 @@ export default function MypageModalRenderer({ editingItem, onClose }: MypageModa
   if (isConfirmModal) {
     return (
       <ConfirmModal
+        key={modalKey}
         isOpen
         title={confirmModalTitle}
         titleClassName={confirmTitleClassName}
