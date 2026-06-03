@@ -40,8 +40,6 @@ export default function DocumentEditModal({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log({ file, url });
-
     // TODO: 파일 업로드/API 요청
     // TODO: response.fileUrl 받기
 

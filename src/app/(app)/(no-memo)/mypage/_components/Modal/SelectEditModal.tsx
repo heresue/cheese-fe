@@ -35,11 +35,6 @@ export default function SelectEditModal({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    console.log({
-      contactMethod: selectedValue,
-      openKakaoUrl: isOpenKakaoSelected ? openKakaoUrl : '',
-    });
-
     // TODO: API 요청
 
     onClose();
