@@ -1,8 +1,12 @@
 import { Button } from '@/components/common/Button';
+import SettingDocumentValue from './SettingDocumentValue';
 
-type ProfileItemProps = {
+import type { ProfileDocument } from '../Profiles/types';
+
+type SettingItemProps = {
   label: string;
   value?: string;
+  document?: ProfileDocument;
   icon?: React.ReactNode;
   buttonIcon?: React.ReactNode;
   buttonIconPosition?: 'left' | 'right';
@@ -11,18 +15,19 @@ type ProfileItemProps = {
   onClick?: () => void;
 };
 
-export default function ProfileItem({
+export default function SettingItem({
   label,
   value,
+  document,
   icon,
   buttonIcon,
   buttonIconPosition = 'left',
   buttonText,
   buttonClassName,
   onClick,
-}: ProfileItemProps) {
+}: SettingItemProps) {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between gap-3">
       <div className="flex items-center gap-[15px]">
         <span className="inline-flex h-[30px] w-[30px] items-center justify-center text-gray-500">
           {icon}
@@ -30,7 +35,8 @@ export default function ProfileItem({
 
         <div className="text-[14px] leading-[30px] text-gray-700">
           <h3 className="font-bold">{label}</h3>
-          {value ?? ''}
+
+          {document ? <SettingDocumentValue document={document} /> : <span>{value}</span>}
         </div>
       </div>
 

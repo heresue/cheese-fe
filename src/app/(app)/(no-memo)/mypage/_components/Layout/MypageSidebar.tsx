@@ -3,13 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { cn } from '@/lib/cn';
-import { MYPAGE_MENU_ITEMS } from '../_constants/mypageMenu';
+import { MYPAGE_MENU_ITEMS } from '../../_constants/mypageMenu';
 
-import MypageIcon from '@/assets/icons/settings/user.svg';
+import { cn } from '@/lib/cn';
+
+import { UserIcon as MypageIcon, ApplicationsIcon, SettingsIcon } from '@/assets/icons/settings';
 import BookmarksIcon from '@/assets/icons/like-outline.svg';
-import ApplicationsIcon from '@/assets/icons/settings/applications.svg';
-import SettingsIcon from '@/assets/icons/settings/settings.svg';
 
 const ICON_MAP = {
   mypage: <MypageIcon />,

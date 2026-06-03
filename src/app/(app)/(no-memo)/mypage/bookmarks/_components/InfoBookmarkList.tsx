@@ -1,6 +1,7 @@
 'use client';
 
 import InfoPostCard from '@/components/boards/info/InfoPostCard';
+
 import { infoPosts } from '@/mocks/posts';
 
 export default function InfoBookmarkList() {

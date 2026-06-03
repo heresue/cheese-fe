@@ -1,8 +1,10 @@
-import ProfileItem from '../SettingItem';
-import { CompanyProfilesProps } from './types';
+import SettingItem from '../Layout/SettingItem';
+
 import { getCompanyProfileItems } from './profile.data';
 
-export default function CompanyProfiles({ profile }: CompanyProfilesProps) {
+import type { CompanyProfilesProps } from './types';
+
+export default function CompanyProfiles({ profile, onOpenModal }: CompanyProfilesProps) {
   const profileItems = getCompanyProfileItems(profile);
 
   return (
@@ -10,7 +12,21 @@ export default function CompanyProfiles({ profile }: CompanyProfilesProps) {
       <div>
         {profileItems.map((item) => (
           <div key={item.label} className="border-b border-gray-300 p-3 last:border-b-0">
-            <ProfileItem {...item} />
+            <SettingItem
+              {...item}
+              onClick={() => {
+                if (!item.modalType) return;
+
+                onOpenModal({
+                  label: item.label,
+                  buttonText: item.buttonText,
+                  value: item.value,
+                  document: item.document,
+                  options: item.options,
+                  modalType: item.modalType,
+                });
+              }}
+            />
           </div>
         ))}
       </div>

@@ -9,9 +9,10 @@ import CategoryTabs from '@/components/common/CategoryTabs';
 import PersonalProfiles from './_components/Profiles/PersonalProfiles';
 import CompanyProfiles from './_components/Profiles/CompanyProfiles';
 import AccountSettings from './_components/Profiles/AccountSettings';
+import MypageModalRenderer from './_components/Profiles/MypageModalRenderer';
+import { useMypageModal } from './_components/Modal/useMypageModal';
 
-import PersonalIcon from '@/assets/icons/settings/personal.svg';
-import CompanyIcon from '@/assets/icons/settings/company.svg';
+import { CompanyIcon, PersonalIcon } from '@/assets/icons/settings';
 
 import ProfileMockImage from 'public/profile_default.png';
 
@@ -33,10 +34,12 @@ const MYPAGE_PROFILE_CATEGORY_TABS = [
 type MypageCategoryTabValue = (typeof MYPAGE_PROFILE_CATEGORY_TABS)[number]['value'];
 
 export default function MyPage() {
+  const profileImage = ProfileMockImage;
   const [mypageTabs, setMypageTabs] = useState<MypageCategoryTabValue>(
     MYPAGE_PROFILE_CATEGORY_TABS[0].value,
   );
-  const profileImage = ProfileMockImage;
+
+  const { editingItem, openModal, closeModal } = useMypageModal();
 
   return (
     <div className="flex flex-col gap-8">
@@ -63,11 +66,17 @@ export default function MyPage() {
           className="[&>button]:h-[46px] [&>button]:px-3"
         />
 
-        {mypageTabs === 'personal' && <PersonalProfiles profile={mockPersonalProfile} />}
+        {mypageTabs === 'personal' && (
+          <PersonalProfiles profile={mockPersonalProfile} onOpenModal={openModal} />
+        )}
 
-        {mypageTabs === 'company' && <CompanyProfiles profile={mockCompanyProfile} />}
+        {mypageTabs === 'company' && (
+          <CompanyProfiles profile={mockCompanyProfile} onOpenModal={openModal} />
+        )}
 
-        <AccountSettings profile={mockAccountSettings} />
+        <AccountSettings profile={mockAccountSettings} onOpenModal={openModal} />
+
+        <MypageModalRenderer editingItem={editingItem} onClose={closeModal} />
       </div>
     </div>
   );

@@ -4,7 +4,6 @@ import { useState } from 'react';
 
 import CategoryTabs from '@/components/common/CategoryTabs';
 import ListFilterBar from '@/components/common/ListFilterBar';
-
 import AppliedJobList from './_components/AppliedJobList';
 import AppliedGroupList from './_components/AppliedGroupList';
 

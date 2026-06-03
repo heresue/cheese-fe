@@ -1,7 +1,4 @@
-import ThemeIcon from '@/assets/icons/settings/theme.svg';
-import LangIcon from '@/assets/icons/settings/language.svg';
-import StartPageIcon from '@/assets/icons/settings/startpage.svg';
-import CookieIcon from '@/assets/icons/settings/cookie.svg';
+import { CookieIcon, LanguageIcon, StartpageIcon, ThemeIcon } from '@/assets/icons/settings';
 
 export const SETTINGS_ITEMS = [
   {
@@ -15,14 +12,14 @@ export const SETTINGS_ITEMS = [
     key: 'language',
     label: '언어',
     value: 'Select your language',
-    icon: <LangIcon className="h-6" />,
+    icon: <LanguageIcon className="h-6" />,
     options: ['한국어'],
   },
   {
     key: 'startPage',
     label: '시작페이지',
     value: '치즈를 시작할 때 표시할 페이지를 선택해주세요',
-    icon: <StartPageIcon className="h-6" />,
+    icon: <StartpageIcon className="h-6" />,
     options: ['홈', '일정 관리', '메모', '문제 풀이', '커뮤니티'],
   },
   {
