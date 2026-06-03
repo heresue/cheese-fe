@@ -61,7 +61,7 @@ export default function MypageModalLayout({
             form={submitFormId}
             size={28}
             paddingX={12}
-            className={cn('tracking-[-4%]', buttonClassName)}
+            className={cn('tracking-[-0.04em]', buttonClassName)}
             onClick={submitFormId ? undefined : onConfirm}
           >
             {buttonText}
