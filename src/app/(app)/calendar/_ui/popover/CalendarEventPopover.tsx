@@ -18,7 +18,7 @@ import {
   ClockLineIcon,
   LinkLineIcon,
   LocationLineIcon,
-} from '../../_assets/icons';
+} from '../../../../../assets/icons/calendar';
 import { DEFAULT_EVENT_COLOR } from '../../_model/constants';
 import type { CalendarEventDraft, EventColorId, ReminderMinutes } from '../../_model/types';
 

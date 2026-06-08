@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronIcon } from '../../_assets/icons';
+import { ChevronIcon } from '../../../../../assets/icons/calendar';
 import type { CalendarView } from '../../_model/types';
 import { CalendarViewSwitcher } from './CalendarViewSwitcher';
 

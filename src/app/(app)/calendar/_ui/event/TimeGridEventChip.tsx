@@ -2,7 +2,7 @@
 
 import type { CSSProperties, MouseEvent } from 'react';
 
-import { DeleteIcon } from '../../_assets/icons';
+import { DeleteIcon } from '../../../../../assets/icons/calendar';
 import { getEventColorTokens } from '../../_model/constants';
 import type { EventColorId } from '../../_model/types';
 
