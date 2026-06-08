@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import ArrowIcon from '@/assets/icons/arrow.svg';
+import ArrowIcon from '@/assets/icons/common/arrow.svg';
 
 type ProblemSolvingHeaderProps = {
   title: string;

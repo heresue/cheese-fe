@@ -1,4 +1,4 @@
-import DrawIcon from '@/assets/icons/draw.svg';
+import DrawIcon from '@/assets/icons/common/draw.svg';
 
 type ProblemActionIconProps = {
   className?: string;

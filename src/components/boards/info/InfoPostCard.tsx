@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import { InfoPost } from '@/components/boards/info/types';
 
-import ViewIcon from '@/assets/icons/view.svg';
-import LikeOutlineIcon from '@/assets/icons/like-outline.svg';
-import LikeFilledIcon from '@/assets/icons/like-filled.svg';
-import CommentIcon from '@/assets/icons/comment.svg';
+import ViewIcon from '@/assets/icons/common/view.svg';
+import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
+import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
+import CommentIcon from '@/assets/icons/common/comment.svg';
 
 type InfoPostCardProps = {
   post: InfoPost;

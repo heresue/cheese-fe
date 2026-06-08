@@ -1,6 +1,6 @@
 'use client';
 
-import CloseIcon from '@/assets/icons/close.svg';
+import CloseIcon from '@/assets/icons/common/close.svg';
 import BaseModal from '@/components/common/Modal/BaseModal';
 import TermsContent from './TermsContent';
 

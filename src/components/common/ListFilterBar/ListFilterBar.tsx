@@ -3,9 +3,9 @@
 import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 
 import { cn } from '@/lib/cn';
-import ChevronIcon from '@/assets/icons/chevron.svg';
-import CloseIcon from '@/assets/icons/close.svg';
-import CreateIcon from '@/assets/icons/create.svg';
+import ChevronIcon from '@/assets/icons/common/chevron.svg';
+import CloseIcon from '@/assets/icons/common/close.svg';
+import CreateIcon from '@/assets/icons/common/create.svg';
 import { Button } from '@/components/common/Button';
 
 import { listFilterBarClassNames as styles } from './style';

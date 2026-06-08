@@ -1,5 +1,5 @@
 import FileIcon from '@/assets/icons/settings/applications.svg';
-import LinkIcon from '@/assets/icons/link.svg';
+import LinkIcon from '@/assets/icons/common/link.svg';
 
 import type { ProfileDocument } from '../Profiles/types';
 
