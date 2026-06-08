@@ -14,7 +14,7 @@ import {
 } from '../../_lib/date';
 import {
   CalendarLineIcon,
-  ChevronDownIcon,
+  ChevronIcon,
   ClockLineIcon,
   LinkLineIcon,
   LocationLineIcon,
@@ -115,8 +115,9 @@ function CustomDropdown<T extends string | number>({
         <span className={isPlaceholder ? 'text-[#B3BAC4]' : 'text-[#4B5563]'}>
           {getLabel(options, value)}
         </span>
+
         <span className="text-[#8E96A3]">
-          <ChevronDownIcon width={16} height={16} />
+          <ChevronIcon direction="down" width={16} height={16} />
         </span>
       </button>
 
