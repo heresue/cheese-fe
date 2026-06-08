@@ -1,4 +1,4 @@
-import type { CalendarView } from '../../model/types';
+import type { CalendarView } from '../../_model/types';
 import type { MonthDensity, MonthLayoutState } from './calendar-core.types';
 
 export const VIEW_MAP: Record<CalendarView, string> = {

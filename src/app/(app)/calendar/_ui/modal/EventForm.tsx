@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-import type { CalendarEventDraft, ReminderMinutes } from '../../model/types';
-import { mockSpaces } from '../../model/mock-spaves';
+import type { CalendarEventDraft, ReminderMinutes } from '../../_model/types';
+import { mockSpaces } from '../../_model/mock-spaves';
 
 type Props = {
   initialValue: CalendarEventDraft;

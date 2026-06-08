@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-import { isSameCalendarDate, parseCalendarDate } from '../../lib/date';
+import { isSameCalendarDate, parseCalendarDate } from '../../_lib/date';
 
 const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
 const GRID_DAYS = 42;

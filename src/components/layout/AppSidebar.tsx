@@ -11,7 +11,7 @@ import {
   MemoIcon,
   ProblemSolvingIcon,
 } from '@/assets/icons/sidebar';
-import { MiniCalendar } from '@/features/calendar/ui/sidebar/MiniCalendar';
+import { MiniCalendar } from '@/app/(app)/calendar/_ui/sidebar/MiniCalendar';
 
 type NavigationItem = {
   label: string;

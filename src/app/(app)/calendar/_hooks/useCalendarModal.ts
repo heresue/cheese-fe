@@ -2,8 +2,8 @@
 
 import { useCallback, useState } from 'react';
 
-import { DEFAULT_EVENT_COLOR } from '../model/constants';
-import type { CalendarEventDraft } from '../model/types';
+import { DEFAULT_EVENT_COLOR } from '@/app/(app)/calendar/_model/constants';
+import type { CalendarEventDraft } from '@/app/(app)/calendar/_model/types';
 
 export type CalendarPopoverPlacement = 'auto' | 'cell-center';
 

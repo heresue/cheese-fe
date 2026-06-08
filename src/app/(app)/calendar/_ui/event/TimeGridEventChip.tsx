@@ -2,9 +2,9 @@
 
 import type { CSSProperties, MouseEvent } from 'react';
 
-import { DeleteIcon } from '../../assets/icons';
-import { getEventColorTokens } from '../../model/constants';
-import type { EventColorId } from '../../model/types';
+import { DeleteIcon } from '../../_assets/icons';
+import { getEventColorTokens } from '../../_model/constants';
+import type { EventColorId } from '../../_model/types';
 
 type Props = {
   title: string;

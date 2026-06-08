@@ -1,6 +1,6 @@
 'use client';
 
-import { formatEnglishHourLabel, formatKoreanWeekday } from '../../lib/date';
+import { formatEnglishHourLabel, formatKoreanWeekday } from '../../_lib/date';
 import { TIMEGRID_SLOT_COUNT } from './calendar-core.constants';
 
 type Props = {

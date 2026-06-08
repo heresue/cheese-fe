@@ -1,7 +1,7 @@
 'use client';
 
 import BaseModal from '@/components/common/Modal/BaseModal';
-import type { CalendarEventDraft } from '../../model/types';
+import type { CalendarEventDraft } from '../../_model/types';
 import EventForm from './EventForm';
 
 type EventFormModalProps = {

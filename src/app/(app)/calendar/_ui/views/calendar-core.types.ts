@@ -3,7 +3,7 @@ import type {
   CalendarEventDraft,
   CalendarSlot,
   CalendarView,
-} from '../../model/types';
+} from '../../_model/types';
 
 export type DateCellPopoverPayload = {
   draft: CalendarEventDraft;

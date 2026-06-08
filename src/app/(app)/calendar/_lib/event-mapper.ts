@@ -6,8 +6,8 @@ import {
   hasTimePart,
   parseCalendarDate,
 } from './date';
-import { DEFAULT_EVENT_COLOR } from '../model/constants';
-import type { CalendarEvent, CalendarEventDraft } from '../model/types';
+import { DEFAULT_EVENT_COLOR } from '@/app/(app)/calendar/_model/constants';
+import type { CalendarEvent, CalendarEventDraft } from '@/app/(app)/calendar/_model/types';
 
 /**
  * 시간형 일정의 기준 슬롯을 만들기 위해 시/분/초를 정시로 맞춘다.

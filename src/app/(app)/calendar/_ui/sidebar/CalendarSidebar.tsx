@@ -1,6 +1,6 @@
 'use client';
 
-import type { CalendarEvent } from '../../model/types';
+import type { CalendarEvent } from '../../_model/types';
 
 type Props = {
   events: CalendarEvent[];

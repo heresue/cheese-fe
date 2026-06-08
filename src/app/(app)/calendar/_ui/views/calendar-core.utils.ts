@@ -8,8 +8,8 @@ import {
   addHoursToCalendarDateTime,
   normalizeCalendarValue,
   parseCalendarDate,
-} from '../../lib/date';
-import type { CalendarEvent, CalendarView } from '../../model/types';
+} from '../../_lib/date';
+import type { CalendarEvent, CalendarView } from '../../_model/types';
 import {
   ALL_DAY_CHIP_GAP,
   DEFAULT_MONTH_LAYOUT,

@@ -2,15 +2,15 @@
 
 import { useRef, useState } from 'react';
 
-import { useCalendarModal } from '../hooks/useCalendarModal';
-import { useCalendarView } from '../hooks/useCalendarView';
+import { useCalendarModal } from '../_hooks/useCalendarModal';
+import { useCalendarView } from '../_hooks/useCalendarView';
 import {
   applyDraftToEvent,
   createCalendarEventFromDraft,
   hasTimedSlotConflict,
-} from '../lib/event-mapper';
-import { mockEvents } from '../model/mock-events';
-import type { CalendarEvent } from '../model/types';
+} from '../_lib/event-mapper';
+import { mockEvents } from '../_model/mock-events';
+import type { CalendarEvent } from '../_model/types';
 import { CalendarEventPopover } from './popover/CalendarEventPopover';
 import { CalendarToolbar } from './toolbar/CalendarToolbar';
 import { CalendarCore } from './views/CalendarCore';

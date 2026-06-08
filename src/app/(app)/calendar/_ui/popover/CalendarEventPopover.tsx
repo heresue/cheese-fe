@@ -11,16 +11,16 @@ import {
   parseCalendarDate,
   toDateInputValue,
   toTimeInputValue,
-} from '../../lib/date';
+} from '../../_lib/date';
 import {
   CalendarLineIcon,
   ChevronDownIcon,
   ClockLineIcon,
   LinkLineIcon,
   LocationLineIcon,
-} from '../../assets/icons';
-import { DEFAULT_EVENT_COLOR } from '../../model/constants';
-import type { CalendarEventDraft, EventColorId, ReminderMinutes } from '../../model/types';
+} from '../../_assets/icons';
+import { DEFAULT_EVENT_COLOR } from '../../_model/constants';
+import type { CalendarEventDraft, EventColorId, ReminderMinutes } from '../../_model/types';
 
 type CalendarEventPopoverProps = {
   open: boolean;

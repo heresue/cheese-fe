@@ -23,8 +23,8 @@ import {
   formatKoreanWeekday,
   isSameCalendarDate,
   normalizeCalendarValue,
-} from '../../lib/date';
-import type { CalendarEvent } from '../../model/types';
+} from '../../_lib/date';
+import type { CalendarEvent } from '../../_model/types';
 import { MonthEventChip } from '../event/MonthEventChip';
 import { TimeGridEventChip } from '../event/TimeGridEventChip';
 import {

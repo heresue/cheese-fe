@@ -2,9 +2,9 @@
 
 import type { CSSProperties, MouseEvent } from 'react';
 
-import { DeleteIcon } from '../../assets/icons';
-import { getEventColorTokens } from '../../model/constants';
-import type { CalendarEvent } from '../../model/types';
+import { DeleteIcon } from '../../_assets/icons';
+import { getEventColorTokens } from '../../_model/constants';
+import type { CalendarEvent } from '../../_model/types';
 
 type Props = {
   event: CalendarEvent;

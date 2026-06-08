@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react';
 
-import type { CalendarView } from '../model/types';
+import type { CalendarView } from '@/app/(app)/calendar/_model/types';
 
 type UseCalendarViewOptions = {
   initialView?: CalendarView;

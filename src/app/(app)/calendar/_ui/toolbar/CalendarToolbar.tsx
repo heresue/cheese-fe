@@ -1,7 +1,7 @@
 'use client';
 
-import { ChevronIcon } from '../../assets/icons';
-import type { CalendarView } from '../../model/types';
+import { ChevronIcon } from '../../_assets/icons';
+import type { CalendarView } from '../../_model/types';
 import { CalendarViewSwitcher } from './CalendarViewSwitcher';
 
 type Props = {

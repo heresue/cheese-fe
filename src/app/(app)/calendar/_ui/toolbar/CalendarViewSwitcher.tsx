@@ -1,6 +1,6 @@
 'use client';
 
-import type { CalendarView } from '../../model/types';
+import type { CalendarView } from '../../_model/types';
 
 type Props = {
   value: CalendarView;
