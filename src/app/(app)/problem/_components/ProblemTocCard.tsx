@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 import ProblemActionIcon from './ProblemActionIcon';
-import type { ProblemQuestion } from '../types/problemSolving';
+import type { ProblemQuestion } from '../_types/problemSolving';
 
 type ProblemTocCardProps = {
   problemSetId: string;

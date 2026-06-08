@@ -1,4 +1,4 @@
-import type { ProblemSet } from '../types/problem';
+import type { ProblemSet } from '../_types/problem';
 
 const baseProblemSets: Omit<ProblemSet, 'id'>[] = [
   {

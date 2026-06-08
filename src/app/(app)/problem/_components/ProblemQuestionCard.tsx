@@ -10,7 +10,7 @@ import DocumentsIcon from '@/assets/icons/settings/documents.svg';
 import ReturnIcon from '@/assets/icons/settings/return.svg';
 import SkillsIcon from '@/assets/icons/settings/skills.svg';
 
-import type { ProblemQuestion } from '../types/problemSolving';
+import type { ProblemQuestion } from '../_types/problemSolving';
 
 type ProblemQuestionCardProps = {
   question: ProblemQuestion;

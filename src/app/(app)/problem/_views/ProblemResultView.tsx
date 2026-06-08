@@ -3,16 +3,16 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import ProblemExitConfirmModal from '../components/ProblemExitConfirmModal';
-import ProblemResultTable from '../components/ProblemResultTable';
-import ProblemSetSummaryCard from '../components/ProblemSetSummaryCard';
-import ProblemSideToc from '../components/ProblemSideToc';
-import ProblemSolvingHeader from '../components/ProblemSolvingHeader';
+import ProblemExitConfirmModal from '../_components/ProblemExitConfirmModal';
+import ProblemResultTable from '../_components/ProblemResultTable';
+import ProblemSetSummaryCard from '../_components/ProblemSetSummaryCard';
+import ProblemSideToc from '../_components/ProblemSideToc';
+import ProblemSolvingHeader from '../_components/ProblemSolvingHeader';
 import {
   mockProblemQuestions,
   mockProblemResultRows,
   mockProblemSetSummary,
-} from '../data/mockProblemSolving';
+} from '../_data/mockProblemSolving';
 
 type ProblemResultViewProps = {
   problemSetId: string;

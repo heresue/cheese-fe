@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 import ProblemActionIcon from './ProblemActionIcon';
 import ProblemStatusIcon from './ProblemStatusIcon';
-import type { ProblemResultRow } from '../types/problemSolving';
+import type { ProblemResultRow } from '../_types/problemSolving';
 
 type ProblemResultTableProps = {
   problemSetId: string;

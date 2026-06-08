@@ -1,4 +1,4 @@
-import ProblemResultView from '@/features/problem/views/ProblemResultView';
+import ProblemResultView from '@/app/(app)/problem/_views/ProblemResultView';
 
 type ProblemResultPageProps = {
   params: Promise<{

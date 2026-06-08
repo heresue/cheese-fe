@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import ProblemActionIcon from './ProblemActionIcon';
-import type { ProblemSetSummary } from '../types/problemSolving';
+import type { ProblemSetSummary } from '../_types/problemSolving';
 
 type ProblemSetSummaryCardProps = {
   problemSetId: string;

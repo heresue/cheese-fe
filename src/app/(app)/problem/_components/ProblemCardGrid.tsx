@@ -1,4 +1,4 @@
-import type { ProblemSet } from '../types/problem';
+import type { ProblemSet } from '../_types/problem';
 import ProblemCard from './ProblemCard';
 
 type ProblemCardGridProps = {

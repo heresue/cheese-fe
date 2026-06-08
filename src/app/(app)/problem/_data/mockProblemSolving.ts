@@ -1,4 +1,8 @@
-import type { ProblemQuestion, ProblemResultRow, ProblemSetSummary } from '../types/problemSolving';
+import type {
+  ProblemQuestion,
+  ProblemResultRow,
+  ProblemSetSummary,
+} from '../_types/problemSolving';
 
 export const mockProblemSetSummary: ProblemSetSummary = {
   id: 'css-basic',

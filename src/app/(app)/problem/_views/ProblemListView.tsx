@@ -5,16 +5,16 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { CategoryTabs } from '@/components/common/CategoryTabs';
 import { ListFilterBar } from '@/components/common/ListFilterBar';
 
-import ProblemCardGrid from '../components/ProblemCardGrid';
-import ProblemSubCategoryTabs from '../components/ProblemSubCategoryTabs';
+import ProblemCardGrid from '../_components/ProblemCardGrid';
+import ProblemSubCategoryTabs from '../_components/ProblemSubCategoryTabs';
 import {
   PROBLEM_MAIN_CATEGORY_TABS,
   PROBLEM_SORT_OPTIONS,
   PROBLEM_SUB_CATEGORY_TABS,
-} from '../constants/problemFilters';
-import { mockProblemSets } from '../data/mockProblemSets';
-import type { ProblemMainCategory, ProblemSortValue, ProblemSubCategory } from '../types/problem';
-import { filterProblemSets } from '../utils/filterProblemSets';
+} from '../_constants/problemFilters';
+import { mockProblemSets } from '../_data/mockProblemSets';
+import type { ProblemMainCategory, ProblemSortValue, ProblemSubCategory } from '../_types/problem';
+import { filterProblemSets } from '../_utils/filterProblemSets';
 
 const PAGE_SIZE = 12;
 

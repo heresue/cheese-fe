@@ -1,4 +1,4 @@
-import type { ProblemMainCategory, ProblemSortValue, ProblemSubCategory } from '../types/problem';
+import type { ProblemMainCategory, ProblemSortValue, ProblemSubCategory } from '../_types/problem';
 
 export const PROBLEM_SORT_OPTIONS = [
   { label: '최신순', value: 'latest' },

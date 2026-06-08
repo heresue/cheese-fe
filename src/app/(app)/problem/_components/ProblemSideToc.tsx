@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 import ArrowIcon from '@/assets/icons/arrow.svg';
 
-import type { ProblemQuestion } from '../types/problemSolving';
+import type { ProblemQuestion } from '../_types/problemSolving';
 
 type ProblemSideTocNavigation = {
   previousHref?: string;

@@ -3,13 +3,13 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import ProblemExitConfirmModal from '../components/ProblemExitConfirmModal';
-import ProblemQuestionCard from '../components/ProblemQuestionCard';
-import ProblemSideToc from '../components/ProblemSideToc';
-import ProblemSolvingHeader from '../components/ProblemSolvingHeader';
-import { mockProblemQuestions } from '../data/mockProblemSolving';
-import type { ProblemQuestion } from '../types/problemSolving';
-import { formatElapsedTime } from '../utils/formatElapsedTime';
+import ProblemExitConfirmModal from '../_components/ProblemExitConfirmModal';
+import ProblemQuestionCard from '../_components/ProblemQuestionCard';
+import ProblemSideToc from '../_components/ProblemSideToc';
+import ProblemSolvingHeader from '../_components/ProblemSolvingHeader';
+import { mockProblemQuestions } from '../_data/mockProblemSolving';
+import type { ProblemQuestion } from '../_types/problemSolving';
+import { formatElapsedTime } from '../_utils/formatElapsedTime';
 
 type ProblemQuestionViewProps = {
   problemSetId: string;

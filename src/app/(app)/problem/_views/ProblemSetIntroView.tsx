@@ -3,12 +3,12 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import ProblemExitConfirmModal from '../components/ProblemExitConfirmModal';
-import ProblemSetSummaryCard from '../components/ProblemSetSummaryCard';
-import ProblemSideToc from '../components/ProblemSideToc';
-import ProblemSolvingHeader from '../components/ProblemSolvingHeader';
-import ProblemTocCard from '../components/ProblemTocCard';
-import { mockProblemQuestions, mockProblemSetSummary } from '../data/mockProblemSolving';
+import ProblemExitConfirmModal from '../_components/ProblemExitConfirmModal';
+import ProblemSetSummaryCard from '../_components/ProblemSetSummaryCard';
+import ProblemSideToc from '../_components/ProblemSideToc';
+import ProblemSolvingHeader from '../_components/ProblemSolvingHeader';
+import ProblemTocCard from '../_components/ProblemTocCard';
+import { mockProblemQuestions, mockProblemSetSummary } from '../_data/mockProblemSolving';
 
 type ProblemSetIntroViewProps = {
   problemSetId: string;

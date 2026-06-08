@@ -3,7 +3,7 @@ import type {
   ProblemSet,
   ProblemSortValue,
   ProblemSubCategory,
-} from '../types/problem';
+} from '../_types/problem';
 
 type FilterProblemSetsParams = {
   problemSets: ProblemSet[];

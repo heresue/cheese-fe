@@ -1,5 +1,5 @@
 import { cn } from '@/lib/cn';
-import type { ProblemSubCategory } from '../types/problem';
+import type { ProblemSubCategory } from '../_types/problem';
 
 type ProblemSubCategoryTabItem = {
   label: string;
