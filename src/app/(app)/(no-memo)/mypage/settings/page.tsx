@@ -1,6 +1,6 @@
 'use client';
 
-import ChevronIcon from '@/assets/icons/chevron.svg';
+import ChevronIcon from '@/assets/icons/common/chevron.svg';
 
 import SettingItem from '../_components/Layout/SettingItem';
 import { SETTINGS_ITEMS } from './_constants/settingsItems';

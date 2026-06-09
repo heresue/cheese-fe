@@ -6,7 +6,7 @@ import { Input } from '@/components/common/Input';
 import { Button } from '@/components/common/Button';
 import MypageModalLayout from './MypageModalLayout';
 
-import PlusIcon from '@/assets/icons/plus.svg';
+import PlusIcon from '@/assets/icons/common/plus.svg';
 
 import type { ProfileDocument } from '../Profiles/types';
 

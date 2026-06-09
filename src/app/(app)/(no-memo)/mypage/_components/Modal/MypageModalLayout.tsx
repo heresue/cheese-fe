@@ -3,7 +3,7 @@ import { Button } from '@/components/common/Button';
 
 import { cn } from '@/lib/cn';
 
-import CloseIcon from '@/assets/icons/close.svg';
+import CloseIcon from '@/assets/icons/common/close.svg';
 
 type MypageModalLayoutProps = {
   isOpen: boolean;

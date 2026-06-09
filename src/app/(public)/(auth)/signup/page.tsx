@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Input, InputActionButton } from '@/components/common/Input';
 import { Button } from '@/components/common/Button';
 import { Checkbox } from '@/components/common/Checkbox';
-import Chevron from '@/assets/icons/chevron.svg';
+import Chevron from '@/assets/icons/common/chevron.svg';
 import TermsModal from './_components/TermsModal';
 import EmailVerifyModal from '../_components/EmailVerifyModal';
 

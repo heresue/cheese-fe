@@ -8,7 +8,7 @@ import { MYPAGE_MENU_ITEMS } from '../../_constants/mypageMenu';
 import { cn } from '@/lib/cn';
 
 import { UserIcon as MypageIcon, ApplicationsIcon, SettingsIcon } from '@/assets/icons/settings';
-import BookmarksIcon from '@/assets/icons/like-outline.svg';
+import BookmarksIcon from '@/assets/icons/common/like-outline.svg';
 
 const ICON_MAP = {
   mypage: <MypageIcon />,

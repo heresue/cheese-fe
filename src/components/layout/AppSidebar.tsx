@@ -11,13 +11,15 @@ import {
   MemoIcon,
   ProblemSolvingIcon,
 } from '@/assets/icons/sidebar';
-import { MiniCalendar } from '@/features/calendar/ui/sidebar/MiniCalendar';
+import { MiniCalendar } from '@/app/(app)/calendar/_ui/sidebar/MiniCalendar';
 
 type NavigationItem = {
   label: string;
   href: string;
   icon: 'bell' | 'calendar' | 'memo' | 'pencil' | 'community';
 };
+
+const DEFAULT_PROFILE_IMAGE_SRC = '/profile_default.png';
 
 const navigationItems: NavigationItem[] = [
   { label: '알림', href: '/notifications', icon: 'bell' },
@@ -60,13 +62,21 @@ export default function AppSidebar() {
       </div>
 
       <div className="px-4">
-        <div className="flex items-center gap-3 px-2 py-1">
-          <div className="bg-tag-blue-100 text-tag-blue-500 relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold">
-            김
-            <span className="border-bg-1 bg-secondary-500 absolute -top-[1px] -right-[1px] h-[9px] w-[9px] rounded-full border" />
-          </div>
-          <span className="text-sm font-semibold text-gray-800">김치즈님</span>
-        </div>
+        <Link
+          href="/mypage"
+          aria-label="마이페이지로 이동"
+          className="inline-flex items-center gap-3 px-2 py-1"
+        >
+          <Image
+            src={DEFAULT_PROFILE_IMAGE_SRC}
+            alt="기본 프로필 이미지"
+            width={30}
+            height={30}
+            className="h-[30px] w-[30px] shrink-0 rounded-full object-cover"
+          />
+
+          <span className="text-sm font-semibold text-gray-800">김치즈 님</span>
+        </Link>
       </div>
 
       <nav className="mt-5 px-[10px]">
@@ -94,6 +104,7 @@ export default function AppSidebar() {
                   >
                     <SidebarIcon type={item.icon} />
                   </span>
+
                   <span>{item.label}</span>
                 </Link>
               </li>

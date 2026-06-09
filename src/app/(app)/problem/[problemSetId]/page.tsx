@@ -1,4 +1,4 @@
-import ProblemSetIntroView from '@/features/problem/views/ProblemSetIntroView';
+import ProblemSetIntroView from '@/app/(app)/problem/_views/ProblemSetIntroView';
 
 type ProblemSetPageProps = {
   params: Promise<{

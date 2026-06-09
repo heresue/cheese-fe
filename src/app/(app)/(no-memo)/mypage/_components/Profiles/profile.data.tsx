@@ -13,12 +13,12 @@ import {
   UserIcon as NicknameIcon,
   UsersIcon as EmployeeIcon,
 } from '@/assets/icons/settings';
-import InterestsIcon from '@/assets/icons/like-outline.svg';
-import CalendarIcon from '@/assets/icons/calendar.svg';
-import ContactIcon from '@/assets/icons/contact.svg';
-import DeleteIcon from '@/assets/icons/delete.svg';
-import EditIcon from '@/assets/icons/edit.svg';
-import PlusIcon from '@/assets/icons/plus.svg';
+import InterestsIcon from '@/assets/icons/common/like-outline.svg';
+import CalendarIcon from '@/assets/icons/common/calendar.svg';
+import ContactIcon from '@/assets/icons/common/contact.svg';
+import DeleteIcon from '@/assets/icons/common/delete.svg';
+import EditIcon from '@/assets/icons/common/edit.svg';
+import PlusIcon from '@/assets/icons/common/plus.svg';
 
 function formatDate(dateString: string) {
   const date = new Date(dateString);

@@ -3,8 +3,8 @@ import { notFound } from 'next/navigation';
 import {
   getProblemQuestion,
   getProblemQuestionIndex,
-} from '@/features/problem/data/mockProblemSolving';
-import ProblemQuestionView from '@/features/problem/views/ProblemQuestionView';
+} from '@/app/(app)/problem/_data/mockProblemSolving';
+import ProblemQuestionView from '@/app/(app)/problem/_views/ProblemQuestionView';
 
 type ProblemQuestionPageProps = {
   params: Promise<{

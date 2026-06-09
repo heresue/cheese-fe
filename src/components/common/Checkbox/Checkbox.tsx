@@ -2,7 +2,7 @@
 
 import { useId, type InputHTMLAttributes } from 'react';
 import { cn } from '@/lib/cn';
-import CheckIcon from '@/assets/icons/check.svg';
+import CheckIcon from '@/assets/icons/common/check.svg';
 
 type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
   label?: string;

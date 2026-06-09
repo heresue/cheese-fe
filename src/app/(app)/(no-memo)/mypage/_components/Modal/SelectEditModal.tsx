@@ -5,7 +5,7 @@ import { useId, useState } from 'react';
 import { Input } from '@/components/common/Input';
 import MypageModalLayout from './MypageModalLayout';
 
-import ChevronIcon from '@/assets/icons/chevron.svg';
+import ChevronIcon from '@/assets/icons/common/chevron.svg';
 
 type SelectEditModalProps = {
   title: string;
