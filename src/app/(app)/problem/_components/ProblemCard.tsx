@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import type { ProblemSet, ProblemThumbnailType } from '../types/problem';
+import type { ProblemSet, ProblemThumbnailType } from '../_types/problem';
 
 type ProblemCardProps = {
   problemSet: ProblemSet;

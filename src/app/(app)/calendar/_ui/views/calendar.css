@@ -881,3 +881,25 @@ input[type='date'],
 input[type='time'] {
   -moz-appearance: textfield;
 }
+/* 오늘 날짜 기본 하이라이트 제거 */
+.fc .fc-daygrid-day.fc-day-today {
+  background-color: transparent !important;
+}
+
+/* 주말 기본 배경 유지 */
+.fc .fc-daygrid-day.fc-day-sun,
+.fc .fc-daygrid-day.fc-day-sat,
+.fc .fc-daygrid-day.fc-day-sun.fc-day-today,
+.fc .fc-daygrid-day.fc-day-sat.fc-day-today {
+  background-color: var(--color-gray-200) !important;
+}
+
+/* 평일 hover와 동일한 hover 배경 */
+.fc .fc-daygrid-day:hover,
+.fc .fc-daygrid-day.fc-day-sun:hover,
+.fc .fc-daygrid-day.fc-day-sat:hover,
+.fc .fc-daygrid-day.fc-day-today:hover,
+.fc .fc-daygrid-day.fc-day-sun.fc-day-today:hover,
+.fc .fc-daygrid-day.fc-day-sat.fc-day-today:hover {
+  background-color: var(--color-background-3) !important;
+}
