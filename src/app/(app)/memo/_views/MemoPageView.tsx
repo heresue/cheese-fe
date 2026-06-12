@@ -5,23 +5,14 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { MemoCard } from '../_components/MemoCard';
 import { MemoEditorModal } from '../_components/MemoEditorModal';
 import { MemoToolbar } from '../_components/MemoToolbar';
-import { mockMemos } from '../_data/mockMemos';
 import { stripHtml } from '../_lib/memoText';
+import { useMemoStore, type MemoSavePayload } from '../_store/MemoStoreProvider';
 import type { Memo } from '../_types/memo';
 
 type MemoFilter = 'all' | 'pinned' | 'deleted';
 type MemoSortOrder = 'latest' | 'oldest';
 
 const PAGE_SIZE = 15;
-
-function getTodayText() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = `${now.getMonth() + 1}`.padStart(2, '0');
-  const date = `${now.getDate()}`.padStart(2, '0');
-
-  return `${year}. ${month}. ${date}`;
-}
 
 function parseMemoDateValue(dateText: string) {
   const [year, month, date] = dateText.match(/\d+/g)?.map(Number) ?? [];
@@ -34,7 +25,18 @@ function parseMemoDateValue(dateText: string) {
 }
 
 export function MemoPageView() {
-  const [memos, setMemos] = useState<Memo[]>(mockMemos);
+  const {
+    memos,
+    saveMemo,
+    toggleSelectMemo,
+    selectMemos,
+    togglePinMemo,
+    deleteMemo,
+    deleteSelectedMemos,
+    restoreMemo,
+    permanentDeleteMemo,
+  } = useMemoStore();
+
   const [filter, setFilter] = useState<MemoFilter>('all');
   const [sortOrder, setSortOrder] = useState<MemoSortOrder>('latest');
   const [searchValue, setSearchValue] = useState('');
@@ -45,7 +47,9 @@ export function MemoPageView() {
   const scrollAreaRef = useRef<HTMLDivElement | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  const selectedCount = memos.filter((memo) => memo.selected && !memo.deleted).length;
+  const selectedCount = useMemo(() => {
+    return memos.filter((memo) => memo.selected && !memo.deleted).length;
+  }, [memos]);
 
   const filteredMemos = useMemo(() => {
     const normalizedSearchValue = searchValue.trim().toLowerCase();
@@ -74,6 +78,7 @@ export function MemoPageView() {
       .sort((a, b) => {
         const dateA = parseMemoDateValue(a.memo.createdAt);
         const dateB = parseMemoDateValue(b.memo.createdAt);
+
         const dateDiff = sortOrder === 'latest' ? dateB - dateA : dateA - dateB;
 
         if (dateDiff !== 0) return dateDiff;
@@ -113,99 +118,37 @@ export function MemoPageView() {
   };
 
   const handleToggleSelectMode = () => {
-    setMemos((prevMemos) => {
-      const visibleIds = new Set(filteredMemos.map((memo) => memo.id));
-      const hasUnselectedVisibleMemo = prevMemos.some(
-        (memo) => visibleIds.has(memo.id) && !memo.selected,
-      );
+    const visibleIds = filteredMemos.map((memo) => memo.id);
+    const hasUnselectedVisibleMemo = filteredMemos.some((memo) => !memo.selected);
 
-      return prevMemos.map((memo) => {
-        if (!visibleIds.has(memo.id)) return memo;
-
-        return {
-          ...memo,
-          selected: hasUnselectedVisibleMemo,
-        };
-      });
-    });
+    selectMemos(visibleIds, hasUnselectedVisibleMemo);
   };
 
   const handleToggleSelect = (id: string) => {
-    setMemos((prevMemos) =>
-      prevMemos.map((memo) =>
-        memo.id === id
-          ? {
-              ...memo,
-              selected: !memo.selected,
-            }
-          : memo,
-      ),
-    );
+    toggleSelectMemo(id);
   };
 
   const handleTogglePin = (id: string) => {
-    setMemos((prevMemos) =>
-      prevMemos.map((memo) =>
-        memo.id === id
-          ? {
-              ...memo,
-              pinned: !memo.pinned,
-            }
-          : memo,
-      ),
-    );
+    togglePinMemo(id);
   };
 
   const handleDelete = (id: string) => {
-    setMemos((prevMemos) =>
-      prevMemos.map((memo) =>
-        memo.id === id
-          ? {
-              ...memo,
-              selected: false,
-              deleted: true,
-            }
-          : memo,
-      ),
-    );
-
+    deleteMemo(id);
     resetVisibleMemos();
   };
 
   const handleDeleteSelected = () => {
-    setMemos((prevMemos) =>
-      prevMemos.map((memo) =>
-        memo.selected && !memo.deleted
-          ? {
-              ...memo,
-              selected: false,
-              deleted: true,
-            }
-          : memo,
-      ),
-    );
-
+    deleteSelectedMemos();
     resetVisibleMemos();
   };
 
   const handleRestore = (id: string) => {
-    setMemos((prevMemos) =>
-      prevMemos.map((memo) =>
-        memo.id === id
-          ? {
-              ...memo,
-              deleted: false,
-              selected: false,
-            }
-          : memo,
-      ),
-    );
-
+    restoreMemo(id);
     resetVisibleMemos();
   };
 
   const handlePermanentDelete = (id: string) => {
-    setMemos((prevMemos) => prevMemos.filter((memo) => memo.id !== id));
+    permanentDeleteMemo(id);
     resetVisibleMemos();
   };
 
@@ -219,40 +162,8 @@ export function MemoPageView() {
     setIsEditorOpen(true);
   };
 
-  const handleSubmitMemo = (
-    nextMemo: Omit<Memo, 'id' | 'createdAt'> & Partial<Pick<Memo, 'id' | 'createdAt'>>,
-  ) => {
-    if (nextMemo.id) {
-      setMemos((prevMemos) =>
-        prevMemos.map((memo) =>
-          memo.id === nextMemo.id
-            ? {
-                ...memo,
-                ...nextMemo,
-              }
-            : memo,
-        ),
-      );
-
-      resetVisibleMemos();
-      return;
-    }
-
-    setMemos((prevMemos) => [
-      {
-        id: `memo-${Date.now()}`,
-        title: nextMemo.title,
-        content: nextMemo.content,
-        createdAt: getTodayText(),
-        color: nextMemo.color,
-        pinned: nextMemo.pinned,
-        imageSrc: nextMemo.imageSrc,
-        selected: false,
-        deleted: false,
-      },
-      ...prevMemos,
-    ]);
-
+  const handleSubmitMemo = (nextMemo: MemoSavePayload) => {
+    saveMemo(nextMemo);
     resetVisibleMemos();
   };
 
