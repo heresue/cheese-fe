@@ -1,11 +1,14 @@
 'use client';
 
+import type { ReactNode } from 'react';
+
 import Image from 'next/image';
 
 import CheckIcon from '@/assets/icons/common/check.svg';
 import DeleteIcon from '@/assets/icons/common/delete.svg';
 import EditIcon from '@/assets/icons/common/edit.svg';
 
+import { stripHtml } from '../_lib/memoText';
 import type { Memo } from '../_types/memo';
 
 type MemoCardProps = {
@@ -53,7 +56,7 @@ function RestoreIcon({ className }: { className?: string }) {
   );
 }
 
-const memoColorClassName = {
+const memoColorClassName: Record<NonNullable<Memo['color']>, string> = {
   pink: 'bg-[#F7CDD3]',
   gray: 'bg-gray-200',
   orange: 'bg-secondary-200',
@@ -61,6 +64,44 @@ const memoColorClassName = {
   blue: 'bg-[#B9D8FF]',
   purple: 'bg-[#D5B8F2]',
 };
+
+function MemoTitle({
+  title,
+  color,
+  variant = 'text',
+}: {
+  title: string;
+  color?: Memo['color'];
+  variant?: 'text' | 'image';
+}) {
+  return (
+    <h3
+      className={cn(
+        'h-[24px] truncate rounded-[5px] px-[8px] text-[14px] leading-[24px] font-bold text-gray-950',
+        variant === 'image' ? 'w-[208px]' : 'w-[178px]',
+        color ? memoColorClassName[color] : '',
+      )}
+    >
+      {title}
+    </h3>
+  );
+}
+
+function MemoThumbnail({ src }: { src: string }) {
+  if (src.startsWith('data:')) {
+    return (
+      <div
+        aria-hidden="true"
+        className="h-full w-full bg-cover bg-center"
+        style={{
+          backgroundImage: `url(${src})`,
+        }}
+      />
+    );
+  }
+
+  return <Image src={src} alt="" fill sizes="250px" className="object-cover" />;
+}
 
 function MemoCheckButton({ selected, onClick }: { selected?: boolean; onClick: () => void }) {
   return (
@@ -86,7 +127,7 @@ function MemoActionButton({
   label,
   onClick,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   label: string;
   onClick: () => void;
 }) {
@@ -116,13 +157,23 @@ export function MemoCard({
 }: MemoCardProps) {
   const hasImage = Boolean(memo.imageSrc);
   const isSelected = Boolean(memo.selected);
+  const previewContent = stripHtml(memo.content);
 
   return (
     <article
       role="button"
       tabIndex={0}
       onClick={() => {
-        if (!memo.deleted) onEdit(memo);
+        if (!memo.deleted) {
+          onEdit(memo);
+        }
+      }}
+      onKeyDown={(event) => {
+        if (memo.deleted) return;
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+
+        event.preventDefault();
+        onEdit(memo);
       }}
       className={cn(
         'relative h-[270px] w-[250px] overflow-hidden rounded-[8px] border bg-white transition-colors',
@@ -133,35 +184,23 @@ export function MemoCard({
 
       {hasImage ? (
         <div className="relative h-[176px] w-full overflow-hidden border-b border-gray-200">
-          <Image src={memo.imageSrc as string} alt="" fill sizes="250px" className="object-cover" />
+          <MemoThumbnail src={memo.imageSrc as string} />
         </div>
       ) : (
         <div className="h-[176px] px-[16px] pt-[16px]">
-          <h3
-            className={cn(
-              'mb-[10px] h-[24px] rounded-[5px] px-[8px] text-[14px] leading-[24px] font-bold text-gray-950',
-              memo.color ? memoColorClassName[memo.color] : '',
-            )}
-          >
-            {memo.title}
-          </h3>
+          <MemoTitle title={memo.title} color={memo.color} variant="text" />
 
-          <p className="[display:-webkit-box] overflow-hidden text-[12px] leading-[18px] font-medium text-gray-600 [-webkit-box-orient:vertical] [-webkit-line-clamp:9]">
-            {memo.content}
+          <p className="mt-[10px] [display:-webkit-box] overflow-hidden text-[12px] leading-[18px] font-medium text-gray-600 [-webkit-box-orient:vertical] [-webkit-line-clamp:9]">
+            {previewContent || '최대 9줄'}
           </p>
         </div>
       )}
 
       <div className={cn('px-[16px]', hasImage ? 'pt-[12px]' : 'pt-0')}>
         {hasImage ? (
-          <h3
-            className={cn(
-              'mb-[12px] h-[24px] rounded-[5px] px-[8px] text-[14px] leading-[24px] font-bold text-gray-950',
-              memo.color ? memoColorClassName[memo.color] : '',
-            )}
-          >
-            {memo.title}
-          </h3>
+          <div className="mb-[12px]">
+            <MemoTitle title={memo.title} color={memo.color} variant="image" />
+          </div>
         ) : null}
 
         <div className="absolute right-[16px] bottom-[14px] left-[16px] flex items-center justify-between">

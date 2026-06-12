@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import CreateIcon from '@/assets/icons/common/create.svg';
 import DeleteIcon from '@/assets/icons/common/delete.svg';
@@ -84,11 +84,42 @@ function PhotoPlaceholder() {
   );
 }
 
+function MemoImagePreview({ src }: { src: string }) {
+  return (
+    <div
+      aria-hidden="true"
+      className="h-[260px] w-[450px] bg-gray-100 bg-cover bg-center"
+      style={{
+        backgroundImage: `url(${src})`,
+      }}
+    />
+  );
+}
+
 function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalContentProps) {
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
+
   const [title, setTitle] = useState(memo?.title ?? '');
   const [content, setContent] = useState(memo?.content ?? '');
   const [color, setColor] = useState<MemoColor>(memo?.color ?? 'gray');
   const [pinned, setPinned] = useState(Boolean(memo?.pinned));
+  const [imageSrc, setImageSrc] = useState(memo?.imageSrc ?? '');
+
+  const handleUploadImage = (file?: File) => {
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setImageSrc(String(reader.result));
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveImage = () => {
+    setImageSrc('');
+  };
 
   const handleSubmit = () => {
     onSubmit({
@@ -98,7 +129,7 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
       content: content.trim(),
       color,
       pinned,
-      imageSrc: memo?.imageSrc,
+      imageSrc: imageSrc || undefined,
       selected: memo?.selected,
       deleted: memo?.deleted,
     });
@@ -164,13 +195,35 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
               <PinIcon className="h-[20px] w-[20px]" />
             </button>
 
-            <button type="button" aria-label="이미지 추가" className="text-gray-600">
+            <button
+              type="button"
+              aria-label="이미지 추가"
+              onClick={() => imageInputRef.current?.click()}
+              className="text-gray-600"
+            >
               <EditIcon className="h-[20px] w-[20px]" aria-hidden="true" />
             </button>
 
-            <button type="button" aria-label="삭제" className="text-gray-600">
+            <button
+              type="button"
+              aria-label="이미지 삭제"
+              onClick={handleRemoveImage}
+              disabled={!imageSrc}
+              className="text-gray-600 disabled:cursor-not-allowed disabled:opacity-40"
+            >
               <DeleteIcon className="h-[20px] w-[20px]" aria-hidden="true" />
             </button>
+
+            <input
+              ref={imageInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(event) => {
+                handleUploadImage(event.target.files?.[0]);
+                event.target.value = '';
+              }}
+            />
           </div>
         </div>
 
@@ -182,7 +235,7 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
             className="mb-[38px] h-[34px] w-full bg-transparent text-[24px] leading-[34px] font-bold text-gray-950 outline-none placeholder:text-gray-500"
           />
 
-          {!memo?.imageSrc ? <PhotoPlaceholder /> : null}
+          {imageSrc ? <MemoImagePreview src={imageSrc} /> : <PhotoPlaceholder />}
         </div>
 
         <MemoRichEditor value={content} onChange={setContent} />
