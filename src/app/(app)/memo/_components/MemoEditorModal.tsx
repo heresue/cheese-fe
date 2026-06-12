@@ -236,7 +236,7 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
       onMouseDown={handleBackdropMouseDown}
     >
       <section className="flex h-[780px] w-[990px] flex-col overflow-hidden rounded-[8px] border border-gray-300 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.18)]">
-        <header className="flex h-[66px] shrink-0 items-center justify-between border-b border-gray-300 px-[32px]">
+        <header className="flex h-[66px] shrink-0 items-center justify-between border-b border-gray-400 bg-gray-100 px-[32px]">
           <div className="flex items-center gap-[16px]">
             <button
               type="button"
@@ -311,11 +311,7 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
           </div>
         </div>
 
-        <MemoRichEditor
-          value={content}
-          onChange={setContent}
-          onRequestImageUpload={openImagePicker}
-        >
+        <MemoRichEditor value={content} onChange={setContent}>
           <input
             value={title}
             onChange={(event) => setTitle(event.target.value)}

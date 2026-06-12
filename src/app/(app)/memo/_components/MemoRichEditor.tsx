@@ -11,12 +11,10 @@ import { EditorContent, useEditor, type Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 
 import LinkIcon from '@/assets/icons/common/link.svg';
-import MemoPictureIcon from '@/assets/icons/memo/picture.svg';
 
 type MemoRichEditorProps = {
   value: string;
   onChange: (value: string) => void;
-  onRequestImageUpload?: () => void;
   children?: ReactNode;
 };
 
@@ -205,13 +203,7 @@ function AlignJustifyIcon() {
   );
 }
 
-function MemoEditorToolbar({
-  editor,
-  onRequestImageUpload,
-}: {
-  editor: Editor | null;
-  onRequestImageUpload?: () => void;
-}) {
+function MemoEditorToolbar({ editor }: { editor: Editor | null }) {
   const disabled = !editor;
 
   const handleSetLink = () => {
@@ -314,24 +306,11 @@ function MemoEditorToolbar({
       >
         <AlignJustifyIcon />
       </ToolbarButton>
-
-      <ToolbarButton
-        label="대표 이미지 추가"
-        disabled={disabled || !onRequestImageUpload}
-        onClick={() => onRequestImageUpload?.()}
-      >
-        <MemoPictureIcon className="h-[18px] w-[18px]" aria-hidden="true" />
-      </ToolbarButton>
     </div>
   );
 }
 
-export function MemoRichEditor({
-  value,
-  onChange,
-  onRequestImageUpload,
-  children,
-}: MemoRichEditorProps) {
+export function MemoRichEditor({ value, onChange, children }: MemoRichEditorProps) {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -374,7 +353,7 @@ export function MemoRichEditor({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <MemoEditorToolbar editor={editor} onRequestImageUpload={onRequestImageUpload} />
+      <MemoEditorToolbar editor={editor} />
 
       <div className="min-h-0 flex-1 overflow-y-auto px-[64px] pt-[48px] pb-[48px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {children}
