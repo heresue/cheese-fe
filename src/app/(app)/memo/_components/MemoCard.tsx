@@ -12,6 +12,7 @@ import MemoPinIcon from '@/assets/icons/memo/pin.svg';
 import MemoPinFilledIcon from '@/assets/icons/memo/pin-filled.svg';
 import MemoReturnIcon from '@/assets/icons/memo/return.svg';
 
+import { getMemoTagColor } from '../_constants/memoColors';
 import { stripHtml } from '../_lib/memoText';
 import type { Memo } from '../_types/memo';
 import { cn } from '@/lib/cn';
@@ -26,15 +27,6 @@ type MemoCardProps = {
   onEdit: (memo: Memo) => void;
 };
 
-const memoColorClassName: Record<NonNullable<Memo['color']>, string> = {
-  pink: 'bg-[#F7CDD3]',
-  gray: 'bg-gray-200',
-  orange: 'bg-secondary-200',
-  green: 'bg-[#B9D77A]',
-  blue: 'bg-[#B9D8FF]',
-  purple: 'bg-[#D5B8F2]',
-};
-
 function MemoTitle({
   title,
   color,
@@ -44,12 +36,14 @@ function MemoTitle({
   color?: Memo['color'];
   variant?: 'text' | 'image';
 }) {
+  const tagColor = getMemoTagColor(color);
+
   return (
     <h3
       className={cn(
         'h-[24px] truncate rounded-[5px] px-[8px] text-[14px] leading-[24px] font-bold text-gray-950',
         variant === 'image' ? 'w-[208px]' : 'w-[178px]',
-        color ? memoColorClassName[color] : '',
+        tagColor?.bgClassName,
       )}
     >
       {title}
