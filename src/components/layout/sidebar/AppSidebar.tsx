@@ -17,6 +17,13 @@ import { MiniCalendar } from '@/app/(app)/calendar/_ui/sidebar/MiniCalendar';
 
 import { NotificationSidebar } from './NotificationSidebar';
 
+import { cn } from '@/lib/cn';
+import {
+  getSidebarIconClassName,
+  getSidebarItemClassName,
+  isSidebarItemActive,
+} from '@/components/layout/sidebar/utils';
+
 type NavigationIconType = 'bell' | 'calendar' | 'memo' | 'pencil' | 'community';
 
 type LinkNavigationItem = {
@@ -51,29 +58,11 @@ function SidebarIcon({ type }: { type: NavigationIconType }) {
   }
 }
 
-function isItemActive(pathname: string, href: string) {
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
-
-function getNavigationItemClassName(isActive: boolean) {
-  return `group flex h-[38px] w-full items-center gap-2 rounded-[10px] p-1 leading-[30px] transition-colors duration-200 ${
-    isActive
-      ? 'bg-sidebar-bg-active text-sidebar-text-active'
-      : 'text-sidebar-text hover:bg-sidebar-bg-active hover:text-sidebar-text-active'
-  }`;
-}
-
-function getNavigationIconClassName(isActive: boolean) {
-  return `flex h-[30px] w-[30px] items-center justify-center transition-colors duration-200 ${
-    isActive ? 'text-sidebar-icon-active' : 'text-sidebar-icon group-hover:text-sidebar-icon-active'
-  }`;
-}
-
 export default function AppSidebar() {
   const pathname = usePathname();
   const [isNotificationSidebarOpen, setIsNotificationSidebarOpen] = useState(false);
 
-  const isMyPageActive = !isNotificationSidebarOpen && isItemActive(pathname, '/mypage');
+  const isMyPageActive = !isNotificationSidebarOpen && isSidebarItemActive(pathname, '/mypage');
 
   return (
     <>
@@ -89,13 +78,13 @@ export default function AppSidebar() {
           </Link>
         </div>
 
-        <div className="flex flex-col gap-2 px-3 text-sm font-medium">
+        <div className="flex flex-col gap-2 px-3 text-sm">
           <div>
             <Link
               href="/mypage"
               aria-label="마이페이지로 이동"
               aria-current={isMyPageActive ? 'page' : undefined}
-              className={getNavigationItemClassName(isMyPageActive)}
+              className={cn('h-[38px] gap-2 p-1', getSidebarItemClassName(isMyPageActive))}
               onClick={() => setIsNotificationSidebarOpen(false)}
             >
               <div className="flex h-[30px] w-[30px] items-center justify-center">
@@ -119,9 +108,17 @@ export default function AppSidebar() {
                   type="button"
                   aria-pressed={isNotificationSidebarOpen}
                   onClick={() => setIsNotificationSidebarOpen((prev) => !prev)}
-                  className={getNavigationItemClassName(isNotificationSidebarOpen)}
+                  className={cn(
+                    'h-[38px] gap-2 p-1',
+                    getSidebarItemClassName(isNotificationSidebarOpen),
+                  )}
                 >
-                  <span className={getNavigationIconClassName(isNotificationSidebarOpen)}>
+                  <span
+                    className={cn(
+                      'h-[30px] w-[30px]',
+                      getSidebarIconClassName(isNotificationSidebarOpen),
+                    )}
+                  >
                     <SidebarIcon type="bell" />
                   </span>
 
@@ -134,7 +131,8 @@ export default function AppSidebar() {
 
             <ul className="flex flex-col gap-2">
               {linkNavigationItems.map((item) => {
-                const isActive = !isNotificationSidebarOpen && isItemActive(pathname, item.href);
+                const isActive =
+                  !isNotificationSidebarOpen && isSidebarItemActive(pathname, item.href);
 
                 return (
                   <li key={item.label}>
@@ -142,9 +140,9 @@ export default function AppSidebar() {
                       href={item.href}
                       aria-current={isActive ? 'page' : undefined}
                       onClick={() => setIsNotificationSidebarOpen(false)}
-                      className={getNavigationItemClassName(isActive)}
+                      className={cn('h-[38px] gap-2 p-1', getSidebarItemClassName(isActive))}
                     >
-                      <span className={getNavigationIconClassName(isActive)}>
+                      <span className={cn('h-[30px] w-[30px]', getSidebarIconClassName(isActive))}>
                         <SidebarIcon type={item.icon} />
                       </span>
 

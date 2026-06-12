@@ -3,12 +3,16 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { MYPAGE_MENU_ITEMS } from '../../_constants/mypageMenu';
-
-import { cn } from '@/lib/cn';
-
 import { UserIcon as MypageIcon, ApplicationsIcon, SettingsIcon } from '@/assets/icons/settings';
 import BookmarksIcon from '@/assets/icons/common/like-outline.svg';
+
+import { cn } from '@/lib/cn';
+import {
+  getSidebarIconClassName,
+  getSidebarItemClassName,
+} from '@/components/layout/sidebar/utils';
+
+import { MYPAGE_MENU_ITEMS } from '../../_constants/mypageMenu';
 
 const ICON_MAP = {
   mypage: <MypageIcon />,
@@ -27,29 +31,16 @@ export default function MyPageSidebar() {
           {MYPAGE_MENU_ITEMS.map((item) => {
             const isActive = pathname === item.href;
             return (
-              <li
-                key={item.href}
-                className={cn(
-                  'group flex items-center rounded-[10px] font-medium transition-colors duration-200',
-                  isActive
-                    ? 'bg-sidebar-bg-active text-sidebar-text-active'
-                    : 'text-sidebar-text hover:bg-sidebar-bg-active hover:text-sidebar-text-active',
-                )}
-              >
-                <Link href={item.href} className="w-full py-3">
-                  <div className="inline-flex w-full items-center gap-2 pl-2">
-                    <span
-                      className={cn(
-                        'inline-flex h-4 w-4 items-center justify-center transition-colors duration-200',
-                        isActive
-                          ? 'text-sidebar-icon-active'
-                          : 'text-sidebar-icon group-hover:text-sidebar-icon-active',
-                      )}
-                    >
-                      {ICON_MAP[item.icon]}
-                    </span>
-                    {item.label}
-                  </div>
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  aria-current={isActive ? 'page' : undefined}
+                  className={cn('h-[54px] gap-3 p-3', getSidebarItemClassName(isActive))}
+                >
+                  <span className={cn('h-4 w-4', getSidebarIconClassName(isActive))}>
+                    {ICON_MAP[item.icon]}
+                  </span>
+                  {item.label}
                 </Link>
               </li>
             );
