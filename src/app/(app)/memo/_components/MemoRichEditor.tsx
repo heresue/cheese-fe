@@ -11,6 +11,7 @@ import { EditorContent, useEditor, type Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 
 import LinkIcon from '@/assets/icons/common/link.svg';
+import MemoPictureIcon from '@/assets/icons/memo/picture.svg';
 
 type MemoRichEditorProps = {
   value: string;
@@ -203,26 +204,6 @@ function AlignJustifyIcon() {
   );
 }
 
-function AddImageIcon() {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" className="h-[20px] w-[20px]">
-      <path
-        d="M4 15.5h12a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1Z"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <path
-        d="m4 13 3.2-3.2 2.2 2.2 2.9-2.9L16 13"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path d="M13.5 6.8h.01" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
 function MemoEditorToolbar({
   editor,
   onRequestImageUpload,
@@ -333,8 +314,12 @@ function MemoEditorToolbar({
         <AlignJustifyIcon />
       </ToolbarButton>
 
-      <ToolbarButton label="대표 이미지 추가" disabled={disabled} onClick={onRequestImageUpload}>
-        <AddImageIcon />
+      <ToolbarButton
+        label="대표 이미지 추가"
+        disabled={disabled || !onRequestImageUpload}
+        onClick={() => onRequestImageUpload?.()}
+      >
+        <MemoPictureIcon className="h-[18px] w-[18px]" aria-hidden="true" />
       </ToolbarButton>
     </div>
   );

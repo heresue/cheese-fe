@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react';
 
 import CreateIcon from '@/assets/icons/common/create.svg';
-import DeleteIcon from '@/assets/icons/common/delete.svg';
-import EditIcon from '@/assets/icons/common/edit.svg';
+import MemoDeleteIcon from '@/assets/icons/memo/delete.svg';
+import MemoPictureIcon from '@/assets/icons/memo/picture.svg';
+import MemoPinIcon from '@/assets/icons/memo/pin.svg';
 
 import { MemoRichEditor } from './MemoRichEditor';
 import type { Memo, MemoColor } from '../_types/memo';
@@ -35,17 +36,6 @@ const MEMO_COLOR_OPTIONS: Array<{ color: MemoColor; hex: string; label: string }
 
 const COLOR_SWATCH_SIZE = 20;
 const COLOR_SWATCH_GAP = 8;
-
-function PinIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" className={className}>
-      <path
-        d="M12.78 2.6 17.4 7.22l-2.16 2.16-1.62-.54-2.92 2.92.54 3.78-.82.82-3.18-3.18-3.64 3.64-.82-.82 3.64-3.64-3.18-3.18.82-.82 3.78.54 2.92-2.92-.54-1.62L12.78 2.6Z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}
 
 function ArrowLeftIcon({ className }: { className?: string }) {
   return (
@@ -212,6 +202,10 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
     onClose();
   };
 
+  const openImagePicker = () => {
+    imageInputRef.current?.click();
+  };
+
   const handleUploadImage = (file?: File) => {
     if (!file) return;
 
@@ -290,16 +284,7 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
               onClick={() => setPinned((prev) => !prev)}
               className={pinned ? 'text-secondary-700' : 'text-gray-600'}
             >
-              <PinIcon className="h-[20px] w-[20px]" />
-            </button>
-
-            <button
-              type="button"
-              aria-label="대표 이미지 추가"
-              onClick={() => imageInputRef.current?.click()}
-              className="text-gray-600"
-            >
-              <EditIcon className="h-[20px] w-[20px]" aria-hidden="true" />
+              <MemoPinIcon className="h-[20px] w-[20px]" aria-hidden="true" />
             </button>
 
             <button
@@ -309,7 +294,17 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
               disabled={!imageSrc}
               className="text-gray-600 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              <DeleteIcon className="h-[20px] w-[20px]" aria-hidden="true" />
+              <MemoDeleteIcon className="h-[20px] w-[20px]" aria-hidden="true" />
+            </button>
+
+            <button
+              type="button"
+              aria-label="대표 이미지 삭제"
+              onClick={handleRemoveImage}
+              disabled={!imageSrc}
+              className="text-gray-600 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <MemoDeleteIcon className="h-[20px] w-[20px]" aria-hidden="true" />
             </button>
 
             <input

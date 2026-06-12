@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
-import CheckIcon from '@/assets/icons/common/check.svg';
 import ChevronIcon from '@/assets/icons/common/chevron.svg';
 import CreateIcon from '@/assets/icons/common/create.svg';
-import DeleteIcon from '@/assets/icons/common/delete.svg';
+import MemoCheckIcon from '@/assets/icons/memo/check.svg';
+import MemoDeleteIcon from '@/assets/icons/memo/delete.svg';
+import MemoPinIcon from '@/assets/icons/memo/pin.svg';
 
 type MemoFilter = 'all' | 'pinned' | 'deleted';
 type MemoSortOrder = 'latest' | 'oldest';
@@ -30,17 +31,6 @@ const SORT_OPTIONS: Array<{ label: string; value: MemoSortOrder }> = [
 
 function cn(...classNames: Array<string | false | null | undefined>) {
   return classNames.filter(Boolean).join(' ');
-}
-
-function PinIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" className={className}>
-      <path
-        d="M12.78 2.6 17.4 7.22l-2.16 2.16-1.62-.54-2.92 2.92.54 3.78-.82.82-3.18-3.18-3.64 3.64-.82-.82 3.64-3.64-3.18-3.18.82-.82 3.78.54 2.92-2.92-.54-1.62L12.78 2.6Z"
-        fill="currentColor"
-      />
-    </svg>
-  );
 }
 
 function SortIcon({ className }: { className?: string }) {
@@ -103,7 +93,9 @@ function ToolbarIconButton({
         disabled && 'cursor-not-allowed opacity-40 hover:border-gray-300 hover:text-gray-500',
       )}
     >
-      {children}
+      <span className="flex h-[20px] w-[20px] translate-x-px items-center justify-center [&>svg]:block [&>svg]:shrink-0">
+        {children}
+      </span>
     </button>
   );
 }
@@ -214,11 +206,11 @@ export function MemoToolbar({
         active={isPinnedActive}
         onClick={() => onChangeFilter(isPinnedActive ? 'all' : 'pinned')}
       >
-        <PinIcon className="h-[18px] w-[18px]" />
+        <MemoPinIcon className="h-[18px] w-[18px]" aria-hidden="true" />
       </ToolbarIconButton>
 
       <ToolbarIconButton label="선택 모드" onClick={onToggleSelectMode}>
-        <CheckIcon className="h-[18px] w-[18px]" aria-hidden="true" />
+        <MemoCheckIcon className="h-[18px] w-[18px]" aria-hidden="true" />
       </ToolbarIconButton>
 
       <ToolbarIconButton
@@ -233,7 +225,7 @@ export function MemoToolbar({
           onChangeFilter(isDeletedActive ? 'all' : 'deleted');
         }}
       >
-        <DeleteIcon className="h-[18px] w-[18px]" aria-hidden="true" />
+        <MemoDeleteIcon className="h-[18px] w-[18px]" aria-hidden="true" />
       </ToolbarIconButton>
 
       <label className="flex h-[44px] w-[500px] items-center gap-[10px] rounded-[8px] border border-gray-300 px-[14px] text-gray-500">
