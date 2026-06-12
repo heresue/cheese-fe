@@ -7,6 +7,7 @@ import CreateIcon from '@/assets/icons/common/create.svg';
 import MemoDeleteIcon from '@/assets/icons/memo/delete.svg';
 import MemoPictureIcon from '@/assets/icons/memo/picture.svg';
 import MemoPinIcon from '@/assets/icons/memo/pin.svg';
+import ArrowIcon from '@/assets/icons/common/arrow.svg';
 
 import { MemoRichEditor } from './MemoRichEditor';
 import type { Memo, MemoColor } from '../_types/memo';
@@ -39,20 +40,6 @@ const MEMO_COLOR_OPTIONS: Array<{ color: MemoColor; hex: string; label: string }
 
 const COLOR_SWATCH_SIZE = 20;
 const COLOR_SWATCH_GAP = 8;
-
-function ArrowLeftIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" className={className}>
-      <path
-        d="M12.5 4 6.5 10l6 6"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 function PhotoPlaceholder() {
   return (
@@ -244,7 +231,7 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
               aria-label="닫기"
               className="flex h-[28px] w-[28px] items-center justify-center text-gray-700"
             >
-              <ArrowLeftIcon className="h-[24px] w-[24px]" />
+              <ArrowIcon className="h-[24px] w-[24px]" aria-hidden="true" />
             </button>
 
             <h2 className="text-[20px] leading-[30px] font-medium text-gray-950">메모</h2>
