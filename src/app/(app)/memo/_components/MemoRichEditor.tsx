@@ -16,7 +16,8 @@ import MemoPictureIcon from '@/assets/icons/memo/picture.svg';
 type MemoRichEditorProps = {
   value: string;
   onChange: (value: string) => void;
-  onRequestImageUpload: () => void;
+  onRequestImageUpload?: () => void;
+  children?: ReactNode;
 };
 
 type ToolbarButtonProps = {
@@ -209,7 +210,7 @@ function MemoEditorToolbar({
   onRequestImageUpload,
 }: {
   editor: Editor | null;
-  onRequestImageUpload: () => void;
+  onRequestImageUpload?: () => void;
 }) {
   const disabled = !editor;
 
@@ -325,7 +326,12 @@ function MemoEditorToolbar({
   );
 }
 
-export function MemoRichEditor({ value, onChange, onRequestImageUpload }: MemoRichEditorProps) {
+export function MemoRichEditor({
+  value,
+  onChange,
+  onRequestImageUpload,
+  children,
+}: MemoRichEditorProps) {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -367,11 +373,15 @@ export function MemoRichEditor({ value, onChange, onRequestImageUpload }: MemoRi
   }, [editor, value]);
 
   return (
-    <div className="min-h-0">
+    <div className="flex min-h-0 flex-1 flex-col">
       <MemoEditorToolbar editor={editor} onRequestImageUpload={onRequestImageUpload} />
 
-      <div className="h-[210px] overflow-y-auto px-[64px] pt-[24px] pb-[48px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <EditorContent editor={editor} />
+      <div className="min-h-0 flex-1 overflow-y-auto px-[64px] pt-[48px] pb-[48px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {children}
+
+        <div className="mt-[28px]">
+          <EditorContent editor={editor} />
+        </div>
       </div>
     </div>
   );

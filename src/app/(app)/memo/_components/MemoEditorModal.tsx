@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react';
 
 import CreateIcon from '@/assets/icons/common/create.svg';
@@ -24,6 +25,8 @@ type MemoEditorModalContentProps = {
   onClose: () => void;
   onSubmit: MemoEditorModalProps['onSubmit'];
 };
+
+const NO_PICTURE_IMAGE_SRC = '/images/nopicture.png';
 
 const MEMO_COLOR_OPTIONS: Array<{ color: MemoColor; hex: string; label: string }> = [
   { color: 'gray', hex: '#93A1AF', label: '회색' },
@@ -53,26 +56,15 @@ function ArrowLeftIcon({ className }: { className?: string }) {
 
 function PhotoPlaceholder() {
   return (
-    <div className="flex h-[260px] w-[450px] items-center justify-center bg-gray-100 text-gray-600">
-      <div className="flex flex-col items-center">
-        <svg
-          viewBox="0 0 160 120"
-          fill="none"
-          aria-hidden="true"
-          className="mb-[8px] h-[110px] w-[160px]"
-        >
-          <path
-            d="M28 94V37h26l8-12h37l8 12h25v57H28Z"
-            stroke="currentColor"
-            strokeWidth="7"
-            strokeLinejoin="round"
-          />
-          <circle cx="80" cy="66" r="22" stroke="currentColor" strokeWidth="7" />
-          <path d="M25 16 139 108" stroke="currentColor" strokeWidth="7" strokeLinecap="round" />
-        </svg>
-
-        <span className="text-[32px] leading-[38px] font-bold text-gray-600">No photo</span>
-      </div>
+    <div className="relative h-[260px] w-[450px] overflow-hidden bg-gray-100">
+      <Image
+        src={NO_PICTURE_IMAGE_SRC}
+        alt="No photo"
+        fill
+        priority={false}
+        sizes="450px"
+        className="object-cover"
+      />
     </div>
   );
 }
@@ -113,7 +105,7 @@ function MemoColorPicker({
   useEffect(() => {
     if (!open) return;
 
-    const handlePointerDown = (event: MouseEvent) => {
+    const handlePointerDown = (event: globalThis.MouseEvent) => {
       if (!pickerRef.current) return;
       if (pickerRef.current.contains(event.target as Node)) return;
 
@@ -243,8 +235,8 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
       className="fixed inset-0 z-50 flex items-start justify-center bg-transparent pt-[150px]"
       onMouseDown={handleBackdropMouseDown}
     >
-      <section className="h-[780px] w-[990px] overflow-hidden rounded-[8px] border border-gray-300 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.18)]">
-        <header className="flex h-[66px] items-center justify-between border-b border-gray-300 px-[32px]">
+      <section className="flex h-[780px] w-[990px] flex-col overflow-hidden rounded-[8px] border border-gray-300 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.18)]">
+        <header className="flex h-[66px] shrink-0 items-center justify-between border-b border-gray-300 px-[32px]">
           <div className="flex items-center gap-[16px]">
             <button
               type="button"
@@ -268,7 +260,7 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
           </button>
         </header>
 
-        <div className="flex h-[54px] items-center justify-between border-b border-gray-300 px-[32px]">
+        <div className="flex h-[54px] shrink-0 items-center justify-between border-b border-gray-300 px-[32px]">
           <div className="flex items-center gap-[10px]">
             <span className="text-[12px] leading-[18px] font-medium text-gray-500">
               메모 색상 설정
@@ -282,19 +274,18 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
               type="button"
               aria-label="고정"
               onClick={() => setPinned((prev) => !prev)}
-              className={pinned ? 'text-secondary-700' : 'text-gray-600'}
+              className={pinned ? 'text-gray-950' : 'text-gray-600'}
             >
               <MemoPinIcon className="h-[20px] w-[20px]" aria-hidden="true" />
             </button>
 
             <button
               type="button"
-              aria-label="대표 이미지 삭제"
-              onClick={handleRemoveImage}
-              disabled={!imageSrc}
-              className="text-gray-600 disabled:cursor-not-allowed disabled:opacity-40"
+              aria-label="대표 이미지 추가"
+              onClick={openImagePicker}
+              className="text-gray-600"
             >
-              <MemoDeleteIcon className="h-[20px] w-[20px]" aria-hidden="true" />
+              <MemoPictureIcon className="h-[20px] w-[20px]" aria-hidden="true" />
             </button>
 
             <button
@@ -320,7 +311,11 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
           </div>
         </div>
 
-        <div className="px-[64px] pt-[48px]">
+        <MemoRichEditor
+          value={content}
+          onChange={setContent}
+          onRequestImageUpload={openImagePicker}
+        >
           <input
             value={title}
             onChange={(event) => setTitle(event.target.value)}
@@ -329,13 +324,7 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
           />
 
           {imageSrc ? <MemoImagePreview src={imageSrc} /> : <PhotoPlaceholder />}
-        </div>
-
-        <MemoRichEditor
-          value={content}
-          onChange={setContent}
-          onRequestImageUpload={() => imageInputRef.current?.click()}
-        />
+        </MemoRichEditor>
       </section>
     </div>
   );

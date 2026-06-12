@@ -9,6 +9,7 @@ import MemoCheckIcon from '@/assets/icons/memo/check.svg';
 import MemoDeleteIcon from '@/assets/icons/memo/delete.svg';
 import MemoDeletePermanentIcon from '@/assets/icons/memo/delete2.svg';
 import MemoPinIcon from '@/assets/icons/memo/pin.svg';
+import MemoPinFilledIcon from '@/assets/icons/memo/pin-filled.svg';
 import MemoReturnIcon from '@/assets/icons/memo/return.svg';
 
 import { stripHtml } from '../_lib/memoText';
@@ -100,16 +101,19 @@ function MemoCheckButton({ selected, onClick }: { selected?: boolean; onClick: (
 function MemoActionButton({
   children,
   label,
+  pressed,
   onClick,
 }: {
   children: ReactNode;
   label: string;
+  pressed?: boolean;
   onClick: () => void;
 }) {
   return (
     <button
       type="button"
       aria-label={label}
+      aria-pressed={pressed}
       onClick={(event) => {
         event.stopPropagation();
         onClick();
@@ -132,6 +136,7 @@ export function MemoCard({
 }: MemoCardProps) {
   const hasImage = Boolean(memo.imageSrc);
   const isSelected = Boolean(memo.selected);
+  const isPinned = Boolean(memo.pinned);
   const previewContent = stripHtml(memo.content);
 
   return (
@@ -188,31 +193,42 @@ export function MemoCard({
             {memo.deleted ? (
               <>
                 <MemoActionButton label="복구" onClick={() => onRestore(memo.id)}>
-                  <MemoReturnIcon className="h-[16px] w-[16px]" aria-hidden="true" />
+                  <MemoReturnIcon className="h-[16px] w-[16px] text-gray-500" aria-hidden="true" />
                 </MemoActionButton>
 
                 <MemoActionButton label="영구 삭제" onClick={() => onPermanentDelete(memo.id)}>
-                  <MemoDeletePermanentIcon className="h-[16px] w-[16px]" aria-hidden="true" />
+                  <MemoDeletePermanentIcon
+                    className="h-[16px] w-[16px] text-gray-500"
+                    aria-hidden="true"
+                  />
                 </MemoActionButton>
               </>
             ) : (
               <>
-                <MemoActionButton label="고정" onClick={() => onTogglePin(memo.id)}>
-                  <MemoPinIcon
-                    className={cn(
-                      'h-[16px] w-[16px]',
-                      memo.pinned ? 'text-gray-950' : 'text-gray-500',
-                    )}
-                    aria-hidden="true"
-                  />
+                <MemoActionButton
+                  label="고정"
+                  pressed={isPinned}
+                  onClick={() => onTogglePin(memo.id)}
+                >
+                  {isPinned ? (
+                    <MemoPinFilledIcon
+                      className="h-[16px] w-[16px] shrink-0 text-gray-950"
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    <MemoPinIcon
+                      className="h-[16px] w-[16px] shrink-0 text-gray-500"
+                      aria-hidden="true"
+                    />
+                  )}
                 </MemoActionButton>
 
                 <MemoActionButton label="수정" onClick={() => onEdit(memo)}>
-                  <EditIcon className="h-[16px] w-[16px]" aria-hidden="true" />
+                  <EditIcon className="h-[16px] w-[16px] text-gray-500" aria-hidden="true" />
                 </MemoActionButton>
 
                 <MemoActionButton label="삭제" onClick={() => onDelete(memo.id)}>
-                  <MemoDeleteIcon className="h-[16px] w-[16px]" aria-hidden="true" />
+                  <MemoDeleteIcon className="h-[16px] w-[16px] text-gray-500" aria-hidden="true" />
                 </MemoActionButton>
               </>
             )}
