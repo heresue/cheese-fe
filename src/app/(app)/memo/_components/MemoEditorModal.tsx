@@ -3,12 +3,16 @@
 import Image from 'next/image';
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react';
 
+import ArrowIcon from '@/assets/icons/common/arrow.svg';
 import CreateIcon from '@/assets/icons/common/create.svg';
 import MemoDeleteIcon from '@/assets/icons/memo/delete.svg';
 import MemoPictureIcon from '@/assets/icons/memo/picture.svg';
 import MemoPinIcon from '@/assets/icons/memo/pin.svg';
+import MemoPinFilledIcon from '@/assets/icons/memo/pin-filled.svg';
+import { cn } from '@/lib/cn';
 
 import { MemoRichEditor } from './MemoRichEditor';
+import { getMemoTagColor, MEMO_COLOR_OPTIONS } from '../_constants/memoColors';
 import type { Memo, MemoColor } from '../_types/memo';
 
 type MemoEditorModalProps = {
@@ -28,31 +32,8 @@ type MemoEditorModalContentProps = {
 
 const NO_PICTURE_IMAGE_SRC = '/images/nopicture.png';
 
-const MEMO_COLOR_OPTIONS: Array<{ color: MemoColor; hex: string; label: string }> = [
-  { color: 'gray', hex: '#93A1AF', label: '회색' },
-  { color: 'pink', hex: '#EB5B49', label: '분홍' },
-  { color: 'orange', hex: '#F4C340', label: '노랑' },
-  { color: 'green', hex: '#9CC04B', label: '초록' },
-  { color: 'blue', hex: '#5B9EF7', label: '파랑' },
-  { color: 'purple', hex: '#9B59D0', label: '보라' },
-];
-
 const COLOR_SWATCH_SIZE = 20;
 const COLOR_SWATCH_GAP = 8;
-
-function ArrowLeftIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" className={className}>
-      <path
-        d="M12.5 4 6.5 10l6 6"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 function PhotoPlaceholder() {
   return (
@@ -85,22 +66,20 @@ function MemoColorPicker({
   value,
   onChange,
 }: {
-  value: MemoColor;
+  value?: MemoColor;
   onChange: (color: MemoColor) => void;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(!value);
   const pickerRef = useRef<HTMLDivElement | null>(null);
 
-  const selectedColor =
-    MEMO_COLOR_OPTIONS.find((option) => option.color === value) ?? MEMO_COLOR_OPTIONS[0];
-
-  const paletteColors = MEMO_COLOR_OPTIONS.filter((option) => option.color !== value);
+  const isCollapsed = Boolean(value) && !open;
+  const visibleColors = isCollapsed
+    ? MEMO_COLOR_OPTIONS.filter((option) => option.color === value)
+    : MEMO_COLOR_OPTIONS;
 
   const paletteWidth =
-    COLOR_SWATCH_SIZE +
-    COLOR_SWATCH_GAP +
-    paletteColors.length * COLOR_SWATCH_SIZE +
-    (paletteColors.length - 1) * COLOR_SWATCH_GAP;
+    visibleColors.length * COLOR_SWATCH_SIZE +
+    Math.max(visibleColors.length - 1, 0) * COLOR_SWATCH_GAP;
 
   useEffect(() => {
     if (!open) return;
@@ -109,7 +88,9 @@ function MemoColorPicker({
       if (!pickerRef.current) return;
       if (pickerRef.current.contains(event.target as Node)) return;
 
-      setOpen(false);
+      if (value) {
+        setOpen(false);
+      }
     };
 
     document.addEventListener('mousedown', handlePointerDown);
@@ -117,58 +98,48 @@ function MemoColorPicker({
     return () => {
       document.removeEventListener('mousedown', handlePointerDown);
     };
-  }, [open]);
+  }, [open, value]);
 
   return (
     <div ref={pickerRef} className="flex items-center">
       <div
         className="overflow-hidden"
         style={{
-          width: `${open ? paletteWidth : COLOR_SWATCH_SIZE}px`,
+          width: `${paletteWidth}px`,
           transition: 'width 240ms cubic-bezier(0.22, 1, 0.36, 1)',
         }}
       >
-        <div className="flex items-center">
-          <button
-            type="button"
-            aria-label="메모 색상 선택"
-            aria-expanded={open}
-            onClick={() => setOpen((prev) => !prev)}
-            className="h-[20px] w-[20px] shrink-0 rounded-[5px] border border-gray-300 transition-transform duration-200"
-            style={{
-              backgroundColor: selectedColor.hex,
-              boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.6)',
-              transform: open ? 'scale(1.04)' : 'scale(1)',
-            }}
-          />
+        <div className="flex items-center gap-[8px]">
+          {visibleColors.map((option) => {
+            const tagColor = getMemoTagColor(option.color);
+            const selected = value === option.color;
 
-          <div
-            className="flex min-w-0 items-center gap-[8px]"
-            style={{
-              marginLeft: COLOR_SWATCH_GAP,
-              opacity: open ? 1 : 0,
-              transform: `translateX(${open ? '0px' : '-8px'})`,
-              pointerEvents: open ? 'auto' : 'none',
-              transition: 'opacity 180ms ease, transform 240ms cubic-bezier(0.22, 1, 0.36, 1)',
-            }}
-          >
-            {paletteColors.map((option) => (
+            return (
               <button
                 key={option.color}
                 type="button"
                 aria-label={`${option.label} 색상 선택`}
+                aria-pressed={selected}
                 onClick={() => {
+                  if (selected) {
+                    setOpen((prev) => !prev);
+                    return;
+                  }
+
                   onChange(option.color);
                   setOpen(false);
                 }}
-                className="h-[20px] w-[20px] shrink-0 rounded-[5px] border border-transparent transition-transform duration-150 hover:scale-105 hover:border-gray-300"
+                className={cn(
+                  'h-[20px] w-[20px] shrink-0 rounded-[5px] border border-transparent transition-transform duration-150 hover:scale-105 hover:border-gray-300',
+                  tagColor?.chipClassName,
+                  selected && 'border-gray-300',
+                )}
                 style={{
-                  backgroundColor: option.hex,
                   boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.52)',
                 }}
               />
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -184,7 +155,7 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
 
   const [title, setTitle] = useState(memo?.title ?? '');
   const [content, setContent] = useState(removeContentImages(memo?.content ?? ''));
-  const [color, setColor] = useState<MemoColor>(memo?.color ?? 'gray');
+  const [color, setColor] = useState<MemoColor | undefined>(memo?.color);
   const [pinned, setPinned] = useState(Boolean(memo?.pinned));
   const [imageSrc, setImageSrc] = useState(memo?.imageSrc ?? '');
 
@@ -236,7 +207,7 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
       onMouseDown={handleBackdropMouseDown}
     >
       <section className="flex h-[780px] w-[990px] flex-col overflow-hidden rounded-[8px] border border-gray-300 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.18)]">
-        <header className="flex h-[66px] shrink-0 items-center justify-between border-b border-gray-300 px-[32px]">
+        <header className="flex h-[66px] shrink-0 items-center justify-between border-b border-gray-300 bg-gray-100 px-[32px]">
           <div className="flex items-center gap-[16px]">
             <button
               type="button"
@@ -244,7 +215,7 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
               aria-label="닫기"
               className="flex h-[28px] w-[28px] items-center justify-center text-gray-700"
             >
-              <ArrowLeftIcon className="h-[24px] w-[24px]" />
+              <ArrowIcon className="h-[24px] w-[14px]" aria-hidden="true" />
             </button>
 
             <h2 className="text-[20px] leading-[30px] font-medium text-gray-950">메모</h2>
@@ -274,9 +245,13 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
               type="button"
               aria-label="고정"
               onClick={() => setPinned((prev) => !prev)}
-              className={pinned ? 'text-gray-950' : 'text-gray-600'}
+              className="flex h-[20px] w-[20px] items-center justify-center"
             >
-              <MemoPinIcon className="h-[20px] w-[20px]" aria-hidden="true" />
+              {pinned ? (
+                <MemoPinFilledIcon className="h-[20px] w-[20px] text-gray-950" aria-hidden="true" />
+              ) : (
+                <MemoPinIcon className="h-[20px] w-[20px] text-gray-600" aria-hidden="true" />
+              )}
             </button>
 
             <button
@@ -311,11 +286,7 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
           </div>
         </div>
 
-        <MemoRichEditor
-          value={content}
-          onChange={setContent}
-          onRequestImageUpload={openImagePicker}
-        >
+        <MemoRichEditor value={content} onChange={setContent}>
           <input
             value={title}
             onChange={(event) => setTitle(event.target.value)}

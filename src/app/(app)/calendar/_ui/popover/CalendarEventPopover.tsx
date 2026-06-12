@@ -2,6 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 
+import { cn } from '@/lib/cn';
+import { getTagColor } from '@/lib/tagPalette';
+
 import {
   addDaysToCalendarDate,
   addHoursToCalendarDateTime,
@@ -54,21 +57,26 @@ const CATEGORY_OPTIONS: Array<DropdownOption<string>> = [
   { label: '기타', value: 'etc' },
 ];
 
-const QUICK_EVENT_COLORS: Array<{ id: EventColorId; hex: string }> = [
-  { id: 'tag-gray', hex: '#93A1AF' },
-  { id: 'tag-red', hex: '#EB5B49' },
-  { id: 'tag-yellow', hex: '#F4C340' },
-  { id: 'tag-green', hex: '#9CC04B' },
-  { id: 'tag-blue', hex: '#5B9EF7' },
-  { id: 'tag-purple', hex: '#9B59D0' },
-];
+const QUICK_EVENT_COLOR_IDS = [
+  'tag-gray',
+  'tag-red',
+  'tag-yellow',
+  'tag-green',
+  'tag-blue',
+  'tag-purple',
+] as const satisfies readonly EventColorId[];
+
+const QUICK_EVENT_COLORS = QUICK_EVENT_COLOR_IDS.map((id) => ({
+  ...getTagColor(id),
+  id,
+}));
 
 const COLOR_SWATCH_SIZE = 20;
 const COLOR_SWATCH_GAP = 8;
 
 function FieldIcon({ children }: { children: React.ReactNode }) {
   return (
-    <span className="flex h-4 w-4 shrink-0 items-center justify-center text-[#C1C7CF]">
+    <span className="flex h-4 w-4 shrink-0 items-center justify-center text-gray-400">
       {children}
     </span>
   );
@@ -96,11 +104,15 @@ function CustomDropdown<T extends string | number>({
     const handlePointerDown = (event: MouseEvent) => {
       if (!rootRef.current) return;
       if (rootRef.current.contains(event.target as Node)) return;
+
       setOpen(false);
     };
 
     document.addEventListener('mousedown', handlePointerDown);
-    return () => document.removeEventListener('mousedown', handlePointerDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+    };
   }, []);
 
   const isPlaceholder = value === '' || value === undefined;
@@ -110,19 +122,19 @@ function CustomDropdown<T extends string | number>({
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex h-[32px] w-full items-center justify-between rounded-[10px] border border-[#E5E7EB] bg-white px-2.5 text-[12px] outline-none"
+        className="flex h-[32px] w-full items-center justify-between rounded-[10px] border border-gray-300 bg-white px-2.5 text-[12px] outline-none"
       >
-        <span className={isPlaceholder ? 'text-[#B3BAC4]' : 'text-[#4B5563]'}>
+        <span className={isPlaceholder ? 'text-gray-500' : 'text-gray-700'}>
           {getLabel(options, value)}
         </span>
 
-        <span className="text-[#8E96A3]">
-          <ChevronIcon direction="down" width={16} height={16} />
+        <span className="text-gray-500">
+          <ChevronIcon direction="down" width={16} height={16} aria-hidden="true" />
         </span>
       </button>
 
       {open ? (
-        <div className="absolute top-[36px] left-0 z-20 w-full rounded-[12px] border border-[#E5E7EB] bg-white py-1 shadow-[0_8px_24px_rgba(15,23,42,0.12)]">
+        <div className="absolute top-[36px] left-0 z-20 w-full rounded-[12px] border border-gray-300 bg-white py-1 shadow-[0_8px_24px_rgba(15,23,42,0.12)]">
           {options.map((option) => {
             const selected = option.value === value;
 
@@ -134,9 +146,10 @@ function CustomDropdown<T extends string | number>({
                   onChange(option.value);
                   setOpen(false);
                 }}
-                className={`flex h-[30px] w-full items-center px-3 text-left text-[12px] ${
-                  selected ? 'text-[#2F2F2F]' : 'text-[#4B5563]'
-                } hover:bg-[#F1F1F1]`}
+                className={cn(
+                  'flex h-[30px] w-full items-center px-3 text-left text-[12px] hover:bg-gray-200',
+                  selected ? 'text-gray-900' : 'text-gray-700',
+                )}
               >
                 {option.label}
               </button>
@@ -174,7 +187,7 @@ function DisplayDateField({ value, onChange }: DisplayDateFieldProps) {
       <button
         type="button"
         onClick={openPicker}
-        className="flex h-[28px] w-full items-center justify-center rounded-[6px] border border-[#E4E8ED] bg-white px-2 text-[12px] leading-[28px] text-[#4B5563]"
+        className="flex h-[28px] w-full items-center justify-center rounded-[6px] border border-gray-300 bg-white px-2 text-[12px] leading-[28px] text-gray-700"
       >
         <span className="truncate">{displayText}</span>
       </button>
@@ -183,7 +196,7 @@ function DisplayDateField({ value, onChange }: DisplayDateFieldProps) {
         ref={inputRef}
         type="date"
         value={inputValue}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(event) => onChange(event.target.value)}
         className="pointer-events-none absolute inset-0 h-full w-full opacity-0"
         tabIndex={-1}
       />
@@ -216,7 +229,7 @@ function DisplayTimeField({ value, onChange }: DisplayTimeFieldProps) {
       <button
         type="button"
         onClick={openPicker}
-        className="flex h-[28px] w-full items-center justify-center rounded-[6px] border border-[#E4E8ED] bg-white px-2 text-[12px] leading-[28px] text-[#4B5563]"
+        className="flex h-[28px] w-full items-center justify-center rounded-[6px] border border-gray-300 bg-white px-2 text-[12px] leading-[28px] text-gray-700"
       >
         <span className="truncate">{inputValue || '시간 선택'}</span>
       </button>
@@ -225,7 +238,7 @@ function DisplayTimeField({ value, onChange }: DisplayTimeFieldProps) {
         ref={inputRef}
         type="time"
         value={inputValue}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(event) => onChange(event.target.value)}
         className="pointer-events-none absolute inset-0 h-full w-full opacity-0"
         tabIndex={-1}
       />
@@ -238,6 +251,7 @@ function getAllDayDisplayEndValue(start?: string, end?: string) {
   if (!end) return start;
 
   const inclusiveEnd = addDaysToCalendarDate(end, -1);
+
   return inclusiveEnd || start;
 }
 
@@ -287,6 +301,7 @@ export function CalendarEventPopover({
     const handlePointerDown = (event: MouseEvent) => {
       if (!popoverRef.current) return;
       if (popoverRef.current.contains(event.target as Node)) return;
+
       onCommit();
     };
 
@@ -310,11 +325,15 @@ export function CalendarEventPopover({
     const handlePointerDown = (event: MouseEvent) => {
       if (!colorPickerRef.current) return;
       if (colorPickerRef.current.contains(event.target as Node)) return;
+
       setIsColorPaletteOpen(false);
     };
 
     document.addEventListener('mousedown', handlePointerDown);
-    return () => document.removeEventListener('mousedown', handlePointerDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+    };
   }, []);
 
   const handleClosePopover = () => {
@@ -444,16 +463,16 @@ export function CalendarEventPopover({
   return (
     <div
       ref={popoverRef}
-      className="fixed z-50 min-h-[455px] w-[320px] overflow-visible rounded-[12px] border border-[#E8EAEE] bg-white shadow-[0_10px_30px_rgba(15,23,42,0.12)]"
+      className="fixed z-50 min-h-[455px] w-[320px] overflow-visible rounded-[12px] border border-gray-300 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.12)]"
       style={{ left: x, top: y }}
     >
       <div className="flex items-center justify-between px-3 py-[10px]">
-        <span className="text-[12px] leading-[16px] font-semibold text-[#2F2F2F]">일정</span>
+        <span className="text-[12px] leading-[16px] font-semibold text-gray-900">일정</span>
 
         <button
           type="button"
           onClick={handleClosePopover}
-          className="text-[18px] leading-none text-[#BFC5CC]"
+          className="text-[18px] leading-none text-gray-400"
           aria-label="닫기"
         >
           ×
@@ -463,14 +482,14 @@ export function CalendarEventPopover({
       <div className="space-y-3 px-3 pb-3">
         <input
           value={draft.title ?? ''}
-          onChange={(e) =>
+          onChange={(event) =>
             onChangeDraft({
               ...draft,
-              title: e.target.value,
+              title: event.target.value,
             })
           }
           placeholder="제목"
-          className="h-[28px] w-full border-0 bg-transparent px-0 text-[12px] text-[#2F2F2F] outline-none placeholder:text-[#A8AFB8]"
+          className="h-[28px] w-full border-0 bg-transparent px-0 text-[12px] text-gray-900 outline-none placeholder:text-gray-500"
         />
 
         {isAllDay ? (
@@ -481,7 +500,7 @@ export function CalendarEventPopover({
 
             <DisplayDateField value={draft.start} onChange={updateAllDayStart} />
 
-            <span className="text-center text-[12px] text-[#A8AFB8]">-</span>
+            <span className="text-center text-[12px] text-gray-500">-</span>
 
             <DisplayDateField value={allDayDisplayEndValue} onChange={updateAllDayEnd} />
           </div>
@@ -505,7 +524,7 @@ export function CalendarEventPopover({
                 onChange={(nextValue) => updateTimedStart(timedStartDateValue, nextValue)}
               />
 
-              <span className="text-center text-[12px] text-[#A8AFB8]">-</span>
+              <span className="text-center text-[12px] text-gray-500">-</span>
 
               <DisplayTimeField
                 value={draft.end}
@@ -523,31 +542,29 @@ export function CalendarEventPopover({
           </div>
         )}
 
-        <label className="flex items-center gap-2 text-[12px] leading-[14px] text-[#6B7280]">
+        <label className="flex items-center gap-2 text-[12px] leading-[14px] text-gray-700">
           <input
             type="checkbox"
             checked={isAllDay}
-            onChange={(e) => handleToggleAllDay(e.target.checked)}
-            className="h-[14px] w-[14px] rounded-[4px] border border-[#D4D9E0] accent-[#F59E0B]"
+            onChange={(event) => handleToggleAllDay(event.target.checked)}
+            className="accent-secondary-700 h-[14px] w-[14px] rounded-[4px] border border-gray-300"
           />
           <span>종일</span>
         </label>
 
         <textarea
           value={draft.memo ?? ''}
-          onChange={(e) =>
+          onChange={(event) =>
             onChangeDraft({
               ...draft,
-              memo: e.target.value,
+              memo: event.target.value,
             })
           }
-          className="h-[96px] w-full resize-none rounded-[8px] border border-[#D9DEE5] px-2.5 py-2 text-[11px] leading-[15px] text-[#4B5563] outline-none focus:border-[#C8CED6]"
+          className="h-[96px] w-full resize-none rounded-[8px] border border-gray-300 px-2.5 py-2 text-[11px] leading-[15px] text-gray-700 outline-none focus:border-gray-400"
         />
 
         <div>
-          <div className="mb-2 text-[11px] leading-[14px] font-medium text-[#6B7280]">
-            일정 색상
-          </div>
+          <div className="mb-2 text-[11px] leading-[14px] font-medium text-gray-700">일정 색상</div>
 
           <div ref={colorPickerRef} className="flex items-center">
             <div
@@ -561,9 +578,11 @@ export function CalendarEventPopover({
                 <button
                   type="button"
                   onClick={handleColorTriggerClick}
-                  className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-[6px] border border-[#C5CCD5] transition-transform duration-200"
+                  className={cn(
+                    'flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-[6px] border border-gray-300 transition-transform duration-200',
+                    selectedColor.chipClassName,
+                  )}
                   style={{
-                    backgroundColor: selectedColor.hex,
                     boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.68)',
                     transform: isColorPaletteOpen ? 'scale(1.04)' : 'scale(1)',
                   }}
@@ -582,21 +601,21 @@ export function CalendarEventPopover({
                       'opacity 180ms ease, transform 240ms cubic-bezier(0.22, 1, 0.36, 1)',
                   }}
                 >
-                  {paletteColors.map((color) => {
-                    return (
-                      <button
-                        key={color.id}
-                        type="button"
-                        onClick={() => handleSelectColor(color.id)}
-                        className="h-[20px] w-[20px] shrink-0 rounded-[6px] border border-transparent transition-transform duration-150 hover:scale-105 hover:border-[#C5CCD4]"
-                        style={{
-                          backgroundColor: color.hex,
-                          boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.52)',
-                        }}
-                        aria-label={color.id}
-                      />
-                    );
-                  })}
+                  {paletteColors.map((color) => (
+                    <button
+                      key={color.id}
+                      type="button"
+                      onClick={() => handleSelectColor(color.id)}
+                      className={cn(
+                        'h-[20px] w-[20px] shrink-0 rounded-[6px] border border-transparent transition-transform duration-150 hover:scale-105 hover:border-gray-300',
+                        color.chipClassName,
+                      )}
+                      style={{
+                        boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.52)',
+                      }}
+                      aria-label={color.label}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
@@ -604,39 +623,39 @@ export function CalendarEventPopover({
         </div>
 
         <div className="space-y-1.5">
-          <div className="grid grid-cols-[14px_1fr] items-center gap-2 rounded-[8px] border border-[#E5E7EB] px-2.5">
+          <div className="grid grid-cols-[14px_1fr] items-center gap-2 rounded-[8px] border border-gray-300 px-2.5">
             <FieldIcon>
               <LocationLineIcon width={16} height={16} />
             </FieldIcon>
 
             <input
               value={draft.location ?? ''}
-              onChange={(e) =>
+              onChange={(event) =>
                 onChangeDraft({
                   ...draft,
-                  location: e.target.value,
+                  location: event.target.value,
                 })
               }
               placeholder="장소"
-              className="h-[31px] w-full border-0 bg-transparent px-0 text-[12px] outline-none placeholder:text-[#B3BAC4]"
+              className="h-[31px] w-full border-0 bg-transparent px-0 text-[12px] outline-none placeholder:text-gray-500"
             />
           </div>
 
-          <div className="grid grid-cols-[14px_1fr] items-center gap-2 rounded-[8px] border border-[#E5E7EB] px-2.5">
+          <div className="grid grid-cols-[14px_1fr] items-center gap-2 rounded-[8px] border border-gray-300 px-2.5">
             <FieldIcon>
               <LinkLineIcon width={16} height={16} />
             </FieldIcon>
 
             <input
               value={(draft as CalendarEventDraft & { url?: string }).url ?? ''}
-              onChange={(e) =>
+              onChange={(event) =>
                 onChangeDraft({
                   ...draft,
-                  url: e.target.value,
+                  url: event.target.value,
                 } as CalendarEventDraft)
               }
               placeholder="채용정보 URL"
-              className="h-[31px] w-full border-0 bg-transparent px-0 text-[12px] outline-none placeholder:text-[#B3BAC4]"
+              className="h-[31px] w-full border-0 bg-transparent px-0 text-[12px] outline-none placeholder:text-gray-500"
             />
           </div>
         </div>
