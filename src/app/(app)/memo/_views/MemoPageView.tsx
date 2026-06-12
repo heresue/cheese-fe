@@ -10,6 +10,7 @@ import { stripHtml } from '../_lib/memoText';
 import type { Memo } from '../_types/memo';
 
 type MemoFilter = 'all' | 'pinned' | 'deleted';
+type MemoSortOrder = 'latest' | 'oldest';
 
 const PAGE_SIZE = 15;
 
@@ -22,9 +23,20 @@ function getTodayText() {
   return `${year}. ${month}. ${date}`;
 }
 
+function parseMemoDateValue(dateText: string) {
+  const [year, month, date] = dateText.match(/\d+/g)?.map(Number) ?? [];
+
+  if (!year || !month || !date) {
+    return 0;
+  }
+
+  return new Date(year, month - 1, date).getTime();
+}
+
 export function MemoPageView() {
   const [memos, setMemos] = useState<Memo[]>(mockMemos);
   const [filter, setFilter] = useState<MemoFilter>('all');
+  const [sortOrder, setSortOrder] = useState<MemoSortOrder>('latest');
   const [searchValue, setSearchValue] = useState('');
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editingMemo, setEditingMemo] = useState<Memo | null>(null);
@@ -54,8 +66,22 @@ export function MemoPageView() {
           memo.title.toLowerCase().includes(normalizedSearchValue) ||
           plainContent.includes(normalizedSearchValue)
         );
-      });
-  }, [filter, memos, searchValue]);
+      })
+      .map((memo, index) => ({
+        memo,
+        index,
+      }))
+      .sort((a, b) => {
+        const dateA = parseMemoDateValue(a.memo.createdAt);
+        const dateB = parseMemoDateValue(b.memo.createdAt);
+        const dateDiff = sortOrder === 'latest' ? dateB - dateA : dateA - dateB;
+
+        if (dateDiff !== 0) return dateDiff;
+
+        return a.index - b.index;
+      })
+      .map(({ memo }) => memo);
+  }, [filter, memos, searchValue, sortOrder]);
 
   const visibleMemos = filteredMemos.slice(0, visibleCount);
   const hasMoreMemos = visibleCount < filteredMemos.length;
@@ -73,6 +99,11 @@ export function MemoPageView() {
 
   const handleChangeFilter = (nextFilter: MemoFilter) => {
     setFilter(nextFilter);
+    resetVisibleMemos();
+  };
+
+  const handleChangeSortOrder = (nextSortOrder: MemoSortOrder) => {
+    setSortOrder(nextSortOrder);
     resetVisibleMemos();
   };
 
@@ -258,9 +289,11 @@ export function MemoPageView() {
       <div className="shrink-0 px-[56px] pt-[40px]">
         <MemoToolbar
           filter={filter}
+          sortOrder={sortOrder}
           searchValue={searchValue}
           selectedCount={selectedCount}
           onChangeFilter={handleChangeFilter}
+          onChangeSortOrder={handleChangeSortOrder}
           onChangeSearchValue={handleChangeSearchValue}
           onToggleSelectMode={handleToggleSelectMode}
           onDeleteSelected={handleDeleteSelected}

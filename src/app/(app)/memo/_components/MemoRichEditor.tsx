@@ -1,21 +1,21 @@
 'use client';
 
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
-import { Color, TextStyle } from '@tiptap/extension-text-style';
-import ImageExtension from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
+import { Color, TextStyle } from '@tiptap/extension-text-style';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
+import { Placeholder } from '@tiptap/extensions';
 import { EditorContent, useEditor, type Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { Placeholder } from '@tiptap/extensions';
 
 import LinkIcon from '@/assets/icons/common/link.svg';
 
 type MemoRichEditorProps = {
   value: string;
   onChange: (value: string) => void;
+  onRequestImageUpload: () => void;
 };
 
 type ToolbarButtonProps = {
@@ -26,7 +26,15 @@ type ToolbarButtonProps = {
   onClick: () => void;
 };
 
-const TEXT_COLORS = ['#111111', '#6B7280', '#EB5B49', '#F4A12C', '#9CC04B', '#5B9EF7', '#9B59D0'];
+const TEXT_COLORS = [
+  { label: '검정', hex: '#111111' },
+  { label: '회색', hex: '#6B7280' },
+  { label: '빨강', hex: '#EB5B49' },
+  { label: '노랑', hex: '#F4C340' },
+  { label: '초록', hex: '#9CC04B' },
+  { label: '파랑', hex: '#5B9EF7' },
+  { label: '보라', hex: '#9B59D0' },
+];
 
 function cn(...classNames: Array<string | false | null | undefined>) {
   return classNames.filter(Boolean).join(' ');
@@ -49,6 +57,97 @@ function ToolbarButton({ active, disabled, label, children, onClick }: ToolbarBu
     >
       {children}
     </button>
+  );
+}
+
+function DropdownArrowIcon() {
+  return (
+    <svg viewBox="0 0 12 12" fill="none" aria-hidden="true" className="h-[12px] w-[12px]">
+      <path
+        d="M3 4.5L6 7.5L9 4.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function TextColorDropdown({ editor }: { editor: Editor | null }) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  const selectedColor =
+    (editor?.getAttributes('textStyle').color as string | undefined) ?? TEXT_COLORS[0].hex;
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!rootRef.current) return;
+      if (rootRef.current.contains(event.target as Node)) return;
+
+      setOpen(false);
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+    };
+  }, [open]);
+
+  return (
+    <div ref={rootRef} className="relative">
+      <button
+        type="button"
+        aria-label="텍스트 색상 선택"
+        aria-expanded={open}
+        disabled={!editor}
+        onClick={() => setOpen((prev) => !prev)}
+        className="flex h-[32px] w-[48px] items-center justify-center gap-[6px] rounded-[4px] text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-950 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        <span
+          className="h-[14px] w-[14px] rounded-[3px] border border-gray-300"
+          style={{ backgroundColor: selectedColor }}
+          aria-hidden="true"
+        />
+
+        <DropdownArrowIcon />
+      </button>
+
+      {open ? (
+        <div className="absolute top-[36px] left-0 z-50 grid w-[116px] grid-cols-4 gap-[6px] rounded-[8px] border border-gray-300 bg-white p-[8px] shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
+          {TEXT_COLORS.map((option) => {
+            const selected = selectedColor.toLowerCase() === option.hex.toLowerCase();
+
+            return (
+              <button
+                key={option.hex}
+                type="button"
+                aria-label={`${option.label} 색상`}
+                title={option.label}
+                onClick={() => {
+                  editor?.chain().focus().setColor(option.hex).run();
+                  setOpen(false);
+                }}
+                className={cn(
+                  'flex h-[20px] w-[20px] items-center justify-center rounded-[5px] border transition-transform hover:scale-105',
+                  selected ? 'border-gray-950' : 'border-gray-300',
+                )}
+              >
+                <span
+                  className="h-[14px] w-[14px] rounded-[3px]"
+                  style={{ backgroundColor: option.hex }}
+                  aria-hidden="true"
+                />
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -124,8 +223,13 @@ function AddImageIcon() {
   );
 }
 
-function MemoEditorToolbar({ editor }: { editor: Editor | null }) {
-  const imageInputRef = useRef<HTMLInputElement | null>(null);
+function MemoEditorToolbar({
+  editor,
+  onRequestImageUpload,
+}: {
+  editor: Editor | null;
+  onRequestImageUpload: () => void;
+}) {
   const disabled = !editor;
 
   const handleSetLink = () => {
@@ -144,26 +248,8 @@ function MemoEditorToolbar({ editor }: { editor: Editor | null }) {
     editor.chain().focus().extendMarkRange('link').setLink({ href: url.trim() }).run();
   };
 
-  const handleAddImage = (file?: File) => {
-    if (!editor || !file) return;
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      editor
-        .chain()
-        .focus()
-        .setImage({
-          src: String(reader.result),
-        })
-        .run();
-    };
-
-    reader.readAsDataURL(file);
-  };
-
   return (
-    <div className="flex h-[54px] items-center gap-[8px] border-b border-gray-300 px-[32px]">
+    <div className="flex h-[54px] shrink-0 items-center gap-[8px] border-b border-gray-300 px-[32px]">
       <ToolbarButton
         label="굵게"
         disabled={disabled}
@@ -200,19 +286,7 @@ function MemoEditorToolbar({ editor }: { editor: Editor | null }) {
         <span className="line-through">S</span>
       </ToolbarButton>
 
-      <div className="mx-[4px] flex items-center gap-[6px]">
-        {TEXT_COLORS.map((color) => (
-          <button
-            key={color}
-            type="button"
-            aria-label={`${color} 글자색`}
-            disabled={disabled}
-            onClick={() => editor?.chain().focus().setColor(color).run()}
-            className="h-[18px] w-[18px] rounded-[4px] border border-gray-300 disabled:opacity-40"
-            style={{ backgroundColor: color }}
-          />
-        ))}
-      </div>
+      <TextColorDropdown editor={editor} />
 
       <ToolbarButton
         label="링크"
@@ -259,31 +333,14 @@ function MemoEditorToolbar({ editor }: { editor: Editor | null }) {
         <AlignJustifyIcon />
       </ToolbarButton>
 
-      <ToolbarButton
-        label="이미지 추가"
-        disabled={disabled}
-        onClick={() => imageInputRef.current?.click()}
-      >
+      <ToolbarButton label="대표 이미지 추가" disabled={disabled} onClick={onRequestImageUpload}>
         <AddImageIcon />
       </ToolbarButton>
-
-      <input
-        ref={imageInputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(event) => {
-          const file = event.target.files?.[0];
-
-          handleAddImage(file);
-          event.target.value = '';
-        }}
-      />
     </div>
   );
 }
 
-export function MemoRichEditor({ value, onChange }: MemoRichEditorProps) {
+export function MemoRichEditor({ value, onChange, onRequestImageUpload }: MemoRichEditorProps) {
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -298,10 +355,6 @@ export function MemoRichEditor({ value, onChange }: MemoRichEditorProps) {
       TextAlign.configure({
         types: ['heading', 'paragraph'],
       }),
-      ImageExtension.configure({
-        inline: false,
-        allowBase64: true,
-      }),
       Placeholder.configure({
         placeholder: '메모를 입력하세요',
       }),
@@ -311,7 +364,7 @@ export function MemoRichEditor({ value, onChange }: MemoRichEditorProps) {
     editorProps: {
       attributes: {
         class:
-          'memo-rich-editor min-h-[210px] w-full outline-none text-[16px] leading-[24px] font-medium text-gray-700',
+          'memo-rich-editor min-h-[180px] w-full outline-none text-[16px] font-medium leading-[24px] text-gray-700',
       },
     },
     onUpdate: ({ editor: currentEditor }) => {
@@ -329,10 +382,10 @@ export function MemoRichEditor({ value, onChange }: MemoRichEditorProps) {
   }, [editor, value]);
 
   return (
-    <div>
-      <MemoEditorToolbar editor={editor} />
+    <div className="min-h-0">
+      <MemoEditorToolbar editor={editor} onRequestImageUpload={onRequestImageUpload} />
 
-      <div className="px-[64px] pt-[24px] pb-[48px]">
+      <div className="h-[210px] overflow-y-auto px-[64px] pt-[24px] pb-[48px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <EditorContent editor={editor} />
       </div>
     </div>

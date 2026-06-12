@@ -1,22 +1,32 @@
 'use client';
 
-import CreateIcon from '@/assets/icons/common/create.svg';
-import DeleteIcon from '@/assets/icons/common/delete.svg';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+
 import CheckIcon from '@/assets/icons/common/check.svg';
 import ChevronIcon from '@/assets/icons/common/chevron.svg';
+import CreateIcon from '@/assets/icons/common/create.svg';
+import DeleteIcon from '@/assets/icons/common/delete.svg';
 
 type MemoFilter = 'all' | 'pinned' | 'deleted';
+type MemoSortOrder = 'latest' | 'oldest';
 
 type MemoToolbarProps = {
   filter: MemoFilter;
+  sortOrder: MemoSortOrder;
   searchValue: string;
   selectedCount: number;
   onChangeFilter: (filter: MemoFilter) => void;
+  onChangeSortOrder: (sortOrder: MemoSortOrder) => void;
   onChangeSearchValue: (value: string) => void;
   onToggleSelectMode: () => void;
   onDeleteSelected: () => void;
   onCreate: () => void;
 };
+
+const SORT_OPTIONS: Array<{ label: string; value: MemoSortOrder }> = [
+  { label: '최신순', value: 'latest' },
+  { label: '오래된순', value: 'oldest' },
+];
 
 function cn(...classNames: Array<string | false | null | undefined>) {
   return classNames.filter(Boolean).join(' ');
@@ -75,7 +85,7 @@ function ToolbarIconButton({
 }: {
   active?: boolean;
   disabled?: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
   label: string;
   onClick: () => void;
 }) {
@@ -98,11 +108,95 @@ function ToolbarIconButton({
   );
 }
 
+function SortDropdown({
+  value,
+  onChange,
+}: {
+  value: MemoSortOrder;
+  onChange: (value: MemoSortOrder) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  const selectedLabel = SORT_OPTIONS.find((option) => option.value === value)?.label ?? '최신순';
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!rootRef.current) return;
+      if (rootRef.current.contains(event.target as Node)) return;
+
+      setOpen(false);
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+    };
+  }, [open]);
+
+  return (
+    <div ref={rootRef} className="relative">
+      <button
+        type="button"
+        aria-label={`메모 정렬: ${selectedLabel}`}
+        aria-expanded={open}
+        onClick={() => setOpen((prev) => !prev)}
+        className={cn(
+          'flex h-[44px] w-[68px] items-center justify-center gap-[8px] rounded-[10px] border transition-colors',
+          open
+            ? 'border-secondary-700 text-secondary-700'
+            : 'hover:border-secondary-700 hover:text-secondary-700 border-gray-300 text-gray-500',
+        )}
+      >
+        <SortIcon className="h-[20px] w-[20px]" />
+        <ChevronIcon
+          className={cn(
+            'h-[12px] w-[12px] transition-transform',
+            open ? '-rotate-90' : 'rotate-90',
+          )}
+          aria-hidden="true"
+        />
+      </button>
+
+      {open ? (
+        <div className="absolute top-[52px] left-0 z-30 w-[98px] overflow-hidden rounded-[10px] border border-gray-300 bg-white py-[6px] shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
+          {SORT_OPTIONS.map((option) => {
+            const selected = option.value === value;
+
+            return (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => {
+                  onChange(option.value);
+                  setOpen(false);
+                }}
+                className={cn(
+                  'flex h-[32px] w-full items-center px-[12px] text-left text-[13px] font-medium transition-colors',
+                  selected ? 'text-secondary-700' : 'text-gray-700',
+                  'hover:bg-gray-100',
+                )}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export function MemoToolbar({
   filter,
+  sortOrder,
   searchValue,
   selectedCount,
   onChangeFilter,
+  onChangeSortOrder,
   onChangeSearchValue,
   onToggleSelectMode,
   onDeleteSelected,
@@ -113,14 +207,7 @@ export function MemoToolbar({
 
   return (
     <div className="mb-[42px] flex items-center justify-center gap-[12px]">
-      <button
-        type="button"
-        aria-label="정렬"
-        className="hover:border-secondary-700 hover:text-secondary-700 flex h-[44px] w-[68px] items-center justify-center gap-[8px] rounded-[10px] border border-gray-300 text-gray-500 transition-colors"
-      >
-        <SortIcon className="h-[20px] w-[20px]" />
-        <ChevronIcon className="h-[12px] w-[12px] rotate-90" aria-hidden="true" />
-      </button>
+      <SortDropdown value={sortOrder} onChange={onChangeSortOrder} />
 
       <ToolbarIconButton
         label="고정 메모 보기"
@@ -151,12 +238,14 @@ export function MemoToolbar({
 
       <label className="flex h-[44px] w-[500px] items-center gap-[10px] rounded-[8px] border border-gray-300 px-[14px] text-gray-500">
         <SearchIcon className="h-[18px] w-[18px] shrink-0" />
+
         <input
           value={searchValue}
           onChange={(event) => onChangeSearchValue(event.target.value)}
           placeholder="메모 검색"
           className="h-full min-w-0 flex-1 bg-transparent text-[14px] font-medium outline-none placeholder:text-gray-500"
         />
+
         <ChevronIcon className="h-[12px] w-[12px] rotate-90" aria-hidden="true" />
       </label>
 

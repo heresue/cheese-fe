@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react';
 
 import CreateIcon from '@/assets/icons/common/create.svg';
 import DeleteIcon from '@/assets/icons/common/delete.svg';
@@ -24,14 +24,17 @@ type MemoEditorModalContentProps = {
   onSubmit: MemoEditorModalProps['onSubmit'];
 };
 
-const colorOptions: Array<{ color: MemoColor; className: string }> = [
-  { color: 'gray', className: 'bg-[#93A1AF]' },
-  { color: 'pink', className: 'bg-[#EB5B49]' },
-  { color: 'orange', className: 'bg-[#F4C340]' },
-  { color: 'green', className: 'bg-[#9CC04B]' },
-  { color: 'blue', className: 'bg-[#5B9EF7]' },
-  { color: 'purple', className: 'bg-[#9B59D0]' },
+const MEMO_COLOR_OPTIONS: Array<{ color: MemoColor; hex: string; label: string }> = [
+  { color: 'gray', hex: '#93A1AF', label: '회색' },
+  { color: 'pink', hex: '#EB5B49', label: '분홍' },
+  { color: 'orange', hex: '#F4C340', label: '노랑' },
+  { color: 'green', hex: '#9CC04B', label: '초록' },
+  { color: 'blue', hex: '#5B9EF7', label: '파랑' },
+  { color: 'purple', hex: '#9B59D0', label: '보라' },
 ];
+
+const COLOR_SWATCH_SIZE = 20;
+const COLOR_SWATCH_GAP = 8;
 
 function PinIcon({ className }: { className?: string }) {
   return (
@@ -96,14 +99,118 @@ function MemoImagePreview({ src }: { src: string }) {
   );
 }
 
+function MemoColorPicker({
+  value,
+  onChange,
+}: {
+  value: MemoColor;
+  onChange: (color: MemoColor) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const pickerRef = useRef<HTMLDivElement | null>(null);
+
+  const selectedColor =
+    MEMO_COLOR_OPTIONS.find((option) => option.color === value) ?? MEMO_COLOR_OPTIONS[0];
+
+  const paletteColors = MEMO_COLOR_OPTIONS.filter((option) => option.color !== value);
+
+  const paletteWidth =
+    COLOR_SWATCH_SIZE +
+    COLOR_SWATCH_GAP +
+    paletteColors.length * COLOR_SWATCH_SIZE +
+    (paletteColors.length - 1) * COLOR_SWATCH_GAP;
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!pickerRef.current) return;
+      if (pickerRef.current.contains(event.target as Node)) return;
+
+      setOpen(false);
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+    };
+  }, [open]);
+
+  return (
+    <div ref={pickerRef} className="flex items-center">
+      <div
+        className="overflow-hidden"
+        style={{
+          width: `${open ? paletteWidth : COLOR_SWATCH_SIZE}px`,
+          transition: 'width 240ms cubic-bezier(0.22, 1, 0.36, 1)',
+        }}
+      >
+        <div className="flex items-center">
+          <button
+            type="button"
+            aria-label="메모 색상 선택"
+            aria-expanded={open}
+            onClick={() => setOpen((prev) => !prev)}
+            className="h-[20px] w-[20px] shrink-0 rounded-[5px] border border-gray-300 transition-transform duration-200"
+            style={{
+              backgroundColor: selectedColor.hex,
+              boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.6)',
+              transform: open ? 'scale(1.04)' : 'scale(1)',
+            }}
+          />
+
+          <div
+            className="flex min-w-0 items-center gap-[8px]"
+            style={{
+              marginLeft: COLOR_SWATCH_GAP,
+              opacity: open ? 1 : 0,
+              transform: `translateX(${open ? '0px' : '-8px'})`,
+              pointerEvents: open ? 'auto' : 'none',
+              transition: 'opacity 180ms ease, transform 240ms cubic-bezier(0.22, 1, 0.36, 1)',
+            }}
+          >
+            {paletteColors.map((option) => (
+              <button
+                key={option.color}
+                type="button"
+                aria-label={`${option.label} 색상 선택`}
+                onClick={() => {
+                  onChange(option.color);
+                  setOpen(false);
+                }}
+                className="h-[20px] w-[20px] shrink-0 rounded-[5px] border border-transparent transition-transform duration-150 hover:scale-105 hover:border-gray-300"
+                style={{
+                  backgroundColor: option.hex,
+                  boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.52)',
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function removeContentImages(html: string) {
+  return html.replace(/<img\b[^>]*>/gi, '').trim();
+}
+
 function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalContentProps) {
   const imageInputRef = useRef<HTMLInputElement | null>(null);
 
   const [title, setTitle] = useState(memo?.title ?? '');
-  const [content, setContent] = useState(memo?.content ?? '');
+  const [content, setContent] = useState(removeContentImages(memo?.content ?? ''));
   const [color, setColor] = useState<MemoColor>(memo?.color ?? 'gray');
   const [pinned, setPinned] = useState(Boolean(memo?.pinned));
   const [imageSrc, setImageSrc] = useState(memo?.imageSrc ?? '');
+
+  const handleBackdropMouseDown = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget) return;
+
+    onClose();
+  };
 
   const handleUploadImage = (file?: File) => {
     if (!file) return;
@@ -126,7 +233,7 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
       id: memo?.id,
       createdAt: memo?.createdAt,
       title: title.trim() || '제목',
-      content: content.trim(),
+      content: removeContentImages(content),
       color,
       pinned,
       imageSrc: imageSrc || undefined,
@@ -138,7 +245,10 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-transparent pt-[150px]">
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center bg-transparent pt-[150px]"
+      onMouseDown={handleBackdropMouseDown}
+    >
       <section className="h-[780px] w-[990px] overflow-hidden rounded-[8px] border border-gray-300 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.18)]">
         <header className="flex h-[66px] items-center justify-between border-b border-gray-300 px-[32px]">
           <div className="flex items-center gap-[16px]">
@@ -170,19 +280,7 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
               메모 색상 설정
             </span>
 
-            <div className="flex items-center gap-[8px]">
-              {colorOptions.map((option) => (
-                <button
-                  key={option.color}
-                  type="button"
-                  aria-label={`${option.color} 색상 선택`}
-                  onClick={() => setColor(option.color)}
-                  className={`h-[20px] w-[20px] rounded-[5px] border ${
-                    color === option.color ? 'border-gray-800' : 'border-transparent'
-                  } ${option.className}`}
-                />
-              ))}
-            </div>
+            <MemoColorPicker value={color} onChange={setColor} />
           </div>
 
           <div className="flex items-center gap-[22px] text-gray-600">
@@ -197,7 +295,7 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
 
             <button
               type="button"
-              aria-label="이미지 추가"
+              aria-label="대표 이미지 추가"
               onClick={() => imageInputRef.current?.click()}
               className="text-gray-600"
             >
@@ -206,7 +304,7 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
 
             <button
               type="button"
-              aria-label="이미지 삭제"
+              aria-label="대표 이미지 삭제"
               onClick={handleRemoveImage}
               disabled={!imageSrc}
               className="text-gray-600 disabled:cursor-not-allowed disabled:opacity-40"
@@ -238,7 +336,11 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
           {imageSrc ? <MemoImagePreview src={imageSrc} /> : <PhotoPlaceholder />}
         </div>
 
-        <MemoRichEditor value={content} onChange={setContent} />
+        <MemoRichEditor
+          value={content}
+          onChange={setContent}
+          onRequestImageUpload={() => imageInputRef.current?.click()}
+        />
       </section>
     </div>
   );
