@@ -7,6 +7,7 @@ import CreateIcon from '@/assets/icons/common/create.svg';
 import MemoCheckIcon from '@/assets/icons/memo/check.svg';
 import MemoDeleteIcon from '@/assets/icons/memo/delete.svg';
 import MemoPinIcon from '@/assets/icons/memo/pin.svg';
+import { cn } from '@/lib/cn';
 
 type MemoFilter = 'all' | 'pinned' | 'deleted';
 type MemoSortOrder = 'latest' | 'oldest';
@@ -28,10 +29,6 @@ const SORT_OPTIONS: Array<{ label: string; value: MemoSortOrder }> = [
   { label: '최신순', value: 'latest' },
   { label: '오래된순', value: 'oldest' },
 ];
-
-function cn(...classNames: Array<string | false | null | undefined>) {
-  return classNames.filter(Boolean).join(' ');
-}
 
 function SortIcon({ className }: { className?: string }) {
   return (

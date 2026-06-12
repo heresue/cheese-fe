@@ -14,6 +14,7 @@ import MemoReturnIcon from '@/assets/icons/memo/return.svg';
 
 import { stripHtml } from '../_lib/memoText';
 import type { Memo } from '../_types/memo';
+import { cn } from '@/lib/cn';
 
 type MemoCardProps = {
   memo: Memo;
@@ -24,10 +25,6 @@ type MemoCardProps = {
   onPermanentDelete: (id: string) => void;
   onEdit: (memo: Memo) => void;
 };
-
-function cn(...classNames: Array<string | false | null | undefined>) {
-  return classNames.filter(Boolean).join(' ');
-}
 
 const memoColorClassName: Record<NonNullable<Memo['color']>, string> = {
   pink: 'bg-[#F7CDD3]',

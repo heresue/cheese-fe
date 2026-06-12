@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import Link from '@tiptap/extension-link';
+import { cn } from '@/lib/cn';
 import { Color, TextStyle } from '@tiptap/extension-text-style';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
@@ -35,10 +36,6 @@ const TEXT_COLORS = [
   { label: '파랑', hex: '#5B9EF7' },
   { label: '보라', hex: '#9B59D0' },
 ];
-
-function cn(...classNames: Array<string | false | null | undefined>) {
-  return classNames.filter(Boolean).join(' ');
-}
 
 function ToolbarButton({ active, disabled, label, children, onClick }: ToolbarButtonProps) {
   return (
