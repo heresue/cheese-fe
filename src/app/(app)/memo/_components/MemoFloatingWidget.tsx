@@ -12,6 +12,7 @@ import {
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/cn';
 
 import EditIcon from '@/assets/icons/common/edit.svg';
 import MemoDeleteIcon from '@/assets/icons/memo/delete.svg';
@@ -37,10 +38,6 @@ type ActiveMemoDraft = {
   selected?: boolean;
   deleted?: boolean;
 };
-
-function cn(...classNames: Array<string | false | null | undefined>) {
-  return classNames.filter(Boolean).join(' ');
-}
 
 function escapeHtml(text: string) {
   return text
