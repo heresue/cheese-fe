@@ -20,29 +20,18 @@ import { NotificationSidebar } from './NotificationSidebar';
 type NavigationIconType = 'bell' | 'calendar' | 'memo' | 'pencil' | 'community';
 
 type LinkNavigationItem = {
-  type: 'link';
   label: string;
   href: string;
   icon: NavigationIconType;
 };
 
-type ActionNavigationItem = {
-  type: 'action';
-  label: string;
-  action: 'notification';
-  icon: NavigationIconType;
-};
-
-type NavigationItem = LinkNavigationItem | ActionNavigationItem;
-
 const DEFAULT_PROFILE_IMAGE_SRC = '/profile_default.png';
 
-const navigationItems: NavigationItem[] = [
-  { type: 'action', label: '알림', action: 'notification', icon: 'bell' },
-  { type: 'link', label: '일정 관리', href: '/calendar', icon: 'calendar' },
-  { type: 'link', label: '메모', href: '/memo', icon: 'memo' },
-  { type: 'link', label: '문제 풀이', href: '/problem', icon: 'pencil' },
-  { type: 'link', label: '커뮤니티', href: '/community', icon: 'community' },
+const linkNavigationItems: LinkNavigationItem[] = [
+  { label: '일정 관리', href: '/calendar', icon: 'calendar' },
+  { label: '메모', href: '/memo', icon: 'memo' },
+  { label: '문제 풀이', href: '/problem', icon: 'pencil' },
+  { label: '커뮤니티', href: '/community', icon: 'community' },
 ];
 
 function SidebarIcon({ type }: { type: NavigationIconType }) {
@@ -67,16 +56,16 @@ function isItemActive(pathname: string, href: string) {
 }
 
 function getNavigationItemClassName(isActive: boolean) {
-  return `group flex h-9 w-full items-center gap-3 rounded-[10px] px-3 text-sm font-medium transition-colors duration-200 ${
+  return `group flex h-[38px] w-full items-center gap-2 rounded-[10px] p-1 leading-[30px] transition-colors duration-200 ${
     isActive
-      ? 'bg-primary-300 text-gray-900'
-      : 'text-gray-700 hover:bg-primary-300 hover:text-gray-900'
+      ? 'bg-primary-300 text-secondary-800'
+      : 'text-gray-700 hover:bg-primary-300 hover:text-secondary-800'
   }`;
 }
 
 function getNavigationIconClassName(isActive: boolean) {
-  return `flex h-[18px] w-[18px] items-center justify-center transition-colors duration-200 ${
-    isActive ? 'text-secondary-700' : 'text-gray-600 group-hover:text-secondary-700'
+  return `flex h-[30px] w-[30px] items-center justify-center transition-colors duration-200 ${
+    isActive ? 'text-secondary-600' : 'text-gray-600 group-hover:text-secondary-600'
   }`;
 }
 
@@ -84,10 +73,12 @@ export default function AppSidebar() {
   const pathname = usePathname();
   const [isNotificationSidebarOpen, setIsNotificationSidebarOpen] = useState(false);
 
+  const isMyPageActive = !isNotificationSidebarOpen && isItemActive(pathname, '/mypage');
+
   return (
     <>
-      <aside className="border-border bg-primary-100 z-50 flex h-dvh w-[254px] shrink-0 flex-col border-r">
-        <div className="px-4 pt-8 pb-14">
+      <aside className="border-border bg-primary-100 z-50 flex h-dvh w-[260px] shrink-0 flex-col border-r-2">
+        <div className="px-4 pt-[33px] pb-20">
           <Link
             href="/calendar"
             aria-label="Cheese 홈"
@@ -98,37 +89,59 @@ export default function AppSidebar() {
           </Link>
         </div>
 
-        <div className="px-4">
-          <Link
-            href="/mypage"
-            aria-label="마이페이지로 이동"
-            className="inline-flex items-center gap-3 px-2 py-1"
-            onClick={() => setIsNotificationSidebarOpen(false)}
-          >
-            <Image
-              src={DEFAULT_PROFILE_IMAGE_SRC}
-              alt="기본 프로필 이미지"
-              width={30}
-              height={30}
-              className="h-[30px] w-[30px] shrink-0 rounded-full object-cover"
-            />
+        <div className="flex flex-col gap-2 px-3 text-sm font-medium">
+          <div>
+            <Link
+              href="/mypage"
+              aria-label="마이페이지로 이동"
+              aria-current={isMyPageActive ? 'page' : undefined}
+              className={getNavigationItemClassName(isMyPageActive)}
+              onClick={() => setIsNotificationSidebarOpen(false)}
+            >
+              <div className="flex h-[30px] w-[30px] items-center justify-center">
+                <Image
+                  src={DEFAULT_PROFILE_IMAGE_SRC}
+                  alt="기본 프로필 이미지"
+                  width={25}
+                  height={25}
+                  className="shrink-0 rounded-full object-cover"
+                />
+              </div>
 
-            <span className="text-sm font-semibold text-gray-800">김치즈 님</span>
-          </Link>
-        </div>
+              <span>김치즈 님</span>
+            </Link>
+          </div>
 
-        <nav className="mt-5 px-[10px]">
-          <ul className="flex flex-col gap-1">
-            {navigationItems.map((item) => {
-              if (item.type === 'action') {
-                const isActive = isNotificationSidebarOpen;
+          <nav>
+            <ul className="flex flex-col gap-2">
+              <li>
+                <button
+                  type="button"
+                  aria-pressed={isNotificationSidebarOpen}
+                  onClick={() => setIsNotificationSidebarOpen((prev) => !prev)}
+                  className={getNavigationItemClassName(isNotificationSidebarOpen)}
+                >
+                  <span className={getNavigationIconClassName(isNotificationSidebarOpen)}>
+                    <SidebarIcon type="bell" />
+                  </span>
+
+                  <span>알림</span>
+                </button>
+              </li>
+            </ul>
+
+            <div aria-hidden="true" className="my-2 border-t border-gray-300" />
+
+            <ul className="flex flex-col gap-2">
+              {linkNavigationItems.map((item) => {
+                const isActive = !isNotificationSidebarOpen && isItemActive(pathname, item.href);
 
                 return (
                   <li key={item.label}>
-                    <button
-                      type="button"
-                      aria-pressed={isNotificationSidebarOpen}
-                      onClick={() => setIsNotificationSidebarOpen((prev) => !prev)}
+                    <Link
+                      href={item.href}
+                      aria-current={isActive ? 'page' : undefined}
+                      onClick={() => setIsNotificationSidebarOpen(false)}
                       className={getNavigationItemClassName(isActive)}
                     >
                       <span className={getNavigationIconClassName(isActive)}>
@@ -136,32 +149,13 @@ export default function AppSidebar() {
                       </span>
 
                       <span>{item.label}</span>
-                    </button>
+                    </Link>
                   </li>
                 );
-              }
-
-              const isActive = !isNotificationSidebarOpen && isItemActive(pathname, item.href);
-
-              return (
-                <li key={item.label}>
-                  <Link
-                    href={item.href}
-                    aria-current={isActive ? 'page' : undefined}
-                    onClick={() => setIsNotificationSidebarOpen(false)}
-                    className={getNavigationItemClassName(isActive)}
-                  >
-                    <span className={getNavigationIconClassName(isActive)}>
-                      <SidebarIcon type={item.icon} />
-                    </span>
-
-                    <span>{item.label}</span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
+              })}
+            </ul>
+          </nav>
+        </div>
 
         <div className="mt-9 px-5">
           <MiniCalendar />
@@ -169,7 +163,7 @@ export default function AppSidebar() {
       </aside>
 
       {isNotificationSidebarOpen ? (
-        <div className="fixed top-0 left-[254px] z-40 h-dvh">
+        <div className="fixed top-0 left-[260px] z-40 h-dvh">
           <NotificationSidebar onClose={() => setIsNotificationSidebarOpen(false)} />
         </div>
       ) : null}
