@@ -58,14 +58,14 @@ function isItemActive(pathname: string, href: string) {
 function getNavigationItemClassName(isActive: boolean) {
   return `group flex h-[38px] w-full items-center gap-2 rounded-[10px] p-1 leading-[30px] transition-colors duration-200 ${
     isActive
-      ? 'bg-primary-300 text-secondary-800'
-      : 'text-gray-700 hover:bg-primary-300 hover:text-secondary-800'
+      ? 'bg-sidebar-bg-active text-sidebar-text-active'
+      : 'text-sidebar-text hover:bg-sidebar-bg-active hover:text-sidebar-text-active'
   }`;
 }
 
 function getNavigationIconClassName(isActive: boolean) {
   return `flex h-[30px] w-[30px] items-center justify-center transition-colors duration-200 ${
-    isActive ? 'text-secondary-600' : 'text-gray-600 group-hover:text-secondary-600'
+    isActive ? 'text-sidebar-icon-active' : 'text-sidebar-icon group-hover:text-sidebar-icon-active'
   }`;
 }
 
@@ -77,7 +77,7 @@ export default function AppSidebar() {
 
   return (
     <>
-      <aside className="border-border bg-primary-100 z-50 flex h-dvh w-[260px] shrink-0 flex-col border-r-2">
+      <aside className="border-border bg-sidebar-bg z-50 flex h-dvh w-[260px] shrink-0 flex-col border-r-2">
         <div className="px-4 pt-[33px] pb-20">
           <Link
             href="/calendar"

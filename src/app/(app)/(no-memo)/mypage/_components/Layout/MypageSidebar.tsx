@@ -21,25 +21,29 @@ export default function MyPageSidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="bg-background-3 h-full">
+    <div className="bg-sidebar-bg h-full">
       <nav className="px-4 pt-[90px]">
         <ul className="flex flex-col gap-2">
           {MYPAGE_MENU_ITEMS.map((item) => {
-            const isActive = pathname == item.href;
+            const isActive = pathname === item.href;
             return (
               <li
                 key={item.href}
                 className={cn(
-                  'text-sidebar-text hover:bg-sidebar-bg-hover flex items-center rounded-[10px] font-medium',
-                  isActive ? 'bg-sidebar-bg-active text-sidebar-text-active' : '',
+                  'group flex items-center rounded-[10px] font-medium transition-colors duration-200',
+                  isActive
+                    ? 'bg-sidebar-bg-active text-sidebar-text-active'
+                    : 'text-sidebar-text hover:bg-sidebar-bg-active hover:text-sidebar-text-active',
                 )}
               >
                 <Link href={item.href} className="w-full py-3">
-                  <div className={cn('inline-flex w-full items-center gap-2 pl-2')}>
+                  <div className="inline-flex w-full items-center gap-2 pl-2">
                     <span
                       className={cn(
-                        'inline-flex h-4 w-4 items-center justify-center',
-                        isActive ? 'text-sidebar-icon-active' : '',
+                        'inline-flex h-4 w-4 items-center justify-center transition-colors duration-200',
+                        isActive
+                          ? 'text-sidebar-icon-active'
+                          : 'text-sidebar-icon group-hover:text-sidebar-icon-active',
                       )}
                     >
                       {ICON_MAP[item.icon]}
