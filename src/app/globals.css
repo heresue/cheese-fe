@@ -140,3 +140,28 @@
     cursor: not-allowed;
   }
 }
+
+.memo-rich-editor p.is-editor-empty:first-child::before {
+  color: var(--color-gray-500);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.memo-rich-editor p {
+  margin: 0;
+}
+
+.memo-rich-editor img {
+  display: block;
+  max-width: 450px;
+  max-height: 260px;
+  object-fit: cover;
+  margin: 24px 0;
+}
+
+.memo-rich-editor a {
+  color: var(--color-secondary-700);
+  text-decoration: underline;
+}
