@@ -96,6 +96,13 @@
 
   --color-border: var(--color-gray-300);
 
+  --color-sidebar-text: var(--color-gray-700);
+  --color-sidebar-text-active: var(--color-secondary-800);
+  --color-sidebar-icon: var(--color-gray-600);
+  --color-sidebar-icon-active: var(--color-secondary-600);
+  --color-sidebar-bg: var(--color-primary-100);
+  --color-sidebar-bg-active: var(--color-primary-300);
+
   /* TODO: Tag 컴포넌트 디자인 확정 후 semantic 재정의 */
   --color-tag-bg: var(--color-tag-gray-100);
   --color-tag-text: var(--color-tag-gray-500);

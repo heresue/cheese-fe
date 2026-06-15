@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-import AppSidebar from '@/components/layout/AppSidebar';
+import AppSidebar from '@/components/layout/sidebar/AppSidebar';
 import { MemoFloatingWidget } from './memo/_components/MemoFloatingWidget';
 import { MemoStoreProvider } from './memo/_store/MemoStoreProvider';
 
