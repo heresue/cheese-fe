@@ -102,11 +102,6 @@
   --color-sidebar-icon-active: var(--color-secondary-600);
   --color-sidebar-bg: var(--color-primary-100);
   --color-sidebar-bg-active: var(--color-primary-300);
-
-  /* TODO: Tag 컴포넌트 디자인 확정 후 semantic 재정의 */
-  --color-tag-bg: var(--color-tag-gray-100);
-  --color-tag-text: var(--color-tag-gray-500);
-  --color-tag-border: var(--color-tag-gray-500);
 }
 
 @layer base {
