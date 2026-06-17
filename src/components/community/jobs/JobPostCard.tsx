@@ -10,9 +10,10 @@ import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 type JobPostCardProps = {
   post: JobPost;
   onDirectApply: () => void;
+  onToggleLike: (postId: number) => void;
 };
 
-export default function JobPostCard({ post, onDirectApply }: JobPostCardProps) {
+export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPostCardProps) {
   const jobConditions = [post.career, post.education, post.location, post.employmentType];
 
   return (
@@ -21,11 +22,20 @@ export default function JobPostCard({ post, onDirectApply }: JobPostCardProps) {
         <span className="w-fit max-w-[130px] leading-5 font-bold break-all">
           {post.companyName}
         </span>
-        {post.isLiked ? (
-          <LikeFilledIcon className="text-error-subtle w-[14px]" />
-        ) : (
-          <LikeOutlineIcon className="w-[14px] text-gray-500" />
-        )}
+
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleLike(post.id);
+          }}
+        >
+          {post.isLiked ? (
+            <LikeFilledIcon className="text-error-subtle w-[14px]" />
+          ) : (
+            <LikeOutlineIcon className="w-[14px] text-gray-500" />
+          )}
+        </button>
       </div>
 
       <div className="mx-7 flex flex-1 flex-col gap-2">
