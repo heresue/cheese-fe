@@ -16,10 +16,14 @@ export type JobPost = {
   education: string;
   location: string;
   employmentType: string;
+
   deadline: string | null;
   createdAt: string;
+  viewCount: number;
   likeCount: number;
+
   apply: ApplyInfo;
+
   isLiked: boolean;
   isApplied: boolean;
 };

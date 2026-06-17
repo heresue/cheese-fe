@@ -42,8 +42,7 @@ export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPo
       </div>
 
       <div className="mx-7 flex flex-1 flex-col gap-2">
-        {/* 게시글 링크 연결 필요 */}
-        <Link href="" className="w-fit">
+        <Link href={`/community/jobs/${post.id}`} className="w-fit">
           <h3 className="leading-5 font-bold">{post.title}</h3>
         </Link>
 

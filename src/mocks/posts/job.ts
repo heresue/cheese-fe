@@ -10,13 +10,17 @@ export const jobPosts: JobPost[] = [
     education: '고졸 ↑',
     location: '광주 광산구',
     employmentType: '인턴직',
+
     deadline: '2026-02-03',
     createdAt: '2026-01-10',
+    viewCount: 128,
     likeCount: 24,
+
     apply: {
       type: 'homepage',
       url: 'https://google.com',
     },
+
     isLiked: false,
     isApplied: true,
   },
@@ -29,12 +33,16 @@ export const jobPosts: JobPost[] = [
     education: '학력무관',
     location: '서울 강남구',
     employmentType: '정규직',
+
     deadline: '2026-02-14',
     createdAt: '2026-01-14',
+    viewCount: 246,
     likeCount: 87,
+
     apply: {
       type: 'direct',
     },
+
     isLiked: true,
     isApplied: true,
   },
@@ -47,13 +55,17 @@ export const jobPosts: JobPost[] = [
     education: '대졸 ↑',
     location: '서울 마포구',
     employmentType: '정규직',
+
     deadline: '2026-02-20',
     createdAt: '2026-01-18',
+    viewCount: 173,
     likeCount: 42,
+
     apply: {
       type: 'homepage',
       url: 'https://naver.com',
     },
+
     isLiked: false,
     isApplied: false,
   },
@@ -66,12 +78,16 @@ export const jobPosts: JobPost[] = [
     education: '학력무관',
     location: '부산 해운대구',
     employmentType: '계약직',
+
     deadline: null,
     createdAt: '2026-01-22',
+    viewCount: 201,
     likeCount: 65,
+
     apply: {
       type: 'direct',
     },
+
     isLiked: true,
     isApplied: false,
   },
@@ -84,13 +100,17 @@ export const jobPosts: JobPost[] = [
     education: '대졸 ↑',
     location: '서울 서초구',
     employmentType: '정규직',
+
     deadline: '2026-02-28',
     createdAt: '2026-01-25',
+    viewCount: 389,
     likeCount: 113,
+
     apply: {
       type: 'homepage',
       url: 'https://github.com',
     },
+
     isLiked: true,
     isApplied: false,
   },
@@ -103,13 +123,17 @@ export const jobPosts: JobPost[] = [
     education: '학력무관',
     location: '경기 성남시',
     employmentType: '정규직',
+
     deadline: '2026-03-05',
     createdAt: '2026-01-28',
+    viewCount: 312,
     likeCount: 38,
+
     apply: {
       type: 'homepage',
       url: 'https://aws.amazon.com',
     },
+
     isLiked: true,
     isApplied: false,
   },
