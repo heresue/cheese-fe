@@ -16,7 +16,9 @@ export type JobPost = {
   education: string;
   location: string;
   employmentType: string;
-  deadline: string;
+  deadline: string | null;
+  createdAt: string;
+  likeCount: number;
   apply: ApplyInfo;
   isLiked: boolean;
   isApplied: boolean;

@@ -1,8 +1,11 @@
 'use client';
 
 import Link from 'next/link';
+
 import JobApplyAction from '@/components/community/jobs/JobApplyAction';
-import { JobPost } from './types';
+import { formatDeadline } from '@/lib/formatDeadline';
+
+import type { JobPost } from './types';
 
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
@@ -59,7 +62,7 @@ export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPo
 
       <div className="flex flex-col items-center gap-2">
         <JobApplyAction apply={post.apply} onDirectApply={onDirectApply} />
-        <span className="text-[12px] leading-5 text-gray-700">{post.deadline}</span>
+        <span className="text-[12px] leading-5 text-gray-700">{formatDeadline(post.deadline)}</span>
       </div>
     </article>
   );
