@@ -1,4 +1,4 @@
-import GroupPostCard from '@/components/boards/groups/GroupPostCard';
+import GroupPostCard from '@/components/community/groups/GroupPostCard';
 
 import { groupPosts } from '@/mocks/posts';
 

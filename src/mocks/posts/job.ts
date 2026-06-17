@@ -1,4 +1,4 @@
-import { JobPost } from '@/components/boards/jobs/types';
+import { JobPost } from '@/components/community/jobs/types';
 
 export const jobPosts: JobPost[] = [
   {

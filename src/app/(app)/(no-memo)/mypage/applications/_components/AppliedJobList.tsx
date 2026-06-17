@@ -1,6 +1,6 @@
 'use client';
 
-import JobPostCard from '@/components/boards/jobs/JobPostCard';
+import JobPostCard from '@/components/community/jobs/JobPostCard';
 
 import { jobPosts } from '@/mocks/posts';
 

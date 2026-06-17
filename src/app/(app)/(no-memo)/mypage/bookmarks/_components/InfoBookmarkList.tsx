@@ -1,6 +1,6 @@
 'use client';
 
-import InfoPostCard from '@/components/boards/info/InfoPostCard';
+import InfoPostCard from '@/components/community/info/InfoPostCard';
 
 import { infoPosts } from '@/mocks/posts';
 

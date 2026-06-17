@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { InfoPost } from '@/components/boards/info/types';
+import { InfoPost } from '@/components/community/info/types';
 
 import ViewIcon from '@/assets/icons/common/view.svg';
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';

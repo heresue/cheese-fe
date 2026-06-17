@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { Chip } from '@/components/common/Chip';
-import { GroupPost } from '@/components/boards/groups/types';
+import { GroupPost } from '@/components/community/groups/types';
 
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';

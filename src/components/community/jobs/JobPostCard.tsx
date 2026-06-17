@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import JobApplyAction from '@/components/boards/jobs/JobApplyAction';
+import JobApplyAction from '@/components/community/jobs/JobApplyAction';
 import { JobPost } from './types';
 
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
