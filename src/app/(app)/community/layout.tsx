@@ -1,10 +1,12 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 import { CategoryTabs } from '@/components/common/CategoryTabs';
 import ListFilterBar from '@/components/common/ListFilterBar';
+
+import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams';
 
 const COMMUNITY_CATEGORY_TABS = [
   { label: '채용공고', value: '/community/jobs' },
@@ -24,9 +26,12 @@ type CommunitySortValue = (typeof COMMUNITY_SORT_OPTIONS)[number]['value'];
 export default function CommunityLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  const [communitySort, setCommunitySort] = useState<CommunitySortValue>('latest');
-  const [communityKeyword, setCommunityKeyword] = useState('');
+  const updateSearchParams = useUpdateSearchParams();
+
+  const communitySort = (searchParams.get('sort') ?? 'latest') as CommunitySortValue;
+  const [communityKeyword, setCommunityKeyword] = useState(searchParams.get('keyword') ?? '');
 
   return (
     <div className="h-full overflow-y-auto px-10 pt-10">
@@ -38,13 +43,16 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
             searchValue={communityKeyword}
             searchPlaceholder="검색"
             searchHistories={['프론트엔드', '스터디 모집', '포트폴리오', '채용공고']}
-            onSortChange={setCommunitySort}
+            onSortChange={(value) => {
+              updateSearchParams('sort', value);
+            }}
             onSearchChange={setCommunityKeyword}
             onSearchSubmit={(value) => {
-              console.log('[커뮤니티] 검색어:', value);
+              updateSearchParams('keyword', value);
             }}
             onSearchHistorySelect={(value) => {
-              console.log('[커뮤니티] 검색 기록 선택:', value);
+              setCommunityKeyword(value);
+              updateSearchParams('keyword', value);
             }}
             actionButton={{
               label: '생성',
