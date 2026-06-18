@@ -5,6 +5,14 @@ export const jobPosts: JobPost[] = [
     id: 1,
     companyName: '치즈공장',
     title: '2026년 스타트업 인턴 부문 경력직 채용',
+
+    author: {
+      id: 1,
+      nickname: '토리',
+      email: 'cheese@test.com',
+      profileImageUrl: '/mock/profile-3.png',
+    },
+
     skills: ['React', 'TypeScript', 'Next.js'],
     career: '신입, 경력',
     education: '고졸 ↑',
@@ -28,6 +36,14 @@ export const jobPosts: JobPost[] = [
     id: 2,
     companyName: '프론트랩',
     title: '프론트엔드 개발자 정규직 채용',
+
+    author: {
+      id: 2,
+      nickname: '보리',
+      email: 'frontend@test.com',
+      profileImageUrl: '/mock/profile-1.png',
+    },
+
     skills: ['JavaScript', 'React', 'Tailwind CSS'],
     career: '경력 1년 ↑',
     education: '학력무관',
@@ -50,6 +66,14 @@ export const jobPosts: JobPost[] = [
     id: 3,
     companyName: '백엔드코어',
     title: 'Spring Boot 기반 백엔드 개발자 모집',
+
+    author: {
+      id: 3,
+      nickname: '지훈',
+      email: 'backend@test.com',
+      profileImageUrl: '/mock/profile-2.png',
+    },
+
     skills: ['Java', 'Spring Boot', 'MySQL'],
     career: '경력 2년 ↑',
     education: '대졸 ↑',
@@ -73,6 +97,14 @@ export const jobPosts: JobPost[] = [
     id: 4,
     companyName: 'UI팩토리',
     title: 'UI/UX 중심 프론트엔드 개발자 채용',
+
+    author: {
+      id: 4,
+      nickname: '도윤',
+      email: 'design@test.com',
+      profileImageUrl: '',
+    },
+
     skills: ['Figma', 'React', 'CSS'],
     career: '신입',
     education: '학력무관',
@@ -95,6 +127,14 @@ export const jobPosts: JobPost[] = [
     id: 5,
     companyName: '데브스테이션',
     title: 'Next.js 기반 웹 서비스 개발자 채용',
+
+    author: {
+      id: 5,
+      nickname: '지민',
+      email: 'react@test.com',
+      profileImageUrl: '/mock/profile-4.png',
+    },
+
     skills: ['Next.js', 'TypeScript', 'React Query'],
     career: '경력 3년 ↑',
     education: '대졸 ↑',
@@ -118,6 +158,14 @@ export const jobPosts: JobPost[] = [
     id: 6,
     companyName: '클라우드웨이',
     title: '클라우드 기반 백엔드 개발자 채용 (AWS)',
+
+    author: {
+      id: 6,
+      nickname: '초보개발자',
+      email: 'cloud@test.com',
+      profileImageUrl: '/mock/profile-5.png',
+    },
+
     skills: ['Node.js', 'AWS', 'Docker'],
     career: '경력 2년 ↑',
     education: '학력무관',

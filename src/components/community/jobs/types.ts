@@ -1,3 +1,5 @@
+import { Author } from '@/components/community/types';
+
 export type ApplyInfo =
   | {
       type: 'homepage';
@@ -11,6 +13,8 @@ export type JobPost = {
   id: number;
   companyName: string;
   title: string;
+  author: Author;
+
   skills: string[];
   career: string;
   education: string;

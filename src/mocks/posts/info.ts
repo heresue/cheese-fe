@@ -1,6 +1,12 @@
 export const infoPosts = [
   {
     id: 1,
+    author: {
+      id: 1,
+      nickname: '김치즈',
+      email: 'cheese@test.com',
+      profileImageUrl: '/mock/profile-3.png',
+    },
     thumbnailUrl: '/mock/info-1.jpg',
     category: '정보글',
     title: '신입 프론트엔드 포트폴리오 구성 팁 정리',
@@ -14,6 +20,12 @@ export const infoPosts = [
   },
   {
     id: 2,
+    author: {
+      id: 2,
+      nickname: '감자칩',
+      email: 'frontend@test.com',
+      profileImageUrl: '/mock/profile-1.png',
+    },
     thumbnailUrl: '/mock/info-2.jpg',
     category: '질문글',
     title: 'Next.js App Router에서 인증 처리 어떻게 하시나요?',
@@ -27,6 +39,12 @@ export const infoPosts = [
   },
   {
     id: 3,
+    author: {
+      id: 3,
+      nickname: '하늘',
+      email: 'backend@test.com',
+      profileImageUrl: '/mock/profile-2.png',
+    },
     thumbnailUrl: '/mock/info-3.jpg',
     category: '정보글',
     title: 'React Query와 Zustand 함께 사용할 때 상태 분리 기준',
@@ -40,6 +58,12 @@ export const infoPosts = [
   },
   {
     id: 4,
+    author: {
+      id: 4,
+      nickname: '몽글이',
+      email: 'design@test.com',
+      profileImageUrl: '',
+    },
     thumbnailUrl: '/mock/info-4.jpg',
     category: '질문글',
     title: 'Tailwind CSS에서 디자인 시스템 컬러 관리 어떻게 하세요?',
@@ -53,6 +77,12 @@ export const infoPosts = [
   },
   {
     id: 5,
+    author: {
+      id: 5,
+      nickname: '유진',
+      email: 'react@test.com',
+      profileImageUrl: '/mock/profile-4.png',
+    },
     thumbnailUrl: '/mock/info-5.jpg',
     category: '정보글',
     title: '면접에서 자주 나오는 CS 질문 정리 (프론트엔드)',
@@ -66,6 +96,12 @@ export const infoPosts = [
   },
   {
     id: 6,
+    author: {
+      id: 6,
+      nickname: '치즈냥',
+      email: 'cloud@test.com',
+      profileImageUrl: '/mock/profile-5.png',
+    },
     thumbnailUrl: '/mock/info-6.jpg',
     category: '질문글',
     title: 'Next.js에서 이미지 최적화 전략 어떻게 가져가시나요?',
