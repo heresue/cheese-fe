@@ -8,6 +8,8 @@ import {
   PostDetailAsideProfile,
 } from '../../_components/PostDetailAside';
 
+import { APPLY_LABEL } from '@/components/community/jobs/constants';
+
 import { jobPosts } from '@/mocks/posts';
 
 export default async function JobDetailPage({ params }: { params: Promise<{ jobId: string }> }) {
@@ -19,7 +21,6 @@ export default async function JobDetailPage({ params }: { params: Promise<{ jobI
     notFound();
   }
 
-  const applyMethodLabel = jobPost.apply.type === 'direct' ? '직접 지원' : '홈페이지 지원';
   const applyUrl = jobPost.apply.type === 'homepage' ? jobPost.apply.url : '-';
 
   const jobInfoItems = [
@@ -44,7 +45,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ jobI
     },
     { label: '고용 형태', value: jobPost.employmentType },
     { label: '지원 마감일', value: jobPost.deadline },
-    { label: '지원 방법', value: applyMethodLabel },
+    { label: '지원 방법', value: APPLY_LABEL[jobPost.apply.type] },
   ];
 
   return (

@@ -1,10 +1,7 @@
 import { Button } from '@/components/common/Button';
-import { ApplyInfo } from './types';
 
-const APPLY_LABEL = {
-  homepage: '홈페이지 지원',
-  direct: '직접지원',
-};
+import { ApplyInfo } from './types';
+import { APPLY_LABEL } from './constants';
 
 export default function JobApplyAction({
   apply,
