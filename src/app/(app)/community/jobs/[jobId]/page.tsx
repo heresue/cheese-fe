@@ -19,14 +19,32 @@ export default async function JobDetailPage({ params }: { params: Promise<{ jobI
     notFound();
   }
 
+  const applyMethodLabel = jobPost.apply.type === 'direct' ? '직접 지원' : '홈페이지 지원';
+  const applyUrl = jobPost.apply.type === 'homepage' ? jobPost.apply.url : '-';
+
   const jobInfoItems = [
     { label: '모집 분야', value: 'FE, BE' },
     { label: '근무 지역', value: jobPost.location },
     { label: '사용 기술', value: jobPost.skills.join(', ') },
-    { label: '공고 URL', value: jobPost.apply.type },
+    {
+      label: '공고 URL',
+      value:
+        jobPost.apply.type === 'homepage' ? (
+          <a
+            href={applyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="break-all underline"
+          >
+            {applyUrl}
+          </a>
+        ) : (
+          '-'
+        ),
+    },
     { label: '고용 형태', value: jobPost.employmentType },
     { label: '지원 마감일', value: jobPost.deadline },
-    { label: '지원 방법', value: jobPost.apply.type },
+    { label: '지원 방법', value: applyMethodLabel },
   ];
 
   return (
