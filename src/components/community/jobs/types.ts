@@ -13,6 +13,8 @@ export type JobPost = {
   id: number;
   companyName: string;
   title: string;
+  applicantCount: number;
+
   author: Author;
 
   skills: string[];

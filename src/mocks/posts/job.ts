@@ -5,6 +5,7 @@ export const jobPosts: JobPost[] = [
     id: 1,
     companyName: '치즈공장',
     title: '2026년 스타트업 인턴 부문 경력직 채용',
+    applicantCount: 5,
 
     author: {
       id: 1,
@@ -36,6 +37,7 @@ export const jobPosts: JobPost[] = [
     id: 2,
     companyName: '프론트랩',
     title: '프론트엔드 개발자 정규직 채용',
+    applicantCount: 125,
 
     author: {
       id: 2,
@@ -66,6 +68,7 @@ export const jobPosts: JobPost[] = [
     id: 3,
     companyName: '백엔드코어',
     title: 'Spring Boot 기반 백엔드 개발자 모집',
+    applicantCount: 56,
 
     author: {
       id: 3,
@@ -97,6 +100,7 @@ export const jobPosts: JobPost[] = [
     id: 4,
     companyName: 'UI팩토리',
     title: 'UI/UX 중심 프론트엔드 개발자 채용',
+    applicantCount: 2,
 
     author: {
       id: 4,
@@ -127,6 +131,7 @@ export const jobPosts: JobPost[] = [
     id: 5,
     companyName: '데브스테이션',
     title: 'Next.js 기반 웹 서비스 개발자 채용',
+    applicantCount: 56,
 
     author: {
       id: 5,
@@ -158,6 +163,7 @@ export const jobPosts: JobPost[] = [
     id: 6,
     companyName: '클라우드웨이',
     title: '클라우드 기반 백엔드 개발자 채용 (AWS)',
+    applicantCount: 33,
 
     author: {
       id: 6,
