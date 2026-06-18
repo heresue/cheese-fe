@@ -1,6 +1,9 @@
 'use client';
 
-import ArrowIcon from '@/assets/icons/common/arrow.svg';
+import { useRouter } from 'next/navigation';
+
+import { BackButton } from '@/components/common/BackButton';
+
 import ViewIcon from '@/assets/icons/common/view.svg';
 
 type PostDetailHeaderProps = {
@@ -10,17 +13,12 @@ type PostDetailHeaderProps = {
 };
 
 export default function PostDetailHeader({ title, createdAt, viewCount }: PostDetailHeaderProps) {
+  const router = useRouter();
+
   return (
     <header className="flex flex-col gap-2 border-b border-gray-300 pt-8 pb-5">
-      {/* TODO: BackButton 컴포넌트로 분리 후 뒤로가기 동작 연결 */}
       <div className="flex gap-2">
-        <button
-          type="button"
-          aria-label="뒤로가기"
-          className="flex h-[30px] w-[30px] items-center justify-center"
-        >
-          <ArrowIcon className="h-4 text-gray-700" />
-        </button>
+        <BackButton onClick={() => router.back()} />
 
         <h1 className="text-2xl leading-[30px] font-bold">{title}</h1>
       </div>
