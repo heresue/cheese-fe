@@ -1,5 +1,6 @@
 export const mockPersonalProfile = {
   nickname: '김치즈',
+  profileImageUrl: '/mock/profile-3.png',
   interestedJob: 'FE (프론트엔드)',
   coverLetter: {
     fileName: '자기소개서_김치즈.pdf',
@@ -17,6 +18,7 @@ export const mockPersonalProfile = {
 
 export const mockCompanyProfile = {
   nickname: '치즈공장',
+  profileImageUrl: '/mock/profile-6.png',
   representativeName: '변대환',
   companyType: '스타트업',
   resumeTemplate: {

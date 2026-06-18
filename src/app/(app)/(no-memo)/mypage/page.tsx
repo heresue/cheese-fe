@@ -1,8 +1,8 @@
 'use client';
 
-import Image from 'next/image';
 import { useState } from 'react';
 
+import { ProfileImage } from '@/components/common/ProfileImage';
 import { Button } from '@/components/common/Button';
 import CategoryTabs from '@/components/common/CategoryTabs';
 
@@ -14,9 +14,11 @@ import { useMypageModal } from './_components/Modal/useMypageModal';
 
 import { CompanyIcon, PersonalIcon } from '@/assets/icons/settings';
 
-import ProfileMockImage from 'public/profile_default.png';
-
-import { mockAccountSettings, mockCompanyProfile, mockPersonalProfile } from './data';
+import {
+  mockAccountSettings,
+  mockCompanyProfile,
+  mockPersonalProfile,
+} from '@/mocks/profile/profiles';
 
 const MYPAGE_PROFILE_CATEGORY_TABS = [
   {
@@ -34,7 +36,6 @@ const MYPAGE_PROFILE_CATEGORY_TABS = [
 type MypageCategoryTabValue = (typeof MYPAGE_PROFILE_CATEGORY_TABS)[number]['value'];
 
 export default function MyPage() {
-  const profileImage = ProfileMockImage;
   const [mypageTabs, setMypageTabs] = useState<MypageCategoryTabValue>(
     MYPAGE_PROFILE_CATEGORY_TABS[0].value,
   );
@@ -45,7 +46,8 @@ export default function MyPage() {
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between px-3">
         <div className="flex items-center gap-3">
-          <Image src={profileImage} alt="프로필 이미지" width={60} height={60} />
+          <ProfileImage src={mockPersonalProfile.profileImageUrl} />
+
           <div className="flex flex-col text-gray-700">
             <span className="text-[20px] font-bold">김치즈</span>
             <span className="text-[14px]">FE (프론트엔드)</span>
