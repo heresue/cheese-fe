@@ -4,7 +4,7 @@ import { useState, type MouseEvent } from 'react';
 
 import Image from 'next/image';
 
-import DoubleArrowIcon from '@/assets/icons/settings/double-arrow.svg';
+import DoubleArrowIcon from '@/assets/icons/problem/double-arrow.svg';
 import DeleteIcon from '@/assets/icons/sidebar/delete.svg';
 import MessageIcon from '@/assets/icons/sidebar/message.svg';
 import SendIcon from '@/assets/icons/sidebar/send.svg';
