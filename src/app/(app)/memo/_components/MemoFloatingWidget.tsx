@@ -12,15 +12,16 @@ import {
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/cn';
 
+import ArrowIcon from '@/assets/icons/common/arrow.svg';
 import EditIcon from '@/assets/icons/common/edit.svg';
 import MemoDeleteIcon from '@/assets/icons/memo/delete.svg';
-import MemoPinIcon from '@/assets/icons/memo/pin.svg';
-import MemoPinFilledIcon from '@/assets/icons/memo/pin-filled.svg';
-import MemoWidgetIcon from '@/assets/icons/memo/memowidget.svg';
 import MemoWidgetCloseIcon from '@/assets/icons/memo/memodelete.svg';
 import MemoWidgetPlusIcon from '@/assets/icons/memo/memoplus.svg';
+import MemoWidgetIcon from '@/assets/icons/memo/memowidget.svg';
+import MemoPinIcon from '@/assets/icons/memo/pin.svg';
+import MemoPinFilledIcon from '@/assets/icons/memo/pin-filled.svg';
+import { cn } from '@/lib/cn';
 
 import { stripHtml } from '../_lib/memoText';
 import { useMemoStore, type MemoSavePayload } from '../_store/MemoStoreProvider';
@@ -32,7 +33,7 @@ type ActiveMemoDraft = {
   createdAt?: string;
   title: string;
   content: string;
-  color: MemoColor;
+  color?: MemoColor;
   pinned: boolean;
   imageSrc?: string;
   selected?: boolean;
@@ -49,15 +50,19 @@ function escapeHtml(text: string) {
 }
 
 function toMemoHtml(text: string) {
-  const normalizedText = text.trim();
+  const normalizedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 
-  if (!normalizedText) return '';
+  if (!normalizedText.trim()) return '';
 
   return normalizedText
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => `<p>${escapeHtml(line)}</p>`)
+    .split('\n')
+    .map((line) => {
+      if (!line.trim()) {
+        return '<p><br /></p>';
+      }
+
+      return `<p>${escapeHtml(line)}</p>`;
+    })
     .join('');
 }
 
@@ -68,7 +73,7 @@ function createDraftFromMemo(memo: Memo): ActiveMemoDraft {
     createdAt: memo.createdAt,
     title: memo.title,
     content: stripHtml(memo.content),
-    color: memo.color ?? 'gray',
+    color: memo.color,
     pinned: Boolean(memo.pinned),
     imageSrc: memo.imageSrc,
     selected: memo.selected,
@@ -76,24 +81,16 @@ function createDraftFromMemo(memo: Memo): ActiveMemoDraft {
   };
 }
 
-function WidgetHeaderArrowIcon() {
+function MemoWidgetHeaderArrow() {
   return (
-    <svg
-      width="8"
-      height="14"
-      viewBox="0 0 8 14"
-      fill="none"
+    <span
       aria-hidden="true"
-      className="block h-[14px] w-[8px] shrink-0"
+      className="relative inline-flex h-[14px] w-[8px] shrink-0 overflow-visible text-gray-500"
     >
-      <path
-        d="M1 1L7 7L1 13"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+      <span className="absolute top-1/2 left-1/2 flex h-[24px] w-[14px] -translate-x-1/2 -translate-y-1/2 items-center justify-center">
+        <ArrowIcon className="block h-[24px] w-[14px] origin-center scale-[0.583] rotate-180 text-gray-500" />
+      </span>
+    </span>
   );
 }
 
@@ -308,9 +305,9 @@ export function MemoFloatingWidget() {
     setActiveDraft(null);
 
     const title = currentDraft.title.trim();
-    const content = currentDraft.content.trim();
+    const content = currentDraft.content;
 
-    if (!title && !content) return;
+    if (!title && !content.trim()) return;
 
     const payload: MemoSavePayload = {
       id: currentDraft.id,
@@ -355,7 +352,6 @@ export function MemoFloatingWidget() {
       mode: 'create',
       title: '',
       content: '',
-      color: 'gray',
       pinned: false,
       selected: false,
       deleted: false,
@@ -420,13 +416,11 @@ export function MemoFloatingWidget() {
               onClick={() => {
                 commitActiveDraft();
               }}
-              className="flex items-center gap-[8px]"
+              className="flex h-[24px] items-center gap-[8px]"
             >
               <h2 className="text-[16px] leading-[24px] font-bold text-gray-950">메모</h2>
 
-              <span className="flex h-[14px] w-[8px] shrink-0 items-center justify-center text-gray-500">
-                <WidgetHeaderArrowIcon />
-              </span>
+              <MemoWidgetHeaderArrow />
             </Link>
           </header>
 
