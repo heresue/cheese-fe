@@ -58,8 +58,11 @@ export default async function JobDetailPage({ params }: { params: Promise<{ jobI
         />
 
         <article className="flex flex-col gap-5">
-          <div>이미지</div>
-          <div>본문</div>
+          {jobPost.imageUrl && (
+            <img src={jobPost.imageUrl} alt={jobPost.title} className="max-w-[740px]" />
+          )}
+
+          <p className="leading-6 whitespace-pre-line">{jobPost.content}</p>
         </article>
       </section>
 

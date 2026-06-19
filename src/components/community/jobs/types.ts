@@ -28,6 +28,9 @@ export type JobPost = {
   viewCount: number;
   likeCount: number;
 
+  content: string;
+  imageUrl?: string;
+
   apply: ApplyInfo;
 
   isLiked: boolean;
