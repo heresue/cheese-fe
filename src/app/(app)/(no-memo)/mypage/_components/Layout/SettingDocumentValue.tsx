@@ -1,39 +1,34 @@
-import FileIcon from '@/assets/icons/settings/applications.svg';
+import { DocumentLinkItem } from '@/components/common/DocumentLinkItem';
+
+import { cn } from '@/lib/cn';
+
+import FileIcon from '@/assets/icons/common/file.svg';
 import LinkIcon from '@/assets/icons/common/link.svg';
 
 import type { ProfileDocument } from '../Profiles/types';
 
-export default function SettingDocumentValue({ document }: { document: ProfileDocument }) {
-  return (
-    <div className="flex flex-col">
-      {document.fileUrl && (
-        <div className="inline-flex items-center gap-2">
-          <FileIcon className="h-3 w-3 text-gray-500" />
+type SettingDocumentValueProps = {
+  document: ProfileDocument;
+  className?: string;
+};
 
-          <a
-            href={document.fileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-success leading-[30px] underline"
-          >
-            {document.fileName}
-          </a>
-        </div>
+export default function SettingDocumentValue({ document, className }: SettingDocumentValueProps) {
+  return (
+    <div className={cn('flex flex-col', className)}>
+      {document.fileUrl && (
+        <DocumentLinkItem
+          href={document.fileUrl}
+          label={document.fileName}
+          icon={<FileIcon className="h-3 w-3 text-gray-500" />}
+        />
       )}
 
       {document.url && (
-        <div className="inline-flex items-center gap-2">
-          <LinkIcon className="h-3 w-3 text-gray-500" />
-
-          <a
-            href={document.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-success leading-[30px] underline"
-          >
-            {document.urlLabel}
-          </a>
-        </div>
+        <DocumentLinkItem
+          href={document.url}
+          label={document.urlLabel ?? document.url}
+          icon={<LinkIcon className="h-3 w-3 text-gray-500" />}
+        />
       )}
     </div>
   );

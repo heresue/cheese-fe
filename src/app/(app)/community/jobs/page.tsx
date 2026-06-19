@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 
 import JobPostCard from '@/components/community/jobs/JobPostCard';
 import ApplyModal from './_components/ApplyModal';
+
 import { useLikeToggle } from '@/hooks/useLikeToggle';
 import { getDeadlineTime } from '@/lib/formatDeadline';
 
@@ -60,7 +61,11 @@ export default function CommunityJobsPage() {
       ))}
 
       {selectedApplyPost && (
-        <ApplyModal isOpen={!!selectedApplyPost} onClose={() => setSelectedApplyPost(null)} />
+        <ApplyModal
+          post={selectedApplyPost}
+          isOpen={!!selectedApplyPost}
+          onClose={() => setSelectedApplyPost(null)}
+        />
       )}
     </div>
   );

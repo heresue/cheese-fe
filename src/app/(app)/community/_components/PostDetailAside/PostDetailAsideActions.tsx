@@ -9,29 +9,27 @@ import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 import ShareIcon from '@/assets/icons/common/contact.svg';
 
-import type { ApplyInfo } from '@/components/community/jobs/types';
+import type { JobPost } from '@/components/community/jobs/types';
 
 type PostDetailAsideActionsProps = {
-  initialIsLiked: boolean;
-  apply: ApplyInfo;
+  post: JobPost;
   buttonText?: string;
 };
 
 export function PostDetailAsideActions({
-  initialIsLiked,
-  apply,
+  post,
   buttonText = '지원하기',
 }: PostDetailAsideActionsProps) {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
-  const [isLiked, setIsLiked] = useState(initialIsLiked);
+  const [isLiked, setIsLiked] = useState(post.isLiked);
 
   const handleToggleLike = () => {
     setIsLiked((prev) => !prev);
   };
 
   const handleApplyClick = () => {
-    if (apply.type === 'homepage') {
-      window.open(apply.url, '_blank', 'noopener,noreferrer');
+    if (post.apply.type === 'homepage') {
+      window.open(post.apply.url, '_blank', 'noopener,noreferrer');
       return;
     }
 
@@ -59,7 +57,11 @@ export function PostDetailAsideActions({
         {buttonText}
       </Button>
 
-      <ApplyModal isOpen={isApplyModalOpen} onClose={() => setIsApplyModalOpen(false)} />
+      <ApplyModal
+        post={post}
+        isOpen={isApplyModalOpen}
+        onClose={() => setIsApplyModalOpen(false)}
+      />
     </div>
   );
 }
