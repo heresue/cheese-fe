@@ -70,7 +70,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ jobI
         actions={
           <div className="flex w-full flex-col gap-5 px-3 py-5">
             <PostDetailAsideInfoItem label="지원자수" value={`${jobPost.applicantCount}명`} />
-            <PostDetailAsideActions />
+            <PostDetailAsideActions initialIsLiked={jobPost.isLiked} apply={jobPost.apply} />
           </div>
         }
       >
