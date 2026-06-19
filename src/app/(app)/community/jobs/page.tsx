@@ -1,17 +1,21 @@
 'use client';
 
+import { useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import JobPostCard from '@/components/community/jobs/JobPostCard';
+import ApplyModal from './_components/ApplyModal';
 import { useLikeToggle } from '@/hooks/useLikeToggle';
+import { getDeadlineTime } from '@/lib/formatDeadline';
+
+import type { JobPost } from '@/components/community/jobs/types';
 
 import { jobPosts as JOB_POSTS } from '@/mocks/posts';
-import { useMemo } from 'react';
-import { getDeadlineTime } from '@/lib/formatDeadline';
 
 export default function CommunityJobsPage() {
   const searchParams = useSearchParams();
   const { posts: jobPosts, toggleLike } = useLikeToggle(JOB_POSTS);
+  const [selectedApplyPost, setSelectedApplyPost] = useState<JobPost | null>(null);
 
   const sort = searchParams.get('sort') ?? 'latest';
   const keyword = searchParams.get('keyword') ?? '';
@@ -46,16 +50,18 @@ export default function CommunityJobsPage() {
 
   return (
     <div>
-      {filteredJobPosts?.map((jobPosts) => (
+      {filteredJobPosts?.map((jobPost) => (
         <JobPostCard
-          key={jobPosts.id}
-          post={jobPosts}
-          onDirectApply={() => {
-            // 모달 열기
-          }}
+          key={jobPost.id}
+          post={jobPost}
+          onDirectApply={() => setSelectedApplyPost(jobPost)}
           onToggleLike={toggleLike}
         />
       ))}
+
+      {selectedApplyPost && (
+        <ApplyModal isOpen={!!selectedApplyPost} onClose={() => setSelectedApplyPost(null)} />
+      )}
     </div>
   );
 }

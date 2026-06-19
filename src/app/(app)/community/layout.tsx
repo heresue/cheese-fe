@@ -35,7 +35,7 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="h-full overflow-y-auto px-10 pt-10">
-      <div className="mx-auto flex w-full max-w-[1100px] flex-col gap-8">
+      <div className="mx-auto mb-8 flex w-full max-w-[1100px] flex-col gap-8">
         <div className="flex flex-col gap-5">
           <ListFilterBar
             sortOptions={COMMUNITY_SORT_OPTIONS}
