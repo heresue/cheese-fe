@@ -1,7 +1,7 @@
 'use client';
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { CategoryTabs } from '@/components/common/CategoryTabs';
 import ListFilterBar from '@/components/common/ListFilterBar';
@@ -20,7 +20,6 @@ const COMMUNITY_SORT_OPTIONS = [
   { label: '좋아요순', value: 'like' },
 ] as const;
 
-type CommunityCategoryValue = (typeof COMMUNITY_CATEGORY_TABS)[number]['value'];
 type CommunitySortValue = (typeof COMMUNITY_SORT_OPTIONS)[number]['value'];
 
 export default function CommunityLayout({ children }: { children: React.ReactNode }) {
@@ -32,6 +31,10 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
 
   const communitySort = (searchParams.get('sort') ?? 'latest') as CommunitySortValue;
   const [communityKeyword, setCommunityKeyword] = useState(searchParams.get('keyword') ?? '');
+
+  const activeCategory =
+    COMMUNITY_CATEGORY_TABS.find((tab) => pathname.startsWith(tab.value))?.value ??
+    '/community/jobs';
 
   return (
     <div className="h-full overflow-y-auto px-10 pt-10">
@@ -64,7 +67,7 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
 
           <CategoryTabs
             items={COMMUNITY_CATEGORY_TABS}
-            activeValue={pathname as CommunityCategoryValue}
+            activeValue={activeCategory}
             onChange={(href) => {
               router.push(href);
             }}
