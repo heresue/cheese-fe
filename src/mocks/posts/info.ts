@@ -1,4 +1,6 @@
-export const infoPosts = [
+import { InfoPost } from '@/components/community/info/types';
+
+export const infoPosts: InfoPost[] = [
   {
     id: 1,
     author: {

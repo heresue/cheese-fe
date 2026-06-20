@@ -7,8 +7,9 @@ export type GroupPost = {
   recruitCount: number;
   expectedPeriod: string;
   author: Author;
-  deadline: string;
+  deadline: string | null;
   likeCount: number;
   commentCount: number;
   isLiked: boolean;
+  isApplied: boolean;
 };

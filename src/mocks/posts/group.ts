@@ -1,4 +1,6 @@
-export const groupPosts = [
+import { GroupPost } from '@/components/community/groups/types';
+
+export const groupPosts: GroupPost[] = [
   {
     id: 1,
     field: 'FE',
@@ -6,10 +8,12 @@ export const groupPosts = [
     recruitCount: 4,
     expectedPeriod: '4주',
     author: {
+      id: 1,
       nickname: '한창우',
       profileImageUrl: '',
+      email: 'changwoo@example.com',
     },
-    deadline: '02.10(화) 마감',
+    deadline: '2026-02-10',
     likeCount: 24,
     commentCount: 8,
     isLiked: true,
@@ -22,10 +26,12 @@ export const groupPosts = [
     recruitCount: 3,
     expectedPeriod: '8주',
     author: {
+      id: 2,
       nickname: '김민준',
       profileImageUrl: '/mock/profile-2.png',
+      email: 'minjun@example.com',
     },
-    deadline: '상시모집',
+    deadline: null,
     likeCount: 17,
     commentCount: 5,
     isLiked: false,
@@ -38,10 +44,12 @@ export const groupPosts = [
     recruitCount: 2,
     expectedPeriod: '6주',
     author: {
+      id: 3,
       nickname: '박서연',
       profileImageUrl: '/mock/profile-3.png',
+      email: 'seoyeon@example.com',
     },
-    deadline: '02.15(일) 마감',
+    deadline: '2026-02-15',
     likeCount: 32,
     commentCount: 12,
     isLiked: true,
@@ -54,10 +62,12 @@ export const groupPosts = [
     recruitCount: 5,
     expectedPeriod: '5주',
     author: {
+      id: 4,
       nickname: '이도현',
       profileImageUrl: '/mock/profile-4.png',
+      email: 'dohyeon@example.com',
     },
-    deadline: '02.20(목) 마감',
+    deadline: '2026-02-20',
     likeCount: 21,
     commentCount: 9,
     isLiked: false,
@@ -70,10 +80,12 @@ export const groupPosts = [
     recruitCount: 3,
     expectedPeriod: '7주',
     author: {
+      id: 5,
       nickname: '최지우',
       profileImageUrl: '/mock/profile-5.png',
+      email: 'jiwoo@example.com',
     },
-    deadline: '상시모집',
+    deadline: null,
     likeCount: 14,
     commentCount: 6,
     isLiked: true,
@@ -86,13 +98,15 @@ export const groupPosts = [
     recruitCount: 4,
     expectedPeriod: '10주',
     author: {
+      id: 6,
       nickname: '정우성',
       profileImageUrl: '/mock/profile-6.png',
+      email: 'woosung@example.com',
     },
-    deadline: '02.28(금) 마감',
+    deadline: '2026-02-28',
     likeCount: 45,
     commentCount: 18,
     isLiked: true,
     isApplied: false,
   },
-] as const;
+];
