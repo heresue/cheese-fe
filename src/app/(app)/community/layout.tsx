@@ -20,7 +20,12 @@ const COMMUNITY_SORT_OPTIONS = [
   { label: '좋아요순', value: 'like' },
 ] as const;
 
-type CommunitySortValue = (typeof COMMUNITY_SORT_OPTIONS)[number]['value'];
+const INFO_SORT_OPTIONS = [
+  { label: '전체', value: 'all' },
+  { label: '질문글', value: 'question' },
+  { label: '정보글', value: 'info' },
+  { label: '자료공유', value: 'resource' },
+] as const;
 
 export default function CommunityLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -29,7 +34,11 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
 
   const updateSearchParams = useUpdateSearchParams();
 
-  const communitySort = (searchParams.get('sort') ?? 'latest') as CommunitySortValue;
+  const isInfoPage = pathname.startsWith('/community/info');
+
+  const sortOptions = isInfoPage ? INFO_SORT_OPTIONS : COMMUNITY_SORT_OPTIONS;
+  const defaultSort = isInfoPage ? 'all' : 'latest';
+  const communitySort = searchParams.get('sort') ?? defaultSort;
   const [communityKeyword, setCommunityKeyword] = useState(searchParams.get('keyword') ?? '');
 
   const activeCategory =
@@ -41,7 +50,7 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
       <div className="mx-auto mb-8 flex w-full max-w-[1100px] flex-col gap-8">
         <div className="flex flex-col gap-5">
           <ListFilterBar
-            sortOptions={COMMUNITY_SORT_OPTIONS}
+            sortOptions={sortOptions}
             selectedSort={communitySort}
             searchValue={communityKeyword}
             searchPlaceholder="검색"

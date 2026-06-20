@@ -1,18 +1,28 @@
 import Image from 'next/image';
-import { InfoPost } from '@/components/community/info/types';
+
+import { cn } from '@/lib/cn';
 
 import ViewIcon from '@/assets/icons/common/view.svg';
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 import CommentIcon from '@/assets/icons/common/comment.svg';
 
+import type { InfoPost } from '@/components/community/info/types';
+
 type InfoPostCardProps = {
   post: InfoPost;
+  wrapperClassName?: string;
+  onToggleLike: (postId: number) => void;
 };
 
-export default function InfoPostCard({ post }: InfoPostCardProps) {
+export default function InfoPostCard({ post, wrapperClassName, onToggleLike }: InfoPostCardProps) {
   return (
-    <article className="flex h-36 w-full items-center gap-5 p-5 leading-5">
+    <article
+      className={cn(
+        'flex w-full items-center gap-5 border-b border-gray-300 p-5 leading-5',
+        wrapperClassName,
+      )}
+    >
       <Image
         className="h-24 w-24 shrink-0 rounded-[10px] border border-gray-300 object-cover"
         width={96}
@@ -27,7 +37,7 @@ export default function InfoPostCard({ post }: InfoPostCardProps) {
           <h3 className="truncate">{post.title}</h3>
         </div>
 
-        <p className="line-clamp-2 text-[14px] font-medium text-gray-700">{post.content}</p>
+        <p className="line-clamp-2 h-10 text-[14px] font-medium text-gray-700">{post.content}</p>
 
         <div className="flex justify-between gap-4 text-[12px] text-gray-600">
           <div className="min-w-0 truncate">{post.tags.map((tag) => `#${tag}`).join(' ')}</div>
@@ -38,14 +48,21 @@ export default function InfoPostCard({ post }: InfoPostCardProps) {
               <span>{post.viewCount}</span>
             </div>
 
-            <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleLike(post.id);
+              }}
+              className="flex items-center gap-1"
+            >
               {post.isLiked ? (
                 <LikeFilledIcon className="text-error-subtle w-[14px]" />
               ) : (
                 <LikeOutlineIcon className="w-[14px] text-gray-500" />
               )}
               <span>{post.likeCount}</span>
-            </div>
+            </button>
 
             <div className="flex items-center gap-1">
               <CommentIcon className="w-4 text-gray-500" />
