@@ -34,7 +34,7 @@ export default async function GroupDetailPage({
   ];
 
   return (
-    <div className="mb-[50px] flex gap-5">
+    <div className="mb-[50px] flex items-start gap-5">
       <section className="flex flex-1 flex-col gap-10 px-5">
         <PostDetailHeader
           title={groupPost.title}

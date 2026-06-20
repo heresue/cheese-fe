@@ -49,7 +49,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ jobI
   ];
 
   return (
-    <div className="mb-[50px] flex gap-5">
+    <div className="mb-[50px] flex items-start gap-5">
       <section className="flex flex-1 flex-col gap-10 px-5">
         <PostDetailHeader
           title={jobPost.title}
@@ -77,7 +77,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ jobI
           </div>
         }
       >
-        <div className="flex w-full flex-col gap-2 border-b border-gray-300 px-3 py-10">
+        <div className="flex w-full flex-col gap-2 border-y border-gray-300 px-3 py-10">
           {jobInfoItems.map((item) => (
             <PostDetailAsideInfoItem key={item.label} label={item.label} value={item.value} />
           ))}

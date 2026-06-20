@@ -23,6 +23,9 @@ export const infoPosts: InfoPost[] = [
 
     tags: ['포트폴리오', '프론트엔드', '취업준비'],
 
+    attachmentFileName: 'frontend-portfolio-guide.pdf',
+    attachmentUrl: '/mock/mockFile.pdf',
+
     viewCount: 1280,
     likeCount: 86,
     commentCount: 14,
@@ -167,6 +170,9 @@ export const infoPosts: InfoPost[] = [
       'next/image 사용 시 성능 개선을 위해 어떤 옵션을 사용하는지, 그리고 CDN과 함께 사용할 때의 구조가 궁금합니다.',
 
     tags: ['Next.js', '이미지최적화', '성능'],
+
+    attachmentFileName: 'frontend-portfolio-guide.pdf',
+    attachmentUrl: '/mock/mockFile.pdf',
 
     viewCount: 531,
     likeCount: 28,

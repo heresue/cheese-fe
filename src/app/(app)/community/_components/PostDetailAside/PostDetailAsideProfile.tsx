@@ -5,15 +5,17 @@ type PostDetailAsideProfileProps = {
   nickname: string;
   email: string;
   profileImageUrl?: string;
+  buttonText?: '기업 정보 알아보기' | '프로필 보기';
 };
 
 export function PostDetailAsideProfile({
   nickname,
   email,
   profileImageUrl,
+  buttonText = '기업 정보 알아보기',
 }: PostDetailAsideProfileProps) {
   return (
-    <div className="flex w-full flex-col items-center gap-4 border-b border-gray-300 py-10">
+    <div className="flex w-full flex-col items-center gap-4 py-10">
       <div className="flex flex-col items-center gap-3">
         <ProfileImage size={100} src={profileImageUrl} />
 
@@ -25,7 +27,7 @@ export function PostDetailAsideProfile({
 
       <Button fullWidth variant="outlineGray" className="border-gray-400" size={44}>
         {/* TODO: 기업 프로필 모달 열기 */}
-        기업 정보 알아보기
+        {buttonText}
       </Button>
     </div>
   );

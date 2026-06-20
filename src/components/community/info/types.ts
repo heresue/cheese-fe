@@ -16,6 +16,9 @@ export type InfoPost = {
 
   tags: string[];
 
+  attachmentFileName?: string;
+  attachmentUrl?: string;
+
   viewCount: number;
   likeCount: number;
   commentCount: number;
