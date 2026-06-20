@@ -1,4 +1,8 @@
+'use client';
+
+import Link from 'next/link';
 import Image from 'next/image';
+
 import { Chip } from '@/components/common/Chip';
 import { GroupPost } from '@/components/community/groups/types';
 
@@ -24,7 +28,11 @@ export default function GroupPostCard({ post, onToggleLike }: GroupPostCardProps
           <span className="text-[12px] text-gray-600">{formatDeadline(post.deadline)}</span>
         </div>
 
-        <h3 className="line-clamp-2 h-[60px] text-[14px] leading-[30px] font-bold">{post.title}</h3>
+        <Link href={`/community/groups/${post.id}`} className="w-fit">
+          <h3 className="line-clamp-2 h-[60px] text-[14px] leading-[30px] font-bold">
+            {post.title}
+          </h3>
+        </Link>
       </div>
 
       <div className="text-[14px] leading-7 text-gray-700">
