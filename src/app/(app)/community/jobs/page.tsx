@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import JobPostCard from '@/components/community/jobs/JobPostCard';
-import ApplyModal from './_components/ApplyModal';
+import ApplyModal from '../_components/ApplyModal/ApplyModal';
 
 import { useLikeToggle } from '@/hooks/useLikeToggle';
 import { getDeadlineTime } from '@/lib/formatDeadline';

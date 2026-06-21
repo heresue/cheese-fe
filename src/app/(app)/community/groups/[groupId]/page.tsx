@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation';
 
-import { GroupDetailAsideActions } from '../_components/GroupDetailAsideActions';
 import PostDetailHeader from '../../_components/PostDetail/PostDetailHeader';
 import {
   PostDetailAside,
+  PostDetailAsideActions,
   PostDetailAsideInfoItem,
   PostDetailAsideProfile,
 } from '../../_components/PostDetailAside';
@@ -61,11 +61,11 @@ export default async function GroupDetailPage({
         actions={
           <div className="flex w-full flex-col gap-5 px-3 py-5">
             <PostDetailAsideInfoItem label="지원자수" value={`${groupPost.applicantCount}명`} />
-            <GroupDetailAsideActions post={groupPost} />
+            <PostDetailAsideActions post={groupPost} />
           </div>
         }
       >
-        <div className="flex w-full flex-col gap-2 border-b border-gray-300 px-3 py-10">
+        <div className="flex w-full flex-col gap-2 border-y border-gray-300 px-3 py-10">
           {groupInfoItems.map((item) => (
             <PostDetailAsideInfoItem key={item.label} label={item.label} value={item.value} />
           ))}

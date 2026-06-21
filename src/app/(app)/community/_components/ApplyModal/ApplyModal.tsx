@@ -4,14 +4,13 @@ import { useState } from 'react';
 
 import { BaseModal } from '@/components/common/Modal';
 
-import ApplyFormContent from '../../jobs/_components/ApplyFormContent';
-import ApplyCompleteContent from '../../jobs/_components/ApplyCompleteContent';
+import ApplyFormContent from './ApplyFormContent';
+import ApplyCompleteContent from './ApplyCompleteContent';
 
 import CloseIcon from '@/assets/icons/common/close.svg';
 
 import type { JobPost } from '@/components/community/jobs/types';
-import { GroupPost } from '@/components/community/groups/types';
-import GroupApplyFormContent from '@/app/(app)/community/groups/_components/GroupApplyFormContent';
+import type { GroupPost } from '@/components/community/groups/types';
 
 export type ApplyModalProps = {
   post: JobPost | GroupPost;
@@ -19,8 +18,7 @@ export type ApplyModalProps = {
   onClose: () => void;
 };
 
-// TODO: 채용공고 PR Merge 후 공통 컴포넌트화
-export default function GroupApplyModal({ post, isOpen, onClose }: ApplyModalProps) {
+export default function ApplyModal({ post, isOpen, onClose }: ApplyModalProps) {
   const [isCompleted, setIsCompleted] = useState(false);
 
   const handleApplyClick = () => {
@@ -39,7 +37,7 @@ export default function GroupApplyModal({ post, isOpen, onClose }: ApplyModalPro
         {isCompleted ? (
           <ApplyCompleteContent title={post.title} />
         ) : (
-          <GroupApplyFormContent post={post} onClose={onClose} onApply={handleApplyClick} />
+          <ApplyFormContent post={post} onClose={onClose} onApply={handleApplyClick} />
         )}
       </section>
     </BaseModal>

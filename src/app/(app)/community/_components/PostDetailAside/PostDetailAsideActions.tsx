@@ -3,16 +3,17 @@
 import { useState } from 'react';
 
 import { Button } from '@/components/common/Button';
-import ApplyModal from '../../jobs/_components/ApplyModal';
+import ApplyModal from '../ApplyModal/ApplyModal';
 
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 import ShareIcon from '@/assets/icons/common/contact.svg';
 
 import type { JobPost } from '@/components/community/jobs/types';
+import type { GroupPost } from '@/components/community/groups/types';
 
 type PostDetailAsideActionsProps = {
-  post: JobPost;
+  post: JobPost | GroupPost;
   buttonText?: string;
 };
 
@@ -28,9 +29,11 @@ export function PostDetailAsideActions({
   };
 
   const handleApplyClick = () => {
-    if (post.apply.type === 'homepage') {
-      window.open(post.apply.url, '_blank', 'noopener,noreferrer');
-      return;
+    if ('apply' in post) {
+      if (post.apply.type === 'homepage') {
+        window.open(post.apply.url, '_blank', 'noopener,noreferrer');
+        return;
+      }
     }
 
     setIsApplyModalOpen(true);

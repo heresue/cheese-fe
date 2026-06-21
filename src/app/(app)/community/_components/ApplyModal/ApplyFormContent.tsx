@@ -19,7 +19,6 @@ type ApplyFormContentProps = {
   onApply: () => void;
 };
 
-// TODO: 채용공고 PR Merge 후 공통 컴포넌트화
 export default function ApplyFormContent({ post, onClose, onApply }: ApplyFormContentProps) {
   const router = useRouter();
 
