@@ -69,7 +69,7 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
             actionButton={{
               label: '생성',
               onClick: () => {
-                console.log('생성 버튼 클릭');
+                // 생성 열기
               },
             }}
           />
