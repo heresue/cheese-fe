@@ -1,0 +1,6 @@
+import type { ApplyInfo } from './types';
+
+export const APPLY_LABEL: Record<ApplyInfo['type'], string> = {
+  homepage: '홈페이지 지원',
+  direct: '직접 지원',
+};

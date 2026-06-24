@@ -3,16 +3,17 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { UserIcon as MypageIcon, ApplicationsIcon, SettingsIcon } from '@/assets/icons/settings';
-import BookmarksIcon from '@/assets/icons/common/like-outline.svg';
+import { UserIcon as MypageIcon, SettingsIcon } from '@/assets/icons/settings';
 
 import { cn } from '@/lib/cn';
 import {
   getSidebarIconClassName,
   getSidebarItemClassName,
 } from '@/components/layout/sidebar/utils';
-
 import { MYPAGE_MENU_ITEMS } from '../../_constants/mypageMenu';
+
+import ApplicationsIcon from '@/assets/icons/common/file.svg';
+import BookmarksIcon from '@/assets/icons/common/like-outline.svg';
 
 const ICON_MAP = {
   mypage: <MypageIcon />,

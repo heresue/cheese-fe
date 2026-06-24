@@ -1,28 +1,38 @@
+'use client';
+
+import Link from 'next/link';
 import Image from 'next/image';
+
 import { Chip } from '@/components/common/Chip';
-import { GroupPost } from '@/components/boards/groups/types';
+import { GroupPost } from '@/components/community/groups/types';
 
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 import CommentIcon from '@/assets/icons/common/comment.svg';
+import { formatDeadline } from '@/lib/formatDeadline';
 
 type GroupPostCardProps = {
   post: GroupPost;
+  onToggleLike: (postId: number) => void;
 };
 
 const DEFAULT_PROFILE = '/profile_default.png';
 
-export default function GroupPostCard({ post }: GroupPostCardProps) {
+export default function GroupPostCard({ post, onToggleLike }: GroupPostCardProps) {
   return (
     <article className="flex h-[236px] w-full flex-col gap-2 rounded-[9px] border border-gray-300 p-5">
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <Chip variant={post.field}>{post.field}</Chip>
 
-          <span className="text-[12px] text-gray-600">{post.deadline}</span>
+          <span className="text-[12px] text-gray-600">{formatDeadline(post.deadline)}</span>
         </div>
 
-        <h3 className="line-clamp-2 h-[60px] text-[14px] leading-[30px] font-bold">{post.title}</h3>
+        <Link href={`/community/groups/${post.id}`} className="w-fit">
+          <h3 className="line-clamp-2 h-[60px] text-[14px] leading-[30px] font-bold">
+            {post.title}
+          </h3>
+        </Link>
       </div>
 
       <div className="text-[14px] leading-7 text-gray-700">
@@ -43,14 +53,21 @@ export default function GroupPostCard({ post }: GroupPostCardProps) {
         </div>
 
         <div className="flex gap-2">
-          <div className="flex items-center gap-1">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleLike(post.id);
+            }}
+            className="flex items-center gap-1"
+          >
             {post.isLiked ? (
               <LikeFilledIcon className="text-error-subtle w-[13px]" />
             ) : (
               <LikeOutlineIcon className="w-[13px] text-gray-500" />
             )}
+            {/* TODO: 좋아요 토글 시 count */}
             <span>{post.likeCount}</span>
-          </div>
+          </button>
           <div className="flex items-center gap-1">
             <CommentIcon className="w-[15px] text-gray-500" />
             <span>{post.commentCount}</span>

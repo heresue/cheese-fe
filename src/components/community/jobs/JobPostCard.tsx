@@ -1,8 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import JobApplyAction from '@/components/boards/jobs/JobApplyAction';
-import { JobPost } from './types';
+
+import JobApplyAction from '@/components/community/jobs/JobApplyAction';
+import { formatDeadline } from '@/lib/formatDeadline';
+
+import type { JobPost } from './types';
 
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
@@ -10,9 +13,10 @@ import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 type JobPostCardProps = {
   post: JobPost;
   onDirectApply: () => void;
+  onToggleLike: (postId: number) => void;
 };
 
-export default function JobPostCard({ post, onDirectApply }: JobPostCardProps) {
+export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPostCardProps) {
   const jobConditions = [post.career, post.education, post.location, post.employmentType];
 
   return (
@@ -21,16 +25,24 @@ export default function JobPostCard({ post, onDirectApply }: JobPostCardProps) {
         <span className="w-fit max-w-[130px] leading-5 font-bold break-all">
           {post.companyName}
         </span>
-        {post.isLiked ? (
-          <LikeFilledIcon className="text-error-subtle w-[14px]" />
-        ) : (
-          <LikeOutlineIcon className="w-[14px] text-gray-500" />
-        )}
+
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleLike(post.id);
+          }}
+        >
+          {post.isLiked ? (
+            <LikeFilledIcon className="text-error-subtle w-[14px]" />
+          ) : (
+            <LikeOutlineIcon className="w-[14px] text-gray-500" />
+          )}
+        </button>
       </div>
 
       <div className="mx-7 flex flex-1 flex-col gap-2">
-        {/* 게시글 링크 연결 필요 */}
-        <Link href="" className="w-fit">
+        <Link href={`/community/jobs/${post.id}`} className="w-fit">
           <h3 className="leading-5 font-bold">{post.title}</h3>
         </Link>
 
@@ -49,7 +61,7 @@ export default function JobPostCard({ post, onDirectApply }: JobPostCardProps) {
 
       <div className="flex flex-col items-center gap-2">
         <JobApplyAction apply={post.apply} onDirectApply={onDirectApply} />
-        <span className="text-[12px] leading-5 text-gray-700">{post.deadline}</span>
+        <span className="text-[12px] leading-5 text-gray-700">{formatDeadline(post.deadline)}</span>
       </div>
     </article>
   );

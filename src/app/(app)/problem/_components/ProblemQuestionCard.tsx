@@ -3,11 +3,11 @@
 import { useEffect, useRef, useState } from 'react';
 
 import ProblemStatusIcon from './ProblemStatusIcon';
-import DoubleArrowIcon from '@/assets/icons/settings/double-arrow.svg';
-import CorrectCircleIcon from '@/assets/icons/settings/cancel-circle.svg';
-import IncorrectCircleIcon from '@/assets/icons/settings/check-circle.svg';
+import DoubleArrowIcon from '@/assets/icons/problem/double-arrow.svg';
+import CorrectCircleIcon from '@/assets/icons/common/cancel-circle.svg';
+import IncorrectCircleIcon from '@/assets/icons/problem/check-circle.svg';
 import DocumentsIcon from '@/assets/icons/settings/documents.svg';
-import ReturnIcon from '@/assets/icons/settings/return.svg';
+import ReturnIcon from '@/assets/icons/problem/return.svg';
 import SkillsIcon from '@/assets/icons/settings/skills.svg';
 
 import type { ProblemQuestion } from '../_types/problemSolving';

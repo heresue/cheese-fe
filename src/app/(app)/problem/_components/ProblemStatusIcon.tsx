@@ -1,6 +1,6 @@
-import CancelBoxIcon from '@/assets/icons/settings/cancel-box.svg';
-import CheckBoxIcon from '@/assets/icons/settings/check-box.svg';
-import DoubleArrowBoxIcon from '@/assets/icons/settings/double-arrow-box.svg';
+import CancelBoxIcon from '@/assets/icons/problem/cancel-box.svg';
+import CheckBoxIcon from '@/assets/icons/problem/check-box.svg';
+import DoubleArrowBoxIcon from '@/assets/icons/problem/double-arrow-box.svg';
 
 export type ProblemStatusIconType = 'correct' | 'incorrect' | 'skipped';
 

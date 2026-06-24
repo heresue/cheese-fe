@@ -1,4 +1,3 @@
-export { default as ApplicationsIcon } from './applications.svg';
 export { default as CompanyIcon } from './company.svg';
 export { default as CookieIcon } from './cookie.svg';
 export { default as DocumentsIcon } from './documents.svg';
