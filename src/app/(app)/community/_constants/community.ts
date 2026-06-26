@@ -17,6 +17,8 @@ export const INFO_SORT_OPTIONS = [
   { label: '자료공유', value: 'resource' },
 ] as const;
 
+// Post Form Dropdown Options
+
 export const FIELD_OPTIONS = [
   { label: 'FE', value: 'FE' },
   { label: 'BE', value: 'BE' },
@@ -34,4 +36,10 @@ export const EDUCATION_OPTIONS = [
   { label: '고졸', value: 'highSchool' },
   { label: '대학원(석사/박사)', value: 'graduateSchool' },
   { label: '학력무관', value: 'none' },
+];
+
+export const WORK_METHOD_OPTIONS = [
+  { label: '온라인', value: 'online' },
+  { label: '오프라인', value: 'offline' },
+  { label: '온/오프라인 병행', value: 'hybrid' },
 ];
