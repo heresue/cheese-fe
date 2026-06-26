@@ -54,8 +54,8 @@ export default function FormDropdown({
         aria-expanded={open}
         onClick={() => setOpen((prev) => !prev)}
         className={cn(
-          'flex h-[30px] w-full items-center justify-between font-medium',
-          open ? 'border-secondary-600 rounded-[10px] border-2 px-5' : 'border-b border-gray-400',
+          'flex h-[30px] w-full items-center justify-between pr-5 font-medium',
+          open ? 'border-secondary-600 rounded-[10px] border-2 pl-5' : 'border-b border-gray-400',
         )}
       >
         <span className={cn(!selectedOption && 'text-gray-500')}>
