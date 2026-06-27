@@ -15,6 +15,7 @@ import UploadIcon from '@/assets/icons/common/upload.svg';
 import CloseIcon from '@/assets/icons/common/close.svg';
 
 import useFileUpload from '@/hooks/useFileUpload';
+import useTagInput from '@/hooks/useTagInput';
 
 const INFO_CATEGORY_OPTIONS = INFO_SORT_OPTIONS.filter((option) => option.value !== 'all');
 
@@ -23,6 +24,8 @@ export default function InfoCreatePage() {
 
   // TODO: API 연동 시 files를 FormData에 추가
   const { files, fileInputRef, openFilePicker, addFiles, removeFile, openFile } = useFileUpload();
+
+  const { tagInput, tags, setTagInput, removeTag, handleTagKeyDown } = useTagInput({ maxTags: 5 });
 
   return (
     <CommunityPostForm>
@@ -84,19 +87,37 @@ export default function InfoCreatePage() {
             </Button>
           </div>
 
-          {/* TODO: 태그 기능 구현 */}
           <FormField
             label="태그 등록"
             labelClassName="text-[14px]"
             className="w-full max-w-[624px]"
           >
             <Input
+              hideMessageSpace
               label="태그 등록"
               name="tags"
+              value={tagInput}
+              onChange={(event) => setTagInput(event.target.value)}
+              onKeyDown={handleTagKeyDown}
               placeholder="# 최대 5개의 태그를 설정할 수 있습니다"
               className={POST_INPUT_CLASS}
               inputClassName="font-medium"
             />
+
+            {tags.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {tags.map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    className="bg-tag-yellow-100 hover:bg-tag-yellow-200 rounded-full px-3 py-1 transition-colors duration-200"
+                    onClick={() => removeTag(tag)}
+                  >
+                    # {tag}
+                  </button>
+                ))}
+              </div>
+            )}
           </FormField>
         </div>
       </section>
