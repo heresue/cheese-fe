@@ -12,12 +12,13 @@ import { cn } from '@/lib/cn';
 import { Button } from '@/components/common/Button';
 
 import UploadIcon from '@/assets/icons/common/upload.svg';
+import CloseIcon from '@/assets/icons/common/close.svg';
 
 const INFO_CATEGORY_OPTIONS = INFO_SORT_OPTIONS.filter((option) => option.value !== 'all');
 
 export default function InfoCreatePage() {
   const [category, setCategory] = useState('');
-  const [fileNames, setFileNames] = useState<string[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -25,15 +26,29 @@ export default function InfoCreatePage() {
     fileInputRef.current?.click();
   };
 
-  // TODO: 파일 추가 업로드 및 삭제 기능 구현
+  // TODO: 파일 업로드 API 연동
   const handleChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
+    const selectedFiles = Array.from(event.target.files ?? []);
 
-    if (!files) return;
+    if (selectedFiles.length === 0) return;
 
-    setFileNames(Array.from(files, (file) => file.name));
+    setFiles((prev) => [...prev, ...selectedFiles]);
 
     event.target.value = '';
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleOpenFile = (file: File) => {
+    const fileUrl = URL.createObjectURL(file);
+
+    window.open(fileUrl, '_blank');
+
+    setTimeout(() => {
+      URL.revokeObjectURL(fileUrl);
+    }, 1000);
   };
 
   return (
@@ -54,12 +69,30 @@ export default function InfoCreatePage() {
 
           <div className="flex flex-col gap-2">
             <span className="text-[14px]">첨부파일</span>
-            {fileNames.length > 0 && (
+
+            {files.length > 0 && (
               <div className="flex flex-col gap-1">
-                {fileNames.map((fileName, index) => (
-                  <span key={`${fileName}-${index}`} className="text-[14px] text-gray-700">
-                    {fileName}
-                  </span>
+                {files.map((file, index) => (
+                  <div
+                    key={`${file.name}-${file.lastModified}-${index}`}
+                    className="flex items-center gap-2"
+                  >
+                    <button
+                      type="button"
+                      className="text-success max-w-[280px] truncate text-left underline"
+                      onClick={() => handleOpenFile(file)}
+                    >
+                      {file.name}
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`${file.name} 삭제`}
+                      className="text-gray-600 hover:text-gray-800"
+                      onClick={() => handleRemoveFile(index)}
+                    >
+                      <CloseIcon className="h-3 w-3" />
+                    </button>
+                  </div>
                 ))}
               </div>
             )}
