@@ -22,16 +22,26 @@ export default function CommunityPostForm({ children, onSubmit }: CommunityPostF
   const pathname = usePathname();
 
   const currentCategory = COMMUNITY_CATEGORY_TABS.find((tab) => pathname.startsWith(tab.value));
+  const listPageHref = currentCategory?.value ?? '/community/jobs';
   const title = `${currentCategory?.label ?? '게시글'} 생성`;
 
   const formId = 'community-post-form';
+
+  const handleBackClick = () => {
+    // TODO: 공통 ConfirmModal 적용
+    const isConfirmed = window.confirm('작성 중인 내용이 사라집니다. 이동하시겠습니까?');
+
+    if (!isConfirmed) return;
+
+    router.push(listPageHref);
+  };
 
   return (
     <div className="px-[50px]">
       <article className="mx-auto w-full max-w-[1000px] overflow-hidden rounded-[10px] border border-gray-400">
         <header className="flex items-center justify-between bg-gray-100 px-6 py-3">
           <div className="flex gap-2">
-            <BackButton onClick={() => router.back()} />
+            <BackButton onClick={handleBackClick} />
             <h2 className="text-[20px] leading-[30px] font-medium">{title}</h2>
           </div>
 

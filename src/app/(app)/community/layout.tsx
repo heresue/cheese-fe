@@ -21,7 +21,8 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
   const updateSearchParams = useUpdateSearchParams();
 
   const isInfoPage = pathname.startsWith('/community/info');
-  const shouldShowFilterBar = !pathname.endsWith('/new');
+  const isCreatePage = pathname.endsWith('/new');
+  const shouldShowFilterBar = !isCreatePage;
 
   const sortOptions = isInfoPage ? INFO_SORT_OPTIONS : COMMUNITY_SORT_OPTIONS;
   const defaultSort = isInfoPage ? 'all' : 'latest';
@@ -34,8 +35,18 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
 
   const createPostHref = `${activeCategory}/new`;
 
-  console.log(pathname);
-  console.log(pathname.endsWith('/new'));
+  const handleChangeTab = (value: (typeof COMMUNITY_CATEGORY_TABS)[number]['value']) => {
+    const nextPath = isCreatePage ? `${value}/new` : `${value}`;
+
+    // TODO: 공통 ConfirmModal 적용
+    if (isCreatePage) {
+      const isConfirmed = window.confirm('작성 중인 내용이 사라집니다. 이동하시겠습니까?');
+
+      if (!isConfirmed) return;
+    }
+
+    router.push(nextPath);
+  };
 
   return (
     <div className="h-dvh overflow-y-auto px-10 pt-10">
@@ -71,9 +82,7 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
           <CategoryTabs
             items={COMMUNITY_CATEGORY_TABS}
             activeValue={activeCategory}
-            onChange={(href) => {
-              router.push(href);
-            }}
+            onChange={handleChangeTab}
           />
         </div>
 
