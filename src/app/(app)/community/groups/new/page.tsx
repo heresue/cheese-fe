@@ -17,8 +17,38 @@ export default function GroupCreatePage() {
   const [workMethodType, setWorkMethodType] = useState('');
   const [education, setEducation] = useState('');
   const [date, setDate] = useState('');
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>, content: string) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+
+    const title = String(formData.get('title') ?? '');
+    const expectedPeriod = String(formData.get('period') ?? '');
+    const recruitCount = Number(formData.get('recruit') ?? 0);
+    const applyUrl = String(formData.get('url') ?? '');
+
+    const newGroupPost = {
+      title,
+      field,
+      workMethodType,
+      expectedPeriod,
+      education,
+      recruitCount,
+      deadline: date,
+      apply: {
+        type: 'homepage',
+        url: applyUrl,
+      },
+      content,
+    };
+
+    // TODO: 게시글 생성 API 연동 후 생성된 게시글 상세 페이지로 이동
+    alert('게시글이 등록되었습니다.');
+  };
+
   return (
-    <CommunityPostForm>
+    <CommunityPostForm onSubmit={handleSubmit}>
       <section className="flex flex-col gap-[30px]">
         <FormField label="제목" required>
           <Input

@@ -27,8 +27,27 @@ export default function InfoCreatePage() {
 
   const { tagInput, tags, setTagInput, removeTag, handleTagKeyDown } = useTagInput({ maxTags: 5 });
 
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>, content: string) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+
+    const title = String(formData.get('title') ?? '');
+
+    const newInfoPost = {
+      title,
+      category,
+      tags,
+      files,
+      content,
+    };
+
+    // TODO: 게시글 생성 API 연동 후 생성된 게시글 상세 페이지로 이동
+    alert('게시글이 등록되었습니다.');
+  };
+
   return (
-    <CommunityPostForm>
+    <CommunityPostForm onSubmit={handleSubmit}>
       <section className="flex flex-col gap-[30px]">
         <Input
           label="제목"

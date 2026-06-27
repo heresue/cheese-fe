@@ -12,9 +12,10 @@ import { COMMUNITY_CATEGORY_TABS } from '../../_constants/community';
 
 type CommunityPostFormProps = {
   children: ReactNode;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>, content: string) => void;
 };
 
-export default function CommunityPostForm({ children }: CommunityPostFormProps) {
+export default function CommunityPostForm({ children, onSubmit }: CommunityPostFormProps) {
   const [content, setContent] = useState('');
 
   const router = useRouter();
@@ -24,12 +25,6 @@ export default function CommunityPostForm({ children }: CommunityPostFormProps) 
   const title = `${currentCategory?.label ?? '게시글'} 생성`;
 
   const formId = 'community-post-form';
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    // TODO: 게시글 생성 API 연결
-  };
 
   return (
     <div className="px-[50px]">
@@ -46,7 +41,11 @@ export default function CommunityPostForm({ children }: CommunityPostFormProps) 
           </Button>
         </header>
 
-        <form id={formId} onSubmit={handleSubmit} className="flex flex-col gap-[30px] px-25 py-8">
+        <form
+          id={formId}
+          onSubmit={(event) => onSubmit(event, content)}
+          className="flex flex-col gap-[30px] px-25 py-8"
+        >
           {children}
 
           <section>
