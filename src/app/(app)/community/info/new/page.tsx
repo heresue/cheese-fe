@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 import { Input } from '@/components/common/Input';
 
@@ -14,42 +14,15 @@ import { Button } from '@/components/common/Button';
 import UploadIcon from '@/assets/icons/common/upload.svg';
 import CloseIcon from '@/assets/icons/common/close.svg';
 
+import useFileUpload from '@/hooks/useFileUpload';
+
 const INFO_CATEGORY_OPTIONS = INFO_SORT_OPTIONS.filter((option) => option.value !== 'all');
 
 export default function InfoCreatePage() {
   const [category, setCategory] = useState('');
-  const [files, setFiles] = useState<File[]>([]);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleOpenFilePicker = () => {
-    fileInputRef.current?.click();
-  };
-
-  // TODO: 파일 업로드 API 연동
-  const handleChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(event.target.files ?? []);
-
-    if (selectedFiles.length === 0) return;
-
-    setFiles((prev) => [...prev, ...selectedFiles]);
-
-    event.target.value = '';
-  };
-
-  const handleRemoveFile = (index: number) => {
-    setFiles((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleOpenFile = (file: File) => {
-    const fileUrl = URL.createObjectURL(file);
-
-    window.open(fileUrl, '_blank');
-
-    setTimeout(() => {
-      URL.revokeObjectURL(fileUrl);
-    }, 1000);
-  };
+  // TODO: API 연동 시 files를 FormData에 추가
+  const { files, fileInputRef, openFilePicker, addFiles, removeFile, openFile } = useFileUpload();
 
   return (
     <CommunityPostForm>
@@ -80,7 +53,7 @@ export default function InfoCreatePage() {
                     <button
                       type="button"
                       className="text-success max-w-[280px] truncate text-left underline"
-                      onClick={() => handleOpenFile(file)}
+                      onClick={() => openFile(file)}
                     >
                       {file.name}
                     </button>
@@ -88,29 +61,23 @@ export default function InfoCreatePage() {
                       type="button"
                       aria-label={`${file.name} 삭제`}
                       className="text-gray-600 hover:text-gray-800"
-                      onClick={() => handleRemoveFile(index)}
+                      onClick={() => removeFile(index)}
                     >
-                      <CloseIcon className="h-3 w-3" />
+                      <CloseIcon className="h-3 w-3" aria-hidden="true" />
                     </button>
                   </div>
                 ))}
               </div>
             )}
 
-            <input
-              ref={fileInputRef}
-              multiple
-              type="file"
-              className="hidden"
-              onChange={handleChangeFile}
-            />
+            <input ref={fileInputRef} multiple type="file" className="hidden" onChange={addFiles} />
             <Button
               type="button"
               width={90}
               size={46}
               variant="outlineLightGray"
               className="gap-3 border-gray-300"
-              onClick={handleOpenFilePicker}
+              onClick={openFilePicker}
             >
               <UploadIcon className="w-3" aria-hidden="true" />
               업로드
