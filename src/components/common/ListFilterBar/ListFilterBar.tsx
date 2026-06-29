@@ -1,29 +1,55 @@
 'use client';
 
-import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 
-import { cn } from '@/lib/cn';
 import ChevronIcon from '@/assets/icons/common/chevron.svg';
 import CloseIcon from '@/assets/icons/common/close.svg';
 import CreateIcon from '@/assets/icons/common/create.svg';
-import { Button } from '@/components/common/Button';
+import { cn } from '@/lib/cn';
 
-import { listFilterBarClassNames as styles } from './style';
-import type { ListFilterBarProps } from './type';
+export type ListFilterOption<TValue extends string = string> = {
+  label: string;
+  value: TValue;
+};
 
-function SortIcon() {
+type ListFilterActionButton = {
+  label: string;
+  onClick: () => void;
+};
+
+type ListFilterBarProps<TSort extends string = string> = {
+  sortOptions: readonly ListFilterOption<TSort>[];
+  selectedSort: TSort;
+  onSortChange: (value: TSort) => void;
+
+  searchValue: string;
+  onSearchChange: (value: string) => void;
+  onSearchSubmit: (value: string) => void;
+  onSearchClear?: () => void;
+  onSearchHistorySelect?: (value: string) => void;
+
+  searchPlaceholder?: string;
+  searchHistories?: readonly string[];
+
+  actionButton?: ListFilterActionButton;
+
+  className?: string;
+  searchClassName?: string;
+};
+
+function SortIcon({ className }: { className?: string }) {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" className={className}>
       <path
-        d="M5 6h9M5 10h7M5 14h5"
+        d="M4 5h8M4 10h6M4 15h4"
         stroke="currentColor"
-        strokeWidth="1.8"
+        strokeWidth="1.6"
         strokeLinecap="round"
       />
       <path
-        d="M17 7v9M14.5 13.5L17 16l2.5-2.5"
+        d="M15 4v10M15 14l-2.5-2.5M15 14l2.5-2.5"
         stroke="currentColor"
-        strokeWidth="1.8"
+        strokeWidth="1.6"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -31,285 +57,318 @@ function SortIcon() {
   );
 }
 
-function SearchIcon() {
+function SearchIcon({ className }: { className?: string }) {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" className={className}>
       <path
-        d="M9.16667 15.8333a6.66667 6.66667 0 1 0 0-13.3333 6.66667 6.66667 0 0 0 0 13.3333ZM14.1667 14.1667 17.5 17.5"
+        d="m14.2 14.2 3 3M8.8 15.2a6.4 6.4 0 1 1 0-12.8 6.4 6.4 0 0 1 0 12.8Z"
         stroke="currentColor"
-        strokeWidth="1.8"
+        strokeWidth="1.7"
         strokeLinecap="round"
       />
     </svg>
   );
 }
 
-function ListFilterBar<TSortValue extends string = string>({
-  sortOptions = [],
+function DropdownChevron({ open }: { open: boolean }) {
+  return (
+    <span className="flex h-[12px] w-[12px] shrink-0 items-center justify-center overflow-visible">
+      <ChevronIcon
+        aria-hidden="true"
+        className={cn(
+          'block h-[12px] w-[7px] shrink-0 origin-center text-current transition-transform',
+          open ? '-rotate-90' : 'rotate-90',
+        )}
+      />
+    </span>
+  );
+}
+
+function DropdownContainer({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div
+      className={cn(
+        'absolute top-[52px] left-0 z-40 overflow-hidden rounded-[10px] border border-gray-300 bg-white py-[8px] shadow-[0_8px_24px_rgba(0,0,0,0.12)]',
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+function SortDropdown<TSort extends string>({
+  options,
+  value,
+  onChange,
+}: {
+  options: readonly ListFilterOption<TSort>[];
+  value: TSort;
+  onChange: (value: TSort) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  const selectedLabel = options.find((option) => option.value === value)?.label ?? '';
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!rootRef.current) return;
+      if (rootRef.current.contains(event.target as Node)) return;
+
+      setOpen(false);
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+    };
+  }, [open]);
+
+  return (
+    <div ref={rootRef} className="relative">
+      <button
+        type="button"
+        aria-label={`정렬: ${selectedLabel}`}
+        aria-expanded={open}
+        onClick={() => setOpen((prev) => !prev)}
+        className={cn(
+          'flex h-[44px] w-[68px] items-center justify-center gap-[8px] rounded-[10px] border transition-colors',
+          open
+            ? 'border-secondary-700 text-secondary-700'
+            : 'hover:border-secondary-700 hover:text-secondary-700 border-gray-300 text-gray-500',
+        )}
+      >
+        <SortIcon className="h-[20px] w-[20px]" />
+
+        <DropdownChevron open={open} />
+      </button>
+
+      {open ? (
+        <DropdownContainer className="w-[110px]">
+          {options.map((option) => {
+            const selected = option.value === value;
+
+            return (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => {
+                  onChange(option.value);
+                  setOpen(false);
+                }}
+                className={cn(
+                  'flex h-[32px] w-full items-center px-[12px] text-left text-[13px] font-medium transition-colors hover:bg-gray-100',
+                  selected ? 'text-secondary-700' : 'text-gray-700',
+                )}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+        </DropdownContainer>
+      ) : null}
+    </div>
+  );
+}
+
+function SearchHistoryDropdown({
+  histories,
+  onSelect,
+}: {
+  histories: readonly string[];
+  onSelect: (value: string) => void;
+}) {
+  return (
+    <DropdownContainer className="w-full">
+      <div className="px-[14px] pb-[6px] text-[12px] font-medium text-gray-500">최근 검색어</div>
+
+      {histories.length > 0 ? (
+        <div className="max-h-[180px] overflow-y-auto">
+          {histories.map((history) => (
+            <button
+              key={history}
+              type="button"
+              onClick={() => onSelect(history)}
+              className="flex h-[34px] w-full items-center px-[14px] text-left text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-950"
+            >
+              {history}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div className="flex h-[42px] items-center px-[14px] text-[13px] font-medium text-gray-500">
+          최근 검색어가 없습니다.
+        </div>
+      )}
+    </DropdownContainer>
+  );
+}
+
+function SearchInput({
+  value,
+  placeholder,
+  histories,
+  onChange,
+  onSubmit,
+  onClear,
+  onHistorySelect,
+  className,
+}: {
+  value: string;
+  placeholder: string;
+  histories: readonly string[];
+  onChange: (value: string) => void;
+  onSubmit: (value: string) => void;
+  onClear?: () => void;
+  onHistorySelect?: (value: string) => void;
+  className?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!rootRef.current) return;
+      if (rootRef.current.contains(event.target as Node)) return;
+
+      setOpen(false);
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+    };
+  }, [open]);
+
+  const handleSubmit = () => {
+    const normalizedValue = value.trim();
+
+    onSubmit(normalizedValue);
+    setOpen(false);
+  };
+
+  const handleClear = () => {
+    if (onClear) {
+      onClear();
+    } else {
+      onChange('');
+    }
+
+    setOpen(false);
+  };
+
+  const handleHistorySelect = (history: string) => {
+    if (onHistorySelect) {
+      onHistorySelect(history);
+    } else {
+      onChange(history);
+      onSubmit(history);
+    }
+
+    setOpen(false);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== 'Enter') return;
+
+    event.preventDefault();
+    handleSubmit();
+  };
+
+  return (
+    <div ref={rootRef} className="relative">
+      <div
+        className={cn(
+          'flex h-[44px] w-[500px] items-center gap-[10px] rounded-[8px] border px-[14px] text-gray-500 transition-colors',
+          open ? 'border-secondary-700' : 'border-gray-300',
+          className,
+        )}
+      >
+        <SearchIcon className="h-[18px] w-[18px] shrink-0" />
+
+        <input
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          className="h-full min-w-0 flex-1 bg-transparent text-[14px] font-medium text-gray-800 outline-none placeholder:text-gray-500"
+        />
+
+        {value ? (
+          <button
+            type="button"
+            aria-label="검색어 지우기"
+            onClick={handleClear}
+            className="hover:text-secondary-700 flex h-[24px] w-[24px] shrink-0 items-center justify-center text-gray-500 transition-colors"
+          >
+            <CloseIcon className="h-[12px] w-[12px]" aria-hidden="true" />
+          </button>
+        ) : null}
+
+        <button
+          type="button"
+          aria-label="검색 기록 열기"
+          aria-expanded={open}
+          onClick={() => setOpen((prev) => !prev)}
+          className="hover:text-secondary-700 flex h-[24px] w-[24px] shrink-0 items-center justify-center text-gray-500 transition-colors"
+        >
+          <DropdownChevron open={open} />
+        </button>
+      </div>
+
+      {open ? <SearchHistoryDropdown histories={histories} onSelect={handleHistorySelect} /> : null}
+    </div>
+  );
+}
+
+export function ListFilterBar<TSort extends string = string>({
+  sortOptions,
   selectedSort,
   onSortChange,
-  searchValue = '',
-  searchPlaceholder = '검색',
-  searchHistories = [],
+  searchValue,
   onSearchChange,
   onSearchSubmit,
   onSearchClear,
   onSearchHistorySelect,
+  searchPlaceholder = '검색',
+  searchHistories = [],
   actionButton,
   className,
-}: ListFilterBarProps<TSortValue>) {
-  const [isSortOpen, setIsSortOpen] = useState(false);
-  const [isSearchHistoryOpen, setIsSearchHistoryOpen] = useState(false);
-
-  const sortRootRef = useRef<HTMLDivElement>(null);
-  const searchRootRef = useRef<HTMLDivElement>(null);
-
-  const searchHistoryListId = useId();
-
-  const hasSortOptions = sortOptions.length > 0;
-
-  const searchHistoryItems = searchHistories.filter((history) => history.trim().length > 0);
-
-  const hasSearchHistories = searchHistoryItems.length > 0;
-
-  const selectedOption =
-    sortOptions.find((option) => option.value === selectedSort) ?? sortOptions[0];
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const trimmedSearchValue = searchValue.trim();
-
-    onSearchSubmit?.(trimmedSearchValue);
-    setIsSearchHistoryOpen(false);
-  };
-
-  const handleSortSelect = (value: TSortValue) => {
-    onSortChange?.(value);
-    setIsSortOpen(false);
-  };
-
-  const handleSearchClear = () => {
-    onSearchChange?.('');
-    onSearchClear?.();
-    setIsSearchHistoryOpen(false);
-  };
-
-  const handleSearchHistorySelect = (history: string) => {
-    const trimmedHistory = history.trim();
-
-    if (!trimmedHistory) {
-      return;
-    }
-
-    onSearchChange?.(trimmedHistory);
-    onSearchHistorySelect?.(trimmedHistory);
-    onSearchSubmit?.(trimmedHistory);
-    setIsSearchHistoryOpen(false);
-  };
-
-  const handleSearchFocus = () => {
-    if (hasSearchHistories) {
-      setIsSearchHistoryOpen(true);
-    }
-  };
-
-  const handleSearchHistoryToggle = () => {
-    if (!hasSearchHistories) {
-      return;
-    }
-
-    setIsSearchHistoryOpen((prev) => !prev);
-  };
-
-  const handleRootKeyDown = (event: KeyboardEvent<HTMLFormElement>) => {
-    if (event.key === 'Escape') {
-      setIsSortOpen(false);
-      setIsSearchHistoryOpen(false);
-    }
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-
-      if (sortRootRef.current && !sortRootRef.current.contains(target)) {
-        setIsSortOpen(false);
-      }
-
-      if (searchRootRef.current && !searchRootRef.current.contains(target)) {
-        setIsSearchHistoryOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
+  searchClassName,
+}: ListFilterBarProps<TSort>) {
   return (
-    <form
-      className={cn(styles.form, className)}
-      onSubmit={handleSubmit}
-      onKeyDown={handleRootKeyDown}
-    >
-      {hasSortOptions && selectedOption && (
-        <div ref={sortRootRef} className={styles.sortRoot}>
-          <button
-            type="button"
-            className={styles.sortButton}
-            aria-label={`정렬: ${selectedOption.label}`}
-            aria-haspopup="listbox"
-            aria-expanded={isSortOpen}
-            onClick={() => {
-              setIsSortOpen((prev) => !prev);
-            }}
-          >
-            <SortIcon />
+    <div className={cn('flex items-center gap-[10px]', className)}>
+      <SortDropdown options={sortOptions} value={selectedSort} onChange={onSortChange} />
 
-            <ChevronIcon className={styles.sortChevronIcon} aria-hidden="true" focusable="false" />
-          </button>
+      <SearchInput
+        value={searchValue}
+        placeholder={searchPlaceholder}
+        histories={searchHistories}
+        onChange={onSearchChange}
+        onSubmit={onSearchSubmit}
+        onClear={onSearchClear}
+        onHistorySelect={onSearchHistorySelect}
+        className={searchClassName}
+      />
 
-          {isSortOpen && (
-            <div className={styles.sortMenu} role="listbox" aria-label="정렬">
-              {sortOptions.map((option) => {
-                const isActive = option.value === selectedOption.value;
-
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    role="option"
-                    aria-selected={isActive}
-                    disabled={option.disabled}
-                    className={cn(
-                      styles.sortMenuItem,
-                      isActive ? styles.sortMenuItemActive : styles.sortMenuItemInactive,
-                    )}
-                    onClick={() => {
-                      handleSortSelect(option.value);
-                    }}
-                  >
-                    {option.label}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
-
-      <div ref={searchRootRef} className={styles.searchRoot}>
-        <span className={styles.searchIcon}>
-          <SearchIcon />
-        </span>
-
-        <input
-          type="text"
-          value={searchValue}
-          placeholder={searchPlaceholder}
-          className={styles.searchInput}
-          aria-label="검색어"
-          autoComplete="off"
-          onFocus={handleSearchFocus}
-          onChange={(event) => {
-            onSearchChange?.(event.target.value);
-          }}
-        />
-
-        <div className={styles.searchRightControls}>
-          {searchValue.length > 0 && (
-            <button
-              type="button"
-              className={styles.searchClearButton}
-              aria-label="검색어 삭제"
-              onClick={handleSearchClear}
-            >
-              <CloseIcon className={styles.searchClearIcon} aria-hidden="true" focusable="false" />
-            </button>
-          )}
-
-          <button
-            type="button"
-            className={styles.searchHistoryToggleButton}
-            aria-label="검색 기록 열기"
-            aria-haspopup="listbox"
-            aria-expanded={isSearchHistoryOpen}
-            aria-controls={searchHistoryListId}
-            onClick={handleSearchHistoryToggle}
-          >
-            <ChevronIcon
-              className={styles.searchHistoryChevronIcon}
-              aria-hidden="true"
-              focusable="false"
-            />
-          </button>
-        </div>
-
-        {isSearchHistoryOpen && hasSearchHistories && (
-          <div
-            id={searchHistoryListId}
-            className={styles.searchHistoryMenu}
-            role="listbox"
-            aria-label="검색 기록"
-          >
-            {searchHistoryItems.map((history, index) => {
-              const isSelected = history === searchValue;
-
-              return (
-                <button
-                  key={`${history}-${index}`}
-                  type="button"
-                  className={styles.searchHistoryItem}
-                  role="option"
-                  aria-selected={isSelected}
-                  onClick={() => {
-                    handleSearchHistorySelect(history);
-                  }}
-                >
-                  {history}
-                </button>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {actionButton && (
-        <Button
+      {actionButton ? (
+        <button
           type="button"
-          variant="default"
-          size={44}
-          width={76}
-          paddingX={0}
-          className={styles.actionButton}
-          disabled={actionButton.disabled}
-          onClick={() => {
-            actionButton.onClick();
-          }}
+          onClick={actionButton.onClick}
+          className="bg-secondary-700 hover:bg-secondary-800 flex h-[44px] items-center justify-center gap-[8px] rounded-[10px] px-[18px] text-[14px] font-medium text-white transition-colors"
         >
-          <span className={styles.actionButtonContent}>
-            {actionButton.icon !== false && (
-              <span className={styles.actionButtonIconWrapper}>
-                {actionButton.icon === undefined ? (
-                  <CreateIcon
-                    className={styles.actionButtonIcon}
-                    aria-hidden="true"
-                    focusable="false"
-                  />
-                ) : (
-                  actionButton.icon
-                )}
-              </span>
-            )}
-
-            <span className={styles.actionButtonLabel}>{actionButton.label}</span>
-          </span>
-        </Button>
-      )}
-    </form>
+          <CreateIcon className="h-[16px] w-[16px]" aria-hidden="true" />
+          {actionButton.label}
+        </button>
+      ) : null}
+    </div>
   );
 }
 

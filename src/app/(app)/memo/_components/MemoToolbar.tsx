@@ -31,7 +31,7 @@ const SORT_OPTIONS: Array<{ label: string; value: MemoSortOrder }> = [
   { label: '오래된순', value: 'oldest' },
 ];
 
-const MEMO_SEARCH_HISTORIES = ['면접', '포트폴리오', '일정', 'CSS', 'Next.js'];
+const MEMO_SEARCH_HISTORIES = ['면접', '포트폴리오', '일정', 'CSS', 'Next.js'] as const;
 
 function SortIcon({ className }: { className?: string }) {
   return (
@@ -63,6 +63,20 @@ function SearchIcon({ className }: { className?: string }) {
         strokeLinecap="round"
       />
     </svg>
+  );
+}
+
+function DropdownChevron({ open }: { open: boolean }) {
+  return (
+    <span className="flex h-[12px] w-[12px] shrink-0 items-center justify-center overflow-visible">
+      <ChevronIcon
+        aria-hidden="true"
+        className={cn(
+          'block h-[12px] w-[7px] shrink-0 origin-center text-current transition-transform',
+          open ? '-rotate-90' : 'rotate-90',
+        )}
+      />
+    </span>
   );
 }
 
@@ -145,13 +159,7 @@ function SortDropdown({
       >
         <SortIcon className="h-[20px] w-[20px]" />
 
-        <ChevronIcon
-          className={cn(
-            'h-[12px] w-[12px] transition-transform',
-            open ? '-rotate-90' : 'rotate-90',
-          )}
-          aria-hidden="true"
-        />
+        <DropdownChevron open={open} />
       </button>
 
       {open ? (
@@ -190,7 +198,7 @@ function MemoSearchBox({
   onHistorySelect,
 }: {
   value: string;
-  histories: string[];
+  histories: readonly string[];
   onChange: (value: string) => void;
   onSubmit: (value: string) => void;
   onHistorySelect: (value: string) => void;
@@ -222,16 +230,16 @@ function MemoSearchBox({
     setOpen(false);
   };
 
+  const handleHistoryClick = (history: string) => {
+    onHistorySelect(history);
+    setOpen(false);
+  };
+
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key !== 'Enter') return;
 
     event.preventDefault();
     handleSubmit();
-  };
-
-  const handleHistoryClick = (history: string) => {
-    onHistorySelect(history);
-    setOpen(false);
   };
 
   return (
@@ -259,13 +267,7 @@ function MemoSearchBox({
           onClick={() => setOpen((prev) => !prev)}
           className="hover:text-secondary-700 flex h-[24px] w-[24px] shrink-0 items-center justify-center text-gray-500 transition-colors"
         >
-          <ChevronIcon
-            className={cn(
-              'h-[12px] w-[12px] transition-transform',
-              open ? '-rotate-90' : 'rotate-90',
-            )}
-            aria-hidden="true"
-          />
+          <DropdownChevron open={open} />
         </button>
       </div>
 
