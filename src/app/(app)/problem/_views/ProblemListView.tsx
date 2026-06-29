@@ -142,7 +142,7 @@ function ProblemListView() {
     <main className="min-h-0">
       <div ref={scrollAreaRef} className="h-dvh min-h-0 overflow-y-auto overscroll-contain">
         <section className="mx-auto w-[1100px] max-w-full py-[40px] pb-[100px]">
-          <div className="flex flex-col gap-[10px]">
+          <div className="flex flex-col gap-5">
             <ListFilterBar
               sortOptions={PROBLEM_SORT_OPTIONS}
               selectedSort={sort}
@@ -157,7 +157,7 @@ function ProblemListView() {
             />
 
             <CategoryTabs
-              size="sm"
+              size="lg"
               items={PROBLEM_MAIN_CATEGORY_TABS}
               activeValue={mainCategory}
               onChange={handleMainCategoryChange}
