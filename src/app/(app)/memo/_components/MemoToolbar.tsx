@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 
 import ChevronIcon from '@/assets/icons/common/chevron.svg';
 import CreateIcon from '@/assets/icons/common/create.svg';
 import MemoCheckIcon from '@/assets/icons/memo/check.svg';
 import MemoDeleteIcon from '@/assets/icons/memo/delete.svg';
 import MemoPinIcon from '@/assets/icons/memo/pin.svg';
+import { useSearchHistories } from '@/hooks/useSearchHistories';
 import { cn } from '@/lib/cn';
 
 type MemoFilter = 'all' | 'pinned' | 'deleted';
@@ -29,6 +30,8 @@ const SORT_OPTIONS: Array<{ label: string; value: MemoSortOrder }> = [
   { label: '최신순', value: 'latest' },
   { label: '오래된순', value: 'oldest' },
 ];
+
+const MEMO_SEARCH_HISTORIES = ['면접', '포트폴리오', '일정', 'CSS', 'Next.js'];
 
 function SortIcon({ className }: { className?: string }) {
   return (
@@ -141,6 +144,7 @@ function SortDropdown({
         )}
       >
         <SortIcon className="h-[20px] w-[20px]" />
+
         <ChevronIcon
           className={cn(
             'h-[12px] w-[12px] transition-transform',
@@ -164,15 +168,131 @@ function SortDropdown({
                   setOpen(false);
                 }}
                 className={cn(
-                  'flex h-[32px] w-full items-center px-[12px] text-left text-[13px] font-medium transition-colors',
+                  'flex h-[32px] w-full items-center px-[12px] text-left text-[13px] font-medium transition-colors hover:bg-gray-100',
                   selected ? 'text-secondary-700' : 'text-gray-700',
-                  'hover:bg-gray-100',
                 )}
               >
                 {option.label}
               </button>
             );
           })}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function MemoSearchBox({
+  value,
+  histories,
+  onChange,
+  onSubmit,
+  onHistorySelect,
+}: {
+  value: string;
+  histories: string[];
+  onChange: (value: string) => void;
+  onSubmit: (value: string) => void;
+  onHistorySelect: (value: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!rootRef.current) return;
+      if (rootRef.current.contains(event.target as Node)) return;
+
+      setOpen(false);
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+    };
+  }, [open]);
+
+  const handleSubmit = () => {
+    const normalizedValue = value.trim();
+
+    onSubmit(normalizedValue);
+    setOpen(false);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== 'Enter') return;
+
+    event.preventDefault();
+    handleSubmit();
+  };
+
+  const handleHistoryClick = (history: string) => {
+    onHistorySelect(history);
+    setOpen(false);
+  };
+
+  return (
+    <div ref={rootRef} className="relative">
+      <div
+        className={cn(
+          'flex h-[44px] w-[500px] items-center gap-[10px] rounded-[8px] border px-[14px] text-gray-500 transition-colors',
+          open ? 'border-secondary-700' : 'border-gray-300',
+        )}
+      >
+        <SearchIcon className="h-[18px] w-[18px] shrink-0" />
+
+        <input
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="메모 검색"
+          className="h-full min-w-0 flex-1 bg-transparent text-[14px] font-medium text-gray-800 outline-none placeholder:text-gray-500"
+        />
+
+        <button
+          type="button"
+          aria-label="메모 검색 기록 열기"
+          aria-expanded={open}
+          onClick={() => setOpen((prev) => !prev)}
+          className="hover:text-secondary-700 flex h-[24px] w-[24px] shrink-0 items-center justify-center text-gray-500 transition-colors"
+        >
+          <ChevronIcon
+            className={cn(
+              'h-[12px] w-[12px] transition-transform',
+              open ? '-rotate-90' : 'rotate-90',
+            )}
+            aria-hidden="true"
+          />
+        </button>
+      </div>
+
+      {open ? (
+        <div className="absolute top-[52px] left-0 z-40 w-full overflow-hidden rounded-[10px] border border-gray-300 bg-white py-[8px] shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
+          <div className="px-[14px] pb-[6px] text-[12px] font-medium text-gray-500">
+            최근 검색어
+          </div>
+
+          {histories.length > 0 ? (
+            <div className="max-h-[180px] overflow-y-auto">
+              {histories.map((history) => (
+                <button
+                  key={history}
+                  type="button"
+                  onClick={() => handleHistoryClick(history)}
+                  className="flex h-[34px] w-full items-center px-[14px] text-left text-[13px] font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-950"
+                >
+                  {history}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="flex h-[42px] items-center px-[14px] text-[13px] font-medium text-gray-500">
+              최근 검색어가 없습니다.
+            </div>
+          )}
         </div>
       ) : null}
     </div>
@@ -193,6 +313,31 @@ export function MemoToolbar({
 }: MemoToolbarProps) {
   const isPinnedActive = filter === 'pinned';
   const isDeletedActive = filter === 'deleted';
+
+  const { histories: memoSearchHistories, addHistory: addMemoSearchHistory } = useSearchHistories(
+    'memo',
+    MEMO_SEARCH_HISTORIES,
+  );
+
+  const handleSearchSubmit = (value: string) => {
+    const normalizedValue = value.trim();
+
+    if (normalizedValue) {
+      addMemoSearchHistory(normalizedValue);
+    }
+
+    onChangeSearchValue(normalizedValue);
+  };
+
+  const handleSearchHistorySelect = (value: string) => {
+    const normalizedValue = value.trim();
+
+    if (normalizedValue) {
+      addMemoSearchHistory(normalizedValue);
+    }
+
+    onChangeSearchValue(normalizedValue);
+  };
 
   return (
     <div className="mb-[42px] flex items-center justify-center gap-[12px]">
@@ -225,18 +370,13 @@ export function MemoToolbar({
         <MemoDeleteIcon className="h-[18px] w-[18px]" aria-hidden="true" />
       </ToolbarIconButton>
 
-      <label className="flex h-[44px] w-[500px] items-center gap-[10px] rounded-[8px] border border-gray-300 px-[14px] text-gray-500">
-        <SearchIcon className="h-[18px] w-[18px] shrink-0" />
-
-        <input
-          value={searchValue}
-          onChange={(event) => onChangeSearchValue(event.target.value)}
-          placeholder="메모 검색"
-          className="h-full min-w-0 flex-1 bg-transparent text-[14px] font-medium outline-none placeholder:text-gray-500"
-        />
-
-        <ChevronIcon className="h-[12px] w-[12px] rotate-90" aria-hidden="true" />
-      </label>
+      <MemoSearchBox
+        value={searchValue}
+        histories={memoSearchHistories}
+        onChange={onChangeSearchValue}
+        onSubmit={handleSearchSubmit}
+        onHistorySelect={handleSearchHistorySelect}
+      />
 
       <button
         type="button"

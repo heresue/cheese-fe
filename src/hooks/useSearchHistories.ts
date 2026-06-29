@@ -8,17 +8,23 @@ function getStorageKey(scope: string) {
   return `cheese:search-histories:${scope}`;
 }
 
-function parseHistories(snapshot: string) {
+function parseHistories(snapshot: string, fallbackHistories: readonly string[]) {
   try {
     const parsed = JSON.parse(snapshot);
 
     if (!Array.isArray(parsed)) {
-      return [];
+      return [...fallbackHistories];
     }
 
-    return parsed.filter((item): item is string => typeof item === 'string');
+    const histories = parsed.filter((item): item is string => typeof item === 'string');
+
+    if (histories.length === 0) {
+      return [...fallbackHistories];
+    }
+
+    return histories;
   } catch {
-    return [];
+    return [...fallbackHistories];
   }
 }
 
@@ -66,8 +72,8 @@ export function useSearchHistories(
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const histories = useMemo(() => {
-    return parseHistories(snapshot).slice(0, maxCount);
-  }, [maxCount, snapshot]);
+    return parseHistories(snapshot, defaultHistories).slice(0, maxCount);
+  }, [defaultHistories, maxCount, snapshot]);
 
   const saveHistories = useCallback(
     (nextHistories: string[]) => {
@@ -97,7 +103,14 @@ export function useSearchHistories(
 
   const removeHistory = useCallback(
     (keyword: string) => {
-      saveHistories(histories.filter((history) => history !== keyword));
+      const nextHistories = histories.filter((history) => history !== keyword);
+
+      if (nextHistories.length === 0) {
+        saveHistories([]);
+        return;
+      }
+
+      saveHistories(nextHistories);
     },
     [histories, saveHistories],
   );
