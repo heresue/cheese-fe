@@ -140,8 +140,11 @@ function ProblemListView() {
 
   return (
     <main className="min-h-0">
-      <div ref={scrollAreaRef} className="h-dvh min-h-0 overflow-y-auto overscroll-contain">
-        <section className="mx-auto w-[1100px] max-w-full py-[40px] pb-[100px]">
+      <div
+        ref={scrollAreaRef}
+        className="h-dvh min-h-0 overflow-y-auto overscroll-contain px-10 pt-10"
+      >
+        <section className="mx-auto mb-8 flex w-full max-w-[1100px] flex-col gap-8 pb-[100px]">
           <div className="flex flex-col gap-5">
             <ListFilterBar
               sortOptions={PROBLEM_SORT_OPTIONS}
@@ -157,7 +160,6 @@ function ProblemListView() {
             />
 
             <CategoryTabs
-              size="lg"
               items={PROBLEM_MAIN_CATEGORY_TABS}
               activeValue={mainCategory}
               onChange={handleMainCategoryChange}
@@ -172,9 +174,7 @@ function ProblemListView() {
             )}
           </div>
 
-          <div className="mt-[32px]">
-            <ProblemCardGrid problemSets={visibleProblemSets} />
-          </div>
+          <ProblemCardGrid problemSets={visibleProblemSets} />
 
           {hasMoreProblemSets && (
             <div ref={loadMoreRef} className="flex h-[96px] items-center justify-center">
