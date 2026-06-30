@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 
+import Comment from '../../_components/Comment';
 import PostDetailHeader from '../../_components/PostDetail/PostDetailHeader';
 import {
   PostDetailAside,
@@ -49,6 +50,8 @@ export default async function GroupDetailPage({
 
           <p className="leading-6 whitespace-pre-line">{groupPost.content}</p>
         </article>
+
+        <Comment />
       </section>
 
       <PostDetailAside

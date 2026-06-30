@@ -188,6 +188,7 @@ export const infoComments = [
     author: {
       id: 2,
       nickname: '유옥천',
+      email: 'you@test.com',
       profileImageUrl: '/mock/profile-4.png',
     },
     content: '잘 보고 갑니다',
@@ -197,6 +198,7 @@ export const infoComments = [
     author: {
       id: 3,
       nickname: '바람',
+      email: 'wind@test.com',
       profileImageUrl: '/mock/profile-2.png',
     },
     content: '좋은 글 감사합니다',
@@ -206,6 +208,7 @@ export const infoComments = [
     author: {
       id: 4,
       nickname: '구름',
+      email: 'cloud@test.com',
       profileImageUrl: '/mock/profile-6.png',
     },
     content: '좋아요',
@@ -215,6 +218,7 @@ export const infoComments = [
     author: {
       id: 5,
       nickname: '몽글이',
+      email: 'mongle@test.com',
       profileImageUrl: '/mock/profile-1.png',
     },
     content: '좋네요 수고요',

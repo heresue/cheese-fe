@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 
 import PostDetailHeader from '../../_components/PostDetail/PostDetailHeader';
 import { PostDetailAside, PostDetailAsideProfile } from '../../_components/PostDetailAside';
-import InfoComment from '../_components/InfoComment';
+import Comment from '../../_components/Comment';
 
 import DownloadIcon from '@/assets/icons/common/download.svg';
 
@@ -33,7 +33,7 @@ export default async function InfoDetailPage({ params }: { params: Promise<{ inf
           <p className="leading-6 whitespace-pre-line">{infoPost.content}</p>
         </article>
 
-        <InfoComment />
+        <Comment />
       </section>
 
       <PostDetailAside
