@@ -1,4 +1,5 @@
 export const mockPersonalProfile = {
+  id: 1,
   nickname: '김치즈',
   profileImageUrl: '/mock/profile-3.png',
   interestedJob: 'FE (프론트엔드)',

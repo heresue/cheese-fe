@@ -181,3 +181,42 @@ export const infoPosts: InfoPost[] = [
     isLiked: true,
   },
 ];
+
+export const infoComments = [
+  {
+    id: 1,
+    author: {
+      id: 2,
+      nickname: '유옥천',
+      profileImageUrl: '/mock/profile-4.png',
+    },
+    content: '잘 보고 갑니다',
+  },
+  {
+    id: 2,
+    author: {
+      id: 3,
+      nickname: '바람',
+      profileImageUrl: '/mock/profile-2.png',
+    },
+    content: '좋은 글 감사합니다',
+  },
+  {
+    id: 3,
+    author: {
+      id: 4,
+      nickname: '구름',
+      profileImageUrl: '/mock/profile-6.png',
+    },
+    content: '좋아요',
+  },
+  {
+    id: 4,
+    author: {
+      id: 5,
+      nickname: '몽글이',
+      profileImageUrl: '/mock/profile-1.png',
+    },
+    content: '좋네요 수고요',
+  },
+];
