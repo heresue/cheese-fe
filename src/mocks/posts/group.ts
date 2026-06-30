@@ -1,4 +1,6 @@
-import { GroupPost } from '@/components/community/groups/types';
+import type { GroupPost } from '@/components/community/groups/types';
+
+import { getMockUser } from '@/mocks/profile/users';
 
 export const groupPosts: GroupPost[] = [
   {
@@ -16,12 +18,7 @@ export const groupPosts: GroupPost[] = [
 
     applicantCount: 6,
 
-    author: {
-      id: 1,
-      nickname: '한창우',
-      profileImageUrl: '',
-      email: 'changwoo@example.com',
-    },
+    author: getMockUser(11),
 
     deadline: '2026-02-10',
     createdAt: '2026-01-28',
@@ -54,12 +51,7 @@ export const groupPosts: GroupPost[] = [
 
     applicantCount: 4,
 
-    author: {
-      id: 2,
-      nickname: '김민준',
-      profileImageUrl: '/mock/profile-2.png',
-      email: 'minjun@example.com',
-    },
+    author: getMockUser(12),
 
     deadline: null,
     createdAt: '2026-01-30',
@@ -92,12 +84,7 @@ export const groupPosts: GroupPost[] = [
 
     applicantCount: 3,
 
-    author: {
-      id: 3,
-      nickname: '박서연',
-      profileImageUrl: '/mock/profile-3.png',
-      email: 'seoyeon@example.com',
-    },
+    author: getMockUser(13),
 
     deadline: '2026-02-15',
     createdAt: '2026-02-01',
@@ -130,12 +117,7 @@ export const groupPosts: GroupPost[] = [
 
     applicantCount: 7,
 
-    author: {
-      id: 4,
-      nickname: '이도현',
-      profileImageUrl: '/mock/profile-4.png',
-      email: 'dohyeon@example.com',
-    },
+    author: getMockUser(14),
 
     deadline: '2026-02-20',
     createdAt: '2026-02-03',
@@ -168,12 +150,7 @@ export const groupPosts: GroupPost[] = [
 
     applicantCount: 5,
 
-    author: {
-      id: 5,
-      nickname: '최지우',
-      profileImageUrl: '/mock/profile-5.png',
-      email: 'jiwoo@example.com',
-    },
+    author: getMockUser(15),
 
     deadline: null,
     createdAt: '2026-02-05',
@@ -206,12 +183,7 @@ export const groupPosts: GroupPost[] = [
 
     applicantCount: 9,
 
-    author: {
-      id: 6,
-      nickname: '정우성',
-      profileImageUrl: '/mock/profile-6.png',
-      email: 'woosung@example.com',
-    },
+    author: getMockUser(16),
 
     deadline: '2026-02-28',
     createdAt: '2026-02-07',

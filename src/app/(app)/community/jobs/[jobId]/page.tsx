@@ -68,7 +68,11 @@ export default async function JobDetailPage({ params }: { params: Promise<{ jobI
 
       <PostDetailAside
         profile={
-          <PostDetailAsideProfile nickname={jobPost.author.nickname} email={jobPost.author.email} />
+          <PostDetailAsideProfile
+            nickname={jobPost.author.nickname}
+            email={jobPost.author.email}
+            profileImageUrl={jobPost.author.profileImageUrl}
+          />
         }
         actions={
           <div className="flex w-full flex-col gap-5 px-3 py-5">

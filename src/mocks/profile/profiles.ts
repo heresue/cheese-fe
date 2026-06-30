@@ -34,7 +34,7 @@ export const mockCompanyProfile = {
 
 export const mockAccountSettings = {
   contact: '이메일/오픈카카오톡',
-  email: 'test@test.com',
+  email: 'cheese@test.com',
   passwordUpdatedAt: '2026-01-30',
   address: '서울특별시',
 };

@@ -1,4 +1,6 @@
-import { JobPost } from '@/components/community/jobs/types';
+import type { JobPost } from '@/components/community/jobs/types';
+
+import { getMockUser } from '@/mocks/profile/users';
 
 export const jobPosts: JobPost[] = [
   {
@@ -7,12 +9,7 @@ export const jobPosts: JobPost[] = [
     title: '2026년 스타트업 인턴 부문 경력직 채용',
     applicantCount: 5,
 
-    author: {
-      id: 1,
-      nickname: '토리',
-      email: 'cheese@test.com',
-      profileImageUrl: '/mock/profile-3.png',
-    },
+    author: getMockUser(3),
 
     skills: ['React', 'TypeScript', 'Next.js'],
     career: '신입, 경력',
@@ -61,12 +58,7 @@ export const jobPosts: JobPost[] = [
     title: '프론트엔드 개발자 정규직 채용',
     applicantCount: 125,
 
-    author: {
-      id: 2,
-      nickname: '보리',
-      email: 'frontend@test.com',
-      profileImageUrl: '/mock/profile-1.png',
-    },
+    author: getMockUser(18),
 
     skills: ['JavaScript', 'React', 'Tailwind CSS'],
     career: '경력 1년 ↑',
@@ -112,12 +104,7 @@ export const jobPosts: JobPost[] = [
     title: 'Spring Boot 기반 백엔드 개발자 모집',
     applicantCount: 56,
 
-    author: {
-      id: 3,
-      nickname: '지훈',
-      email: 'backend@test.com',
-      profileImageUrl: '/mock/profile-2.png',
-    },
+    author: getMockUser(5),
 
     skills: ['Java', 'Spring Boot', 'MySQL'],
     career: '경력 2년 ↑',
@@ -164,12 +151,7 @@ export const jobPosts: JobPost[] = [
     title: 'UI/UX 중심 프론트엔드 개발자 채용',
     applicantCount: 2,
 
-    author: {
-      id: 4,
-      nickname: '도윤',
-      email: 'design@test.com',
-      profileImageUrl: '',
-    },
+    author: getMockUser(21),
 
     skills: ['Figma', 'React', 'CSS'],
     career: '신입',
@@ -215,12 +197,7 @@ export const jobPosts: JobPost[] = [
     title: 'Next.js 기반 웹 서비스 개발자 채용',
     applicantCount: 56,
 
-    author: {
-      id: 5,
-      nickname: '지민',
-      email: 'react@test.com',
-      profileImageUrl: '/mock/profile-4.png',
-    },
+    author: getMockUser(7),
 
     skills: ['Next.js', 'TypeScript', 'React Query'],
     career: '경력 3년 ↑',
@@ -267,12 +244,7 @@ export const jobPosts: JobPost[] = [
     title: '클라우드 기반 백엔드 개발자 채용 (AWS)',
     applicantCount: 33,
 
-    author: {
-      id: 6,
-      nickname: '초보개발자',
-      email: 'cloud@test.com',
-      profileImageUrl: '/mock/profile-5.png',
-    },
+    author: getMockUser(22),
 
     skills: ['Node.js', 'AWS', 'Docker'],
     career: '경력 2년 ↑',

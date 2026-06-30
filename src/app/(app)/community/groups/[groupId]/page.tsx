@@ -59,6 +59,7 @@ export default async function GroupDetailPage({
           <PostDetailAsideProfile
             nickname={groupPost.author.nickname}
             email={groupPost.author.email}
+            profileImageUrl={groupPost.author.profileImageUrl}
           />
         }
         actions={

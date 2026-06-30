@@ -1,16 +1,12 @@
-import { InfoPost } from '@/components/community/info/types';
+import type { Comment } from '@/app/(app)/community/_components/Comment/types';
+import type { InfoPost } from '@/components/community/info/types';
+
+import { getMockUser } from '@/mocks/profile/users';
 
 export const infoPosts: InfoPost[] = [
   {
     id: 1,
-
-    author: {
-      id: 1,
-      nickname: '김치즈',
-      email: 'cheese@test.com',
-      profileImageUrl: '/mock/profile-3.png',
-    },
-
+    author: getMockUser(1),
     createdAt: '2026-02-01',
 
     thumbnailUrl: '/mock/info-1.jpg',
@@ -35,14 +31,7 @@ export const infoPosts: InfoPost[] = [
 
   {
     id: 2,
-
-    author: {
-      id: 2,
-      nickname: '감자칩',
-      email: 'frontend@test.com',
-      profileImageUrl: '/mock/profile-1.png',
-    },
-
+    author: getMockUser(6),
     createdAt: '2026-02-02',
 
     thumbnailUrl: '/mock/info-2.jpg',
@@ -64,14 +53,7 @@ export const infoPosts: InfoPost[] = [
 
   {
     id: 3,
-
-    author: {
-      id: 3,
-      nickname: '하늘',
-      email: 'backend@test.com',
-      profileImageUrl: '/mock/profile-2.png',
-    },
-
+    author: getMockUser(7),
     createdAt: '2026-02-03',
 
     thumbnailUrl: '/mock/info-3.jpg',
@@ -93,14 +75,7 @@ export const infoPosts: InfoPost[] = [
 
   {
     id: 4,
-
-    author: {
-      id: 4,
-      nickname: '몽글이',
-      email: 'design@test.com',
-      profileImageUrl: '',
-    },
-
+    author: getMockUser(5),
     createdAt: '2026-02-04',
 
     thumbnailUrl: '/mock/info-4.jpg',
@@ -122,14 +97,7 @@ export const infoPosts: InfoPost[] = [
 
   {
     id: 5,
-
-    author: {
-      id: 5,
-      nickname: '유진',
-      email: 'react@test.com',
-      profileImageUrl: '/mock/profile-4.png',
-    },
-
+    author: getMockUser(8),
     createdAt: '2026-02-05',
 
     thumbnailUrl: '/mock/info-5.jpg',
@@ -151,14 +119,7 @@ export const infoPosts: InfoPost[] = [
 
   {
     id: 6,
-
-    author: {
-      id: 6,
-      nickname: '치즈냥',
-      email: 'cloud@test.com',
-      profileImageUrl: '/mock/profile-5.png',
-    },
-
+    author: getMockUser(9),
     createdAt: '2026-02-06',
 
     thumbnailUrl: '/mock/info-6.jpg',
@@ -182,45 +143,36 @@ export const infoPosts: InfoPost[] = [
   },
 ];
 
-export const infoComments = [
+export const infoComments: Comment[] = [
   {
     id: 1,
-    author: {
-      id: 2,
-      nickname: '유옥천',
-      email: 'you@test.com',
-      profileImageUrl: '/mock/profile-4.png',
-    },
+    author: getMockUser(2),
     content: '잘 보고 갑니다',
   },
   {
     id: 2,
-    author: {
-      id: 3,
-      nickname: '바람',
-      email: 'wind@test.com',
-      profileImageUrl: '/mock/profile-2.png',
-    },
+    author: getMockUser(3),
     content: '좋은 글 감사합니다',
   },
   {
     id: 3,
-    author: {
-      id: 4,
-      nickname: '구름',
-      email: 'cloud@test.com',
-      profileImageUrl: '/mock/profile-6.png',
-    },
+    author: getMockUser(4),
     content: '좋아요',
   },
   {
     id: 4,
-    author: {
-      id: 5,
-      nickname: '몽글이',
-      email: 'mongle@test.com',
-      profileImageUrl: '/mock/profile-1.png',
-    },
+    author: getMockUser(5),
     content: '좋네요 수고요',
+  },
+  {
+    id: 5,
+    author: getMockUser(10),
+    content:
+      '좋은 글 감사합니다!\n\n실제 프로젝트를 진행하면서 비슷한 고민을 많이 했는데, 정리해주신 내용이 정말 도움이 됐어요. 특히 예시를 함께 설명해주셔서 이해하기 쉬웠습니다. 다음에도 좋은 글 기대하겠습니다 😊',
+  },
+  {
+    id: 6,
+    author: getMockUser(1),
+    content: '감사합니다 ^^',
   },
 ];
