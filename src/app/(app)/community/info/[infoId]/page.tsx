@@ -36,16 +36,7 @@ export default async function InfoDetailPage({ params }: { params: Promise<{ inf
         <Comment />
       </section>
 
-      <PostDetailAside
-        profile={
-          <PostDetailAsideProfile
-            nickname={infoPost.author.nickname}
-            email={infoPost.author.email}
-            profileImageUrl={infoPost.author.profileImageUrl}
-            buttonText="프로필 보기"
-          />
-        }
-      >
+      <PostDetailAside profile={<PostDetailAsideProfile author={infoPost.author} />}>
         {infoPost.attachmentUrl ? (
           <div className="flex w-full flex-col gap-1 border-t border-gray-300 px-3 py-10 text-[14px] leading-6 text-gray-600">
             <div className="font-medium">첨부파일</div>

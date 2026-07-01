@@ -1,7 +1,7 @@
 import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/common/Button';
-import { DocumentLinkItem } from '@/components/common/DocumentLinkItem';
+import { DocumentLinkItem } from '@/components/common/DocumentLink';
 
 import ShareIcon from '@/assets/icons/common/contact.svg';
 import EditIcon from '@/assets/icons/common/edit.svg';

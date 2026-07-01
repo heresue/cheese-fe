@@ -55,13 +55,7 @@ export default async function GroupDetailPage({
       </section>
 
       <PostDetailAside
-        profile={
-          <PostDetailAsideProfile
-            nickname={groupPost.author.nickname}
-            email={groupPost.author.email}
-            profileImageUrl={groupPost.author.profileImageUrl}
-          />
-        }
+        profile={<PostDetailAsideProfile author={groupPost.author} />}
         actions={
           <div className="flex w-full flex-col gap-5 px-3 py-5">
             <PostDetailAsideInfoItem label="지원자수" value={`${groupPost.applicantCount}명`} />

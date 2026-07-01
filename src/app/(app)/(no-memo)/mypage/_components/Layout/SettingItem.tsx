@@ -1,5 +1,5 @@
 import { Button } from '@/components/common/Button';
-import SettingDocumentValue from './SettingDocumentValue';
+import { DocumentLinkItemList } from '@/components/common/DocumentLink';
 
 import type { ProfileDocument } from '@/types/profile';
 
@@ -36,7 +36,7 @@ export default function SettingItem({
         <div className="text-[14px] leading-[30px] text-gray-700">
           <h3 className="font-bold">{label}</h3>
 
-          {document ? <SettingDocumentValue document={document} /> : <span>{value}</span>}
+          {document ? <DocumentLinkItemList document={document} /> : <span>{value}</span>}
         </div>
       </div>
 

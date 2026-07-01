@@ -67,13 +67,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ jobI
       </section>
 
       <PostDetailAside
-        profile={
-          <PostDetailAsideProfile
-            nickname={jobPost.author.nickname}
-            email={jobPost.author.email}
-            profileImageUrl={jobPost.author.profileImageUrl}
-          />
-        }
+        profile={<PostDetailAsideProfile author={jobPost.author} />}
         actions={
           <div className="flex w-full flex-col gap-5 px-3 py-5">
             <PostDetailAsideInfoItem label="지원자수" value={`${jobPost.applicantCount}명`} />
