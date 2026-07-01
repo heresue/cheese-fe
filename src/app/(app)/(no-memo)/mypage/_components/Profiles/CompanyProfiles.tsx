@@ -2,7 +2,13 @@ import SettingItem from '../Layout/SettingItem';
 
 import { getCompanyProfileItems } from './profile.data';
 
-import type { CompanyProfilesProps } from './types';
+import type { CompanyProfile } from '@/types/profile';
+import type { MypageModalItem } from '../Modal/types';
+
+export type CompanyProfilesProps = {
+  profile: CompanyProfile;
+  onOpenModal: (item: MypageModalItem) => void;
+};
 
 export default function CompanyProfiles({ profile, onOpenModal }: CompanyProfilesProps) {
   const profileItems = getCompanyProfileItems(profile);

@@ -5,7 +5,7 @@ import { cn } from '@/lib/cn';
 import FileIcon from '@/assets/icons/common/file.svg';
 import LinkIcon from '@/assets/icons/common/link.svg';
 
-import type { ProfileDocument } from '../Profiles/types';
+import type { ProfileDocument } from '@/types/profile';
 
 type SettingDocumentValueProps = {
   document: ProfileDocument;

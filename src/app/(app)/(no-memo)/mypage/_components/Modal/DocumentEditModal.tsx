@@ -8,7 +8,7 @@ import MypageModalLayout from './MypageModalLayout';
 
 import PlusIcon from '@/assets/icons/common/plus.svg';
 
-import type { ProfileDocument } from '../Profiles/types';
+import type { ProfileDocument } from '@/types/profile';
 
 type DocumentEditModalProps = {
   title: string;

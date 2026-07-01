@@ -5,10 +5,10 @@ import Link from 'next/link';
 import JobApplyAction from '@/components/community/jobs/JobApplyAction';
 import { formatDeadline } from '@/lib/formatDeadline';
 
-import type { JobPost } from './types';
-
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
+
+import type { JobPost } from '@/types/community';
 
 type JobPostCardProps = {
   post: JobPost;

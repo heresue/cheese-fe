@@ -9,7 +9,7 @@ import ApplyModal from '../_components/ApplyModal/ApplyModal';
 import { useLikeToggle } from '@/hooks/useLikeToggle';
 import { getDeadlineTime } from '@/lib/formatDeadline';
 
-import type { JobPost } from '@/components/community/jobs/types';
+import type { JobPost } from '@/types/community';
 
 import { jobPosts as JOB_POSTS } from '@/mocks/posts';
 

@@ -1,7 +1,8 @@
 import { Button } from '@/components/common/Button';
 
-import { ApplyInfo } from './types';
 import { APPLY_LABEL } from './constants';
+
+import type { ApplyInfo } from '@/types/community';
 
 export default function JobApplyAction({
   apply,

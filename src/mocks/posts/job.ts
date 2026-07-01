@@ -1,6 +1,6 @@
-import type { JobPost } from '@/components/community/jobs/types';
+import type { JobPost } from '@/types/community';
 
-import { getMockUser } from '@/mocks/profile/users';
+import { getMockUserSummary } from '@/mocks/profile/userSummaries';
 
 export const jobPosts: JobPost[] = [
   {
@@ -9,7 +9,7 @@ export const jobPosts: JobPost[] = [
     title: '2026년 스타트업 인턴 부문 경력직 채용',
     applicantCount: 5,
 
-    author: getMockUser(3),
+    author: getMockUserSummary(3, 'personal'),
 
     skills: ['React', 'TypeScript', 'Next.js'],
     career: '신입, 경력',
@@ -58,7 +58,7 @@ export const jobPosts: JobPost[] = [
     title: '프론트엔드 개발자 정규직 채용',
     applicantCount: 125,
 
-    author: getMockUser(18),
+    author: getMockUserSummary(18, 'company'),
 
     skills: ['JavaScript', 'React', 'Tailwind CSS'],
     career: '경력 1년 ↑',
@@ -104,7 +104,7 @@ export const jobPosts: JobPost[] = [
     title: 'Spring Boot 기반 백엔드 개발자 모집',
     applicantCount: 56,
 
-    author: getMockUser(5),
+    author: getMockUserSummary(5, 'personal'),
 
     skills: ['Java', 'Spring Boot', 'MySQL'],
     career: '경력 2년 ↑',
@@ -151,7 +151,7 @@ export const jobPosts: JobPost[] = [
     title: 'UI/UX 중심 프론트엔드 개발자 채용',
     applicantCount: 2,
 
-    author: getMockUser(21),
+    author: getMockUserSummary(21, 'company'),
 
     skills: ['Figma', 'React', 'CSS'],
     career: '신입',
@@ -197,7 +197,7 @@ export const jobPosts: JobPost[] = [
     title: 'Next.js 기반 웹 서비스 개발자 채용',
     applicantCount: 56,
 
-    author: getMockUser(7),
+    author: getMockUserSummary(7, 'personal'),
 
     skills: ['Next.js', 'TypeScript', 'React Query'],
     career: '경력 3년 ↑',
@@ -244,7 +244,7 @@ export const jobPosts: JobPost[] = [
     title: '클라우드 기반 백엔드 개발자 채용 (AWS)',
     applicantCount: 33,
 
-    author: getMockUser(22),
+    author: getMockUserSummary(22, 'personal'),
 
     skills: ['Node.js', 'AWS', 'Docker'],
     career: '경력 2년 ↑',

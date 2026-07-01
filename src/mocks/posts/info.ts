@@ -1,12 +1,12 @@
 import type { Comment } from '@/app/(app)/community/_components/Comment/types';
-import type { InfoPost } from '@/components/community/info/types';
+import type { InfoPost } from '@/types/community';
 
-import { getMockUser } from '@/mocks/profile/users';
+import { getMockUserSummary } from '@/mocks/profile/userSummaries';
 
 export const infoPosts: InfoPost[] = [
   {
     id: 1,
-    author: getMockUser(1),
+    author: getMockUserSummary(1, 'personal'),
     createdAt: '2026-02-01',
 
     thumbnailUrl: '/mock/info-1.jpg',
@@ -31,7 +31,7 @@ export const infoPosts: InfoPost[] = [
 
   {
     id: 2,
-    author: getMockUser(6),
+    author: getMockUserSummary(6, 'company'),
     createdAt: '2026-02-02',
 
     thumbnailUrl: '/mock/info-2.jpg',
@@ -53,7 +53,7 @@ export const infoPosts: InfoPost[] = [
 
   {
     id: 3,
-    author: getMockUser(7),
+    author: getMockUserSummary(7, 'personal'),
     createdAt: '2026-02-03',
 
     thumbnailUrl: '/mock/info-3.jpg',
@@ -75,7 +75,7 @@ export const infoPosts: InfoPost[] = [
 
   {
     id: 4,
-    author: getMockUser(5),
+    author: getMockUserSummary(5, 'personal'),
     createdAt: '2026-02-04',
 
     thumbnailUrl: '/mock/info-4.jpg',
@@ -97,7 +97,7 @@ export const infoPosts: InfoPost[] = [
 
   {
     id: 5,
-    author: getMockUser(8),
+    author: getMockUserSummary(8, 'personal'),
     createdAt: '2026-02-05',
 
     thumbnailUrl: '/mock/info-5.jpg',
@@ -119,7 +119,7 @@ export const infoPosts: InfoPost[] = [
 
   {
     id: 6,
-    author: getMockUser(9),
+    author: getMockUserSummary(9, 'company'),
     createdAt: '2026-02-06',
 
     thumbnailUrl: '/mock/info-6.jpg',
@@ -146,33 +146,33 @@ export const infoPosts: InfoPost[] = [
 export const infoComments: Comment[] = [
   {
     id: 1,
-    author: getMockUser(2),
+    author: getMockUserSummary(2, 'company'),
     content: '잘 보고 갑니다',
   },
   {
     id: 2,
-    author: getMockUser(3),
+    author: getMockUserSummary(3, 'personal'),
     content: '좋은 글 감사합니다',
   },
   {
     id: 3,
-    author: getMockUser(4),
+    author: getMockUserSummary(4, 'company'),
     content: '좋아요',
   },
   {
     id: 4,
-    author: getMockUser(5),
+    author: getMockUserSummary(5, 'personal'),
     content: '좋네요 수고요',
   },
   {
     id: 5,
-    author: getMockUser(10),
+    author: getMockUserSummary(10, 'company'),
     content:
       '좋은 글 감사합니다!\n\n실제 프로젝트를 진행하면서 비슷한 고민을 많이 했는데, 정리해주신 내용이 정말 도움이 됐어요. 특히 예시를 함께 설명해주셔서 이해하기 쉬웠습니다. 다음에도 좋은 글 기대하겠습니다 😊',
   },
   {
     id: 6,
-    author: getMockUser(1),
+    author: getMockUserSummary(1, 'personal'),
     content: '감사합니다 ^^',
   },
 ];

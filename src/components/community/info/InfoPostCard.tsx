@@ -8,7 +8,7 @@ import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 import CommentIcon from '@/assets/icons/common/comment.svg';
 
-import type { InfoPost } from '@/components/community/info/types';
+import type { InfoPost } from '@/types/community';
 
 type InfoPostCardProps = {
   post: InfoPost;

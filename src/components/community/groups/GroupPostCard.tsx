@@ -4,12 +4,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 import { Chip } from '@/components/common/Chip';
-import { GroupPost } from '@/components/community/groups/types';
 
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 import CommentIcon from '@/assets/icons/common/comment.svg';
 import { formatDeadline } from '@/lib/formatDeadline';
+
+import type { GroupPost } from '@/types/community';
 
 type GroupPostCardProps = {
   post: GroupPost;

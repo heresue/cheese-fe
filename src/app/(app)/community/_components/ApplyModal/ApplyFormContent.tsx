@@ -8,8 +8,7 @@ import EditIcon from '@/assets/icons/common/edit.svg';
 import FileIcon from '@/assets/icons/common/file.svg';
 import LinkIcon from '@/assets/icons/common/link.svg';
 
-import type { JobPost } from '@/components/community/jobs/types';
-import type { GroupPost } from '@/components/community/groups/types';
+import type { JobPost, GroupPost } from '@/types/community';
 
 import { mockAccountSettings, mockPersonalProfile } from '@/mocks/profile/profiles';
 
@@ -27,12 +26,12 @@ export default function ApplyFormContent({ post, onClose, onApply }: ApplyFormCo
 
   const documentLinks = [
     {
-      href: personalProfile.resume.fileUrl,
-      label: personalProfile.resume.fileName,
+      href: personalProfile.additionalDocument.fileUrl,
+      label: personalProfile.additionalDocument.fileName,
       icon: <FileIcon className="h-3" />,
     },
     {
-      href: personalProfile.resume.url,
+      href: personalProfile.additionalDocument.url,
       label: `${personalProfile.nickname}의 이력서 URL`,
       icon: <LinkIcon className="h-[6px]" />,
     },

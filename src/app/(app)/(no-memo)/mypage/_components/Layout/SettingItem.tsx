@@ -1,7 +1,7 @@
 import { Button } from '@/components/common/Button';
 import SettingDocumentValue from './SettingDocumentValue';
 
-import type { ProfileDocument } from '../Profiles/types';
+import type { ProfileDocument } from '@/types/profile';
 
 type SettingItemProps = {
   label: string;

@@ -1,8 +1,19 @@
+import type { MypageModalItem } from '..//Modal/types';
 import SettingItem from '../Layout/SettingItem';
 
 import { getAccountItems } from './profile.data';
 
-import type { AccountSettingsProps } from './types';
+export type AccountSettings = {
+  contact: string;
+  email: string;
+  passwordUpdatedAt: string;
+  address: string;
+};
+
+type AccountSettingsProps = {
+  profile: AccountSettings;
+  onOpenModal: (item: MypageModalItem) => void;
+};
 
 export default function AccountSettings({ profile, onOpenModal }: AccountSettingsProps) {
   const accountItems = getAccountItems(profile);

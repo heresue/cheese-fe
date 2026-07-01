@@ -5,8 +5,9 @@ import { useEffect, useRef, useState } from 'react';
 import CommentForm from './CommentForm';
 import CommentItem from './CommentItem';
 
-import { mockAccountSettings, mockPersonalProfile } from '@/mocks/profile/profiles';
+import { mockPersonalProfile } from '@/mocks/profile/profiles';
 import { infoComments } from '@/mocks/posts';
+import { getMockUserSummary } from '@/mocks/profile/userSummaries';
 
 export default function Comment() {
   const [openCommentId, setOpenCommentId] = useState<number | null>(null);
@@ -26,12 +27,8 @@ export default function Comment() {
       ...prev,
       {
         id: Date.now(),
-        author: {
-          id: mockPersonalProfile.id,
-          nickname: mockPersonalProfile.nickname,
-          email: mockAccountSettings.email,
-          profileImageUrl: mockPersonalProfile.profileImageUrl,
-        },
+        // TODO: 현재 로그인한 프로필 모드(personal/company)에 따라 작성자 정보 설정
+        author: getMockUserSummary(1, 'personal'),
         content: trimmedComment,
       },
     ]);

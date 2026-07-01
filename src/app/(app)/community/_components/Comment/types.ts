@@ -1,8 +1,8 @@
-import { Author } from '@/components/community/types';
+import { UserSummary } from '@/types/community';
 
 export type Comment = {
   id: number;
-  author: Author;
+  author: UserSummary;
   content: string;
 };
 

@@ -1,6 +1,6 @@
-import type { GroupPost } from '@/components/community/groups/types';
+import type { GroupPost } from '@/types/community';
 
-import { getMockUser } from '@/mocks/profile/users';
+import { getMockUserSummary } from '@/mocks/profile/userSummaries';
 
 export const groupPosts: GroupPost[] = [
   {
@@ -18,7 +18,7 @@ export const groupPosts: GroupPost[] = [
 
     applicantCount: 6,
 
-    author: getMockUser(11),
+    author: getMockUserSummary(11, 'personal'),
 
     deadline: '2026-02-10',
     createdAt: '2026-01-28',
@@ -51,7 +51,7 @@ export const groupPosts: GroupPost[] = [
 
     applicantCount: 4,
 
-    author: getMockUser(12),
+    author: getMockUserSummary(12, 'personal'),
 
     deadline: null,
     createdAt: '2026-01-30',
@@ -84,7 +84,7 @@ export const groupPosts: GroupPost[] = [
 
     applicantCount: 3,
 
-    author: getMockUser(13),
+    author: getMockUserSummary(13, 'company'),
 
     deadline: '2026-02-15',
     createdAt: '2026-02-01',
@@ -117,7 +117,7 @@ export const groupPosts: GroupPost[] = [
 
     applicantCount: 7,
 
-    author: getMockUser(14),
+    author: getMockUserSummary(14, 'personal'),
 
     deadline: '2026-02-20',
     createdAt: '2026-02-03',
@@ -150,7 +150,7 @@ export const groupPosts: GroupPost[] = [
 
     applicantCount: 5,
 
-    author: getMockUser(15),
+    author: getMockUserSummary(15, 'company'),
 
     deadline: null,
     createdAt: '2026-02-05',
@@ -183,7 +183,7 @@ export const groupPosts: GroupPost[] = [
 
     applicantCount: 9,
 
-    author: getMockUser(16),
+    author: getMockUserSummary(16, 'personal'),
 
     deadline: '2026-02-28',
     createdAt: '2026-02-07',

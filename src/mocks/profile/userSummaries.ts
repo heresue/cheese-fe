@@ -1,24 +1,32 @@
-import type { Author } from '@/components/community/types';
+import type { UserSummary } from '@/types/community';
 
-export function getMockUser(id: number) {
-  const user = mockUsers.find((user) => user.id === id);
+export function getMockUserSummary(id: number, type: UserSummary['type']) {
+  const user = mockUserSummaries.find((user) => user.id === id && user.type === type);
 
   if (!user) {
-    throw new Error(`Mock user(${id})를 찾을 수 없습니다.`);
+    throw new Error(`Mock user(${id}, ${type})를 찾을 수 없습니다.`);
   }
 
   return user;
 }
 
-export const mockUsers: Author[] = [
+export const mockUserSummaries: UserSummary[] = [
+  // 로그인 계정 (개인모드 & 기업모드)
   {
-    // 로그인 계정 (김치즈)
     id: 1,
     type: 'personal',
     nickname: '김치즈',
     email: 'cheese@test.com',
     profileImageUrl: '/mock/profile-3.png',
   },
+  {
+    id: 1,
+    type: 'company',
+    nickname: '치즈공장',
+    email: 'cheese@test.com',
+    profileImageUrl: '/mock/profile-6.png',
+  },
+
   {
     id: 2,
     type: 'company',
