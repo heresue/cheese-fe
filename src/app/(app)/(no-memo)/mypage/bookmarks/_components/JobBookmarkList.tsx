@@ -1,18 +1,19 @@
-'use client';
-
 import JobPostCard from '@/components/community/jobs/JobPostCard';
+
+import { useBookmarkedPosts } from '../hooks/useBookmarkedPosts';
 
 import { jobPosts } from '@/mocks/posts';
 
 export default function JobBookmarkList() {
-  const likedPosts = jobPosts?.filter((post) => post.isLiked);
+  const { bookmarkedPosts: bookmarkedJobPosts, toggleLike } = useBookmarkedPosts(jobPosts);
 
   return (
     <>
-      {likedPosts?.map((post) => (
+      {bookmarkedJobPosts?.map((post) => (
         <JobPostCard
           key={post.id}
           post={post}
+          onToggleLike={toggleLike}
           onDirectApply={() => {
             // 모달 열기
           }}
