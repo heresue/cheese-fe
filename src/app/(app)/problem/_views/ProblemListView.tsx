@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { CategoryTabs } from '@/components/common/CategoryTabs';
 import { ListFilterBar } from '@/components/common/ListFilterBar';
+import { useSearchHistories } from '@/hooks/useSearchHistories';
 
 import ProblemCardGrid from '../_components/ProblemCardGrid';
 import ProblemSubCategoryTabs from '../_components/ProblemSubCategoryTabs';
@@ -20,7 +21,7 @@ const PAGE_SIZE = 12;
 
 const PROBLEM_SEARCH_HISTORIES = ['CSS', 'Next.js', 'cursor', '표준모드', '라우팅'] as const;
 
-export default function ProblemListView() {
+function ProblemListView() {
   const [sort, setSort] = useState<ProblemSortValue>('latest');
   const [keyword, setKeyword] = useState('');
   const [mainCategory, setMainCategory] = useState<ProblemMainCategory>('all');
@@ -29,6 +30,9 @@ export default function ProblemListView() {
 
   const scrollAreaRef = useRef<HTMLDivElement | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  const { histories: problemSearchHistories, addHistory: addProblemSearchHistory } =
+    useSearchHistories('problem', PROBLEM_SEARCH_HISTORIES);
 
   const subCategoryItems = PROBLEM_SUB_CATEGORY_TABS[mainCategory] ?? [];
 
@@ -65,7 +69,13 @@ export default function ProblemListView() {
   };
 
   const handleSearchSubmit = (value: string) => {
-    setKeyword(value);
+    const normalizedValue = value.trim();
+
+    if (normalizedValue) {
+      addProblemSearchHistory(normalizedValue);
+    }
+
+    setKeyword(normalizedValue);
     resetVisibleProblemSets();
   };
 
@@ -75,7 +85,13 @@ export default function ProblemListView() {
   };
 
   const handleSearchHistorySelect = (value: string) => {
-    setKeyword(value);
+    const normalizedValue = value.trim();
+
+    if (normalizedValue) {
+      addProblemSearchHistory(normalizedValue);
+    }
+
+    setKeyword(normalizedValue);
     resetVisibleProblemSets();
   };
 
@@ -124,15 +140,18 @@ export default function ProblemListView() {
 
   return (
     <main className="min-h-0">
-      <div ref={scrollAreaRef} className="h-dvh min-h-0 overflow-y-auto overscroll-contain">
-        <section className="mx-auto w-[1100px] max-w-full py-[40px] pb-[100px]">
-          <div className="flex flex-col gap-[10px]">
+      <div
+        ref={scrollAreaRef}
+        className="h-dvh min-h-0 overflow-y-auto overscroll-contain px-10 pt-10"
+      >
+        <section className="mx-auto mb-8 flex w-full max-w-[1100px] flex-col gap-8 pb-[100px]">
+          <div className="flex flex-col gap-5">
             <ListFilterBar
               sortOptions={PROBLEM_SORT_OPTIONS}
               selectedSort={sort}
               searchValue={keyword}
               searchPlaceholder="검색"
-              searchHistories={PROBLEM_SEARCH_HISTORIES}
+              searchHistories={problemSearchHistories}
               onSortChange={handleSortChange}
               onSearchChange={handleKeywordChange}
               onSearchSubmit={handleSearchSubmit}
@@ -141,7 +160,6 @@ export default function ProblemListView() {
             />
 
             <CategoryTabs
-              size="sm"
               items={PROBLEM_MAIN_CATEGORY_TABS}
               activeValue={mainCategory}
               onChange={handleMainCategoryChange}
@@ -156,9 +174,7 @@ export default function ProblemListView() {
             )}
           </div>
 
-          <div className="mt-[32px]">
-            <ProblemCardGrid problemSets={visibleProblemSets} />
-          </div>
+          <ProblemCardGrid problemSets={visibleProblemSets} />
 
           {hasMoreProblemSets && (
             <div ref={loadMoreRef} className="flex h-[96px] items-center justify-center">
@@ -170,3 +186,6 @@ export default function ProblemListView() {
     </main>
   );
 }
+
+export { ProblemListView };
+export default ProblemListView;

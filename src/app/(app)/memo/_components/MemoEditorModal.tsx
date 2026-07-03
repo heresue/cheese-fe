@@ -203,7 +203,7 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-transparent pt-[150px]"
+      className="absolute inset-0 z-50 flex items-start justify-center bg-transparent pt-[150px]"
       onMouseDown={handleBackdropMouseDown}
     >
       <section className="flex h-[780px] w-[990px] flex-col overflow-hidden rounded-[8px] border border-gray-300 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.18)]">

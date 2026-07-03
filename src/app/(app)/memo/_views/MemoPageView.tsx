@@ -196,7 +196,7 @@ export function MemoPageView() {
   }, [filteredMemos.length, hasMoreMemos]);
 
   return (
-    <main className="flex h-dvh min-h-0 min-w-0 flex-col overflow-hidden bg-white">
+    <main className="relative flex h-dvh min-h-0 min-w-0 flex-col overflow-hidden bg-white">
       <div className="shrink-0 px-[56px] pt-[40px]">
         <MemoToolbar
           filter={filter}
