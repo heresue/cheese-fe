@@ -1,17 +1,17 @@
 import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/common/Button';
-import { DocumentLinkItem } from '@/components/common/DocumentLinkItem';
+import { DocumentLinkItem } from '@/components/common/DocumentLink';
 
 import ShareIcon from '@/assets/icons/common/contact.svg';
 import EditIcon from '@/assets/icons/common/edit.svg';
 import FileIcon from '@/assets/icons/common/file.svg';
 import LinkIcon from '@/assets/icons/common/link.svg';
 
-import type { JobPost } from '@/components/community/jobs/types';
-import type { GroupPost } from '@/components/community/groups/types';
+import type { JobPost, GroupPost } from '@/types/community';
 
-import { mockAccountSettings, mockPersonalProfile } from '@/mocks/profile/profiles';
+import { mockAccountSettings } from '@/mocks/profile/userProfiles';
+import { getMockPersonalProfile } from '@/mocks/profile/userProfiles';
 
 type ApplyFormContentProps = {
   post: JobPost | GroupPost;
@@ -22,17 +22,17 @@ type ApplyFormContentProps = {
 export default function ApplyFormContent({ post, onClose, onApply }: ApplyFormContentProps) {
   const router = useRouter();
 
-  const personalProfile = mockPersonalProfile;
+  const personalProfile = getMockPersonalProfile(1);
   const accountSettings = mockAccountSettings;
 
   const documentLinks = [
     {
-      href: personalProfile.resume.fileUrl,
-      label: personalProfile.resume.fileName,
+      href: personalProfile.additionalDocument.fileUrl,
+      label: personalProfile.additionalDocument.fileName,
       icon: <FileIcon className="h-3" />,
     },
     {
-      href: personalProfile.resume.url,
+      href: personalProfile.additionalDocument.url,
       label: `${personalProfile.nickname}의 이력서 URL`,
       icon: <LinkIcon className="h-[6px]" />,
     },
@@ -46,7 +46,7 @@ export default function ApplyFormContent({ post, onClose, onApply }: ApplyFormCo
       label: `${personalProfile.nickname}의 자기소개서 URL`,
       icon: <LinkIcon className="h-[6px]" />,
     },
-  ].filter((item) => item.href);
+  ].filter((item): item is typeof item & { href: string } => Boolean(item.href));
 
   const handleMoveToMyPage = () => {
     onClose();

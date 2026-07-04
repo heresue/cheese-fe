@@ -1,10 +1,12 @@
 import { notFound } from 'next/navigation';
 
-import PostDetailHeader from '../../_components/PostDetail/PostDetailHeader';
 import { PostDetailAside, PostDetailAsideProfile } from '../../_components/PostDetailAside';
-import InfoComment from '../_components/InfoComment';
+import Comment from '../../_components/Comment';
+import InfoDetailHeader from '../_components/InfoDetailHeader';
 
 import DownloadIcon from '@/assets/icons/common/download.svg';
+
+import { POST_CONTENT_CLASS } from '../../_constants/community';
 
 import { infoPosts } from '@/mocks/posts';
 
@@ -19,33 +21,23 @@ export default async function InfoDetailPage({ params }: { params: Promise<{ inf
   return (
     <div className="mb-[50px] flex items-start gap-5">
       <section className="flex flex-1 flex-col gap-10 px-5">
-        <PostDetailHeader
-          title={infoPost.title}
-          createdAt={infoPost.createdAt}
-          viewCount={infoPost.viewCount}
-        />
+        <InfoDetailHeader infoPost={infoPost} />
 
         <article className="flex flex-col gap-5">
           {infoPost.thumbnailUrl && (
             <img src={infoPost.thumbnailUrl} alt={infoPost.title} className="max-w-[740px]" />
           )}
 
-          <p className="leading-6 whitespace-pre-line">{infoPost.content}</p>
+          <div
+            className={POST_CONTENT_CLASS}
+            dangerouslySetInnerHTML={{ __html: infoPost.content }}
+          />
         </article>
 
-        <InfoComment />
+        <Comment />
       </section>
 
-      <PostDetailAside
-        profile={
-          <PostDetailAsideProfile
-            nickname={infoPost.author.nickname}
-            email={infoPost.author.email}
-            profileImageUrl={infoPost.author.profileImageUrl}
-            buttonText="프로필 보기"
-          />
-        }
-      >
+      <PostDetailAside profile={<PostDetailAsideProfile author={infoPost.author} />}>
         {infoPost.attachmentUrl ? (
           <div className="flex w-full flex-col gap-1 border-t border-gray-300 px-3 py-10 text-[14px] leading-6 text-gray-600">
             <div className="font-medium">첨부파일</div>

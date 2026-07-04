@@ -9,8 +9,7 @@ import ApplyCompleteContent from './ApplyCompleteContent';
 
 import CloseIcon from '@/assets/icons/common/close.svg';
 
-import type { JobPost } from '@/components/community/jobs/types';
-import type { GroupPost } from '@/components/community/groups/types';
+import type { JobPost, GroupPost } from '@/types/community';
 
 export type ApplyModalProps = {
   post: JobPost | GroupPost;

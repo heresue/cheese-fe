@@ -1,4 +1,4 @@
-import { ProfileDocument } from '../Profiles/types';
+import { ProfileDocument } from '@/types/profile';
 
 export type MypageModalType = 'text' | 'document' | 'confirm' | 'select';
 

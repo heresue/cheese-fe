@@ -32,6 +32,7 @@ const variantDisabledClassMap: Record<Exclude<ButtonVariant, 'circle' | 'gray'>,
 const sizeClassMap: Record<ButtonSize, string> = {
   28: 'h-[28px] rounded-[5px] text-[12px]',
   30: 'h-[30px] rounded-[5px] text-[12px]',
+  36: 'h-[36px] rounded-[10px] text-[12px]',
   38: 'h-[38px] rounded-[5px] text-[12px]',
   40: 'h-[40px] rounded-[10px] text-[14px]',
   44: 'h-[44px] rounded-[10px] text-[14px]',

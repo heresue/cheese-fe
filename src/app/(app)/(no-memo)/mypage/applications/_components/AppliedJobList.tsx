@@ -13,7 +13,10 @@ export default function AppliedJobList() {
           key={post.id}
           post={post}
           onDirectApply={() => {
-            // 모달 열기
+            // TODO: 모달 열기
+          }}
+          onToggleLike={() => {
+            // TODO: 마이페이지 지원 내역 좋아요 처리 연동
           }}
         />
       ))}

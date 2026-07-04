@@ -4,12 +4,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 import { Chip } from '@/components/common/Chip';
-import { GroupPost } from '@/components/community/groups/types';
 
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 import CommentIcon from '@/assets/icons/common/comment.svg';
-import { formatDeadline } from '@/lib/formatDeadline';
+import { formatDeadline, isRecruitClosed } from '@/lib/formatDeadline';
+
+import type { GroupPost } from '@/types/community';
+import { cn } from '@/lib/cn';
 
 type GroupPostCardProps = {
   post: GroupPost;
@@ -19,8 +21,15 @@ type GroupPostCardProps = {
 const DEFAULT_PROFILE = '/profile_default.png';
 
 export default function GroupPostCard({ post, onToggleLike }: GroupPostCardProps) {
+  const isClosed = isRecruitClosed(post.deadline);
+
   return (
-    <article className="flex h-[236px] w-full flex-col gap-2 rounded-[9px] border border-gray-300 p-5">
+    <article
+      className={cn(
+        'flex h-[236px] w-full flex-col gap-2 rounded-[9px] border border-gray-300 p-5',
+        isClosed && 'opacity-50',
+      )}
+    >
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <Chip variant={post.field}>{post.field}</Chip>

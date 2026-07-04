@@ -14,11 +14,8 @@ import { useMypageModal } from './_components/Modal/useMypageModal';
 
 import { CompanyIcon, PersonalIcon } from '@/assets/icons/settings';
 
-import {
-  mockAccountSettings,
-  mockCompanyProfile,
-  mockPersonalProfile,
-} from '@/mocks/profile/profiles';
+import { mockAccountSettings } from '@/mocks/profile/userProfiles';
+import { getMockCompanyProfile, getMockPersonalProfile } from '@/mocks/profile/userProfiles';
 
 const MYPAGE_PROFILE_CATEGORY_TABS = [
   {
@@ -42,14 +39,17 @@ export default function MyPage() {
 
   const { editingItem, openModal, closeModal } = useMypageModal();
 
+  const personalProfile = getMockPersonalProfile(1);
+  const companyProfile = getMockCompanyProfile(1);
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between px-3">
         <div className="flex items-center gap-3">
-          <ProfileImage src={mockPersonalProfile.profileImageUrl} />
+          <ProfileImage src={personalProfile.profileImageUrl} />
 
           <div className="flex flex-col text-gray-700">
-            <span className="text-[20px] font-bold">김치즈</span>
+            <span className="text-[20px] font-bold">{personalProfile.nickname}</span>
             <span className="text-[14px]">FE (프론트엔드)</span>
           </div>
         </div>
@@ -69,11 +69,11 @@ export default function MyPage() {
         />
 
         {mypageTabs === 'personal' && (
-          <PersonalProfiles profile={mockPersonalProfile} onOpenModal={openModal} />
+          <PersonalProfiles profile={personalProfile} onOpenModal={openModal} />
         )}
 
         {mypageTabs === 'company' && (
-          <CompanyProfiles profile={mockCompanyProfile} onOpenModal={openModal} />
+          <CompanyProfiles profile={companyProfile} onOpenModal={openModal} />
         )}
 
         <AccountSettings profile={mockAccountSettings} onOpenModal={openModal} />

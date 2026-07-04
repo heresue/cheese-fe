@@ -3,12 +3,15 @@
 import Link from 'next/link';
 
 import JobApplyAction from '@/components/community/jobs/JobApplyAction';
-import { formatDeadline } from '@/lib/formatDeadline';
-
-import type { JobPost } from './types';
+import { formatDeadline, isRecruitClosed } from '@/lib/formatDeadline';
 
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
+
+import type { JobPost } from '@/types/community';
+import { getOptionLabel } from '@/lib/getOptionLabel';
+import { EDUCATION_OPTIONS, EMPLOYMENT_TYPE_OPTIONS } from '@/constants/profileOptions';
+import { cn } from '@/lib/cn';
 
 type JobPostCardProps = {
   post: JobPost;
@@ -17,31 +20,22 @@ type JobPostCardProps = {
 };
 
 export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPostCardProps) {
-  const jobConditions = [post.career, post.education, post.location, post.employmentType];
+  const isClosed = isRecruitClosed(post.deadline);
+
+  const educationLabel = getOptionLabel(EDUCATION_OPTIONS, post.education);
+  const employmentTypeLabel = getOptionLabel(EMPLOYMENT_TYPE_OPTIONS, post.employmentType);
+
+  const jobConditions = [post.career, educationLabel, post.location, employmentTypeLabel];
 
   return (
-    <article className="flex h-[146px] items-center justify-between border-b border-gray-300 p-5">
-      <div className="flex w-[150px] items-center gap-1">
+    <article className="flex items-center justify-between border-b border-gray-300 px-5 py-8">
+      <div className={cn('flex w-[150px] items-center gap-1', isClosed && 'opacity-50')}>
         <span className="w-fit max-w-[130px] leading-5 font-bold break-all">
           {post.companyName}
         </span>
-
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleLike(post.id);
-          }}
-        >
-          {post.isLiked ? (
-            <LikeFilledIcon className="text-error-subtle w-[14px]" />
-          ) : (
-            <LikeOutlineIcon className="w-[14px] text-gray-500" />
-          )}
-        </button>
       </div>
 
-      <div className="mx-7 flex flex-1 flex-col gap-2">
+      <div className={cn('mx-7 flex flex-1 flex-col gap-2', isClosed && 'opacity-50')}>
         <Link href={`/community/jobs/${post.id}`} className="w-fit">
           <h3 className="leading-5 font-bold">{post.title}</h3>
         </Link>
@@ -49,6 +43,7 @@ export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPo
         <div className="text-[14px] leading-[30px] font-medium text-gray-700">
           필요스킬: {post.skills.join(', ')}
         </div>
+
         <ul className="flex">
           {jobConditions.map((item, i) => (
             <li key={i} className="flex items-center">
@@ -57,11 +52,26 @@ export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPo
             </li>
           ))}
         </ul>
+
+        <span className="text-[12px] leading-5 text-gray-700">{formatDeadline(post.deadline)}</span>
       </div>
 
-      <div className="flex flex-col items-center gap-2">
-        <JobApplyAction apply={post.apply} onDirectApply={onDirectApply} />
-        <span className="text-[12px] leading-5 text-gray-700">{formatDeadline(post.deadline)}</span>
+      <div className="flex gap-1">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleLike(post.id);
+          }}
+          className="flex h-10 w-[38px] items-center justify-center rounded-[10px] border border-gray-500"
+        >
+          {post.isLiked ? (
+            <LikeFilledIcon className="text-error-subtle w-[14px]" />
+          ) : (
+            <LikeOutlineIcon className="w-[14px] text-gray-500" />
+          )}
+        </button>
+        <JobApplyAction apply={post.apply} onDirectApply={onDirectApply} isClosed={isClosed} />
       </div>
     </article>
   );

@@ -1,15 +1,16 @@
-'use client';
-
 import InfoPostCard from '@/components/community/info/InfoPostCard';
+
+import { useBookmarkedPosts } from '../hooks/useBookmarkedPosts';
 
 import { infoPosts } from '@/mocks/posts';
 
 export default function InfoBookmarkList() {
-  const likedPosts = infoPosts.filter((post) => post.isLiked);
+  const { bookmarkedPosts: bookmarkedInfoPosts, toggleLike } = useBookmarkedPosts(infoPosts);
+
   return (
     <>
-      {likedPosts?.map((post) => (
-        <InfoPostCard key={post.id} post={post} />
+      {bookmarkedInfoPosts?.map((post) => (
+        <InfoPostCard key={post.id} post={post} onToggleLike={toggleLike} />
       ))}
     </>
   );

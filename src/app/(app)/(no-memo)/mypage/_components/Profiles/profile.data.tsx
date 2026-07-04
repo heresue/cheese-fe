@@ -1,4 +1,4 @@
-import { SettingItemData, PersonalProfile, CompanyProfile, AccountSettings } from './types';
+import { ReactNode } from 'react';
 
 import {
   CompanyIcon,
@@ -19,6 +19,29 @@ import ContactIcon from '@/assets/icons/common/contact.svg';
 import DeleteIcon from '@/assets/icons/common/delete.svg';
 import EditIcon from '@/assets/icons/common/edit.svg';
 import PlusIcon from '@/assets/icons/common/plus.svg';
+
+import { getOptionLabel } from '@/lib/getOptionLabel';
+import { CONTACT_METHOD_OPTIONS } from '@/constants/profileOptions';
+
+import type {
+  AccountSettings,
+  CompanyProfile,
+  PersonalProfile,
+  ProfileDocument,
+} from '@/types/profile';
+import type { MypageModalType } from '../Modal/types';
+
+type SettingItemData = {
+  label: string;
+  value?: string;
+  document?: ProfileDocument;
+  icon: ReactNode;
+  buttonIcon: ReactNode;
+  buttonText: string;
+  modalType?: MypageModalType;
+  options?: string[];
+  danger?: boolean;
+};
 
 function formatDate(dateString: string) {
   const date = new Date(dateString);
@@ -53,7 +76,10 @@ export function getPersonalProfileItems(profile: PersonalProfile): SettingItemDa
     },
     {
       label: '이력서 및 기타문서',
-      document: { ...profile.resume, urlLabel: `${profile.nickname} 이력서 및 기타문서 URL` },
+      document: {
+        ...profile.additionalDocument,
+        urlLabel: `${profile.nickname} 이력서 및 기타문서 URL`,
+      },
       icon: <CompanyIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
@@ -144,11 +170,11 @@ export function getAccountItems(profile: AccountSettings): SettingItemData[] {
   return [
     {
       label: '선호하는 연락방식',
-      value: profile.contact,
+      value: getOptionLabel(CONTACT_METHOD_OPTIONS, profile.contact),
       icon: <ContactIcon className="h-6" />,
       buttonIcon: <EditIcon className="h-[14px]" />,
       buttonText: '변경',
-      options: ['이메일', '오픈 카카오톡'],
+      options: CONTACT_METHOD_OPTIONS.map((option) => option.label),
       modalType: 'select',
     },
     {

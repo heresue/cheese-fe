@@ -1,4 +1,6 @@
-export function formatDeadline(deadline: string | null) {
+type Deadline = string | null;
+
+export function formatDeadline(deadline: Deadline) {
   if (!deadline) {
     return '상시모집';
   }
@@ -11,10 +13,16 @@ export function formatDeadline(deadline: string | null) {
   return `${String(month).padStart(2, '0')}.${String(day).padStart(2, '0')}(${weekdays[date.getDay()]}) 마감`;
 }
 
-export function getDeadlineTime(deadline: string | null) {
+export function getDeadlineTime(deadline: Deadline) {
   if (!deadline) {
     return Number.MAX_SAFE_INTEGER;
   }
 
   return new Date(deadline).getTime();
+}
+
+export function isRecruitClosed(deadline: Deadline) {
+  if (!deadline) return false;
+
+  return new Date(deadline) < new Date();
 }

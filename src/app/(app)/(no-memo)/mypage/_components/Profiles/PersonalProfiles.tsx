@@ -2,7 +2,13 @@ import SettingItem from '../Layout/SettingItem';
 
 import { getPersonalProfileItems } from './profile.data';
 
-import type { PersonalProfilesProps } from './types';
+import type { PersonalProfile } from '@/types/profile';
+import type { MypageModalItem } from '../Modal/types';
+
+type PersonalProfilesProps = {
+  profile: PersonalProfile;
+  onOpenModal: (item: MypageModalItem) => void;
+};
 
 export default function PersonalProfiles({ profile, onOpenModal }: PersonalProfilesProps) {
   const profileItems = getPersonalProfileItems(profile);

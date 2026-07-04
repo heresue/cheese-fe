@@ -10,6 +10,7 @@ type BaseModalProps = {
   children: React.ReactNode;
   closeOnDimClick?: boolean;
   hasOverlay?: boolean;
+  contentClassName?: string;
 };
 
 export default function BaseModal({
@@ -18,6 +19,7 @@ export default function BaseModal({
   children,
   closeOnDimClick = true,
   hasOverlay = false,
+  contentClassName,
 }: BaseModalProps) {
   useModalBehavior({ isOpen, onClose });
 
@@ -36,7 +38,10 @@ export default function BaseModal({
       role="presentation"
     >
       <div className="flex h-full w-full items-center justify-center p-5">
-        <div className="max-h-full max-w-full" onClick={(e) => e.stopPropagation()}>
+        <div
+          className={cn('max-h-full max-w-full', contentClassName)}
+          onClick={(e) => e.stopPropagation()}
+        >
           {children}
         </div>
       </div>
