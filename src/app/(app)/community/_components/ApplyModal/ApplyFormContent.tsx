@@ -10,7 +10,7 @@ import LinkIcon from '@/assets/icons/common/link.svg';
 
 import type { JobPost, GroupPost } from '@/types/community';
 
-import { mockAccountSettings } from '@/mocks/profile/profiles';
+import { mockAccountSettings } from '@/mocks/profile/userProfiles';
 import { getMockPersonalProfile } from '@/mocks/profile/userProfiles';
 
 type ApplyFormContentProps = {

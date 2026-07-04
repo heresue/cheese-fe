@@ -14,7 +14,7 @@ import { useMypageModal } from './_components/Modal/useMypageModal';
 
 import { CompanyIcon, PersonalIcon } from '@/assets/icons/settings';
 
-import { mockAccountSettings } from '@/mocks/profile/profiles';
+import { mockAccountSettings } from '@/mocks/profile/userProfiles';
 import { getMockCompanyProfile, getMockPersonalProfile } from '@/mocks/profile/userProfiles';
 
 const MYPAGE_PROFILE_CATEGORY_TABS = [
