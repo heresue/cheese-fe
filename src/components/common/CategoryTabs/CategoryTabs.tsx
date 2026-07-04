@@ -1,10 +1,29 @@
 'use client';
 
 import { cn } from '@/lib/cn';
-import { categoryTabsClassNames as styles } from './style';
-import type { CategoryTabsProps } from './type';
 
-function CategoryTabs<TValue extends string = string>({
+export type CategoryTabItem<TValue extends string = string> = {
+  label: string;
+  value: TValue;
+};
+
+type CategoryTabsSize = 'sm' | 'md' | 'lg';
+
+type CategoryTabsProps<TValue extends string = string> = {
+  items: readonly CategoryTabItem<TValue>[];
+  activeValue: TValue;
+  onChange: (value: TValue) => void;
+  size?: CategoryTabsSize;
+  className?: string;
+};
+
+const sizeClassName: Record<CategoryTabsSize, string> = {
+  sm: 'h-[46px] px-[22px] text-[14px] leading-[20px]',
+  md: 'h-[52px] px-[24px] text-[15px] leading-[22px]',
+  lg: 'h-[54px] px-[28px] text-[16px] leading-[24px]',
+};
+
+export function CategoryTabs<TValue extends string = string>({
   items,
   activeValue,
   onChange,
@@ -12,28 +31,23 @@ function CategoryTabs<TValue extends string = string>({
   className,
 }: CategoryTabsProps<TValue>) {
   return (
-    <div className={cn(styles.list, className)} role="tablist">
+    <div className={cn('flex items-center gap-[10px]', className)}>
       {items.map((item) => {
-        const Icon = item.icon;
         const isActive = item.value === activeValue;
 
         return (
           <button
             key={item.value}
             type="button"
-            role="tab"
-            aria-selected={isActive}
-            disabled={item.disabled}
+            onClick={() => onChange(item.value)}
             className={cn(
-              styles.buttonBase,
-              styles.buttonSize[size],
-              isActive ? styles.active : styles.inactive,
+              'flex shrink-0 items-center justify-center rounded-[10px] border bg-white font-medium transition-colors',
+              sizeClassName[size],
+              isActive
+                ? 'border-secondary-700 text-secondary-700'
+                : 'hover:border-secondary-700 hover:text-secondary-700 border-gray-300 text-gray-800',
             )}
-            onClick={() => {
-              onChange(item.value);
-            }}
           >
-            {Icon && <Icon className={cn('h-[14px] w-[14px]', !isActive && 'text-gray-500')} />}
             {item.label}
           </button>
         );
