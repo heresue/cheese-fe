@@ -21,6 +21,9 @@ type GroupPostFormProps = {
 export default function GroupPostForm({ mode, initialValues }: GroupPostFormProps) {
   const [field, setField] = useState(initialValues?.field ?? '');
   const [progressType, setProgressType] = useState(initialValues?.progressType ?? '');
+  {
+    /* TODO: 학력 필드 추가 여부 확인 */
+  }
   // const [education, setEducation] = useState(initialValues?.education ?? '');
   const [date, setDate] = useState(initialValues?.deadline ?? '');
 
@@ -103,7 +106,6 @@ export default function GroupPostForm({ mode, initialValues }: GroupPostFormProp
             />
           </FormField>
 
-          {/* TODO: 학력 필드 추가 여부 확인 */}
           {/* <FormField label="학력" labelClassName="text-[14px]">
             <FormDropdown value={education} options={EDUCATION_OPTIONS} onChange={setEducation} />
           </FormField> */}
