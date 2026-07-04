@@ -20,6 +20,9 @@ import DeleteIcon from '@/assets/icons/common/delete.svg';
 import EditIcon from '@/assets/icons/common/edit.svg';
 import PlusIcon from '@/assets/icons/common/plus.svg';
 
+import { getOptionLabel } from '@/lib/getOptionLabel';
+import { CONTACT_METHOD_OPTIONS } from '@/constants/profileOptions';
+
 import type { CompanyProfile, PersonalProfile, ProfileDocument } from '@/types/profile';
 import type { MypageModalType } from '../Modal/types';
 import type { AccountSettings } from './AccountSettings';
@@ -163,11 +166,11 @@ export function getAccountItems(profile: AccountSettings): SettingItemData[] {
   return [
     {
       label: '선호하는 연락방식',
-      value: profile.contact,
+      value: getOptionLabel(CONTACT_METHOD_OPTIONS, profile.contact),
       icon: <ContactIcon className="h-6" />,
       buttonIcon: <EditIcon className="h-[14px]" />,
       buttonText: '변경',
-      options: ['이메일', '오픈 카카오톡'],
+      options: CONTACT_METHOD_OPTIONS.map((option) => option.label),
       modalType: 'select',
     },
     {

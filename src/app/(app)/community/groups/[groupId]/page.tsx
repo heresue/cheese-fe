@@ -12,10 +12,9 @@ import GroupDetailHeader from '../_components/GroupDetailHeader';
 import { groupPosts } from '@/mocks/posts';
 import { getOptionLabel } from '@/lib/getOptionLabel';
 import { isRecruitClosed } from '@/lib/formatDeadline';
-import {
-  POST_CONTENT_CLASS,
-  WORK_METHOD_OPTIONS,
-} from '@/app/(app)/community/_constants/community';
+
+import { WORK_METHOD_OPTIONS } from '@/constants/profileOptions';
+import { POST_CONTENT_CLASS } from '@/app/(app)/community/_constants/community';
 
 export default async function GroupDetailPage({
   params,

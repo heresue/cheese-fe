@@ -12,7 +12,7 @@ import {
   EDUCATION_OPTIONS,
   EMPLOYMENT_TYPE_OPTIONS,
   FIELD_OPTIONS,
-} from '../../_constants/community';
+} from '@/constants/profileOptions';
 
 import { cn } from '@/lib/cn';
 

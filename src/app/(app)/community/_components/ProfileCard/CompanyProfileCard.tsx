@@ -8,6 +8,9 @@ import { ProfileCardItem } from './ProfileCardItem';
 import CloseIcon from '@/assets/icons/common/close.svg';
 import ContactIcon from '@/assets/icons/common/contact.svg';
 
+import { getOptionLabel } from '@/lib/getOptionLabel';
+import { CONTACT_METHOD_OPTIONS } from '@/constants/profileOptions';
+
 import type { CompanyProfile } from '@/types/profile';
 
 type CompanyProfileCardProps = {
@@ -23,9 +26,10 @@ export default function CompanyProfileCard({ isOpen, onClose, profile }: Company
     { label: '산업 구분', value: profile.industryType.join(', ') },
     { label: '사원 수', value: `${profile.employeeCount.toLocaleString()}명` },
     { label: '설립일', value: profile.foundedAt },
-
-    // TODO: 프로필별 선호 연락 방법 데이터 연동
-    { label: '선호 연락 방법', value: '이메일' },
+    {
+      label: '선호 연락 방법',
+      value: getOptionLabel(CONTACT_METHOD_OPTIONS, profile.contactMethod),
+    },
     {
       label: '이력서 양식',
       value: (
@@ -38,6 +42,15 @@ export default function CompanyProfileCard({ isOpen, onClose, profile }: Company
       valueClassName: '',
     },
   ];
+
+  const handleContactClick = () => {
+    if (profile.contactMethod === 'email') {
+      window.location.href = `mailto:${profile.email}`;
+      return;
+    }
+
+    window.open(profile.contactUrl, '_blank', 'noopener,noreferrer');
+  };
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} hasOverlay>
@@ -70,7 +83,7 @@ export default function CompanyProfileCard({ isOpen, onClose, profile }: Company
                   </div>
                 </div>
 
-                <Button width={182} size={54} className="gap-3">
+                <Button onClick={handleContactClick} width={182} size={54} className="gap-3">
                   <ContactIcon className="h-[13px]" />
                   메시지 보내기
                 </Button>

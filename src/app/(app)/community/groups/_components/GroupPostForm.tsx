@@ -8,7 +8,7 @@ import DatePicker from '@/components/common/DatePicker/DatePicker';
 import { CommunityPostForm } from '../../_components/CommunityPostForm';
 import { FormField, FormDropdown, POST_INPUT_CLASS } from '../../_components/CommunityPostForm';
 
-import { FIELD_OPTIONS, WORK_METHOD_OPTIONS } from '../../_constants/community';
+import { FIELD_OPTIONS, WORK_METHOD_OPTIONS } from '@/constants/profileOptions';
 import { cn } from '@/lib/cn';
 
 import type { GroupPost } from '@/types/community';

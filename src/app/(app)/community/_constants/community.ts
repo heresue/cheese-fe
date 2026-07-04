@@ -19,31 +19,6 @@ export const INFO_SORT_OPTIONS = [
   { label: '자료공유', value: 'resource' },
 ];
 
-// 게시글 작성/수정
+// 게시글 상세 페이지
 
 export const POST_CONTENT_CLASS = '[&_p]:m-0 [&_p]:min-h-6 [&_br]:block [&_br]:content-[""]';
-
-export const FIELD_OPTIONS = [
-  { label: 'FE', value: 'FE' },
-  { label: 'BE', value: 'BE' },
-];
-
-export const EMPLOYMENT_TYPE_OPTIONS = [
-  { label: '인턴직', value: 'intern' },
-  { label: '계약직', value: 'contract' },
-  { label: '정규직', value: 'fullTime' },
-];
-
-export const EDUCATION_OPTIONS = [
-  { label: '대졸', value: 'college' },
-  { label: '초대졸', value: 'associate' },
-  { label: '고졸', value: 'highSchool' },
-  { label: '대학원(석사/박사)', value: 'graduateSchool' },
-  { label: '학력무관', value: 'none' },
-];
-
-export const WORK_METHOD_OPTIONS = [
-  { label: '온라인', value: 'online' },
-  { label: '오프라인', value: 'offline' },
-  { label: '온/오프라인 병행', value: 'online/offline' },
-];

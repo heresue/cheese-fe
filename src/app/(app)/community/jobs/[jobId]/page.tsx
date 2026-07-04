@@ -10,14 +10,12 @@ import JobDetailHeader from '../_components/JobDetailHeader';
 
 import { APPLY_LABEL } from '@/components/community/jobs/constants';
 
-import { jobPosts } from '@/mocks/posts';
 import { getOptionLabel } from '@/lib/getOptionLabel';
 import { isRecruitClosed } from '@/lib/formatDeadline';
-import {
-  EDUCATION_OPTIONS,
-  EMPLOYMENT_TYPE_OPTIONS,
-  POST_CONTENT_CLASS,
-} from '../../_constants/community';
+import { EDUCATION_OPTIONS, EMPLOYMENT_TYPE_OPTIONS } from '@/constants/profileOptions';
+import { POST_CONTENT_CLASS } from '../../_constants/community';
+
+import { jobPosts } from '@/mocks/posts';
 
 export default async function JobDetailPage({ params }: { params: Promise<{ jobId: string }> }) {
   const { jobId } = await params;

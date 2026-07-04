@@ -1,10 +1,12 @@
-import type { MypageModalItem } from '..//Modal/types';
 import SettingItem from '../Layout/SettingItem';
 
 import { getAccountItems } from './profile.data';
 
+import type { ContactMethod } from '@/types/profile';
+import type { MypageModalItem } from '..//Modal/types';
+
 export type AccountSettings = {
-  contact: string;
+  contact: ContactMethod;
   email: string;
   passwordUpdatedAt: string;
   address: string;

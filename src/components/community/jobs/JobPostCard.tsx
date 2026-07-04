@@ -10,10 +10,7 @@ import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 
 import type { JobPost } from '@/types/community';
 import { getOptionLabel } from '@/lib/getOptionLabel';
-import {
-  EDUCATION_OPTIONS,
-  EMPLOYMENT_TYPE_OPTIONS,
-} from '@/app/(app)/community/_constants/community';
+import { EDUCATION_OPTIONS, EMPLOYMENT_TYPE_OPTIONS } from '@/constants/profileOptions';
 import { cn } from '@/lib/cn';
 
 type JobPostCardProps = {

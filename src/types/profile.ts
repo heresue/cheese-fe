@@ -9,6 +9,9 @@ export type PersonalProfile = {
   additionalDocument: ProfileDocument;
   skills: string[];
   interests: string[];
+
+  contactMethod: ContactMethod;
+  contactUrl?: string;
 };
 
 export type CompanyProfile = {
@@ -23,6 +26,9 @@ export type CompanyProfile = {
   industryType: string[];
   employeeCount: number;
   foundedAt: string;
+
+  contactMethod: ContactMethod;
+  contactUrl?: string;
 };
 
 export type ProfileDocument = {
@@ -31,3 +37,5 @@ export type ProfileDocument = {
   url: string;
   urlLabel?: string;
 };
+
+export type ContactMethod = 'email' | 'kakaoOpenChat' | 'googleForm';
