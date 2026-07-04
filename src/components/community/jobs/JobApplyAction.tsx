@@ -23,7 +23,7 @@ export default function JobApplyAction({
 
   if (apply.type === 'homepage') {
     return (
-      <Button asChild width={100}>
+      <Button asChild width={100} variant="outlineGray">
         <a href={apply.url} target="_blank" rel="noopener noreferrer">
           {APPLY_LABEL[apply.type]}
         </a>
@@ -32,7 +32,7 @@ export default function JobApplyAction({
   }
 
   return (
-    <Button width={100} variant="outlineGray" onClick={onDirectApply} disabled={isClosed}>
+    <Button width={100} onClick={onDirectApply} disabled={isClosed}>
       {APPLY_LABEL[apply.type]}
     </Button>
   );

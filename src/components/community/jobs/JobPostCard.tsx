@@ -31,25 +31,11 @@ export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPo
   const jobConditions = [post.career, educationLabel, post.location, employmentTypeLabel];
 
   return (
-    <article className="flex h-[146px] items-center justify-between border-b border-gray-300 p-5">
+    <article className="flex items-center justify-between border-b border-gray-300 px-5 py-8">
       <div className={cn('flex w-[150px] items-center gap-1', isClosed && 'opacity-50')}>
         <span className="w-fit max-w-[130px] leading-5 font-bold break-all">
           {post.companyName}
         </span>
-
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleLike(post.id);
-          }}
-        >
-          {post.isLiked ? (
-            <LikeFilledIcon className="text-error-subtle w-[14px]" />
-          ) : (
-            <LikeOutlineIcon className="w-[14px] text-gray-500" />
-          )}
-        </button>
       </div>
 
       <div className={cn('mx-7 flex flex-1 flex-col gap-2', isClosed && 'opacity-50')}>
@@ -60,6 +46,7 @@ export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPo
         <div className="text-[14px] leading-[30px] font-medium text-gray-700">
           필요스킬: {post.skills.join(', ')}
         </div>
+
         <ul className="flex">
           {jobConditions.map((item, i) => (
             <li key={i} className="flex items-center">
@@ -68,11 +55,27 @@ export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPo
             </li>
           ))}
         </ul>
+
+        <span className="text-[12px] leading-5 text-gray-700">{formatDeadline(post.deadline)}</span>
       </div>
 
-      <div className="flex flex-col items-center gap-2">
+      <div className="flex gap-1">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleLike(post.id);
+          }}
+          className="flex h-10 w-[38px] items-center justify-center rounded-[10px] border border-gray-500"
+        >
+          {post.isLiked ? (
+            <LikeFilledIcon className="text-error-subtle w-[14px]" />
+          ) : (
+            <LikeOutlineIcon className="w-[14px] text-gray-500" />
+          )}
+        </button>
         <JobApplyAction apply={post.apply} onDirectApply={onDirectApply} isClosed={isClosed} />
-        <span className="text-[12px] leading-5 text-gray-700">{formatDeadline(post.deadline)}</span>
+        {/* <span className="text-[12px] leading-5 text-gray-700">{formatDeadline(post.deadline)}</span> */}
       </div>
     </article>
   );
