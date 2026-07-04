@@ -72,7 +72,6 @@ export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPo
           )}
         </button>
         <JobApplyAction apply={post.apply} onDirectApply={onDirectApply} isClosed={isClosed} />
-        {/* <span className="text-[12px] leading-5 text-gray-700">{formatDeadline(post.deadline)}</span> */}
       </div>
     </article>
   );
