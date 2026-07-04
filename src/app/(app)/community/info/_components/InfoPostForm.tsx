@@ -77,6 +77,7 @@ export default function InfoPostForm({ mode, initialValues }: InfoPostFormProps)
           defaultValue={initialValues?.title ?? ''}
           className={cn(POST_INPUT_CLASS, 'h-16 border-0 text-[24px]')}
           inputClassName="font-medium leading-16 h-16"
+          hideMessageSpace
         />
 
         <div className="flex flex-col gap-y-6">
@@ -134,7 +135,6 @@ export default function InfoPostForm({ mode, initialValues }: InfoPostFormProps)
             className="w-full max-w-[624px]"
           >
             <Input
-              hideMessageSpace
               label="태그 등록"
               name="tags"
               value={tagInput}
@@ -143,6 +143,7 @@ export default function InfoPostForm({ mode, initialValues }: InfoPostFormProps)
               placeholder="# 최대 5개의 태그를 설정할 수 있습니다"
               className={POST_INPUT_CLASS}
               inputClassName="font-medium"
+              hideMessageSpace
             />
 
             {tags.length > 0 && (

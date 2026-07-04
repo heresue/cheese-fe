@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 
 import { Chip } from '@/components/common/Chip';
+import { ProfileImage } from '@/components/common/ProfileImage';
 
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
@@ -17,8 +17,6 @@ type GroupPostCardProps = {
   post: GroupPost;
   onToggleLike: (postId: number) => void;
 };
-
-const DEFAULT_PROFILE = '/profile_default.png';
 
 export default function GroupPostCard({ post, onToggleLike }: GroupPostCardProps) {
   const isClosed = isRecruitClosed(post.deadline);
@@ -50,14 +48,8 @@ export default function GroupPostCard({ post, onToggleLike }: GroupPostCardProps
       </div>
 
       <div className="flex items-center justify-between text-[12px] leading-[26px] text-gray-600">
-        <div className="flex items-center gap-2.5 pl-0.5">
-          <Image
-            width={24}
-            height={24}
-            className="line-clamp-1 inline-block rounded-full"
-            src={post.author.profileImageUrl || DEFAULT_PROFILE}
-            alt="작성자 프로필 이미지"
-          />
+        <div className="flex items-center gap-[10.5px] pl-0.5">
+          <ProfileImage src={post.author.profileImageUrl} size={24} />
           <div>{post.author.nickname} 님</div>
         </div>
 
@@ -74,9 +66,10 @@ export default function GroupPostCard({ post, onToggleLike }: GroupPostCardProps
             ) : (
               <LikeOutlineIcon className="w-[13px] text-gray-500" />
             )}
-            {/* TODO: 좋아요 토글 시 count */}
+
             <span>{post.likeCount}</span>
           </button>
+
           <div className="flex items-center gap-1">
             <CommentIcon className="w-[15px] text-gray-500" />
             <span>{post.commentCount}</span>

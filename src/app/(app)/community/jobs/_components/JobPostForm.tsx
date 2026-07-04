@@ -84,6 +84,7 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
             defaultValue={initialValues?.title ?? ''}
             className={POST_INPUT_CLASS}
             inputClassName="font-medium"
+            hideMessageSpace
           />
         </FormField>
 
@@ -108,6 +109,7 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
               defaultValue={initialValues?.location ?? ''}
               className={POST_INPUT_CLASS}
               inputClassName="font-medium"
+              hideMessageSpace
             />
           </FormField>
 
@@ -123,6 +125,7 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
               defaultValue={initialValues?.skills?.join(', ') ?? ''}
               className={POST_INPUT_CLASS}
               inputClassName="font-medium"
+              hideMessageSpace
             />
           </FormField>
 
@@ -143,6 +146,7 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
               placeholder="URL 입력"
               defaultValue={applyUrl}
               className={POST_INPUT_CLASS}
+              hideMessageSpace
             />
           </FormField>
         </div>

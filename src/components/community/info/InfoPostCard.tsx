@@ -36,7 +36,7 @@ export default function InfoPostCard({ post, wrapperClassName, onToggleLike }: I
         <div className="flex min-w-0 flex-1 flex-col gap-3">
           <Link href={`/community/info/${post.id}`} className="flex min-w-0 flex-col gap-3">
             <div className="flex min-w-0 gap-[5px] font-medium">
-              <span className="shrink-0 text-gray-700">
+              <span className="shrink-0 text-gray-500">
                 [{getOptionLabel(INFO_SORT_OPTIONS, post.category)}]
               </span>
               <h3 className="truncate">{post.title}</h3>
