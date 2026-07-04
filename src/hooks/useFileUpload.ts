@@ -27,10 +27,6 @@ export default function useFileUpload() {
     const fileUrl = URL.createObjectURL(file);
 
     window.open(fileUrl, '_blank');
-
-    setTimeout(() => {
-      URL.revokeObjectURL(fileUrl);
-    }, 1000);
   };
 
   return {
