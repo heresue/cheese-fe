@@ -23,9 +23,13 @@ import PlusIcon from '@/assets/icons/common/plus.svg';
 import { getOptionLabel } from '@/lib/getOptionLabel';
 import { CONTACT_METHOD_OPTIONS } from '@/constants/profileOptions';
 
-import type { CompanyProfile, PersonalProfile, ProfileDocument } from '@/types/profile';
+import type {
+  AccountSettings,
+  CompanyProfile,
+  PersonalProfile,
+  ProfileDocument,
+} from '@/types/profile';
 import type { MypageModalType } from '../Modal/types';
-import type { AccountSettings } from './AccountSettings';
 
 type SettingItemData = {
   label: string;

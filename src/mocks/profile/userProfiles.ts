@@ -47,6 +47,7 @@ export const mockPersonalProfiles: PersonalProfile[] = [
     },
     skills: ['HTML5', 'CSS3', 'JavaScript'],
     interests: ['Redux', 'Zustand', 'Recoil', 'Context API'],
+
     contactMethod: 'email',
     contactUrl: undefined,
   },
@@ -64,6 +65,7 @@ export const mockPersonalProfiles: PersonalProfile[] = [
       additionalDocument: createDocument(`이력서_${user.nickname}.pdf`),
       skills: ['HTML5', 'CSS3', 'JavaScript'],
       interests: ['Redux', 'Zustand', 'Recoil'],
+
       contactMethod: 'kakaoOpenChat' as ContactMethod,
       contactUrl: 'https://open.kakao.com/',
     })),
@@ -86,6 +88,7 @@ export const mockCompanyProfiles: CompanyProfile[] = [
     industryType: ['솔루션 SI', 'CRM', 'ERP'],
     employeeCount: 10,
     foundedAt: '2020-05-15',
+
     contactMethod: 'email',
     contactUrl: undefined,
   },
@@ -104,6 +107,7 @@ export const mockCompanyProfiles: CompanyProfile[] = [
       industryType: ['IT 서비스', 'AI 플랫폼'],
       employeeCount: 2800,
       foundedAt: '2001-07-18',
+
       contactMethod: 'email' as ContactMethod,
       contactUrl: undefined,
     })),

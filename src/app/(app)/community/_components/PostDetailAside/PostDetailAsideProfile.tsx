@@ -9,10 +9,6 @@ import { UserSummary } from '@/types/community';
 import { getMockCompanyProfile, getMockPersonalProfile } from '@/mocks/profile/userProfiles';
 
 type PostDetailAsideProfileProps = {
-  // nickname: string;
-  // email: string;
-  // profileImageUrl?: string;
-  // profileType?: string;
   author: UserSummary;
 };
 

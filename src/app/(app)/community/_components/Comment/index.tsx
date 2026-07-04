@@ -5,9 +5,9 @@ import { useEffect, useRef, useState } from 'react';
 import CommentForm from './CommentForm';
 import CommentItem from './CommentItem';
 
-import { mockPersonalProfile } from '@/mocks/profile/profiles';
 import { infoComments } from '@/mocks/posts';
 import { getMockUserSummary } from '@/mocks/profile/userSummaries';
+import { getMockPersonalProfile } from '@/mocks/profile/userProfiles';
 
 export default function Comment() {
   const [openCommentId, setOpenCommentId] = useState<number | null>(null);
@@ -17,6 +17,8 @@ export default function Comment() {
 
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingValue, setEditingValue] = useState('');
+
+  const personalProfile = getMockPersonalProfile(1);
 
   const handleSubmitComment = () => {
     const trimmedComment = commentValue.trim();
@@ -70,7 +72,7 @@ export default function Comment() {
           <CommentItem
             key={comment.id}
             comment={comment}
-            isMine={comment.author.id === mockPersonalProfile.id}
+            isMine={comment.author.id === personalProfile.id}
             isEditing={editingCommentId === comment.id}
             isMenuOpen={openCommentId === comment.id}
             editingValue={editingValue}

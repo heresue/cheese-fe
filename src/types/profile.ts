@@ -31,6 +31,13 @@ export type CompanyProfile = {
   contactUrl?: string;
 };
 
+export type AccountSettings = {
+  contact: ContactMethod;
+  email: string;
+  passwordUpdatedAt: string;
+  address: string;
+};
+
 export type ProfileDocument = {
   fileName: string;
   fileUrl?: string;

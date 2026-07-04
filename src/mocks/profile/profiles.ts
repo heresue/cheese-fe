@@ -1,43 +1,8 @@
 // 로그인 한 유저의 프로필 정보
 
-export const mockPersonalProfile = {
-  id: 1,
-  nickname: '김치즈',
-  email: 'cheese@test.com',
-  profileImageUrl: '/mock/profile-3.png',
-  interestedJob: 'FE (프론트엔드)',
-  coverLetter: {
-    fileName: '자기소개서_김치즈.pdf',
-    fileUrl: 'https://google.com',
-    url: 'https://google.com',
-  },
-  additionalDocument: {
-    fileName: '이력서_김치즈.pdf',
-    fileUrl: 'https://google.com',
-    url: 'https://google.com',
-  },
-  skills: ['HTML5', 'CSS3', 'JavaScript'],
-  interests: ['Redux', 'Zustand', 'Recoil', 'Context API'],
-};
+import { AccountSettings } from '@/types/profile';
 
-export const mockCompanyProfile = {
-  id: 1,
-  nickname: '치즈공장',
-  email: 'cheese@test.com',
-  profileImageUrl: '/mock/profile-6.png',
-  representativeName: '변대환',
-  companyType: '스타트업',
-  resumeTemplate: {
-    fileName: 'cheese_resume_template.pdf',
-    fileUrl: 'https://google.com',
-    url: 'https://google.com',
-  },
-  industryType: ['솔루션 SI', 'CRM', 'ERP'],
-  employeeCount: 10,
-  foundedAt: '2020-05-15',
-};
-
-export const mockAccountSettings = {
+export const mockAccountSettings: AccountSettings = {
   contact: 'email',
   email: 'cheese@test.com',
   passwordUpdatedAt: '2026-01-30',

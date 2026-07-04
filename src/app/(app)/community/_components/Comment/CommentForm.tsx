@@ -5,14 +5,15 @@ import { useRef } from 'react';
 import { ProfileImage } from '@/components/common/ProfileImage';
 import { Button } from '@/components/common/Button';
 
+import { getMockPersonalProfile } from '@/mocks/profile/userProfiles';
 import { resizeTextarea } from './utils';
 
 import type { CommentFormProps } from './types';
 
-import { mockPersonalProfile } from '@/mocks/profile/profiles';
-
 export default function CommentForm({ value, onValueChange, onSubmit }: CommentFormProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const personalProfile = getMockPersonalProfile(1);
 
   const handleSubmit = () => {
     onSubmit();
@@ -26,7 +27,7 @@ export default function CommentForm({ value, onValueChange, onSubmit }: CommentF
 
   return (
     <div className="flex gap-3">
-      <ProfileImage size={40} src={mockPersonalProfile.profileImageUrl} />
+      <ProfileImage size={40} src={personalProfile.profileImageUrl} />
 
       <div className="focus-within:border-secondary-600 flex w-full items-center gap-2.5 border-b border-gray-400 pb-3 transition-colors">
         <textarea

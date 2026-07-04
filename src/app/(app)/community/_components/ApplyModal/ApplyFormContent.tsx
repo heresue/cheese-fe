@@ -10,7 +10,8 @@ import LinkIcon from '@/assets/icons/common/link.svg';
 
 import type { JobPost, GroupPost } from '@/types/community';
 
-import { mockAccountSettings, mockPersonalProfile } from '@/mocks/profile/profiles';
+import { mockAccountSettings } from '@/mocks/profile/profiles';
+import { getMockPersonalProfile } from '@/mocks/profile/userProfiles';
 
 type ApplyFormContentProps = {
   post: JobPost | GroupPost;
@@ -21,7 +22,7 @@ type ApplyFormContentProps = {
 export default function ApplyFormContent({ post, onClose, onApply }: ApplyFormContentProps) {
   const router = useRouter();
 
-  const personalProfile = mockPersonalProfile;
+  const personalProfile = getMockPersonalProfile(1);
   const accountSettings = mockAccountSettings;
 
   const documentLinks = [
@@ -45,7 +46,7 @@ export default function ApplyFormContent({ post, onClose, onApply }: ApplyFormCo
       label: `${personalProfile.nickname}의 자기소개서 URL`,
       icon: <LinkIcon className="h-[6px]" />,
     },
-  ].filter((item) => item.href);
+  ].filter((item): item is typeof item & { href: string } => Boolean(item.href));
 
   const handleMoveToMyPage = () => {
     onClose();
