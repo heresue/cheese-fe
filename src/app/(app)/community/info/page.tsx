@@ -6,16 +6,12 @@ import { useSearchParams } from 'next/navigation';
 import InfoPostCard from '@/components/community/info/InfoPostCard';
 
 import { useLikeToggle } from '@/hooks/useLikeToggle';
+import { getOptionLabel } from '@/lib/getOptionLabel';
+import { INFO_SORT_OPTIONS } from '../_constants/community';
 
 import { infoPosts as INFO_POSTS } from '@/mocks/posts';
 
-const INFO_CATEGORY_LABEL = {
-  question: '질문글',
-  info: '정보글',
-  resource: '자료공유',
-} as const;
-
-type InfoCategoryValue = 'all' | keyof typeof INFO_CATEGORY_LABEL;
+type InfoCategoryValue = (typeof INFO_SORT_OPTIONS)[number]['value'];
 
 export default function CommunityInfoPage() {
   const searchParams = useSearchParams();
@@ -26,11 +22,12 @@ export default function CommunityInfoPage() {
 
   const filteredInfoPosts = useMemo(() => {
     const normalizedKeyword = keyword.trim().toLowerCase();
-    const selectedCategory = category === 'all' ? null : INFO_CATEGORY_LABEL[category];
 
     return infoPosts
       .filter((post) => {
-        if (selectedCategory && post.category !== selectedCategory) {
+        const matchesCategory = category === 'all' || post.category === category;
+
+        if (!matchesCategory) {
           return false;
         }
 
@@ -42,7 +39,9 @@ export default function CommunityInfoPage() {
           post.title.toLowerCase().includes(normalizedKeyword) ||
           post.content.toLowerCase().includes(normalizedKeyword) ||
           post.author.nickname.toLowerCase().includes(normalizedKeyword) ||
-          post.category.toLowerCase().includes(normalizedKeyword) ||
+          getOptionLabel(INFO_SORT_OPTIONS, post.category)
+            .toLowerCase()
+            .includes(normalizedKeyword) ||
           post.tags.some((tag) => tag.toLowerCase().includes(normalizedKeyword))
         );
       })

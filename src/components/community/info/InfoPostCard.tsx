@@ -8,6 +8,9 @@ import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 import CommentIcon from '@/assets/icons/common/comment.svg';
 
+import { getOptionLabel } from '@/lib/getOptionLabel';
+import { INFO_SORT_OPTIONS, POST_CONTENT_CLASS } from '@/app/(app)/community/_constants/community';
+
 import type { InfoPost } from '@/types/community';
 
 type InfoPostCardProps = {
@@ -33,13 +36,19 @@ export default function InfoPostCard({ post, wrapperClassName, onToggleLike }: I
         <div className="flex min-w-0 flex-1 flex-col gap-3">
           <Link href={`/community/info/${post.id}`} className="flex min-w-0 flex-col gap-3">
             <div className="flex min-w-0 gap-[5px] font-medium">
-              <span className="shrink-0 text-gray-700">[{post.category}]</span>
+              <span className="shrink-0 text-gray-700">
+                [{getOptionLabel(INFO_SORT_OPTIONS, post.category)}]
+              </span>
               <h3 className="truncate">{post.title}</h3>
             </div>
 
-            <p className="line-clamp-2 h-10 text-[14px] font-medium text-gray-700">
-              {post.content}
-            </p>
+            <div
+              className={cn(
+                POST_CONTENT_CLASS,
+                'line-clamp-2 h-10 text-[14px] leading-5 font-medium text-gray-700',
+              )}
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
           </Link>
 
           <div className="flex justify-between gap-4 text-[12px] text-gray-600">

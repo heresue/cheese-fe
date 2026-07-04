@@ -1,12 +1,14 @@
 import { useState } from 'react';
 
 type UseTagInputOptions = {
+  initialTags?: string[];
+
   maxTags?: number;
 };
 
-export default function useTagInput({ maxTags }: UseTagInputOptions = {}) {
+export default function useTagInput({ initialTags = [], maxTags }: UseTagInputOptions = {}) {
   const [tagInput, setTagInput] = useState('');
-  const [tags, setTags] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>(initialTags);
 
   const addTag = () => {
     const tag = tagInput.trim().replace(/^#/, '');

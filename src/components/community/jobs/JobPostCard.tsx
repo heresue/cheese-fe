@@ -9,6 +9,11 @@ import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 
 import type { JobPost } from '@/types/community';
+import { getOptionLabel } from '@/lib/getOptionLabel';
+import {
+  EDUCATION_OPTIONS,
+  EMPLOYMENT_TYPE_OPTIONS,
+} from '@/app/(app)/community/_constants/community';
 
 type JobPostCardProps = {
   post: JobPost;
@@ -17,7 +22,10 @@ type JobPostCardProps = {
 };
 
 export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPostCardProps) {
-  const jobConditions = [post.career, post.education, post.location, post.employmentType];
+  const educationLabel = getOptionLabel(EDUCATION_OPTIONS, post.education);
+  const employmentTypeLabel = getOptionLabel(EMPLOYMENT_TYPE_OPTIONS, post.employmentType);
+
+  const jobConditions = [post.career, educationLabel, post.location, employmentTypeLabel];
 
   return (
     <article className="flex h-[146px] items-center justify-between border-b border-gray-300 p-5">

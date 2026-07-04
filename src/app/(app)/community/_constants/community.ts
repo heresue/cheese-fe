@@ -1,3 +1,5 @@
+// 상단 탭 & 필터
+
 export const COMMUNITY_CATEGORY_TABS = [
   { label: '채용공고', value: '/community/jobs' },
   { label: '그룹모집', value: '/community/groups' },
@@ -17,7 +19,9 @@ export const INFO_SORT_OPTIONS = [
   { label: '자료공유', value: 'resource' },
 ];
 
-// Post Form Dropdown Options
+// 게시글 작성/수정
+
+export const POST_CONTENT_CLASS = '[&_p]:m-0 [&_p]:min-h-6 [&_br]:block [&_br]:content-[""]';
 
 export const FIELD_OPTIONS = [
   { label: 'FE', value: 'FE' },
@@ -41,5 +45,5 @@ export const EDUCATION_OPTIONS = [
 export const WORK_METHOD_OPTIONS = [
   { label: '온라인', value: 'online' },
   { label: '오프라인', value: 'offline' },
-  { label: '온/오프라인 병행', value: 'hybrid' },
+  { label: '온/오프라인 병행', value: 'online/offline' },
 ];

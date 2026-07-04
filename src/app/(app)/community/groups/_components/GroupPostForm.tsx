@@ -8,15 +8,21 @@ import DatePicker from '@/components/common/DatePicker/DatePicker';
 import { CommunityPostForm } from '../../_components/CommunityPostForm';
 import { FormField, FormDropdown, POST_INPUT_CLASS } from '../../_components/CommunityPostForm';
 
-import { EDUCATION_OPTIONS, FIELD_OPTIONS, WORK_METHOD_OPTIONS } from '../../_constants/community';
-
+import { FIELD_OPTIONS, WORK_METHOD_OPTIONS } from '../../_constants/community';
 import { cn } from '@/lib/cn';
 
-export default function GroupCreatePage() {
-  const [field, setField] = useState('');
-  const [workMethodType, setWorkMethodType] = useState('');
-  const [education, setEducation] = useState('');
-  const [date, setDate] = useState('');
+import type { GroupPost } from '@/types/community';
+
+type GroupPostFormProps = {
+  mode: 'create' | 'edit';
+  initialValues?: GroupPost;
+};
+
+export default function GroupPostForm({ mode, initialValues }: GroupPostFormProps) {
+  const [field, setField] = useState(initialValues?.field ?? '');
+  const [progressType, setProgressType] = useState(initialValues?.progressType ?? '');
+  // const [education, setEducation] = useState(initialValues?.education ?? '');
+  const [date, setDate] = useState(initialValues?.deadline ?? '');
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>, content: string) => {
     event.preventDefault();
@@ -26,37 +32,49 @@ export default function GroupCreatePage() {
     const title = String(formData.get('title') ?? '');
     const expectedPeriod = String(formData.get('period') ?? '');
     const recruitCount = Number(formData.get('recruit') ?? 0);
-    const applyUrl = String(formData.get('url') ?? '');
+    // const applyUrl = String(formData.get('url') ?? '');
 
-    const newGroupPost = {
+    const groupPostPayload = {
       title,
       field,
-      workMethodType,
+      progressType,
       expectedPeriod,
-      education,
+      // education,
       recruitCount,
       deadline: date,
-      apply: {
-        type: 'homepage',
-        url: applyUrl,
-      },
+      // apply: {
+      //   type: 'homepage',
+      //   url: applyUrl,
+      // },
       content,
     };
 
-    // TODO: 게시글 생성 API 연동 후 생성된 게시글 상세 페이지로 이동
-    alert('게시글이 등록되었습니다.');
+    if (mode === 'create') {
+      // TODO: 생성 API + 게시글 상세 페이지로 이동
+      alert('게시글이 등록되었습니다.');
+      return;
+    }
+
+    // TODO: 수정 API + 게시글 상세 페이지로 이동
+    alert('게시글이 수정되었습니다.');
   };
 
   return (
-    <CommunityPostForm onSubmit={handleSubmit}>
+    <CommunityPostForm
+      mode={mode}
+      onSubmit={handleSubmit}
+      initialContent={initialValues?.content ?? ''}
+    >
       <section className="flex flex-col gap-[30px]">
         <FormField label="제목" required>
           <Input
             label="제목"
             name="title"
             placeholder="제목 입력"
+            defaultValue={initialValues?.title ?? ''}
             className={POST_INPUT_CLASS}
             inputClassName="font-medium"
+            hideMessageSpace
           />
         </FormField>
 
@@ -67,9 +85,9 @@ export default function GroupCreatePage() {
 
           <FormField label="진행방식" labelClassName="text-[14px]">
             <FormDropdown
-              value={workMethodType}
+              value={progressType}
               options={WORK_METHOD_OPTIONS}
-              onChange={setWorkMethodType}
+              onChange={setProgressType}
             />
           </FormField>
 
@@ -78,22 +96,27 @@ export default function GroupCreatePage() {
               label="예상 기간"
               name="period"
               placeholder="예상 기간 입력"
+              defaultValue={initialValues?.expectedPeriod ?? ''}
               className={POST_INPUT_CLASS}
               inputClassName="font-medium"
+              hideMessageSpace
             />
           </FormField>
 
-          <FormField label="학력" labelClassName="text-[14px]">
+          {/* TODO: 학력 필드 추가 여부 확인 */}
+          {/* <FormField label="학력" labelClassName="text-[14px]">
             <FormDropdown value={education} options={EDUCATION_OPTIONS} onChange={setEducation} />
-          </FormField>
+          </FormField> */}
 
           <FormField label="모집 인원" labelClassName="text-[14px]">
             <Input
               label="모집 인원"
-              name="recruit"
+              name="recruitCount"
               placeholder="모집 인원 입력"
+              defaultValue={initialValues?.recruitCount ?? ''}
               className={POST_INPUT_CLASS}
               inputClassName="font-medium"
+              hideMessageSpace
             />
           </FormField>
 
@@ -106,15 +129,18 @@ export default function GroupCreatePage() {
             />
           </FormField>
 
-          <FormField label="공고 URL" labelClassName="text-[14px]" className="col-span-2" required>
+          {/* TODO: URL 필요 여부 확인 */}
+          {/* <FormField label="공고 URL" labelClassName="text-[14px]" className="col-span-2" required>
             <Input
               label="공고 URL"
               name="url"
               type="url"
               placeholder="URL 입력"
+              defaultValue={initialValues?.applyUrl ?? ''}
               className={POST_INPUT_CLASS}
+              hideMessageSpace
             />
-          </FormField>
+          </FormField> */}
         </div>
       </section>
     </CommunityPostForm>

@@ -11,19 +11,29 @@ import { CommunityPostEditor } from '../CommunityPostEditor';
 import { COMMUNITY_CATEGORY_TABS } from '../../_constants/community';
 
 type CommunityPostFormProps = {
-  children: ReactNode;
+  mode?: 'create' | 'edit';
   onSubmit: (event: React.FormEvent<HTMLFormElement>, content: string) => void;
+  initialContent?: string;
+  children: ReactNode;
 };
 
-export default function CommunityPostForm({ children, onSubmit }: CommunityPostFormProps) {
-  const [content, setContent] = useState('');
+export default function CommunityPostForm({
+  mode = 'create',
+  onSubmit,
+  initialContent = '',
+  children,
+}: CommunityPostFormProps) {
+  const [content, setContent] = useState(initialContent);
 
   const router = useRouter();
   const pathname = usePathname();
 
   const currentCategory = COMMUNITY_CATEGORY_TABS.find((tab) => pathname.startsWith(tab.value));
   const listPageHref = currentCategory?.value ?? '/community/jobs';
-  const title = `${currentCategory?.label ?? '게시글'} 생성`;
+
+  const actionLabel = mode === 'edit' ? '수정' : '생성';
+  const title = `${currentCategory?.label ?? '게시글'} ${actionLabel}`;
+  const submitButtonText = mode === 'edit' ? '수정하기' : '등록하기';
 
   const formId = 'community-post-form';
 
@@ -47,7 +57,7 @@ export default function CommunityPostForm({ children, onSubmit }: CommunityPostF
 
           <Button type="submit" form={formId} width={100} size={44} paddingX={12} className="gap-3">
             <EditIcon className="w-4" aria-hidden="true" />
-            등록하기
+            {submitButtonText}
           </Button>
         </header>
 

@@ -1,16 +1,22 @@
 import { notFound } from 'next/navigation';
 
-import PostDetailHeader from '../../_components/PostDetail/PostDetailHeader';
 import {
   PostDetailAside,
   PostDetailAsideActions,
   PostDetailAsideInfoItem,
   PostDetailAsideProfile,
 } from '../../_components/PostDetailAside';
+import JobDetailHeader from '../_components/JobDetailHeader';
 
 import { APPLY_LABEL } from '@/components/community/jobs/constants';
 
 import { jobPosts } from '@/mocks/posts';
+import { getOptionLabel } from '@/lib/getOptionLabel';
+import {
+  EDUCATION_OPTIONS,
+  EMPLOYMENT_TYPE_OPTIONS,
+  POST_CONTENT_CLASS,
+} from '../../_constants/community';
 
 export default async function JobDetailPage({ params }: { params: Promise<{ jobId: string }> }) {
   const { jobId } = await params;
@@ -43,7 +49,8 @@ export default async function JobDetailPage({ params }: { params: Promise<{ jobI
           '-'
         ),
     },
-    { label: '고용 형태', value: jobPost.employmentType },
+    { label: '학력', value: getOptionLabel(EDUCATION_OPTIONS, jobPost.education) },
+    { label: '고용 형태', value: getOptionLabel(EMPLOYMENT_TYPE_OPTIONS, jobPost.employmentType) },
     { label: '지원 마감일', value: jobPost.deadline },
     { label: '지원 방법', value: APPLY_LABEL[jobPost.apply.type] },
   ];
@@ -51,18 +58,17 @@ export default async function JobDetailPage({ params }: { params: Promise<{ jobI
   return (
     <div className="mb-[50px] flex items-start gap-5">
       <section className="flex flex-1 flex-col gap-10 px-5">
-        <PostDetailHeader
-          title={jobPost.title}
-          createdAt={jobPost.createdAt}
-          viewCount={jobPost.viewCount}
-        />
+        <JobDetailHeader jobPost={jobPost} />
 
         <article className="flex flex-col gap-5">
           {jobPost.imageUrl && (
             <img src={jobPost.imageUrl} alt={jobPost.title} className="max-w-[740px]" />
           )}
 
-          <p className="leading-6 whitespace-pre-line">{jobPost.content}</p>
+          <div
+            className={POST_CONTENT_CLASS}
+            dangerouslySetInnerHTML={{ __html: jobPost.content }}
+          />
         </article>
       </section>
 

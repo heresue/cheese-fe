@@ -24,6 +24,7 @@ export type JobPost = {
 
   author: UserSummary;
 
+  field: string;
   skills: string[];
   career: string;
   education: string;
@@ -53,7 +54,7 @@ export type InfoPost = {
 
   thumbnailUrl: string;
 
-  category: '질문글' | '정보글' | '자료공유';
+  category: 'question' | 'info' | 'resource';
   title: string;
 
   content: string;
@@ -78,7 +79,7 @@ export type GroupPost = {
 
   recruitCount: number;
   expectedPeriod: string;
-  progressType: '온라인' | '오프라인' | '온/오프라인';
+  progressType: 'online' | 'offline' | 'online/offline';
 
   skills: string[];
   applyMethod: string;

@@ -21,7 +21,7 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
   const updateSearchParams = useUpdateSearchParams();
 
   const isInfoPage = pathname.startsWith('/community/info');
-  const isCreatePage = pathname.endsWith('/new');
+  const isCreatePage = pathname.endsWith('/create');
   const shouldShowFilterBar = !isCreatePage;
 
   const sortOptions = isInfoPage ? INFO_SORT_OPTIONS : COMMUNITY_SORT_OPTIONS;
@@ -33,10 +33,10 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
     COMMUNITY_CATEGORY_TABS.find((tab) => pathname.startsWith(tab.value))?.value ??
     '/community/jobs';
 
-  const createPostHref = `${activeCategory}/new`;
+  const createPostHref = `${activeCategory}/create`;
 
   const handleChangeTab = (value: (typeof COMMUNITY_CATEGORY_TABS)[number]['value']) => {
-    const nextPath = isCreatePage ? `${value}/new` : `${value}`;
+    const nextPath = isCreatePage ? `${value}/create` : `${value}`;
 
     // TODO: 공통 ConfirmModal 적용
     if (isCreatePage) {
