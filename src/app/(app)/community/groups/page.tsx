@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import GroupPostCard from '@/components/community/groups/GroupPostCard';
 
 import { useLikeToggle } from '@/hooks/useLikeToggle';
-import { getDeadlineTime } from '@/lib/formatDeadline';
+import { getDeadlineTime, isRecruitClosed } from '@/lib/formatDeadline';
 
 import { groupPosts as GROUP_POSTS } from '@/mocks/posts';
 
@@ -38,6 +38,13 @@ export default function CommunityGroupsPage() {
         }
 
         if (sort === 'deadline') {
+          const aClosed = isRecruitClosed(a.deadline);
+          const bClosed = isRecruitClosed(b.deadline);
+
+          if (aClosed !== bClosed) {
+            return aClosed ? 1 : -1;
+          }
+
           return getDeadlineTime(a.deadline) - getDeadlineTime(b.deadline);
         }
 

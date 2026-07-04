@@ -13,15 +13,19 @@ import type { JobPost, GroupPost } from '@/types/community';
 
 type PostDetailAsideActionsProps = {
   post: JobPost | GroupPost;
+  isClosed?: boolean;
   buttonText?: string;
 };
 
 export function PostDetailAsideActions({
   post,
+  isClosed,
   buttonText = '지원하기',
 }: PostDetailAsideActionsProps) {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const [isLiked, setIsLiked] = useState(post.isLiked);
+
+  const closedButtonText = 'apply' in post ? '채용 마감' : '모집 마감';
 
   const handleToggleLike = () => {
     setIsLiked((prev) => !prev);
@@ -54,9 +58,15 @@ export function PostDetailAsideActions({
         )}
       </Button>
 
-      <Button size={54} width={182} onClick={handleApplyClick} className="flex gap-3">
+      <Button
+        disabled={isClosed}
+        onClick={handleApplyClick}
+        size={54}
+        width={182}
+        className="flex gap-3"
+      >
         <ShareIcon className="h-[13px]" />
-        {buttonText}
+        {isClosed ? closedButtonText : buttonText}
       </Button>
 
       <ApplyModal

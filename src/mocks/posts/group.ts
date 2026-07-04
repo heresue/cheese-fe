@@ -1,6 +1,7 @@
 import type { GroupPost } from '@/types/community';
 
 import { getMockUserSummary } from '@/mocks/profile/userSummaries';
+import getMockDeadline from '@/mocks/getMockDeadline';
 
 export const groupPosts: GroupPost[] = [
   {
@@ -20,7 +21,7 @@ export const groupPosts: GroupPost[] = [
 
     author: getMockUserSummary(11, 'personal'),
 
-    deadline: '2026-02-10',
+    deadline: getMockDeadline(17),
     createdAt: '2026-01-28',
 
     viewCount: 128,
@@ -92,7 +93,7 @@ export const groupPosts: GroupPost[] = [
 
     author: getMockUserSummary(13, 'company'),
 
-    deadline: '2026-02-15',
+    deadline: getMockDeadline(1),
     createdAt: '2026-02-01',
 
     viewCount: 154,
@@ -128,7 +129,7 @@ export const groupPosts: GroupPost[] = [
 
     author: getMockUserSummary(14, 'personal'),
 
-    deadline: '2026-02-20',
+    deadline: getMockDeadline(-3),
     createdAt: '2026-02-03',
 
     viewCount: 112,
@@ -198,7 +199,7 @@ export const groupPosts: GroupPost[] = [
 
     author: getMockUserSummary(1, 'personal'),
 
-    deadline: '2026-02-28',
+    deadline: getMockDeadline(7),
     createdAt: '2026-02-07',
 
     viewCount: 203,

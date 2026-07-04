@@ -11,6 +11,7 @@ import GroupDetailHeader from '../_components/GroupDetailHeader';
 
 import { groupPosts } from '@/mocks/posts';
 import { getOptionLabel } from '@/lib/getOptionLabel';
+import { isRecruitClosed } from '@/lib/formatDeadline';
 import {
   POST_CONTENT_CLASS,
   WORK_METHOD_OPTIONS,
@@ -28,6 +29,8 @@ export default async function GroupDetailPage({
   if (!groupPost) {
     notFound();
   }
+
+  const isClosed = isRecruitClosed(groupPost.deadline);
 
   const groupInfoItems = [
     { label: '모집 분야', value: groupPost.field },
@@ -66,7 +69,7 @@ export default async function GroupDetailPage({
         actions={
           <div className="flex w-full flex-col gap-5 px-3 py-5">
             <PostDetailAsideInfoItem label="지원자수" value={`${groupPost.applicantCount}명`} />
-            <PostDetailAsideActions post={groupPost} />
+            <PostDetailAsideActions post={groupPost} isClosed={isClosed} />
           </div>
         }
       >

@@ -1,6 +1,7 @@
 import type { JobPost } from '@/types/community';
 
 import { getMockUserSummary } from '@/mocks/profile/userSummaries';
+import getMockDeadline from '@/mocks/getMockDeadline';
 
 export const jobPosts: JobPost[] = [
   {
@@ -18,7 +19,7 @@ export const jobPosts: JobPost[] = [
     location: '광주 광산구',
     employmentType: 'intern',
 
-    deadline: '2026-02-03',
+    deadline: getMockDeadline(10),
     createdAt: '2026-01-10',
     viewCount: 128,
     likeCount: 24,
@@ -67,9 +68,9 @@ export const jobPosts: JobPost[] = [
     career: '경력 1년 ↑',
     education: 'none',
     location: '서울 강남구',
-    employmentType: 'fplTime',
+    employmentType: 'fullTime',
 
-    deadline: '2026-02-14',
+    deadline: getMockDeadline(-6),
     createdAt: '2026-01-14',
     viewCount: 246,
     likeCount: 87,
@@ -114,9 +115,9 @@ export const jobPosts: JobPost[] = [
     career: '경력 2년 ↑',
     education: 'college',
     location: '서울 마포구',
-    employmentType: 'fplTime',
+    employmentType: 'fullTime',
 
-    deadline: '2026-02-20',
+    deadline: null,
     createdAt: '2026-01-18',
     viewCount: 173,
     likeCount: 42,
@@ -209,9 +210,9 @@ export const jobPosts: JobPost[] = [
     career: '경력 3년 ↑',
     education: 'college',
     location: '서울 서초구',
-    employmentType: 'fplTime',
+    employmentType: 'fullTime',
 
-    deadline: '2026-02-28',
+    deadline: getMockDeadline(-2),
     createdAt: '2026-01-25',
     viewCount: 389,
     likeCount: 113,
@@ -260,7 +261,7 @@ export const jobPosts: JobPost[] = [
     location: '경기 성남시',
     employmentType: 'fullTime',
 
-    deadline: '2026-03-05',
+    deadline: getMockDeadline(1),
     createdAt: '2026-01-28',
     viewCount: 312,
     likeCount: 38,

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 
 import JobApplyAction from '@/components/community/jobs/JobApplyAction';
-import { formatDeadline } from '@/lib/formatDeadline';
+import { formatDeadline, isRecruitClosed } from '@/lib/formatDeadline';
 
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
@@ -14,6 +14,7 @@ import {
   EDUCATION_OPTIONS,
   EMPLOYMENT_TYPE_OPTIONS,
 } from '@/app/(app)/community/_constants/community';
+import { cn } from '@/lib/cn';
 
 type JobPostCardProps = {
   post: JobPost;
@@ -22,6 +23,8 @@ type JobPostCardProps = {
 };
 
 export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPostCardProps) {
+  const isClosed = isRecruitClosed(post.deadline);
+
   const educationLabel = getOptionLabel(EDUCATION_OPTIONS, post.education);
   const employmentTypeLabel = getOptionLabel(EMPLOYMENT_TYPE_OPTIONS, post.employmentType);
 
@@ -29,7 +32,7 @@ export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPo
 
   return (
     <article className="flex h-[146px] items-center justify-between border-b border-gray-300 p-5">
-      <div className="flex w-[150px] items-center gap-1">
+      <div className={cn('flex w-[150px] items-center gap-1', isClosed && 'opacity-50')}>
         <span className="w-fit max-w-[130px] leading-5 font-bold break-all">
           {post.companyName}
         </span>
@@ -49,7 +52,7 @@ export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPo
         </button>
       </div>
 
-      <div className="mx-7 flex flex-1 flex-col gap-2">
+      <div className={cn('mx-7 flex flex-1 flex-col gap-2', isClosed && 'opacity-50')}>
         <Link href={`/community/jobs/${post.id}`} className="w-fit">
           <h3 className="leading-5 font-bold">{post.title}</h3>
         </Link>
@@ -68,7 +71,7 @@ export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPo
       </div>
 
       <div className="flex flex-col items-center gap-2">
-        <JobApplyAction apply={post.apply} onDirectApply={onDirectApply} />
+        <JobApplyAction apply={post.apply} onDirectApply={onDirectApply} isClosed={isClosed} />
         <span className="text-[12px] leading-5 text-gray-700">{formatDeadline(post.deadline)}</span>
       </div>
     </article>

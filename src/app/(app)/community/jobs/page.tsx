@@ -7,7 +7,7 @@ import JobPostCard from '@/components/community/jobs/JobPostCard';
 import ApplyModal from '../_components/ApplyModal/ApplyModal';
 
 import { useLikeToggle } from '@/hooks/useLikeToggle';
-import { getDeadlineTime } from '@/lib/formatDeadline';
+import { getDeadlineTime, isRecruitClosed } from '@/lib/formatDeadline';
 
 import type { JobPost } from '@/types/community';
 
@@ -42,6 +42,13 @@ export default function CommunityJobsPage() {
         }
 
         if (sort === 'deadline') {
+          const aClosed = isRecruitClosed(a.deadline);
+          const bClosed = isRecruitClosed(b.deadline);
+
+          if (aClosed !== bClosed) {
+            return aClosed ? 1 : -1;
+          }
+
           return getDeadlineTime(a.deadline) - getDeadlineTime(b.deadline);
         }
 

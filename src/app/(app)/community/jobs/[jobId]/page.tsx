@@ -12,6 +12,7 @@ import { APPLY_LABEL } from '@/components/community/jobs/constants';
 
 import { jobPosts } from '@/mocks/posts';
 import { getOptionLabel } from '@/lib/getOptionLabel';
+import { isRecruitClosed } from '@/lib/formatDeadline';
 import {
   EDUCATION_OPTIONS,
   EMPLOYMENT_TYPE_OPTIONS,
@@ -28,6 +29,8 @@ export default async function JobDetailPage({ params }: { params: Promise<{ jobI
   }
 
   const applyUrl = jobPost.apply.type === 'homepage' ? jobPost.apply.url : '-';
+
+  const isClosed = isRecruitClosed(jobPost.deadline);
 
   const jobInfoItems = [
     { label: '모집 분야', value: 'FE, BE' },
@@ -77,7 +80,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ jobI
         actions={
           <div className="flex w-full flex-col gap-5 px-3 py-5">
             <PostDetailAsideInfoItem label="지원자수" value={`${jobPost.applicantCount}명`} />
-            <PostDetailAsideActions post={jobPost} />
+            <PostDetailAsideActions post={jobPost} isClosed={isClosed} />
           </div>
         }
       >
