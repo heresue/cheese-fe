@@ -23,6 +23,8 @@ import {
   getSidebarItemClassName,
   isSidebarItemActive,
 } from '@/components/layout/sidebar/utils';
+import { getMockPersonalProfile } from '@/mocks/profile/userProfiles';
+import { ProfileImage } from '@/components/common/ProfileImage';
 
 type NavigationIconType = 'bell' | 'calendar' | 'memo' | 'pencil' | 'community';
 
@@ -31,8 +33,6 @@ type LinkNavigationItem = {
   href: string;
   icon: NavigationIconType;
 };
-
-const DEFAULT_PROFILE_IMAGE_SRC = '/profile_default.png';
 
 const linkNavigationItems: LinkNavigationItem[] = [
   { label: '일정 관리', href: '/calendar', icon: 'calendar' },
@@ -62,6 +62,8 @@ export default function AppSidebar() {
   const pathname = usePathname();
   const [isNotificationSidebarOpen, setIsNotificationSidebarOpen] = useState(false);
 
+  const profile = getMockPersonalProfile(1);
+
   const isMyPageActive = !isNotificationSidebarOpen && isSidebarItemActive(pathname, '/mypage');
 
   return (
@@ -88,16 +90,10 @@ export default function AppSidebar() {
               onClick={() => setIsNotificationSidebarOpen(false)}
             >
               <div className="flex h-[30px] w-[30px] items-center justify-center">
-                <Image
-                  src={DEFAULT_PROFILE_IMAGE_SRC}
-                  alt="기본 프로필 이미지"
-                  width={25}
-                  height={25}
-                  className="shrink-0 rounded-full object-cover"
-                />
+                <ProfileImage src={profile.profileImageUrl} size={25} />
               </div>
 
-              <span>김치즈 님</span>
+              <span>{profile.nickname} 님</span>
             </Link>
           </div>
 
