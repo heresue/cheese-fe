@@ -18,17 +18,18 @@ export const groupPosts: GroupPost[] = [
     applicantCount: 6,
     deadline: getMockDeadline(17),
 
+    content: `<img src='/mock/info-3.jpg' alt='첨부 이미지 1' />
+    <p>취업 포트폴리오를 함께 점검하고 개선할 스터디원을 모집합니다.</p>
+    <p>주 1회 온라인으로 모여 각자 작업한 포트폴리오를 공유하고, 서로 피드백을 주고받는 방식으로 진행할 예정입니다.</p>
+    <p></p>
+    <img src='/mock/info-5.jpg' alt='첨부 이미지 2' />
+    <p>프론트엔드 취업을 준비 중이거나 포트폴리오 완성도를 높이고 싶은 분들과 함께하고 싶습니다.</p>
+    `,
+
     createdAt: '2026-01-28',
     viewCount: 128,
     likeCount: 24,
     commentCount: 8,
-
-    content: `<p>취업 포트폴리오를 함께 점검하고 개선할 스터디원을 모집합니다.</p>
-<p>주 1회 온라인으로 모여 각자 작업한 포트폴리오를 공유하고, 서로 피드백을 주고받는 방식으로 진행할 예정입니다.</p>
-<p></p>
-<p>프론트엔드 취업을 준비 중이거나 포트폴리오 완성도를 높이고 싶은 분들과 함께하고 싶습니다.</p>
-`,
-    imageUrl: '/mock/info-1.jpg',
 
     isLiked: true,
     isApplied: true,
@@ -48,17 +49,16 @@ export const groupPosts: GroupPost[] = [
     applicantCount: 4,
     deadline: null,
 
+    content: `<p>Spring Boot 기반 사이드 프로젝트를 함께 진행할 백엔드 팀원을 모집합니다.</p>
+    <p>기획은 어느 정도 정리되어 있으며, API 설계와 DB 모델링부터 함께 진행할 예정입니다.</p>
+    <p></p>
+    <p>협업 경험을 쌓고 싶은 분, 꾸준히 참여 가능하신 분이면 좋겠습니다.</p>
+    `,
+
     createdAt: '2026-01-30',
     viewCount: 96,
     likeCount: 17,
     commentCount: 5,
-
-    content: `<p>Spring Boot 기반 사이드 프로젝트를 함께 진행할 백엔드 팀원을 모집합니다.</p>
-<p>기획은 어느 정도 정리되어 있으며, API 설계와 DB 모델링부터 함께 진행할 예정입니다.</p>
-<p></p>
-<p>협업 경험을 쌓고 싶은 분, 꾸준히 참여 가능하신 분이면 좋겠습니다.</p>
-`,
-    imageUrl: '/mock/info-2.jpg',
 
     isLiked: false,
     isApplied: true,
@@ -78,17 +78,17 @@ export const groupPosts: GroupPost[] = [
     applicantCount: 3,
     deadline: getMockDeadline(1),
 
+    content: `<p>React 기반 토이 프로젝트를 함께 만들 프론트엔드 팀원을 구합니다.</p>
+    <p></p>
+    <p>작은 기능부터 시작해서 상태 관리, 라우팅, UI 컴포넌트 분리까지 함께 연습해보는 것이 목표입니다.</p>
+    <img src='/mock/info-2.jpg' alt='첨부 이미지 1' />
+    <p>초보자도 괜찮지만, 꾸준히 소통 가능하신 분이면 좋겠습니다.</p>
+    `,
+
     createdAt: '2026-02-01',
     viewCount: 154,
     likeCount: 32,
     commentCount: 12,
-
-    content: `<p>React 기반 토이 프로젝트를 함께 만들 프론트엔드 팀원을 구합니다.</p>
-<p></p>
-<p>작은 기능부터 시작해서 상태 관리, 라우팅, UI 컴포넌트 분리까지 함께 연습해보는 것이 목표입니다.</p>
-<p>초보자도 괜찮지만, 꾸준히 소통 가능하신 분이면 좋겠습니다.</p>
-`,
-    imageUrl: '/mock/info-3.jpg',
 
     isLiked: true,
     isApplied: false,
@@ -108,16 +108,16 @@ export const groupPosts: GroupPost[] = [
     applicantCount: 7,
     deadline: getMockDeadline(-3),
 
+    content: `<p>Node.js와 Express를 활용해 서버 개발을 함께 공부할 스터디원을 모집합니다.</p>
+    <p>REST API 설계, 인증 처리, 데이터베이스 연결 등을 실습 중심으로 진행합니다.</p>
+    <img src='/mock/info-5.jpg' alt='첨부 이미지 1' />
+    <p>백엔드 입문자나 기초를 다시 정리하고 싶은 분께 적합합니다.</p>
+    `,
+
     createdAt: '2026-02-03',
     viewCount: 112,
     likeCount: 21,
     commentCount: 9,
-
-    content: `<p>Node.js와 Express를 활용해 서버 개발을 함께 공부할 스터디원을 모집합니다.</p>
-<p>REST API 설계, 인증 처리, 데이터베이스 연결 등을 실습 중심으로 진행합니다.</p>
-<p>백엔드 입문자나 기초를 다시 정리하고 싶은 분께 적합합니다.</p>
-`,
-    imageUrl: '/mock/info-4.jpg',
 
     isLiked: false,
     isApplied: true,
@@ -136,21 +136,21 @@ export const groupPosts: GroupPost[] = [
     applicantCount: 5,
     deadline: null,
 
+    content: `<img src='/mock/info-2.jpg' alt='첨부 이미지 1' />
+    <img src='/mock/info-4.jpg' alt='첨부 이미지 2' />
+    <p>기존 화면을 개선하는 방식의 프론트엔드 협업 프로젝트입니다.</p>
+    <p>Figma 시안을 참고해 UI를 구현하고, 컴포넌트 구조와 사용자 경험을 함께 개선해볼 예정입니다.</p>
+    <p>디자인을 코드로 옮기는 작업에 관심 있는 분을 찾고 있습니다.</p>
+    `,
+
     createdAt: '2026-02-05',
     viewCount: 87,
     likeCount: 14,
     commentCount: 6,
 
-    content: `<p>기존 화면을 개선하는 방식의 프론트엔드 협업 프로젝트입니다.</p>
-<p>Figma 시안을 참고해 UI를 구현하고, 컴포넌트 구조와 사용자 경험을 함께 개선해볼 예정입니다.</p>
-<p>디자인을 코드로 옮기는 작업에 관심 있는 분을 찾고 있습니다.</p>
-`,
-    imageUrl: '/mock/info-5.jpg',
-
     isLiked: true,
     isApplied: false,
   },
-
   {
     id: 6,
     field: ['BE'],
@@ -165,17 +165,19 @@ export const groupPosts: GroupPost[] = [
     applicantCount: 9,
     deadline: getMockDeadline(7),
 
+    content: `<img src='/mock/info-1.jpg' alt='첨부 이미지 1' />
+    <p>대규모 트래픽 상황을 가정한 백엔드 프로젝트를 함께 진행합니다.</p>
+    <p></p>
+    <p>캐싱, 동시성 처리, 성능 개선, 배포 환경 구성 등을 경험해보는 것이 목표입니다.</p>
+    <p>기본적인 백엔드 개발 경험이 있고, 심화 주제를 다뤄보고 싶은 분께 추천합니다.</p>
+    <p></p>
+    <img src='/mock/info-3.jpg' alt='첨부 이미지 2' />
+    `,
+
     createdAt: '2026-02-07',
     viewCount: 203,
     likeCount: 45,
     commentCount: 18,
-
-    content: `<p>대규모 트래픽 상황을 가정한 백엔드 프로젝트를 함께 진행합니다.</p>
-<p></p>
-<p>캐싱, 동시성 처리, 성능 개선, 배포 환경 구성 등을 경험해보는 것이 목표입니다.</p>
-<p>기본적인 백엔드 개발 경험이 있고, 심화 주제를 다뤄보고 싶은 분께 추천합니다.</p>
-`,
-    imageUrl: '/mock/info-6.jpg',
 
     isLiked: true,
     isApplied: false,

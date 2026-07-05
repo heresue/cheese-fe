@@ -60,10 +60,6 @@ export default async function GroupDetailPage({
         <GroupDetailHeader groupPost={groupPost} />
 
         <article className="flex flex-col gap-5">
-          {groupPost.imageUrl && (
-            <img src={groupPost.imageUrl} alt={groupPost.title} className="max-w-[740px]" />
-          )}
-
           <div
             className={POST_CONTENT_CLASS}
             dangerouslySetInnerHTML={{ __html: groupPost.content }}

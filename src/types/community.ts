@@ -33,12 +33,11 @@ export type JobPost = {
   applicantCount: number;
   deadline: string | null;
 
+  content: string;
+
   createdAt: string;
   viewCount: number;
   likeCount: number;
-
-  content: string;
-  imageUrl?: string;
 
   apply: ApplyInfo;
 
@@ -60,13 +59,12 @@ export type GroupPost = {
   applicantCount: number;
   deadline: string | null;
 
+  content: string;
+
   createdAt: string;
   viewCount: number;
   likeCount: number;
   commentCount: number;
-
-  content: string;
-  imageUrl?: string;
 
   isLiked: boolean;
   isApplied: boolean;
@@ -74,16 +72,19 @@ export type GroupPost = {
 
 export type InfoPost = {
   id: number;
-
-  author: UserSummary;
-
-  createdAt: string;
-
-  thumbnailUrl: string;
-
   category: 'question' | 'info' | 'resource';
   title: string;
 
+  author: UserSummary;
+
+  // TODO: content 안에 첨부된 첫 번째 이미지를 썸네일로 사용
+  thumbnailUrl?: string;
+
+  // 목록 카드 미리보기용 텍스트
+  // TODO: content에서 HTML/img를 제거한 순수 텍스트
+  previewText: string;
+
+  // 상세 본문 HTML
   content: string;
 
   tags: string[];
@@ -91,6 +92,7 @@ export type InfoPost = {
   attachmentFileName?: string;
   attachmentUrl?: string;
 
+  createdAt: string;
   viewCount: number;
   likeCount: number;
   commentCount: number;

@@ -70,10 +70,6 @@ export default async function JobDetailPage({ params }: { params: Promise<{ jobI
         <JobDetailHeader jobPost={jobPost} />
 
         <article className="flex flex-col gap-5">
-          {jobPost.imageUrl && (
-            <img src={jobPost.imageUrl} alt={jobPost.title} className="max-w-[740px]" />
-          )}
-
           <div
             className={POST_CONTENT_CLASS}
             dangerouslySetInnerHTML={{ __html: jobPost.content }}

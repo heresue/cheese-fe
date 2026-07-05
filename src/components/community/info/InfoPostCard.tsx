@@ -23,15 +23,19 @@ export default function InfoPostCard({ post, wrapperClassName, onToggleLike }: I
   return (
     <article className={cn('border-b border-gray-300 p-5 leading-5', wrapperClassName)}>
       <div className="flex w-full items-center gap-5">
-        <Link href={`/community/info/${post.id}`}>
-          <Image
-            className="h-24 w-24 shrink-0 rounded-[10px] border border-gray-300 object-cover"
-            width={96}
-            height={96}
-            src={post.thumbnailUrl}
-            alt="게시글 썸네일 이미지"
-          />
-        </Link>
+        {post.thumbnailUrl ? (
+          <Link href={`/community/info/${post.id}`}>
+            <Image
+              className="h-24 w-24 shrink-0 rounded-[10px] border border-gray-300 object-cover"
+              width={96}
+              height={96}
+              src={post.thumbnailUrl}
+              alt="게시글 썸네일 이미지"
+            />
+          </Link>
+        ) : (
+          ''
+        )}
 
         <div className="flex min-w-0 flex-1 flex-col gap-3">
           <Link href={`/community/info/${post.id}`} className="flex min-w-0 flex-col gap-3">
@@ -41,14 +45,14 @@ export default function InfoPostCard({ post, wrapperClassName, onToggleLike }: I
               </span>
               <h3 className="truncate">{post.title}</h3>
             </div>
-
-            <div
+            <p
               className={cn(
                 POST_CONTENT_CLASS,
                 'line-clamp-2 h-10 text-[14px] leading-5 font-medium text-gray-700',
               )}
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
+            >
+              {post.previewText}
+            </p>
           </Link>
 
           <div className="flex justify-between gap-4 text-[12px] text-gray-600">

@@ -20,32 +20,33 @@ export const jobPosts: JobPost[] = [
     applicantCount: 5,
     deadline: getMockDeadline(10),
 
+    content: `<p>안녕하세요.</p>
+    <p></p>
+    <p>치즈공장에서 프론트엔드 인턴을 모집합니다.</p>
+    <img src='/mock/info-1.jpg' alt='첨부 이미지 1' />
+    <p></p>
+    <p><strong><담당 업무></strong></p>
+    <p>- React 기반 웹 서비스 개발</p>
+    <p>- TypeScript 코드 작성 및 유지보수</p>
+    <p>- 디자이너 및 백엔드 개발자와 협업</p>
+    <p></p>
+    <img src='/mock/info-2.jpg' alt='첨부 이미지 2' />
+    <p><strong><자격 요건></strong></p>
+    <p>- React 사용 경험</p>
+    <p>- Git 사용 경험</p>
+    <p>- 원활한 커뮤니케이션 능력</p>
+    <p></p>
+    <p><strong><우대 사항></strong></p>
+    <p>- Next.js 경험</p>
+    <p>- 사이드 프로젝트 경험</p>
+    <p></p>
+    <p></p>
+    <p>많은 관심과 지원 부탁드립니다.</p>
+    `,
+
     createdAt: '2026-01-10',
     viewCount: 128,
     likeCount: 24,
-
-    content: `<p>안녕하세요.</p>
-<p></p>
-<p>치즈공장에서 프론트엔드 인턴을 모집합니다.</p>
-<p></p>
-<p><strong><담당 업무></strong></p>
-<p>- React 기반 웹 서비스 개발</p>
-<p>- TypeScript 코드 작성 및 유지보수</p>
-<p>- 디자이너 및 백엔드 개발자와 협업</p>
-<p></p>
-<p><strong><자격 요건></strong></p>
-<p>- React 사용 경험</p>
-<p>- Git 사용 경험</p>
-<p>- 원활한 커뮤니케이션 능력</p>
-<p></p>
-<p><strong><우대 사항></strong></p>
-<p>- Next.js 경험</p>
-<p>- 사이드 프로젝트 경험</p>
-<p></p>
-<p></p>
-<p>많은 관심과 지원 부탁드립니다.</p>
-`,
-    imageUrl: '/mock/info-1.jpg',
 
     apply: {
       type: 'homepage',
@@ -71,29 +72,30 @@ export const jobPosts: JobPost[] = [
     applicantCount: 125,
     deadline: getMockDeadline(-6),
 
+    content: `<p>프론트랩에서 프론트엔드 개발자를 채용합니다.</p>
+    <p></p>
+    <p><strong><담당 업무></strong></p>
+    <p>- React 기반 서비스 개발</p>
+    <p>- 공통 컴포넌트 설계 및 유지보수</p>
+    <p>- 서비스 성능 개선</p>
+    <p></p>
+    <img src='/mock/info-6.jpg' alt='첨부 이미지 1' />
+    <p><strong>자격 요건</strong></p>
+    <p>- JavaScript 및 React 활용 경험</p>
+    <p>- 협업 경험</p>
+    <p>- 웹 표준에 대한 이해</p>
+    <p></p>
+    <p><strong><우대 사항></strong></p>
+    <p>- TypeScript 경험</p>
+    <p>- 테스트 코드 작성 경험</p>
+    <p></p>
+    <p>함께 성장할 분들의 지원을 기다립니다.</p>
+    <img src='/mock/info-4.jpg' alt='첨부 이미지 2' />
+    `,
+
     createdAt: '2026-01-14',
     viewCount: 246,
     likeCount: 87,
-
-    content: `<p>프론트랩에서 프론트엔드 개발자를 채용합니다.</p>
-<p></p>
-<p><strong><담당 업무></strong></p>
-<p>- React 기반 서비스 개발</p>
-<p>- 공통 컴포넌트 설계 및 유지보수</p>
-<p>- 서비스 성능 개선</p>
-<p></p>
-<p><strong>자격 요건</strong></p>
-<p>- JavaScript 및 React 활용 경험</p>
-<p>- 협업 경험</p>
-<p>- 웹 표준에 대한 이해</p>
-<p></p>
-<p><strong><우대 사항></strong></p>
-<p>- TypeScript 경험</p>
-<p>- 테스트 코드 작성 경험</p>
-<p></p>
-<p>함께 성장할 분들의 지원을 기다립니다.</p>
-`,
-    imageUrl: '/mock/info-2.jpg',
 
     apply: {
       type: 'direct',
@@ -118,29 +120,30 @@ export const jobPosts: JobPost[] = [
     applicantCount: 56,
     deadline: null,
 
+    content: `<img src='/mock/info-5.jpg' alt='첨부 이미지 1' />
+    <p>백엔드코어에서 Spring Boot 개발자를 모집합니다.</p>
+    <p></p>
+    <p><strong><담당 업무></strong></p>
+    <p>- REST API 개발 및 운영</p>
+    <p>- MySQL 데이터베이스 설계</p>
+    <p>- 서버 성능 개선</p>
+    <p></p>
+    <p><strong>자격 요건</strong></p>
+    <p>- Java 및 Spring Boot 경험</p>
+    <p>- SQL 활용 능력</p>
+    <p>- Git 협업 경험</p>
+    <p></p>
+    <img src='/mock/info-6.jpg' alt='첨부 이미지 2' />
+    <p><strong><우대 사항></strong></p>
+    <p>- AWS 경험</p>
+    <p>- 대용량 트래픽 처리 경험</p>
+    <p></p>
+    <p>열정 있는 개발자분들의 많은 지원 바랍니다.</p>
+    `,
+
     createdAt: '2026-01-18',
     viewCount: 173,
     likeCount: 42,
-
-    content: `<p>백엔드코어에서 Spring Boot 개발자를 모집합니다.</p>
-<p></p>
-<p><strong><담당 업무></strong></p>
-<p>- REST API 개발 및 운영</p>
-<p>- MySQL 데이터베이스 설계</p>
-<p>- 서버 성능 개선</p>
-<p></p>
-<p><strong>자격 요건</strong></p>
-<p>- Java 및 Spring Boot 경험</p>
-<p>- SQL 활용 능력</p>
-<p>- Git 협업 경험</p>
-<p></p>
-<p><strong><우대 사항></strong></p>
-<p>- AWS 경험</p>
-<p>- 대용량 트래픽 처리 경험</p>
-<p></p>
-<p>열정 있는 개발자분들의 많은 지원 바랍니다.</p>
-`,
-    imageUrl: '/mock/info-3.jpg',
 
     apply: {
       type: 'homepage',
@@ -166,29 +169,30 @@ export const jobPosts: JobPost[] = [
     applicantCount: 2,
     deadline: null,
 
+    content: `<p>UI팩토리에서 UI/UX 중심 프론트엔드 개발자를 채용합니다.</p>
+    <p></p>
+    <img src='/mock/info-4.jpg' alt='첨부 이미지 1' />
+    <p><strong><담당 업무></strong></p>
+    <p>- 사용자 중심 인터페이스 개발</p>
+    <p>- 디자인 시스템 구축 및 관리</p>
+    <p>- 서비스 화면 개선</p>
+    <p></p>
+    <p><strong>자격 요건</strong></p>
+    <p>- React 활용 경험</p>
+    <p>- CSS 및 반응형 웹 구현 경험</p>
+    <p>- 협업 능력</p>
+    <p></p>
+    <img src='/mock/info-6.jpg' alt='첨부 이미지 2' />
+    <p><strong><우대 사항></strong></p>
+    <p>- Figma 활용 경험</p>
+    <p>- 디자인 시스템 구축 경험</p>
+    <p></p>
+    <p>사용자 경험에 관심 있는 분들의 지원을 기다립니다.</p>
+    `,
+
     createdAt: '2026-01-22',
     viewCount: 201,
     likeCount: 65,
-
-    content: `<p>UI팩토리에서 UI/UX 중심 프론트엔드 개발자를 채용합니다.</p>
-<p></p>
-<p><strong><담당 업무></strong></p>
-<p>- 사용자 중심 인터페이스 개발</p>
-<p>- 디자인 시스템 구축 및 관리</p>
-<p>- 서비스 화면 개선</p>
-<p></p>
-<p><strong>자격 요건</strong></p>
-<p>- React 활용 경험</p>
-<p>- CSS 및 반응형 웹 구현 경험</p>
-<p>- 협업 능력</p>
-<p></p>
-<p><strong><우대 사항></strong></p>
-<p>- Figma 활용 경험</p>
-<p>- 디자인 시스템 구축 경험</p>
-<p></p>
-<p>사용자 경험에 관심 있는 분들의 지원을 기다립니다.</p>
-`,
-    imageUrl: '/mock/info-4.jpg',
 
     apply: {
       type: 'direct',
@@ -213,30 +217,30 @@ export const jobPosts: JobPost[] = [
     applicantCount: 56,
     deadline: getMockDeadline(-2),
 
+    content: `<p>데브스테이션에서 Next.js 개발자를 모집합니다.</p>
+    <p><strong><담당 업무></strong></p>
+    <p></p>
+    <img src='/mock/info-1.jpg' alt='첨부 이미지 1' />
+    <p>- Next.js 기반 웹 서비스 개발</p>
+    <p>- 데이터 연동 및 상태 관리</p>
+    <p>- 사용자 경험 개선</p>
+    <p></p>
+    <p><strong>자격 요건</strong></p>
+    <p>- React 및 Next.js 경험</p>
+    <p>- TypeScript 활용 능력</p>
+    <p>- Git 사용 경험</p>
+    <p></p>
+    <p><strong><우대 사항></strong></p>
+    <p>- React Query 경험</p>
+    <p>- SSR 및 SEO 최적화 경험</p>
+    <p></p>
+    <p></p>
+    <p>함께 성장할 개발자를 찾고 있습니다.</p>
+    `,
+
     createdAt: '2026-01-25',
     viewCount: 389,
     likeCount: 113,
-
-    content: `<p>데브스테이션에서 Next.js 개발자를 모집합니다.</p>
-<p><strong><담당 업무></strong></p>
-<p></p>
-<p>- Next.js 기반 웹 서비스 개발</p>
-<p>- 데이터 연동 및 상태 관리</p>
-<p>- 사용자 경험 개선</p>
-<p></p>
-<p><strong>자격 요건</strong></p>
-<p>- React 및 Next.js 경험</p>
-<p>- TypeScript 활용 능력</p>
-<p>- Git 사용 경험</p>
-<p></p>
-<p><strong><우대 사항></strong></p>
-<p>- React Query 경험</p>
-<p>- SSR 및 SEO 최적화 경험</p>
-<p></p>
-<p></p>
-<p>함께 성장할 개발자를 찾고 있습니다.</p>
-`,
-    imageUrl: '/mock/info-5.jpg',
 
     apply: {
       type: 'homepage',
@@ -262,29 +266,30 @@ export const jobPosts: JobPost[] = [
     applicantCount: 33,
     deadline: getMockDeadline(1),
 
+    content: `<img src='/mock/info-6.jpg' alt='첨부 이미지 1' />
+        <p>클라우드웨이에서 클라우드 기반 백엔드 개발자를 채용합니다.</p>
+    <p></p>
+    <p><strong><담당 업무></strong></p>
+    <p>- Node.js 기반 서버 개발</p>
+    <p>- AWS 인프라 운영</p>
+    <p>- Docker 환경 구축 및 관리</p>
+    <p></p>
+    <img src='/mock/info-2.jpg' alt='첨부 이미지 2' />
+    <p><strong>자격 요건</strong></p>
+    <p>- Node.js 활용 경험</p>
+    <p>- Docker 사용 경험</p>
+    <p>- 협업 경험</p>
+    <p></p>
+    <p><strong><우대 사항></strong></p>
+    <p>- AWS 서비스 운영 경험</p>
+    <p>- CI/CD 구축 경험</p>
+    <p></p>
+    <p>클라우드 환경에 관심 있는 분들의 많은 지원 바랍니다.</p>
+    `,
+
     createdAt: '2026-01-28',
     viewCount: 312,
     likeCount: 38,
-
-    content: `<p>클라우드웨이에서 클라우드 기반 백엔드 개발자를 채용합니다.</p>
-<p></p>
-<p><strong><담당 업무></strong></p>
-<p>- Node.js 기반 서버 개발</p>
-<p>- AWS 인프라 운영</p>
-<p>- Docker 환경 구축 및 관리</p>
-<p></p>
-<p><strong>자격 요건</strong></p>
-<p>- Node.js 활용 경험</p>
-<p>- Docker 사용 경험</p>
-<p>- 협업 경험</p>
-<p></p>
-<p><strong><우대 사항></strong></p>
-<p>- AWS 서비스 운영 경험</p>
-<p>- CI/CD 구축 경험</p>
-<p></p>
-<p>클라우드 환경에 관심 있는 분들의 많은 지원 바랍니다.</p>
-`,
-    imageUrl: '/mock/info-6.jpg',
 
     apply: {
       type: 'homepage',
