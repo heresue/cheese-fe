@@ -7,7 +7,7 @@ export const groupPosts: GroupPost[] = [
   {
     id: 1,
 
-    field: 'FE',
+    field: ['FE', 'BE'],
     title: '취업 포트폴리오 스터디 함께하실 분 모집합니다',
 
     recruitCount: 4,
@@ -43,7 +43,7 @@ export const groupPosts: GroupPost[] = [
   {
     id: 2,
 
-    field: 'BE',
+    field: ['BE'],
     title: 'Spring Boot 사이드 프로젝트 팀원 모집',
 
     recruitCount: 3,
@@ -79,7 +79,7 @@ export const groupPosts: GroupPost[] = [
   {
     id: 3,
 
-    field: 'FE',
+    field: ['BE', 'FE'],
     title: 'React 기반 토이 프로젝트 같이 하실 분 구해요',
 
     recruitCount: 2,
@@ -115,7 +115,7 @@ export const groupPosts: GroupPost[] = [
   {
     id: 4,
 
-    field: 'BE',
+    field: ['BE'],
     title: 'Node.js + Express 서버 스터디 인원 모집합니다',
 
     recruitCount: 5,
@@ -150,7 +150,7 @@ export const groupPosts: GroupPost[] = [
   {
     id: 5,
 
-    field: 'FE',
+    field: ['FE'],
     title: 'UI/UX 개선 중심 프론트 협업 프로젝트 참여자 모집',
 
     recruitCount: 3,
@@ -185,7 +185,7 @@ export const groupPosts: GroupPost[] = [
   {
     id: 6,
 
-    field: 'BE',
+    field: ['BE'],
     title: '대규모 트래픽 처리 경험을 위한 백엔드 프로젝트',
 
     recruitCount: 4,

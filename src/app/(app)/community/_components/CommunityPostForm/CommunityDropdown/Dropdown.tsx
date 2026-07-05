@@ -6,24 +6,22 @@ import { cn } from '@/lib/cn';
 
 import ArrowIcon from '@/assets/icons/common/arrow.svg';
 
-type DropdownOption = {
-  label: string;
+type DropdownProps = {
   value: string;
-};
-
-type FormDropdownProps = {
-  value: string;
-  options: DropdownOption[];
+  options: {
+    label: string;
+    value: string;
+  }[];
   placeholder?: string;
   onChange: (value: string) => void;
 };
 
-export default function FormDropdown({
+export default function Dropdown({
   value,
   options,
   placeholder = '선택',
   onChange,
-}: FormDropdownProps) {
+}: DropdownProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
 

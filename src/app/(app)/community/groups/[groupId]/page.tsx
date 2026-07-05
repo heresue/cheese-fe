@@ -13,8 +13,14 @@ import { groupPosts } from '@/mocks/posts';
 import { getOptionLabel } from '@/lib/getOptionLabel';
 import { isRecruitClosed } from '@/lib/formatDeadline';
 
-import { WORK_METHOD_OPTIONS } from '@/constants/profileOptions';
-import { POST_CONTENT_CLASS } from '@/app/(app)/community/_constants/community';
+import { Field, WORK_METHOD_OPTIONS } from '@/constants/profileOptions';
+import { POST_CONTENT_CLASS } from '../../_constants/community';
+
+const FIELD_ORDER: Field[] = ['FE', 'BE'];
+
+function formatField(fields: Field[]) {
+  return FIELD_ORDER.filter((field) => fields.includes(field)).join(', ');
+}
 
 export default async function GroupDetailPage({
   params,
@@ -32,7 +38,7 @@ export default async function GroupDetailPage({
   const isClosed = isRecruitClosed(groupPost.deadline);
 
   const groupInfoItems = [
-    { label: '모집 분야', value: groupPost.field },
+    { label: '모집 분야', value: formatField(groupPost.field) },
     {
       label: '진행방식',
       value: getOptionLabel(WORK_METHOD_OPTIONS, groupPost.progressType),

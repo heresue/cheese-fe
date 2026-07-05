@@ -12,14 +12,23 @@ import { formatDeadline, isRecruitClosed } from '@/lib/formatDeadline';
 
 import type { GroupPost } from '@/types/community';
 import { cn } from '@/lib/cn';
+import { Field } from '@/constants/profileOptions';
 
 type GroupPostCardProps = {
   post: GroupPost;
   onToggleLike: (postId: number) => void;
 };
 
+const FIELD_ORDER: Field[] = ['FE', 'BE'];
+
+function sortFields(fields: Field[]) {
+  return FIELD_ORDER.filter((field) => fields.includes(field));
+}
+
 export default function GroupPostCard({ post, onToggleLike }: GroupPostCardProps) {
   const isClosed = isRecruitClosed(post.deadline);
+
+  const sortedFields = sortFields(post.field);
 
   return (
     <article
@@ -30,7 +39,13 @@ export default function GroupPostCard({ post, onToggleLike }: GroupPostCardProps
     >
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <Chip variant={post.field}>{post.field}</Chip>
+          <div className="flex gap-2">
+            {sortedFields.map((field) => (
+              <Chip key={field} variant={field}>
+                {field}
+              </Chip>
+            ))}
+          </div>
 
           <span className="text-[12px] text-gray-600">{formatDeadline(post.deadline)}</span>
         </div>

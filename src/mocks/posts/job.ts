@@ -12,7 +12,7 @@ export const jobPosts: JobPost[] = [
 
     author: getMockUserSummary(3, 'personal'),
 
-    field: 'FE',
+    field: ['FE'],
     skills: ['React', 'TypeScript', 'Next.js'],
     career: '신입, 경력',
     education: 'highSchool',
@@ -63,7 +63,7 @@ export const jobPosts: JobPost[] = [
 
     author: getMockUserSummary(18, 'company'),
 
-    field: 'FE',
+    field: ['FE'],
     skills: ['JavaScript', 'React', 'Tailwind CSS'],
     career: '경력 1년 ↑',
     education: 'none',
@@ -110,7 +110,7 @@ export const jobPosts: JobPost[] = [
 
     author: getMockUserSummary(5, 'personal'),
 
-    field: 'BE',
+    field: ['BE'],
     skills: ['Java', 'Spring Boot', 'MySQL'],
     career: '경력 2년 ↑',
     education: 'college',
@@ -158,7 +158,7 @@ export const jobPosts: JobPost[] = [
 
     author: getMockUserSummary(21, 'company'),
 
-    field: 'FE',
+    field: ['FE'],
     skills: ['Figma', 'React', 'CSS'],
     career: '신입',
     education: 'none',
@@ -205,7 +205,7 @@ export const jobPosts: JobPost[] = [
 
     author: getMockUserSummary(7, 'personal'),
 
-    field: 'FE, BE',
+    field: ['FE', 'BE'],
     skills: ['Next.js', 'TypeScript', 'React Query'],
     career: '경력 3년 ↑',
     education: 'college',
@@ -254,7 +254,7 @@ export const jobPosts: JobPost[] = [
 
     author: getMockUserSummary(1, 'personal'),
 
-    field: 'BE',
+    field: ['FE', 'BE'],
     skills: ['Node.js', 'AWS', 'Docker'],
     career: '경력 2년 ↑',
     education: 'none',

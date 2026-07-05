@@ -12,10 +12,16 @@ import { APPLY_LABEL } from '@/components/community/jobs/constants';
 
 import { getOptionLabel } from '@/lib/getOptionLabel';
 import { isRecruitClosed } from '@/lib/formatDeadline';
-import { EDUCATION_OPTIONS, EMPLOYMENT_TYPE_OPTIONS } from '@/constants/profileOptions';
+import { EDUCATION_OPTIONS, EMPLOYMENT_TYPE_OPTIONS, Field } from '@/constants/profileOptions';
 import { POST_CONTENT_CLASS } from '../../_constants/community';
 
 import { jobPosts } from '@/mocks/posts';
+
+const FIELD_ORDER: Field[] = ['FE', 'BE'];
+
+function formatField(fields: Field[]) {
+  return FIELD_ORDER.filter((field) => fields.includes(field)).join(', ');
+}
 
 export default async function JobDetailPage({ params }: { params: Promise<{ jobId: string }> }) {
   const { jobId } = await params;
@@ -31,7 +37,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ jobI
   const isClosed = isRecruitClosed(jobPost.deadline);
 
   const jobInfoItems = [
-    { label: '모집 분야', value: 'FE, BE' },
+    { label: '모집 분야', value: formatField(jobPost.field) },
     { label: '근무 지역', value: jobPost.location },
     { label: '사용 기술', value: jobPost.skills.join(', ') },
     {

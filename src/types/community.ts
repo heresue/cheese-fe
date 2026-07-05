@@ -17,14 +17,13 @@ export type ApplyInfo =
 
 export type JobPost = {
   id: number;
-
   companyName: string;
   title: string;
   applicantCount: number;
 
   author: UserSummary;
 
-  field: string;
+  field: ('FE' | 'BE')[];
   skills: string[];
   career: string;
   education: string;
@@ -40,6 +39,36 @@ export type JobPost = {
   imageUrl?: string;
 
   apply: ApplyInfo;
+
+  isLiked: boolean;
+  isApplied: boolean;
+};
+
+export type GroupPost = {
+  id: number;
+  field: ('FE' | 'BE')[];
+  title: string;
+
+  recruitCount: number;
+  expectedPeriod: string;
+  progressType: 'online' | 'offline' | 'online/offline';
+
+  skills: string[];
+  applyMethod: string;
+
+  applicantCount: number;
+
+  author: UserSummary;
+
+  deadline: string | null;
+  createdAt: string;
+
+  viewCount: number;
+  likeCount: number;
+  commentCount: number;
+
+  imageUrl?: string;
+  content: string;
 
   isLiked: boolean;
   isApplied: boolean;
@@ -69,35 +98,4 @@ export type InfoPost = {
   commentCount: number;
 
   isLiked: boolean;
-};
-
-export type GroupPost = {
-  id: number;
-
-  field: 'FE' | 'BE';
-  title: string;
-
-  recruitCount: number;
-  expectedPeriod: string;
-  progressType: 'online' | 'offline' | 'online/offline';
-
-  skills: string[];
-  applyMethod: string;
-
-  applicantCount: number;
-
-  author: UserSummary;
-
-  deadline: string | null;
-  createdAt: string;
-
-  viewCount: number;
-  likeCount: number;
-  commentCount: number;
-
-  imageUrl?: string;
-  content: string;
-
-  isLiked: boolean;
-  isApplied: boolean;
 };
