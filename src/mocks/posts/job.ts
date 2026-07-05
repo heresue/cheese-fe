@@ -8,7 +8,6 @@ export const jobPosts: JobPost[] = [
     id: 1,
     companyName: '치즈공장',
     title: '2026년 스타트업 인턴 부문 경력직 채용',
-    applicantCount: 5,
 
     author: getMockUserSummary(3, 'personal'),
 
@@ -18,8 +17,9 @@ export const jobPosts: JobPost[] = [
     education: 'highSchool',
     location: '광주 광산구',
     employmentType: 'intern',
-
+    applicantCount: 5,
     deadline: getMockDeadline(10),
+
     createdAt: '2026-01-10',
     viewCount: 128,
     likeCount: 24,
@@ -59,7 +59,6 @@ export const jobPosts: JobPost[] = [
     id: 2,
     companyName: '프론트랩',
     title: '프론트엔드 개발자 정규직 채용',
-    applicantCount: 125,
 
     author: getMockUserSummary(18, 'company'),
 
@@ -69,8 +68,9 @@ export const jobPosts: JobPost[] = [
     education: 'none',
     location: '서울 강남구',
     employmentType: 'fullTime',
-
+    applicantCount: 125,
     deadline: getMockDeadline(-6),
+
     createdAt: '2026-01-14',
     viewCount: 246,
     likeCount: 87,
@@ -106,7 +106,6 @@ export const jobPosts: JobPost[] = [
     id: 3,
     companyName: '백엔드코어',
     title: 'Spring Boot 기반 백엔드 개발자 모집',
-    applicantCount: 56,
 
     author: getMockUserSummary(5, 'personal'),
 
@@ -116,8 +115,9 @@ export const jobPosts: JobPost[] = [
     education: 'college',
     location: '서울 마포구',
     employmentType: 'fullTime',
-
+    applicantCount: 56,
     deadline: null,
+
     createdAt: '2026-01-18',
     viewCount: 173,
     likeCount: 42,
@@ -154,7 +154,6 @@ export const jobPosts: JobPost[] = [
     id: 4,
     companyName: 'UI팩토리',
     title: 'UI/UX 중심 프론트엔드 개발자 채용',
-    applicantCount: 2,
 
     author: getMockUserSummary(21, 'company'),
 
@@ -164,8 +163,9 @@ export const jobPosts: JobPost[] = [
     education: 'none',
     location: '부산 해운대구',
     employmentType: 'contract',
-
+    applicantCount: 2,
     deadline: null,
+
     createdAt: '2026-01-22',
     viewCount: 201,
     likeCount: 65,
@@ -201,7 +201,6 @@ export const jobPosts: JobPost[] = [
     id: 5,
     companyName: '데브스테이션',
     title: 'Next.js 기반 웹 서비스 개발자 채용',
-    applicantCount: 56,
 
     author: getMockUserSummary(7, 'personal'),
 
@@ -211,8 +210,9 @@ export const jobPosts: JobPost[] = [
     education: 'college',
     location: '서울 서초구',
     employmentType: 'fullTime',
-
+    applicantCount: 56,
     deadline: getMockDeadline(-2),
+
     createdAt: '2026-01-25',
     viewCount: 389,
     likeCount: 113,
@@ -250,7 +250,6 @@ export const jobPosts: JobPost[] = [
     id: 6,
     companyName: '클라우드웨이',
     title: '클라우드 기반 백엔드 개발자 채용 (AWS)',
-    applicantCount: 33,
 
     author: getMockUserSummary(1, 'personal'),
 
@@ -260,8 +259,9 @@ export const jobPosts: JobPost[] = [
     education: 'none',
     location: '경기 성남시',
     employmentType: 'fullTime',
-
+    applicantCount: 33,
     deadline: getMockDeadline(1),
+
     createdAt: '2026-01-28',
     viewCount: 312,
     likeCount: 38,

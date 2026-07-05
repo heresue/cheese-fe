@@ -16,6 +16,8 @@ import { isRecruitClosed } from '@/lib/formatDeadline';
 import { Field, WORK_METHOD_OPTIONS } from '@/constants/profileOptions';
 import { POST_CONTENT_CLASS } from '../../_constants/community';
 
+const APPLY_METHOD_LABEL = '치즈';
+
 const FIELD_ORDER: Field[] = ['FE', 'BE'];
 
 function formatField(fields: Field[]) {
@@ -47,7 +49,7 @@ export default async function GroupDetailPage({
     { label: '예상기간', value: groupPost.expectedPeriod },
     { label: '모집인원', value: `${groupPost.recruitCount}명` },
     { label: '지원 마감일', value: groupPost.deadline ?? '상시모집' },
-    { label: '지원 방법', value: groupPost.applyMethod },
+    { label: '지원 방법', value: APPLY_METHOD_LABEL },
   ];
 
   return (

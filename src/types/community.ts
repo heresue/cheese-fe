@@ -1,3 +1,5 @@
+import { Field } from '@/constants/profileOptions';
+
 export type UserSummary = {
   id: number;
   type: 'personal' | 'company';
@@ -19,18 +21,18 @@ export type JobPost = {
   id: number;
   companyName: string;
   title: string;
-  applicantCount: number;
 
   author: UserSummary;
 
-  field: ('FE' | 'BE')[];
+  field: Field[];
   skills: string[];
   career: string;
   education: string;
   location: string;
   employmentType: string;
-
+  applicantCount: number;
   deadline: string | null;
+
   createdAt: string;
   viewCount: number;
   likeCount: number;
@@ -46,29 +48,25 @@ export type JobPost = {
 
 export type GroupPost = {
   id: number;
-  field: ('FE' | 'BE')[];
+  field: Field[];
   title: string;
+
+  author: UserSummary;
 
   recruitCount: number;
   expectedPeriod: string;
   progressType: 'online' | 'offline' | 'online/offline';
-
   skills: string[];
-  applyMethod: string;
-
   applicantCount: number;
-
-  author: UserSummary;
-
   deadline: string | null;
-  createdAt: string;
 
+  createdAt: string;
   viewCount: number;
   likeCount: number;
   commentCount: number;
 
-  imageUrl?: string;
   content: string;
+  imageUrl?: string;
 
   isLiked: boolean;
   isApplied: boolean;
