@@ -12,8 +12,10 @@ import { APPLY_LABEL } from '@/components/community/jobs/constants';
 
 import { getOptionLabel } from '@/lib/getOptionLabel';
 import { isRecruitClosed } from '@/lib/formatDeadline';
-import { EDUCATION_OPTIONS, EMPLOYMENT_TYPE_OPTIONS, Field } from '@/constants/profileOptions';
+import { EDUCATION_OPTIONS, EMPLOYMENT_TYPE_OPTIONS } from '@/constants/profileOptions';
 import { POST_CONTENT_CLASS } from '../../_constants/community';
+
+import type { Field } from '@/types/community';
 
 import { jobPosts } from '@/mocks/posts';
 

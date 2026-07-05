@@ -10,9 +10,8 @@ import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 import CommentIcon from '@/assets/icons/common/comment.svg';
 import { formatDeadline, isRecruitClosed } from '@/lib/formatDeadline';
 
-import type { GroupPost } from '@/types/community';
+import type { Field, GroupPost } from '@/types/community';
 import { cn } from '@/lib/cn';
-import { Field } from '@/constants/profileOptions';
 
 type GroupPostCardProps = {
   post: GroupPost;

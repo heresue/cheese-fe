@@ -1,5 +1,3 @@
-import { Field } from '@/constants/profileOptions';
-
 export type UserSummary = {
   id: number;
   type: 'personal' | 'company';
@@ -7,6 +5,8 @@ export type UserSummary = {
   email: string;
   profileImageUrl?: string;
 };
+
+export type Field = 'FE' | 'BE';
 
 export type ApplyInfo =
   | {

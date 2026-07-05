@@ -1,4 +1,4 @@
-export type Field = 'FE' | 'BE';
+import { Field } from '@/types/community';
 
 export const FIELD_OPTIONS = [
   { label: 'FE', value: 'FE' },
