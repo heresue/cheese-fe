@@ -1,5 +1,11 @@
 import { mockUserSummaries } from '@/mocks/profile/userSummaries';
-import { AccountSettings, CompanyProfile, ContactMethod, PersonalProfile } from '@/types/profile';
+import {
+  AccountSettings,
+  CompanyProfile,
+  ContactMethod,
+  Mypage,
+  PersonalProfile,
+} from '@/types/profile';
 
 const createDocument = (fileName: string) => ({
   fileName,
@@ -27,7 +33,7 @@ export function getMockCompanyProfile(id: number): CompanyProfile {
   return profile;
 }
 
-export const mockPersonalProfiles: PersonalProfile[] = [
+const mockPersonalProfiles: PersonalProfile[] = [
   // 로그인 유저
   {
     id: 1,
@@ -71,11 +77,11 @@ export const mockPersonalProfiles: PersonalProfile[] = [
     })),
 ];
 
-export const mockCompanyProfiles: CompanyProfile[] = [
+const mockCompanyProfiles: CompanyProfile[] = [
   // 로그인 유저
   {
     id: 1,
-    nickname: '치즈공장',
+    companyName: '치즈공장',
     email: 'cheese@test.com',
     profileImageUrl: '/mock/profile-6.png',
     representativeName: '변대환',
@@ -98,7 +104,7 @@ export const mockCompanyProfiles: CompanyProfile[] = [
     .filter((user) => user.type === 'company' && user.id !== 1)
     .map((user) => ({
       id: user.id,
-      nickname: user.nickname,
+      companyName: user.nickname,
       email: user.email,
       profileImageUrl: user.profileImageUrl,
       representativeName: '김지수',
@@ -113,9 +119,18 @@ export const mockCompanyProfiles: CompanyProfile[] = [
     })),
 ];
 
-export const mockAccountSettings: AccountSettings = {
-  contact: 'email',
+const mockAccountSettings: AccountSettings = {
+  contactMethod: 'email',
   email: 'cheese@test.com',
   passwordUpdatedAt: '2026-01-30',
   address: '서울특별시',
+};
+
+const MOCK_LOGIN_USER_ID = 1;
+
+export const mockMypage: Mypage = {
+  activeProfileType: 'personal',
+  personalProfile: getMockPersonalProfile(MOCK_LOGIN_USER_ID),
+  companyProfile: getMockCompanyProfile(MOCK_LOGIN_USER_ID),
+  accountSettings: mockAccountSettings,
 };

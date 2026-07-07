@@ -15,6 +15,7 @@ import {
 } from '@/assets/icons/sidebar';
 import { MiniCalendar } from '@/app/(app)/calendar/_ui/sidebar/MiniCalendar';
 
+import { ProfileImage } from '@/components/common/ProfileImage';
 import { NotificationSidebar } from './NotificationSidebar';
 
 import { cn } from '@/lib/cn';
@@ -23,8 +24,8 @@ import {
   getSidebarItemClassName,
   isSidebarItemActive,
 } from '@/components/layout/sidebar/utils';
-import { getMockPersonalProfile } from '@/mocks/profile/userProfiles';
-import { ProfileImage } from '@/components/common/ProfileImage';
+
+import { mockMypage } from '@/mocks/profile/userProfiles';
 
 type NavigationIconType = 'bell' | 'calendar' | 'memo' | 'pencil' | 'community';
 
@@ -62,9 +63,17 @@ export default function AppSidebar() {
   const pathname = usePathname();
   const [isNotificationSidebarOpen, setIsNotificationSidebarOpen] = useState(false);
 
-  const profile = getMockPersonalProfile(1);
-
   const isMyPageActive = !isNotificationSidebarOpen && isSidebarItemActive(pathname, '/mypage');
+
+  const mypage = mockMypage;
+
+  const profile =
+    mypage.activeProfileType === 'personal' ? mypage.personalProfile : mypage.companyProfile;
+
+  const profileName =
+    mypage.activeProfileType === 'personal'
+      ? mypage.personalProfile.nickname
+      : mypage.companyProfile.companyName;
 
   return (
     <>
@@ -93,7 +102,7 @@ export default function AppSidebar() {
                 <ProfileImage src={profile.profileImageUrl} size={25} />
               </div>
 
-              <span>{profile.nickname} 님</span>
+              <span>{profileName} 님</span>
             </Link>
           </div>
 

@@ -108,7 +108,7 @@ export function getCompanyProfileItems(profile: CompanyProfile): SettingItemData
   return [
     {
       label: '기업명',
-      value: profile.nickname,
+      value: profile.companyName,
       icon: <NicknameIcon className="h-6" />,
       buttonIcon: <EditIcon className="h-[14px]" />,
       buttonText: '변경',
@@ -133,7 +133,7 @@ export function getCompanyProfileItems(profile: CompanyProfile): SettingItemData
     },
     {
       label: '이력서 양식 및 기업 홈페이지',
-      document: { ...profile.resumeTemplate, urlLabel: `${profile.nickname} 기업 홈페이지 URL` },
+      document: { ...profile.resumeTemplate, urlLabel: `${profile.companyName} 기업 홈페이지 URL` },
       icon: <CompanyIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
@@ -170,7 +170,7 @@ export function getAccountItems(profile: AccountSettings): SettingItemData[] {
   return [
     {
       label: '선호하는 연락방식',
-      value: getOptionLabel(CONTACT_METHOD_OPTIONS, profile.contact),
+      value: getOptionLabel(CONTACT_METHOD_OPTIONS, profile.contactMethod),
       icon: <ContactIcon className="h-6" />,
       buttonIcon: <EditIcon className="h-[14px]" />,
       buttonText: '변경',

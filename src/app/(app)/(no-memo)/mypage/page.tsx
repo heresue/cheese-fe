@@ -14,8 +14,7 @@ import { useMypageModal } from './_components/Modal/useMypageModal';
 
 import { CompanyIcon, PersonalIcon } from '@/assets/icons/settings';
 
-import { mockAccountSettings } from '@/mocks/profile/userProfiles';
-import { getMockCompanyProfile, getMockPersonalProfile } from '@/mocks/profile/userProfiles';
+import { mockMypage } from '@/mocks/profile/userProfiles';
 
 const MYPAGE_PROFILE_CATEGORY_TABS = [
   {
@@ -39,18 +38,29 @@ export default function MyPage() {
 
   const { editingItem, openModal, closeModal } = useMypageModal();
 
-  const personalProfile = getMockPersonalProfile(1);
-  const companyProfile = getMockCompanyProfile(1);
+  const mypage = mockMypage;
+
+  const isPersonalProfile = mypageTabs === 'personal';
+
+  const activeProfile = isPersonalProfile ? mypage.personalProfile : mypage.companyProfile;
+
+  const profileName = isPersonalProfile
+    ? mypage.personalProfile.nickname
+    : mypage.companyProfile.companyName;
+
+  const profileSubText = isPersonalProfile
+    ? mypage.personalProfile.interestedJob
+    : mypage.companyProfile.companyType;
 
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between px-3">
         <div className="flex items-center gap-3">
-          <ProfileImage src={personalProfile.profileImageUrl} />
+          <ProfileImage src={activeProfile.profileImageUrl} />
 
           <div className="flex flex-col text-gray-700">
-            <span className="text-[20px] font-bold">{personalProfile.nickname}</span>
-            <span className="text-[14px]">FE (프론트엔드)</span>
+            <span className="text-[20px] font-bold">{profileName}</span>
+            <span className="text-[14px]">{profileSubText}</span>
           </div>
         </div>
         <Button variant="outlineLightGray" size={38} paddingX={8}>
@@ -68,15 +78,13 @@ export default function MyPage() {
           className="[&>button]:h-[46px] [&>button]:px-3"
         />
 
-        {mypageTabs === 'personal' && (
-          <PersonalProfiles profile={personalProfile} onOpenModal={openModal} />
+        {mypageTabs === 'personal' ? (
+          <PersonalProfiles profile={mypage.personalProfile} onOpenModal={openModal} />
+        ) : (
+          <CompanyProfiles profile={mypage.companyProfile} onOpenModal={openModal} />
         )}
 
-        {mypageTabs === 'company' && (
-          <CompanyProfiles profile={companyProfile} onOpenModal={openModal} />
-        )}
-
-        <AccountSettings profile={mockAccountSettings} onOpenModal={openModal} />
+        <AccountSettings profile={mypage.accountSettings} onOpenModal={openModal} />
 
         <MypageModalRenderer editingItem={editingItem} onClose={closeModal} />
       </div>
