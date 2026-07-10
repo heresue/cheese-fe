@@ -102,6 +102,17 @@
   --color-sidebar-icon-active: var(--color-secondary-600);
   --color-sidebar-bg: var(--color-primary-100);
   --color-sidebar-bg-active: var(--color-primary-300);
+
+  /* Dashboard (Figma) */
+  --color-dashboard-black: #000000;
+  --color-dashboard-navy: #004589;
+  --color-dashboard-green: #2ecc87;
+  --color-dashboard-sky: #47b2f7;
+  --color-dashboard-gray: #595959;
+  --color-dashboard-purple: #b38bdc;
+  --color-dashboard-red: #e73b3b;
+  --color-dashboard-yellow: #fdc02d;
+  --color-dashboard-pink: #fe759e;
 }
 
 @layer base {
