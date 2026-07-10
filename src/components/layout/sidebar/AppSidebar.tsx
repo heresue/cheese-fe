@@ -38,7 +38,7 @@ type LinkNavigationItem = {
 const linkNavigationItems: LinkNavigationItem[] = [
   { label: '일정 관리', href: '/calendar', icon: 'calendar' },
   { label: '메모', href: '/memo', icon: 'memo' },
-  { label: '문제 풀이', href: '/problem', icon: 'pencil' },
+  { label: '면접 연습', href: '/problem', icon: 'pencil' },
   { label: '커뮤니티', href: '/community', icon: 'community' },
 ];
 
