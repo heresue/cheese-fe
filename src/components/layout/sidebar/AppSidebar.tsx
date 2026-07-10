@@ -80,7 +80,7 @@ export default function AppSidebar() {
       <aside className="border-border bg-sidebar-bg z-50 flex h-dvh w-[260px] shrink-0 flex-col border-r-2">
         <div className="flex px-4 pt-[33px] pb-20">
           <Link
-            href="/calendar"
+            href="/dashboard"
             aria-label="Cheese 홈"
             className="inline-flex"
             onClick={() => setIsNotificationSidebarOpen(false)}
