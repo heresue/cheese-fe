@@ -1,6 +1,6 @@
 export type UserSummary = {
   id: number;
-  type: 'personal' | 'company';
+  profileType: 'personal' | 'company';
   nickname: string;
   email: string;
   profileImageUrl?: string;

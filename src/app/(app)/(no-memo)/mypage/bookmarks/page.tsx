@@ -11,7 +11,7 @@ import InfoBookmarkList from './_components/InfoBookmarkList';
 const MYPAGE_BOOKMARK_CATEGORY_TABS = [
   { label: '채용공고', value: 'jobs' },
   { label: '그룹모집', value: 'groups' },
-  { label: '정보/자료공유', value: 'infos' },
+  { label: '정보/자료공유', value: 'info' },
 ];
 
 type MypageBookmarkCategoryTabValue = (typeof MYPAGE_BOOKMARK_CATEGORY_TABS)[number]['value'];

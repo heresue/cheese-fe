@@ -60,7 +60,7 @@ const mockPersonalProfiles: PersonalProfile[] = [
 
   // 나머지 유저
   ...mockUserSummaries
-    .filter((user) => user.type === 'personal' && user.id !== 1)
+    .filter((user) => user.profileType === 'personal' && user.id !== 1)
     .map((user) => ({
       id: user.id,
       nickname: user.nickname,
@@ -101,7 +101,7 @@ const mockCompanyProfiles: CompanyProfile[] = [
 
   // 나머지 유저
   ...mockUserSummaries
-    .filter((user) => user.type === 'company' && user.id !== 1)
+    .filter((user) => user.profileType === 'company' && user.id !== 1)
     .map((user) => ({
       id: user.id,
       companyName: user.nickname,
