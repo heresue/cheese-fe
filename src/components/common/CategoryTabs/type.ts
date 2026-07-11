@@ -1,6 +1,6 @@
 import { ComponentType, SVGProps } from 'react';
 
-export type CategoryTabsSize = 'sm' | 'md' | 'lg';
+export type CategoryTabsSize = 'sm' | 'md';
 
 export type CategoryTabItem<TValue extends string = string> = {
   label: string;

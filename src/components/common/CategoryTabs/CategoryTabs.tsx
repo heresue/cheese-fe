@@ -5,9 +5,8 @@ import { cn } from '@/lib/cn';
 import type { CategoryTabsProps, CategoryTabsSize } from '@/components/common/CategoryTabs/type';
 
 const sizeClassName: Record<CategoryTabsSize, string> = {
-  sm: 'h-[46px] px-[22px] text-[14px] leading-[20px]',
-  md: 'h-[52px] px-[24px] text-[15px] leading-[22px]',
-  lg: 'h-[54px] px-[28px] text-[16px] leading-[24px]',
+  sm: 'h-[46px] px-3 text-[16px] leading-[30px]',
+  md: 'h-[54px] px-5 text-[16px] leading-[30px]',
 };
 
 export function CategoryTabs<TValue extends string = string>({
@@ -32,8 +31,8 @@ export function CategoryTabs<TValue extends string = string>({
               'flex shrink-0 items-center justify-center gap-3 rounded-[10px] border bg-white font-medium transition-colors',
               sizeClassName[size],
               isActive
-                ? 'border-secondary-700 text-secondary-700'
-                : 'hover:border-secondary-700 hover:text-secondary-700 border-gray-300 text-gray-800 [&_svg]:text-gray-500',
+                ? 'border-secondary-600 text-secondary-700 [&_svg]:text-secondary-600 border-2 font-bold'
+                : 'hover:border-secondary-600 hover:text-secondary-700 hover:[&_svg]:text-secondary-600 border-gray-400 text-gray-700 [&_svg]:text-gray-500',
             )}
           >
             {Icon && <Icon className="h-[14px] w-[14px]" />}
