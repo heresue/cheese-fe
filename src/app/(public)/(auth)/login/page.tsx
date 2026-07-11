@@ -1,12 +1,26 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+
 import { Button } from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
 
 export default function LoginPage() {
+  const router = useRouter();
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    // TODO 1: (대시보드 구현 후) 대시보드로 이동하기
+    // TODO 2: 로그인 API 호출
+    router.push('/calendar');
+  };
+
   return (
     <div>
-      <form className="flex flex-col gap-5 pb-10">
+      <form className="flex flex-col gap-5 pb-10" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-5">
           <Input label="아이디" placeholder="아이디" type="email" name="email" />
           <Input
