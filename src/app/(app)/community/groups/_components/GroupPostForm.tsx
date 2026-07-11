@@ -5,8 +5,13 @@ import { useState } from 'react';
 import { Input } from '@/components/common/Input';
 import DatePicker from '@/components/common/DatePicker/DatePicker';
 
-import { CommunityPostForm } from '../../_components/CommunityPostForm';
-import { FormField, FormDropdown, POST_INPUT_CLASS } from '../../_components/CommunityPostForm';
+import {
+  CommunityPostForm,
+  Dropdown,
+  MultiSelectDropdown,
+  FormField,
+  POST_INPUT_CLASS,
+} from '../../_components/CommunityPostForm';
 
 import { FIELD_OPTIONS, WORK_METHOD_OPTIONS } from '@/constants/profileOptions';
 import { cn } from '@/lib/cn';
@@ -19,7 +24,7 @@ type GroupPostFormProps = {
 };
 
 export default function GroupPostForm({ mode, initialValues }: GroupPostFormProps) {
-  const [field, setField] = useState(initialValues?.field ?? '');
+  const [field, setField] = useState(initialValues?.field ?? []);
   const [progressType, setProgressType] = useState(initialValues?.progressType ?? '');
   {
     /* TODO: 학력 필드 추가 여부 확인 */
@@ -83,11 +88,11 @@ export default function GroupPostForm({ mode, initialValues }: GroupPostFormProp
 
         <div className="grid grid-cols-2 gap-x-15 gap-y-6">
           <FormField label="모집분야" labelClassName="text-[14px]">
-            <FormDropdown value={field} options={FIELD_OPTIONS} onChange={setField} />
+            <MultiSelectDropdown value={field} options={FIELD_OPTIONS} onChange={setField} />
           </FormField>
 
           <FormField label="진행방식" labelClassName="text-[14px]">
-            <FormDropdown
+            <Dropdown
               value={progressType}
               options={WORK_METHOD_OPTIONS}
               onChange={setProgressType}

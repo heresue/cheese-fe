@@ -58,7 +58,7 @@ export default function CompanyProfileCard({ isOpen, onClose, profile }: Company
         <div className="bg-bg-2 mx-auto flex w-full flex-col gap-6 px-10 py-13">
           <header className="flex items-center justify-between">
             <div>
-              <h2 className="text-[24px] font-bold">{profile.nickname} 님의 프로필</h2>
+              <h2 className="text-[24px] font-bold">{profile.companyName} 님의 프로필</h2>
               <p className="text-[20px] font-medium text-gray-600">기업 회원</p>
             </div>
 
@@ -78,7 +78,7 @@ export default function CompanyProfileCard({ isOpen, onClose, profile }: Company
                 <div className="flex items-center gap-5">
                   <ProfileImage src={profile.profileImageUrl} size={100} />
                   <div className="flex flex-col gap-3 font-medium">
-                    <span className="text-[20px]">{profile.nickname}</span>
+                    <span className="text-[20px]">{profile.companyName}</span>
                     <span className="text-gray-600">{profile.email}</span>
                   </div>
                 </div>

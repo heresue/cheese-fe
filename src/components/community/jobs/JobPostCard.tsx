@@ -40,20 +40,16 @@ export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPo
           <h3 className="leading-5 font-bold">{post.title}</h3>
         </Link>
 
-        <div className="text-[14px] leading-[30px] font-medium text-gray-700">
-          필요스킬: {post.skills.join(', ')}
-        </div>
-
         <ul className="flex">
           {jobConditions.map((item, i) => (
             <li key={i} className="flex items-center">
-              <span className="text-[12px] text-gray-600">{item}</span>
+              <span className="text-[12px]">{item}</span>
               {i !== jobConditions.length - 1 && <div className="mx-3 h-[10px] w-px bg-gray-300" />}
             </li>
           ))}
         </ul>
 
-        <span className="text-[12px] leading-5 text-gray-700">{formatDeadline(post.deadline)}</span>
+        <span className="text-[12px] leading-5">{formatDeadline(post.deadline)}</span>
       </div>
 
       <div className="flex gap-1">

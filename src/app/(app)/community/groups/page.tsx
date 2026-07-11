@@ -29,7 +29,7 @@ export default function CommunityGroupsPage() {
         return (
           post.title.toLowerCase().includes(normalizedKeyword) ||
           post.author.nickname.toLowerCase().includes(normalizedKeyword) ||
-          post.field.toLowerCase().includes(normalizedKeyword)
+          post.field.some((field) => field.toLowerCase().includes(normalizedKeyword))
         );
       })
       .sort((a, b) => {

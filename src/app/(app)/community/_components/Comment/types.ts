@@ -4,6 +4,7 @@ export type Comment = {
   id: number;
   author: UserSummary;
   content: string;
+  createdAt?: string;
 };
 
 export type CommentFormProps = {

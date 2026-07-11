@@ -5,10 +5,10 @@ import JobPostCard from '@/components/community/jobs/JobPostCard';
 import { jobPosts } from '@/mocks/posts';
 
 export default function AppliedJobList() {
-  const AppliedPosts = jobPosts?.filter((post) => post.isApplied);
+  const appliedPosts = jobPosts?.filter((post) => post.isApplied);
   return (
     <>
-      {AppliedPosts?.map((post) => (
+      {appliedPosts?.map((post) => (
         <JobPostCard
           key={post.id}
           post={post}

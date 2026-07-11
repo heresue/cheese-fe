@@ -14,7 +14,17 @@ import { getOptionLabel } from '@/lib/getOptionLabel';
 import { isRecruitClosed } from '@/lib/formatDeadline';
 
 import { WORK_METHOD_OPTIONS } from '@/constants/profileOptions';
-import { POST_CONTENT_CLASS } from '@/app/(app)/community/_constants/community';
+import { POST_CONTENT_CLASS } from '../../_constants/community';
+
+import type { Field } from '@/types/community';
+
+const APPLY_METHOD_LABEL = '치즈';
+
+const FIELD_ORDER: Field[] = ['FE', 'BE'];
+
+function formatField(fields: Field[]) {
+  return FIELD_ORDER.filter((field) => fields.includes(field)).join(', ');
+}
 
 export default async function GroupDetailPage({
   params,
@@ -32,7 +42,7 @@ export default async function GroupDetailPage({
   const isClosed = isRecruitClosed(groupPost.deadline);
 
   const groupInfoItems = [
-    { label: '모집 분야', value: groupPost.field },
+    { label: '모집 분야', value: formatField(groupPost.field) },
     {
       label: '진행방식',
       value: getOptionLabel(WORK_METHOD_OPTIONS, groupPost.progressType),
@@ -41,7 +51,7 @@ export default async function GroupDetailPage({
     { label: '예상기간', value: groupPost.expectedPeriod },
     { label: '모집인원', value: `${groupPost.recruitCount}명` },
     { label: '지원 마감일', value: groupPost.deadline ?? '상시모집' },
-    { label: '지원 방법', value: groupPost.applyMethod },
+    { label: '지원 방법', value: APPLY_METHOD_LABEL },
   ];
 
   return (
@@ -50,10 +60,6 @@ export default async function GroupDetailPage({
         <GroupDetailHeader groupPost={groupPost} />
 
         <article className="flex flex-col gap-5">
-          {groupPost.imageUrl && (
-            <img src={groupPost.imageUrl} alt={groupPost.title} className="max-w-[740px]" />
-          )}
-
           <div
             className={POST_CONTENT_CLASS}
             dangerouslySetInnerHTML={{ __html: groupPost.content }}

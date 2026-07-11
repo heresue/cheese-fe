@@ -1,7 +1,9 @@
+import { Field } from '@/types/community';
+
 export const FIELD_OPTIONS = [
   { label: 'FE', value: 'FE' },
   { label: 'BE', value: 'BE' },
-];
+] satisfies { label: string; value: Field }[];
 
 export const EMPLOYMENT_TYPE_OPTIONS = [
   { label: '인턴직', value: 'intern' },

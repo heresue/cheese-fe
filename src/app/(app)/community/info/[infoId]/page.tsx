@@ -24,10 +24,6 @@ export default async function InfoDetailPage({ params }: { params: Promise<{ inf
         <InfoDetailHeader infoPost={infoPost} />
 
         <article className="flex flex-col gap-5">
-          {infoPost.thumbnailUrl && (
-            <img src={infoPost.thumbnailUrl} alt={infoPost.title} className="max-w-[740px]" />
-          )}
-
           <div
             className={POST_CONTENT_CLASS}
             dangerouslySetInnerHTML={{ __html: infoPost.content }}

@@ -15,8 +15,7 @@ type PostDetailAsideProfileProps = {
 export function PostDetailAsideProfile({ author }: PostDetailAsideProfileProps) {
   const [isProfileCardOpen, setIsProfileCardOpen] = useState(false);
 
-  const isPersonalProfile = author.type === 'personal';
-  // const ProfileCardModal = isPersonalProfile ? PersonalProfileCard : CompanyProfileCard;
+  const isPersonalProfile = author.profileType === 'personal';
 
   const handleProfileButtonClick = () => {
     setIsProfileCardOpen(true);
@@ -40,8 +39,7 @@ export function PostDetailAsideProfile({ author }: PostDetailAsideProfileProps) 
         className="border-gray-400"
         size={44}
       >
-        {/* TODO: 기업 프로필 모달 열기 */}
-        {author.type === 'personal' ? '프로필 보기' : '기업 정보 알아보기'}
+        {author.profileType === 'personal' ? '프로필 보기' : '기업 정보 알아보기'}
       </Button>
 
       {isPersonalProfile ? (

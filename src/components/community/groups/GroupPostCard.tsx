@@ -1,16 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 
 import { Chip } from '@/components/common/Chip';
+import { ProfileImage } from '@/components/common/ProfileImage';
 
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 import CommentIcon from '@/assets/icons/common/comment.svg';
 import { formatDeadline, isRecruitClosed } from '@/lib/formatDeadline';
 
-import type { GroupPost } from '@/types/community';
+import type { Field, GroupPost } from '@/types/community';
 import { cn } from '@/lib/cn';
 
 type GroupPostCardProps = {
@@ -18,10 +18,16 @@ type GroupPostCardProps = {
   onToggleLike: (postId: number) => void;
 };
 
-const DEFAULT_PROFILE = '/profile_default.png';
+const FIELD_ORDER: Field[] = ['FE', 'BE'];
+
+function sortFields(fields: Field[]) {
+  return FIELD_ORDER.filter((field) => fields.includes(field));
+}
 
 export default function GroupPostCard({ post, onToggleLike }: GroupPostCardProps) {
   const isClosed = isRecruitClosed(post.deadline);
+
+  const sortedFields = sortFields(post.field);
 
   return (
     <article
@@ -32,7 +38,13 @@ export default function GroupPostCard({ post, onToggleLike }: GroupPostCardProps
     >
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <Chip variant={post.field}>{post.field}</Chip>
+          <div className="flex gap-2">
+            {sortedFields.map((field) => (
+              <Chip key={field} variant={field}>
+                {field}
+              </Chip>
+            ))}
+          </div>
 
           <span className="text-[12px] text-gray-600">{formatDeadline(post.deadline)}</span>
         </div>
@@ -50,14 +62,8 @@ export default function GroupPostCard({ post, onToggleLike }: GroupPostCardProps
       </div>
 
       <div className="flex items-center justify-between text-[12px] leading-[26px] text-gray-600">
-        <div className="flex items-center gap-2.5 pl-0.5">
-          <Image
-            width={24}
-            height={24}
-            className="line-clamp-1 inline-block rounded-full"
-            src={post.author.profileImageUrl || DEFAULT_PROFILE}
-            alt="작성자 프로필 이미지"
-          />
+        <div className="flex items-center gap-[10.5px] pl-0.5">
+          <ProfileImage src={post.author.profileImageUrl} size={24} />
           <div>{post.author.nickname} 님</div>
         </div>
 
@@ -74,9 +80,10 @@ export default function GroupPostCard({ post, onToggleLike }: GroupPostCardProps
             ) : (
               <LikeOutlineIcon className="w-[13px] text-gray-500" />
             )}
-            {/* TODO: 좋아요 토글 시 count */}
+
             <span>{post.likeCount}</span>
           </button>
+
           <div className="flex items-center gap-1">
             <CommentIcon className="w-[15px] text-gray-500" />
             <span>{post.commentCount}</span>

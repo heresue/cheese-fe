@@ -5,8 +5,13 @@ import { useState } from 'react';
 import { Input } from '@/components/common/Input';
 import DatePicker from '@/components/common/DatePicker/DatePicker';
 
-import { CommunityPostForm } from '../../_components/CommunityPostForm';
-import { FormField, FormDropdown, POST_INPUT_CLASS } from '../../_components/CommunityPostForm';
+import {
+  CommunityPostForm,
+  Dropdown,
+  MultiSelectDropdown,
+  FormField,
+  POST_INPUT_CLASS,
+} from '../../_components/CommunityPostForm';
 
 import {
   EDUCATION_OPTIONS,
@@ -24,7 +29,7 @@ type JobPostFormProps = {
 };
 
 export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
-  const [field, setField] = useState(initialValues?.field ?? '');
+  const [field, setField] = useState(initialValues?.field ?? []);
   const [employmentType, setEmploymentType] = useState(initialValues?.employmentType ?? '');
   const [education, setEducation] = useState(initialValues?.education ?? '');
   const [date, setDate] = useState(initialValues?.deadline ?? '');
@@ -84,16 +89,17 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
             defaultValue={initialValues?.title ?? ''}
             className={POST_INPUT_CLASS}
             inputClassName="font-medium"
+            hideMessageSpace
           />
         </FormField>
 
         <div className="grid grid-cols-2 gap-x-15 gap-y-6">
           <FormField label="모집분야" labelClassName="text-[14px]">
-            <FormDropdown value={field} options={FIELD_OPTIONS} onChange={setField} />
+            <MultiSelectDropdown value={field} options={FIELD_OPTIONS} onChange={setField} />
           </FormField>
 
           <FormField label="고용 형태" labelClassName="text-[14px]">
-            <FormDropdown
+            <Dropdown
               value={employmentType}
               options={EMPLOYMENT_TYPE_OPTIONS}
               onChange={setEmploymentType}
@@ -108,11 +114,12 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
               defaultValue={initialValues?.location ?? ''}
               className={POST_INPUT_CLASS}
               inputClassName="font-medium"
+              hideMessageSpace
             />
           </FormField>
 
           <FormField label="학력" labelClassName="text-[14px]">
-            <FormDropdown value={education} options={EDUCATION_OPTIONS} onChange={setEducation} />
+            <Dropdown value={education} options={EDUCATION_OPTIONS} onChange={setEducation} />
           </FormField>
 
           <FormField label="필요스킬" labelClassName="text-[14px]">
@@ -123,6 +130,7 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
               defaultValue={initialValues?.skills?.join(', ') ?? ''}
               className={POST_INPUT_CLASS}
               inputClassName="font-medium"
+              hideMessageSpace
             />
           </FormField>
 
@@ -143,6 +151,7 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
               placeholder="URL 입력"
               defaultValue={applyUrl}
               className={POST_INPUT_CLASS}
+              hideMessageSpace
             />
           </FormField>
         </div>
