@@ -192,7 +192,7 @@ export const jobPosts: JobPost[] = [
 
     createdAt: '2026-01-22',
     viewCount: 201,
-    likeCount: 65,
+    likeCount: 87,
 
     apply: {
       type: 'direct',

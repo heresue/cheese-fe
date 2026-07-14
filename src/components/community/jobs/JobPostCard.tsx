@@ -8,10 +8,16 @@ import { formatDeadline, isRecruitClosed } from '@/lib/formatDeadline';
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 
-import type { JobPost } from '@/types/community';
-import { getOptionLabel } from '@/lib/getOptionLabel';
-import { EDUCATION_OPTIONS, EMPLOYMENT_TYPE_OPTIONS } from '@/constants/profileOptions';
 import { cn } from '@/lib/cn';
+import { getOptionLabel } from '@/lib/getOptionLabel';
+import {
+  EDUCATION_OPTIONS,
+  EMPLOYMENT_TYPE_OPTIONS,
+  FIELD_OPTIONS,
+} from '@/constants/profileOptions';
+import { toFieldSelectValue } from '@/lib/jobField';
+
+import type { JobPost } from '@/types/community';
 
 type JobPostCardProps = {
   post: JobPost;
@@ -22,10 +28,17 @@ type JobPostCardProps = {
 export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPostCardProps) {
   const isClosed = isRecruitClosed(post.deadline);
 
+  const fieldLabel = getOptionLabel(FIELD_OPTIONS, toFieldSelectValue(post.field));
   const educationLabel = getOptionLabel(EDUCATION_OPTIONS, post.education);
   const employmentTypeLabel = getOptionLabel(EMPLOYMENT_TYPE_OPTIONS, post.employmentType);
 
-  const jobConditions = [post.career, educationLabel, post.location, employmentTypeLabel];
+  const jobConditions = [
+    fieldLabel,
+    post.career,
+    educationLabel,
+    post.location,
+    employmentTypeLabel,
+  ];
 
   return (
     <article className="flex items-center justify-between border-b border-gray-300 px-5 py-8">
@@ -59,13 +72,17 @@ export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPo
             e.stopPropagation();
             onToggleLike(post.id);
           }}
-          className="flex h-10 w-[38px] items-center justify-center rounded-[10px] border border-gray-500"
+          className="flex h-10 min-w-[69px] items-center justify-center gap-1 rounded-[10px] border border-gray-500 px-3"
         >
           {post.isLiked ? (
             <LikeFilledIcon className="text-error-subtle w-[14px]" />
           ) : (
             <LikeOutlineIcon className="w-[14px] text-gray-500" />
           )}
+
+          <span className={cn('font-medium', post.isLiked ? 'text-error-subtle' : '')}>
+            {post.likeCount}
+          </span>
         </button>
         <JobApplyAction apply={post.apply} onDirectApply={onDirectApply} isClosed={isClosed} />
       </div>

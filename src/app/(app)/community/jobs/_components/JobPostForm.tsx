@@ -20,22 +20,16 @@ import {
 
 import { cn } from '@/lib/cn';
 
-import type { Field, JobPost } from '@/types/community';
+import type { JobPost } from '@/types/community';
+import { FieldSelectValue, toFieldArray, toFieldSelectValue } from '@/lib/jobField';
 
 type JobPostFormProps = {
   mode: 'create' | 'edit';
   initialValues?: JobPost;
 };
 
-const getFieldValue = (field?: Field[]) => {
-  if (!field?.length) return '';
-  if (field.includes('FE') && field.includes('BE')) return 'FE_BE';
-
-  return field[0];
-};
-
 export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
-  const [field, setField] = useState(getFieldValue(initialValues?.field));
+  const [field, setField] = useState(toFieldSelectValue(initialValues?.field));
   const [employmentType, setEmploymentType] = useState(initialValues?.employmentType ?? '');
   const [education, setEducation] = useState(initialValues?.education ?? '');
   const [date, setDate] = useState(initialValues?.deadline ?? '');
@@ -53,11 +47,9 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
       .filter(Boolean);
     const applyUrl = String(formData.get('url') ?? '');
 
-    const fieldPayload: Field[] = field === 'FE_BE' ? ['FE', 'BE'] : field ? [field as Field] : [];
-
     const jobPostPayload = {
       title,
-      field: fieldPayload,
+      field: toFieldArray(field),
       employmentType,
       location,
       education,
@@ -103,7 +95,11 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
 
         <div className="grid grid-cols-2 gap-x-15 gap-y-6">
           <FormField label="모집분야" labelClassName="text-[14px]">
-            <FormDropdown value={field} options={FIELD_OPTIONS} onChange={setField} />
+            <FormDropdown
+              value={field}
+              options={FIELD_OPTIONS}
+              onChange={(value) => setField(value as FieldSelectValue)}
+            />
           </FormField>
 
           <FormField label="고용 형태" labelClassName="text-[14px]">
