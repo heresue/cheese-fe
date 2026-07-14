@@ -5,6 +5,8 @@ import { createPortal } from 'react-dom';
 import { useModalBehavior } from '@/hooks/useModalBehavior';
 import { cn } from '@/lib/cn';
 
+type ModalScope = 'viewport' | 'content';
+
 type ModalInteraction = 'default' | 'interactive';
 
 type BaseModalProps = {
@@ -16,6 +18,7 @@ type BaseModalProps = {
   closeOnEscape?: boolean;
   interaction?: ModalInteraction;
 
+  scope?: ModalScope;
   contentClassName?: string;
 };
 
@@ -24,15 +27,15 @@ export default function BaseModal({
   onClose,
   children,
 
-  hasOverlay = false,
+  hasOverlay,
   closeOnEscape = true,
   interaction = 'default',
 
+  scope = 'viewport',
   contentClassName,
 }: BaseModalProps) {
   const isInteractive = interaction === 'interactive';
-
-  const closeOnDimClick = !isInteractive;
+  const closeOnOutsideClick = !isInteractive;
   const lockBodyScroll = !isInteractive;
 
   useModalBehavior({ isOpen, onClose, closeOnEscape, lockBodyScroll });
@@ -40,20 +43,25 @@ export default function BaseModal({
   if (!isOpen) return null;
   if (typeof window === 'undefined') return null;
 
+  const portalTarget = scope === 'content' ? document.getElementById('app-main') : document.body;
+
+  if (!portalTarget) return null;
+
   return createPortal(
     <div
       className={cn(
-        'fixed inset-0 z-50 overflow-hidden',
+        'z-50 overflow-hidden',
+        scope === 'viewport' ? 'fixed inset-0' : 'absolute inset-0',
         isInteractive && 'pointer-events-none',
-        hasOverlay ? 'bg-overlay-dim' : '',
+        hasOverlay && 'bg-overlay-dim',
       )}
-      onClick={closeOnDimClick ? onClose : undefined}
+      onClick={closeOnOutsideClick ? onClose : undefined}
       role="presentation"
     >
       <div className="flex h-full w-full items-center justify-center p-5">
         <div
           className={cn(
-            'pointer-events-auto max-h-full max-w-full',
+            'max-h-full max-w-full',
             isInteractive && 'pointer-events-auto',
             contentClassName,
           )}
@@ -63,6 +71,6 @@ export default function BaseModal({
         </div>
       </div>
     </div>,
-    document.body,
+    portalTarget,
   );
 }
