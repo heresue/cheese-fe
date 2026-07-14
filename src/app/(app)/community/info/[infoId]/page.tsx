@@ -23,11 +23,22 @@ export default async function InfoDetailPage({ params }: { params: Promise<{ inf
       <section className="flex flex-1 flex-col gap-10 px-5">
         <InfoDetailHeader infoPost={infoPost} />
 
-        <article className="flex flex-col gap-5">
+        <article className="flex flex-col gap-6">
           <div
             className={POST_CONTENT_CLASS}
             dangerouslySetInnerHTML={{ __html: infoPost.content }}
           />
+
+          {infoPost.tags.length > 0 && (
+            <ul
+              aria-label="게시글 태그"
+              className="text-success flex flex-wrap gap-x-2 gap-y-1 text-[17px]"
+            >
+              {infoPost.tags.map((tag) => (
+                <li key={tag}>#{tag}</li>
+              ))}
+            </ul>
+          )}
         </article>
 
         <Comment />

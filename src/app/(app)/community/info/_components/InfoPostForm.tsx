@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Input } from '@/components/common/Input';
 
 import { CommunityPostForm } from '../../_components/CommunityPostForm';
-import { FormField, Dropdown, POST_INPUT_CLASS } from '../../_components/CommunityPostForm';
+import { FormField, FormDropdown, POST_INPUT_CLASS } from '../../_components/CommunityPostForm';
 
 import { INFO_SORT_OPTIONS } from '../../_constants/community';
 import { cn } from '@/lib/cn';
@@ -82,7 +82,7 @@ export default function InfoPostForm({ mode, initialValues }: InfoPostFormProps)
 
         <div className="flex flex-col gap-y-6">
           <FormField label="분류" labelClassName="text-[14px]" className="w-full max-w-[300px]">
-            <Dropdown value={category} options={INFO_CATEGORY_OPTIONS} onChange={setCategory} />
+            <FormDropdown value={category} options={INFO_CATEGORY_OPTIONS} onChange={setCategory} />
           </FormField>
 
           <div className="flex flex-col gap-2">
