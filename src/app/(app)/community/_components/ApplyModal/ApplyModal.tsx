@@ -30,19 +30,36 @@ export default function ApplyModal({ post, isOpen, onClose }: ApplyModalProps) {
   };
 
   return (
-    <BaseModal isOpen={isOpen} onClose={handleClose}>
-      <section className="bg-bg-white flex w-[540px] flex-col gap-[10px] rounded-xl border border-gray-400 px-8 pt-5 pb-15">
-        <header className="flex justify-end">
-          <button type="button" onClick={handleClose} aria-label="닫기" className="py-[7px]">
+    <BaseModal
+      isOpen={isOpen}
+      onClose={handleClose}
+      interaction="interactive"
+      scope="content"
+      draggable
+    >
+      <section className="bg-bg-white flex w-[540px] flex-col rounded-xl border border-gray-400 pb-15">
+        <header
+          data-drag-handle
+          className="flex cursor-grab justify-end pt-5 pb-[10px] active:cursor-grabbing"
+        >
+          <button
+            data-no-drag
+            type="button"
+            onClick={handleClose}
+            aria-label="닫기"
+            className="mr-[25px] p-[7px]"
+          >
             <CloseIcon className="w-4 text-gray-700" />
           </button>
         </header>
 
-        {isCompleted ? (
-          <ApplyCompleteContent title={post.title} />
-        ) : (
-          <ApplyFormContent post={post} onClose={onClose} onApply={handleApplyClick} />
-        )}
+        <div className="px-8">
+          {isCompleted ? (
+            <ApplyCompleteContent title={post.title} />
+          ) : (
+            <ApplyFormContent post={post} onClose={handleClose} onApply={handleApplyClick} />
+          )}
+        </div>
       </section>
     </BaseModal>
   );
