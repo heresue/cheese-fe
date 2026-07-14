@@ -7,8 +7,7 @@ import DatePicker from '@/components/common/DatePicker/DatePicker';
 
 import {
   CommunityPostForm,
-  Dropdown,
-  MultiSelectDropdown,
+  FormDropdown,
   FormField,
   POST_INPUT_CLASS,
 } from '../../_components/CommunityPostForm';
@@ -16,15 +15,22 @@ import {
 import { FIELD_OPTIONS, WORK_METHOD_OPTIONS } from '@/constants/profileOptions';
 import { cn } from '@/lib/cn';
 
-import type { GroupPost } from '@/types/community';
+import type { Field, GroupPost } from '@/types/community';
 
 type GroupPostFormProps = {
   mode: 'create' | 'edit';
   initialValues?: GroupPost;
 };
 
+const getFieldValue = (field?: Field[]) => {
+  if (!field?.length) return '';
+  if (field.includes('FE') && field.includes('BE')) return 'FE_BE';
+
+  return field[0];
+};
+
 export default function GroupPostForm({ mode, initialValues }: GroupPostFormProps) {
-  const [field, setField] = useState(initialValues?.field ?? []);
+  const [field, setField] = useState(getFieldValue(initialValues?.field));
   const [progressType, setProgressType] = useState(initialValues?.progressType ?? '');
   {
     /* TODO: 학력 필드 추가 여부 확인 */
@@ -42,9 +48,11 @@ export default function GroupPostForm({ mode, initialValues }: GroupPostFormProp
     const recruitCount = Number(formData.get('recruit') ?? 0);
     // const applyUrl = String(formData.get('url') ?? '');
 
+    const fieldPayload: Field[] = field === 'FE_BE' ? ['FE', 'BE'] : field ? [field as Field] : [];
+
     const groupPostPayload = {
       title,
-      field,
+      field: fieldPayload,
       progressType,
       expectedPeriod,
       // education,
@@ -88,11 +96,11 @@ export default function GroupPostForm({ mode, initialValues }: GroupPostFormProp
 
         <div className="grid grid-cols-2 gap-x-15 gap-y-6">
           <FormField label="모집분야" labelClassName="text-[14px]">
-            <MultiSelectDropdown value={field} options={FIELD_OPTIONS} onChange={setField} />
+            <FormDropdown value={field} options={FIELD_OPTIONS} onChange={setField} />
           </FormField>
 
           <FormField label="진행방식" labelClassName="text-[14px]">
-            <Dropdown
+            <FormDropdown
               value={progressType}
               options={WORK_METHOD_OPTIONS}
               onChange={setProgressType}

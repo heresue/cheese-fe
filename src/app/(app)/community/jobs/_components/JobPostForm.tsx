@@ -7,8 +7,7 @@ import DatePicker from '@/components/common/DatePicker/DatePicker';
 
 import {
   CommunityPostForm,
-  Dropdown,
-  MultiSelectDropdown,
+  FormDropdown,
   FormField,
   POST_INPUT_CLASS,
 } from '../../_components/CommunityPostForm';
@@ -21,15 +20,22 @@ import {
 
 import { cn } from '@/lib/cn';
 
-import type { JobPost } from '@/types/community';
+import type { Field, JobPost } from '@/types/community';
 
 type JobPostFormProps = {
   mode: 'create' | 'edit';
   initialValues?: JobPost;
 };
 
+const getFieldValue = (field?: Field[]) => {
+  if (!field?.length) return '';
+  if (field.includes('FE') && field.includes('BE')) return 'FE_BE';
+
+  return field[0];
+};
+
 export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
-  const [field, setField] = useState(initialValues?.field ?? []);
+  const [field, setField] = useState(getFieldValue(initialValues?.field));
   const [employmentType, setEmploymentType] = useState(initialValues?.employmentType ?? '');
   const [education, setEducation] = useState(initialValues?.education ?? '');
   const [date, setDate] = useState(initialValues?.deadline ?? '');
@@ -47,9 +53,11 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
       .filter(Boolean);
     const applyUrl = String(formData.get('url') ?? '');
 
+    const fieldPayload: Field[] = field === 'FE_BE' ? ['FE', 'BE'] : field ? [field as Field] : [];
+
     const jobPostPayload = {
       title,
-      field,
+      field: fieldPayload,
       employmentType,
       location,
       education,
@@ -95,11 +103,11 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
 
         <div className="grid grid-cols-2 gap-x-15 gap-y-6">
           <FormField label="모집분야" labelClassName="text-[14px]">
-            <MultiSelectDropdown value={field} options={FIELD_OPTIONS} onChange={setField} />
+            <FormDropdown value={field} options={FIELD_OPTIONS} onChange={setField} />
           </FormField>
 
           <FormField label="고용 형태" labelClassName="text-[14px]">
-            <Dropdown
+            <FormDropdown
               value={employmentType}
               options={EMPLOYMENT_TYPE_OPTIONS}
               onChange={setEmploymentType}
@@ -119,7 +127,7 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
           </FormField>
 
           <FormField label="학력" labelClassName="text-[14px]">
-            <Dropdown value={education} options={EDUCATION_OPTIONS} onChange={setEducation} />
+            <FormDropdown value={education} options={EDUCATION_OPTIONS} onChange={setEducation} />
           </FormField>
 
           <FormField label="필요스킬" labelClassName="text-[14px]">
