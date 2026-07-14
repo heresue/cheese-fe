@@ -12,11 +12,11 @@ import {
   POST_INPUT_CLASS,
 } from '../../_components/CommunityPostForm';
 
-import { FIELD_OPTIONS, WORK_METHOD_OPTIONS } from '@/constants/profileOptions';
 import { cn } from '@/lib/cn';
+import { toFieldArray, toFieldSelectValue, type FieldSelectValue } from '@/lib/jobField';
+import { FIELD_OPTIONS, WORK_METHOD_OPTIONS } from '@/constants/profileOptions';
 
 import type { GroupPost } from '@/types/community';
-import { FieldSelectValue, toFieldArray, toFieldSelectValue } from '@/lib/jobField';
 
 type GroupPostFormProps = {
   mode: 'create' | 'edit';
@@ -26,10 +26,7 @@ type GroupPostFormProps = {
 export default function GroupPostForm({ mode, initialValues }: GroupPostFormProps) {
   const [field, setField] = useState(toFieldSelectValue(initialValues?.field));
   const [progressType, setProgressType] = useState(initialValues?.progressType ?? '');
-  {
-    /* TODO: 학력 필드 추가 여부 확인 */
-  }
-  // const [education, setEducation] = useState(initialValues?.education ?? '');
+
   const [date, setDate] = useState(initialValues?.deadline ?? '');
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>, content: string) => {
@@ -39,21 +36,20 @@ export default function GroupPostForm({ mode, initialValues }: GroupPostFormProp
 
     const title = String(formData.get('title') ?? '');
     const expectedPeriod = String(formData.get('period') ?? '');
-    const recruitCount = Number(formData.get('recruit') ?? 0);
-    // const applyUrl = String(formData.get('url') ?? '');
+    const skills = String(formData.get('skills') ?? '')
+      .split(',')
+      .map((skill) => skill.trim())
+      .filter(Boolean);
+    const recruitCount = Number(formData.get('recruitCount') ?? 0);
 
     const groupPostPayload = {
       title,
       field: toFieldArray(field),
       progressType,
       expectedPeriod,
-      // education,
+      skills,
       recruitCount,
       deadline: date,
-      // apply: {
-      //   type: 'homepage',
-      //   url: applyUrl,
-      // },
       content,
     };
 
@@ -115,13 +111,23 @@ export default function GroupPostForm({ mode, initialValues }: GroupPostFormProp
             />
           </FormField>
 
-          {/* <FormField label="학력" labelClassName="text-[14px]">
-            <FormDropdown value={education} options={EDUCATION_OPTIONS} onChange={setEducation} />
-          </FormField> */}
+          <FormField label="필요스킬" labelClassName="text-[14px]">
+            <Input
+              label="필요스킬"
+              name="skills"
+              placeholder="예) React, TypeScript"
+              defaultValue={initialValues?.skills?.join(', ') ?? ''}
+              className={POST_INPUT_CLASS}
+              inputClassName="font-medium"
+              hideMessageSpace
+            />
+          </FormField>
 
           <FormField label="모집 인원" labelClassName="text-[14px]">
             <Input
               label="모집 인원"
+              type="number"
+              min={1}
               name="recruitCount"
               placeholder="모집 인원 입력"
               defaultValue={initialValues?.recruitCount ?? ''}
@@ -139,19 +145,6 @@ export default function GroupPostForm({ mode, initialValues }: GroupPostFormProp
               buttonClassName={cn('border-b border-gray-400', POST_INPUT_CLASS)}
             />
           </FormField>
-
-          {/* TODO: URL 필요 여부 확인 */}
-          {/* <FormField label="공고 URL" labelClassName="text-[14px]" className="col-span-2" required>
-            <Input
-              label="공고 URL"
-              name="url"
-              type="url"
-              placeholder="URL 입력"
-              defaultValue={initialValues?.applyUrl ?? ''}
-              className={POST_INPUT_CLASS}
-              hideMessageSpace
-            />
-          </FormField> */}
         </div>
       </section>
     </CommunityPostForm>
