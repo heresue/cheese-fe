@@ -55,7 +55,7 @@ export default function DraggableModal({
     const modalRect = modalElement.getBoundingClientRect();
     const boundaryRect = boundaryElement.getBoundingClientRect();
 
-    const boundaryPadding = 20;
+    const boundaryPadding = 0;
 
     dragStartRef.current = {
       pointerX: e.clientX,
