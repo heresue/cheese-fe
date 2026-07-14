@@ -20,9 +20,9 @@ export default function CommunityLayoutContent({ children }: { children: React.R
 
   const updateSearchParams = useUpdateSearchParams();
 
+  const isCommunityListPage = pathname.split('/').filter(Boolean).length === 2;
   const isInfoPage = pathname.startsWith('/community/info');
   const isCreatePage = pathname.endsWith('/create');
-  const shouldShowFilterBar = !isCreatePage;
 
   const sortOptions = isInfoPage ? INFO_SORT_OPTIONS : COMMUNITY_SORT_OPTIONS;
   const defaultSort = isInfoPage ? 'all' : 'latest';
@@ -52,7 +52,7 @@ export default function CommunityLayoutContent({ children }: { children: React.R
     <div className="h-dvh overflow-y-auto px-10 pt-10">
       <div className="mx-auto mb-8 flex w-full max-w-[1100px] flex-col gap-8">
         <div className="flex flex-col gap-5">
-          {shouldShowFilterBar && (
+          {isCommunityListPage && (
             <ListFilterBar
               sortOptions={sortOptions}
               selectedSort={communitySort}
