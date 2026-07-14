@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 
 import { useModalBehavior } from '@/hooks/useModalBehavior';
 import { cn } from '@/lib/cn';
+import DraggableModal from '@/components/common/Modal/DraggableModal';
 
 type ModalScope = 'viewport' | 'content';
 
@@ -20,6 +21,9 @@ type BaseModalProps = {
 
   scope?: ModalScope;
   contentClassName?: string;
+
+  draggable?: boolean;
+  dragHandleSelector?: string;
 };
 
 export default function BaseModal({
@@ -33,6 +37,9 @@ export default function BaseModal({
 
   scope = 'viewport',
   contentClassName,
+
+  draggable,
+  dragHandleSelector,
 }: BaseModalProps) {
   const isInteractive = interaction === 'interactive';
   const closeOnOutsideClick = !isInteractive;
@@ -47,6 +54,27 @@ export default function BaseModal({
 
   if (!portalTarget) return null;
 
+  const modalContent = (
+    <div
+      className={cn(
+        'max-h-full max-w-full',
+        isInteractive && 'pointer-events-auto',
+        contentClassName,
+      )}
+      onClick={(event) => event.stopPropagation()}
+    >
+      {children}
+    </div>
+  );
+
+  const handleOutsideClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!closeOnOutsideClick) return;
+
+    if (event.target !== event.currentTarget) return;
+
+    onClose();
+  };
+
   return createPortal(
     <div
       className={cn(
@@ -55,20 +83,22 @@ export default function BaseModal({
         isInteractive && 'pointer-events-none',
         hasOverlay && 'bg-overlay-dim',
       )}
-      onClick={closeOnOutsideClick ? onClose : undefined}
       role="presentation"
     >
-      <div className="flex h-full w-full items-center justify-center p-5">
-        <div
-          className={cn(
-            'max-h-full max-w-full',
-            isInteractive && 'pointer-events-auto',
-            contentClassName,
-          )}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {children}
-        </div>
+      <div
+        className="flex h-full w-full items-center justify-center p-5"
+        onClick={(event) => {
+          if (!closeOnOutsideClick) return;
+          if (event.target !== event.currentTarget) return;
+
+          onClose();
+        }}
+      >
+        {draggable ? (
+          <DraggableModal dragHandleSelector={dragHandleSelector}>{modalContent}</DraggableModal>
+        ) : (
+          modalContent
+        )}
       </div>
     </div>,
     portalTarget,
