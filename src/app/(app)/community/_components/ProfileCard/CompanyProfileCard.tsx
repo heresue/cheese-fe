@@ -32,13 +32,7 @@ export default function CompanyProfileCard({ isOpen, onClose, profile }: Company
     },
     {
       label: '이력서 양식',
-      value: (
-        <DocumentLinkItemList
-          document={profile.resumeTemplate}
-          className="gap-2.5"
-          labelClassName="text-gray-950 no-underline"
-        />
-      ),
+      value: <DocumentLinkItemList document={profile.resumeTemplate} className="gap-2.5" />,
       valueClassName: '',
     },
   ];

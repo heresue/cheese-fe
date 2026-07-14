@@ -42,13 +42,7 @@ export default function PersonalProfileCard({
     { label: '관심 분야', value: profile.interests.join(', ') },
     {
       label: '이력서 및 기타문서',
-      value: (
-        <DocumentLinkItemList
-          document={profile.additionalDocument}
-          className="gap-2.5"
-          labelClassName="text-gray-950 no-underline"
-        />
-      ),
+      value: <DocumentLinkItemList document={profile.additionalDocument} className="gap-2.5" />,
       valueClassName: '',
     },
     {
