@@ -13,6 +13,7 @@ import {
 } from '../../_components/CommunityPostForm';
 
 import {
+  CAREER_OPTIONS,
   EDUCATION_OPTIONS,
   EMPLOYMENT_TYPE_OPTIONS,
   FIELD_OPTIONS,
@@ -32,6 +33,7 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
   const [field, setField] = useState(toFieldSelectValue(initialValues?.field));
   const [employmentType, setEmploymentType] = useState(initialValues?.employmentType ?? '');
   const [education, setEducation] = useState(initialValues?.education ?? '');
+  const [career, setCareer] = useState(initialValues?.career ?? '');
   const [date, setDate] = useState(initialValues?.deadline ?? '');
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>, content: string) => {
@@ -53,6 +55,7 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
       employmentType,
       location,
       education,
+      career,
       skills,
       deadline: date,
       apply: {
@@ -126,9 +129,13 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
             <FormDropdown value={education} options={EDUCATION_OPTIONS} onChange={setEducation} />
           </FormField>
 
+          <FormField label="경력" labelClassName="text-[14px]">
+            <FormDropdown value={career} options={CAREER_OPTIONS} onChange={setCareer} />
+          </FormField>
+
           <FormField label="필요스킬" labelClassName="text-[14px]">
             <Input
-              label="필요 스킬"
+              label="필요스킬"
               name="skills"
               placeholder="예) React, TypeScript"
               defaultValue={initialValues?.skills?.join(', ') ?? ''}

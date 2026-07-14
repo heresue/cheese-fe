@@ -13,7 +13,7 @@ export const jobPosts: JobPost[] = [
 
     field: ['FE'],
     skills: ['React', 'TypeScript', 'Next.js'],
-    career: '신입, 경력',
+    career: 'any',
     education: 'highSchool',
     location: '광주 광산구',
     employmentType: 'intern',
@@ -65,7 +65,7 @@ export const jobPosts: JobPost[] = [
 
     field: ['FE'],
     skills: ['JavaScript', 'React', 'Tailwind CSS'],
-    career: '경력 1년 ↑',
+    career: 'experienced',
     education: 'none',
     location: '서울 강남구',
     employmentType: 'fullTime',
@@ -113,7 +113,7 @@ export const jobPosts: JobPost[] = [
 
     field: ['BE'],
     skills: ['Java', 'Spring Boot', 'MySQL'],
-    career: '경력 2년 ↑',
+    career: 'experienced',
     education: 'college',
     location: '서울 마포구',
     employmentType: 'fullTime',
@@ -162,7 +162,7 @@ export const jobPosts: JobPost[] = [
 
     field: ['FE'],
     skills: ['Figma', 'React', 'CSS'],
-    career: '신입',
+    career: 'new',
     education: 'none',
     location: '부산 해운대구',
     employmentType: 'contract',
@@ -210,7 +210,7 @@ export const jobPosts: JobPost[] = [
 
     field: ['FE', 'BE'],
     skills: ['Next.js', 'TypeScript', 'React Query'],
-    career: '경력 3년 ↑',
+    career: 'experienced',
     education: 'college',
     location: '서울 서초구',
     employmentType: 'fullTime',
@@ -259,7 +259,7 @@ export const jobPosts: JobPost[] = [
 
     field: ['FE', 'BE'],
     skills: ['Node.js', 'AWS', 'Docker'],
-    career: '경력 2년 ↑',
+    career: 'any',
     education: 'none',
     location: '경기 성남시',
     employmentType: 'fullTime',

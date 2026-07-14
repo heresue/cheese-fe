@@ -11,6 +11,7 @@ import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 import { cn } from '@/lib/cn';
 import { getOptionLabel } from '@/lib/getOptionLabel';
 import {
+  CAREER_OPTIONS,
   EDUCATION_OPTIONS,
   EMPLOYMENT_TYPE_OPTIONS,
   FIELD_OPTIONS,
@@ -30,11 +31,12 @@ export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPo
 
   const fieldLabel = getOptionLabel(FIELD_OPTIONS, toFieldSelectValue(post.field));
   const educationLabel = getOptionLabel(EDUCATION_OPTIONS, post.education);
+  const careerLabel = getOptionLabel(CAREER_OPTIONS, post.career);
   const employmentTypeLabel = getOptionLabel(EMPLOYMENT_TYPE_OPTIONS, post.employmentType);
 
   const jobConditions = [
     fieldLabel,
-    post.career,
+    careerLabel,
     educationLabel,
     post.location,
     employmentTypeLabel,
