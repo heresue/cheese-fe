@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
 
-import Comment from '../../_components/Comment';
 import {
   PostDetailAside,
   PostDetailAsideActions,
@@ -65,8 +64,6 @@ export default async function GroupDetailPage({
             dangerouslySetInnerHTML={{ __html: groupPost.content }}
           />
         </article>
-
-        <Comment />
       </section>
 
       <PostDetailAside
