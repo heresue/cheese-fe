@@ -84,10 +84,7 @@ export function CalendarCore({
   const fcEvents = useMemo(() => {
     return buildFullCalendarEvents(events, view, visibleRange);
   }, [events, view, visibleRange]);
-  const hasVisibleAllDayEvents = useMemo(
-    () => view !== 'month' && fcEvents.some((event) => event.allDay),
-    [fcEvents, view],
-  );
+  const showsAllDaySection = view !== 'month';
 
   // 주간/일간의 종일 영역 높이는 실제 보이는 일정 개수에 따라 달라진다.
   const allDaySectionHeight = useMemo(() => {
@@ -609,23 +606,23 @@ export function CalendarCore({
                 );
               }
         }
-        allDaySlot={hasVisibleAllDayEvents}
+        allDaySlot={showsAllDaySection}
         allDayText="종일 일정"
         allDayClassNames={
-          !hasVisibleAllDayEvents
+          !showsAllDaySection
             ? undefined
             : () => {
                 return ['calendar-timegrid-allday-axis-cell'];
               }
         }
         allDayContent={
-          !hasVisibleAllDayEvents
+          !showsAllDaySection
             ? undefined
             : (arg) => {
                 return <span className="calendar-timegrid-allday-label">{arg.text}</span>;
               }
         }
-        allDayDidMount={hasVisibleAllDayEvents ? handleAllDayDidMount : undefined}
+        allDayDidMount={showsAllDaySection ? handleAllDayDidMount : undefined}
         dayMaxEvents={false}
         dayMaxEventRows={false}
         slotEventOverlap={false}

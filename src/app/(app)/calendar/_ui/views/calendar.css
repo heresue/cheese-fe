@@ -910,6 +910,19 @@ input[type='date'],
 input[type='time'] {
   -moz-appearance: textfield;
 }
+
+.calendar-all-day-checkbox-icon {
+  flex: 0 0 16px;
+}
+
+.calendar-all-day-checkbox-icon--checked rect:last-of-type {
+  stroke: var(--color-secondary-600);
+}
+
+.calendar-all-day-checkbox-icon--checked path {
+  fill: var(--color-secondary-600);
+}
+
 /* 월간의 오늘 날짜와 주말 배경 */
 .fc .fc-daygrid-day.fc-day-today {
   background-color: var(--color-background-3) !important;

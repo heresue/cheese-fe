@@ -4,8 +4,13 @@ import { useEffect, useRef, useState } from 'react';
 
 import { cn } from '@/lib/cn';
 import { getTagColor } from '@/lib/tagPalette';
-import CheckIcon from '@/assets/icons/common/check.svg';
-import CloseIcon from '@/assets/icons/common/close.svg';
+import CheckboxIcon from '@/assets/icons/calendar/checkbox.svg';
+import ThinCloseIcon from '@/assets/icons/calendar/thinclose.svg';
+import WatchIcon from '@/assets/icons/calendar/watch.svg';
+import Watch2Icon from '@/assets/icons/calendar/watch2.svg';
+import DateIcon from '@/assets/icons/common/calendar.svg';
+import LinkIcon from '@/assets/icons/common/link.svg';
+import LocationIcon from '@/assets/icons/settings/location.svg';
 
 import {
   addDaysToCalendarDate,
@@ -17,13 +22,7 @@ import {
   toDateInputValue,
   toTimeInputValue,
 } from '../../_lib/date';
-import {
-  CalendarLineIcon,
-  ChevronIcon,
-  ClockLineIcon,
-  LinkLineIcon,
-  LocationLineIcon,
-} from '../../../../../assets/icons/calendar';
+import { ChevronIcon } from '../../../../../assets/icons/calendar';
 import { DEFAULT_EVENT_COLOR } from '../../_model/constants';
 import type { CalendarEventDraft, EventColorId, ReminderMinutes } from '../../_model/types';
 
@@ -448,7 +447,7 @@ export function CalendarEventPopover({
             className="flex h-5 w-5 items-center justify-center text-gray-400"
             aria-label="닫기"
           >
-            <CloseIcon width={10} height={10} aria-hidden="true" />
+            <ThinCloseIcon width={10} height={10} aria-hidden="true" />
           </button>
         </div>
 
@@ -469,7 +468,7 @@ export function CalendarEventPopover({
           {isAllDay ? (
             <div className="mt-[21px] grid grid-cols-[14px_1fr_10px_1fr] items-center gap-2">
               <FieldIcon>
-                <CalendarLineIcon width={16} height={16} />
+                <DateIcon width={14} height={16} />
               </FieldIcon>
 
               <DisplayDateField value={draft.start} onChange={updateAllDayStart} />
@@ -481,7 +480,7 @@ export function CalendarEventPopover({
           ) : showDateOnlyTimedField ? (
             <div className="mt-[21px] grid grid-cols-[14px_1fr] items-center gap-2">
               <FieldIcon>
-                <CalendarLineIcon width={16} height={16} />
+                <DateIcon width={14} height={16} />
               </FieldIcon>
 
               <DisplayDateField value={draft.start} onChange={updateTimedDateOnlyDraft} />
@@ -490,7 +489,7 @@ export function CalendarEventPopover({
             <div className="mt-[21px] space-y-1.5">
               <div className="grid grid-cols-[14px_1fr_10px_1fr] items-center gap-2">
                 <FieldIcon>
-                  <ClockLineIcon width={16} height={16} />
+                  <WatchIcon width={16} height={16} />
                 </FieldIcon>
 
                 <DisplayTimeField
@@ -508,7 +507,7 @@ export function CalendarEventPopover({
 
               <div className="grid grid-cols-[14px_1fr] items-center gap-2">
                 <FieldIcon>
-                  <CalendarLineIcon width={16} height={16} />
+                  <DateIcon width={14} height={16} />
                 </FieldIcon>
 
                 <DisplayDateField value={draft.start} onChange={updateTimedDateOnlyDraft} />
@@ -521,11 +520,16 @@ export function CalendarEventPopover({
               type="checkbox"
               checked={isAllDay}
               onChange={handleToggleAllDay}
-              className="peer sr-only"
+              className="sr-only"
             />
-            <span className="peer-checked:border-secondary-600 peer-checked:text-secondary-600 flex h-4 w-4 items-center justify-center rounded-[2px] border border-gray-300 bg-white text-transparent">
-              <CheckIcon width={10} height={10} aria-hidden="true" />
-            </span>
+            <CheckboxIcon
+              width={16}
+              height={16}
+              aria-hidden="true"
+              className={cn('calendar-all-day-checkbox-icon', {
+                'calendar-all-day-checkbox-icon--checked': isAllDay,
+              })}
+            />
             <span>종일</span>
           </label>
 
@@ -537,7 +541,7 @@ export function CalendarEventPopover({
                 memo: event.target.value,
               })
             }
-            placeholder={'메모\n메모\n메모\n메모\n메모'}
+            placeholder="메모"
             className="mt-[25px] h-[100px] w-full resize-none overflow-y-auto rounded-[6px] border border-gray-300 px-2.5 py-2 text-[11px] leading-[15px] text-gray-700 outline-none placeholder:text-gray-500 focus:border-gray-400"
           />
 
@@ -567,7 +571,7 @@ export function CalendarEventPopover({
           <div className="mt-[21px] space-y-[3px]">
             <div className="grid h-[30px] grid-cols-[14px_1fr] items-center gap-2 rounded-[6px] border border-gray-300 px-2.5">
               <FieldIcon>
-                <LocationLineIcon width={16} height={16} />
+                <LocationIcon width={12} height={16} />
               </FieldIcon>
 
               <input
@@ -585,7 +589,7 @@ export function CalendarEventPopover({
 
             <div className="grid h-[30px] grid-cols-[14px_1fr] items-center gap-2 rounded-[6px] border border-gray-300 px-2.5">
               <FieldIcon>
-                <LinkLineIcon width={16} height={16} />
+                <LinkIcon width={12} height={6} />
               </FieldIcon>
 
               <input
@@ -606,7 +610,7 @@ export function CalendarEventPopover({
             <CustomDropdown
               value={draft.reminderMinutes !== undefined ? draft.reminderMinutes : ''}
               options={REMINDER_OPTIONS}
-              leadingIcon={<ClockLineIcon width={16} height={16} />}
+              leadingIcon={<Watch2Icon width={12} height={12} />}
               onChange={(nextValue) => {
                 onChangeDraft({
                   ...draft,
