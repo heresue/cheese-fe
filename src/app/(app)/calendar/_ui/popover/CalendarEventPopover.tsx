@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 
 import { cn } from '@/lib/cn';
 import { getTagColor } from '@/lib/tagPalette';
+import CheckIcon from '@/assets/icons/common/check.svg';
+import CloseIcon from '@/assets/icons/common/close.svg';
 
 import {
   addDaysToCalendarDate,
@@ -87,12 +89,14 @@ type CustomDropdownProps<T extends string | number> = {
   value: T;
   options: Array<DropdownOption<T>>;
   onChange: (value: T) => void;
+  leadingIcon?: React.ReactNode;
 };
 
 function CustomDropdown<T extends string | number>({
   value,
   options,
   onChange,
+  leadingIcon,
 }: CustomDropdownProps<T>) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -121,8 +125,11 @@ function CustomDropdown<T extends string | number>({
         onClick={() => setOpen((prev) => !prev)}
         className="flex h-[30px] w-full items-center justify-between rounded-[6px] border border-gray-300 bg-white px-2.5 text-[12px] outline-none"
       >
-        <span className={isPlaceholder ? 'text-gray-500' : 'text-gray-700'}>
-          {getLabel(options, value)}
+        <span className="flex min-w-0 items-center gap-2">
+          {leadingIcon ? <FieldIcon>{leadingIcon}</FieldIcon> : null}
+          <span className={isPlaceholder ? 'truncate text-gray-500' : 'truncate text-gray-700'}>
+            {getLabel(options, value)}
+          </span>
         </span>
 
         <span className="text-gray-500">
@@ -160,11 +167,10 @@ function CustomDropdown<T extends string | number>({
 
 type DisplayDateFieldProps = {
   value?: string;
-  active?: boolean;
   onChange: (nextValue: string) => void;
 };
 
-function DisplayDateField({ value, active = false, onChange }: DisplayDateFieldProps) {
+function DisplayDateField({ value, onChange }: DisplayDateFieldProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const displayText = formatDisplayDate(value);
   const inputValue = toDateInputValue(value);
@@ -185,10 +191,7 @@ function DisplayDateField({ value, active = false, onChange }: DisplayDateFieldP
       <button
         type="button"
         onClick={openPicker}
-        className={cn(
-          'flex h-[28px] w-full items-center justify-center rounded-[6px] border border-gray-300 px-2 text-[12px] leading-[28px] text-gray-700',
-          active ? 'bg-gray-200' : 'bg-white',
-        )}
+        className="flex h-[28px] w-full items-center justify-center rounded-[6px] border border-gray-300 bg-white px-2 text-[12px] leading-[28px] text-gray-700"
       >
         <span className="truncate">{displayText}</span>
       </button>
@@ -209,6 +212,18 @@ type DisplayTimeFieldProps = {
   value?: string;
   onChange: (nextValue: string) => void;
 };
+
+function formatDisplayTime(value?: string) {
+  const inputValue = toTimeInputValue(value);
+  if (!inputValue) return '시간 선택';
+
+  const [hourText = '0', minute = '00'] = inputValue.split(':');
+  const hour = Number(hourText);
+  const period = hour < 12 ? '오전' : '오후';
+  const displayHour = hour % 12 || 12;
+
+  return `${period} ${displayHour}:${minute}`;
+}
 
 function DisplayTimeField({ value, onChange }: DisplayTimeFieldProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -232,7 +247,7 @@ function DisplayTimeField({ value, onChange }: DisplayTimeFieldProps) {
         onClick={openPicker}
         className="flex h-[28px] w-full items-center justify-center rounded-[6px] border border-gray-300 bg-white px-2 text-[12px] leading-[28px] text-gray-700"
       >
-        <span className="truncate">{inputValue || '시간 선택'}</span>
+        <span className="truncate">{formatDisplayTime(value)}</span>
       </button>
 
       <input
@@ -279,27 +294,18 @@ export function CalendarEventPopover({
   useEffect(() => {
     if (!open) return;
 
-    const handlePointerDown = (event: MouseEvent) => {
-      if (!popoverRef.current) return;
-      if (popoverRef.current.contains(event.target as Node)) return;
-
-      onCommit();
-    };
-
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose();
       }
     };
 
-    document.addEventListener('mousedown', handlePointerDown);
     document.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      document.removeEventListener('mousedown', handlePointerDown);
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [open, onClose, onCommit]);
+  }, [open, onClose]);
 
   const handleClosePopover = () => {
     onClose();
@@ -379,189 +385,249 @@ export function CalendarEventPopover({
     });
   };
 
+  const handleToggleAllDay = () => {
+    const nextAllDay = !isAllDay;
+    const dateValue = toDateInputValue(draft.start);
+
+    if (!dateValue) return;
+
+    if (nextAllDay) {
+      onChangeDraft({
+        ...draft,
+        allDay: true,
+        start: dateValue,
+        end: addDaysToCalendarDate(dateValue, 1),
+      });
+      return;
+    }
+
+    const nextStart = combineDateAndTime(dateValue, '22:00');
+    const nextEnd = combineDateAndTime(dateValue, '23:30');
+
+    if (!nextStart || !nextEnd) return;
+
+    onChangeDraft({
+      ...draft,
+      allDay: false,
+      start: nextStart,
+      end: nextEnd,
+    });
+  };
+
   if (!open) return null;
 
   return (
-    <div
-      ref={popoverRef}
-      className={cn(
-        'fixed z-50 w-[300px] overflow-visible rounded-[10px] border border-gray-300 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.12)]',
-        isAllDay || showDateOnlyTimedField ? 'h-[442px]' : 'min-h-[476px]',
-      )}
-      style={{ left: x, top: y }}
-    >
-      <div className="flex h-12 items-center justify-between px-4">
-        <span className="text-[12px] leading-[16px] font-semibold text-gray-900">일정</span>
+    <>
+      <div
+        aria-hidden="true"
+        className="fixed inset-0 z-40 bg-transparent"
+        onMouseDown={(event) => event.stopPropagation()}
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          onCommit();
+        }}
+      />
 
-        <button
-          type="button"
-          onClick={handleClosePopover}
-          className="text-[18px] leading-none text-gray-400"
-          aria-label="닫기"
-        >
-          ×
-        </button>
-      </div>
+      <div
+        ref={popoverRef}
+        role="dialog"
+        aria-label="일정"
+        className={cn(
+          'fixed z-50 w-[300px] overflow-visible rounded-[10px] border border-gray-300 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.12)]',
+          isAllDay || showDateOnlyTimedField ? 'h-[486px]' : 'h-[520px]',
+        )}
+        style={{ left: x, top: y }}
+      >
+        <div className="flex h-12 items-center justify-between px-4">
+          <span className="text-[12px] leading-[16px] font-semibold text-gray-900">일정</span>
 
-      <div className="px-4 pb-[18px]">
-        <input
-          value={draft.title ?? ''}
-          onChange={(event) =>
-            onChangeDraft({
-              ...draft,
-              title: event.target.value,
-            })
-          }
-          placeholder="제목"
-          className="mt-[6px] h-[28px] w-full border-0 bg-transparent px-0 text-[12px] text-gray-900 outline-none placeholder:text-gray-500"
-        />
+          <button
+            type="button"
+            onClick={handleClosePopover}
+            className="flex h-5 w-5 items-center justify-center text-gray-400"
+            aria-label="닫기"
+          >
+            <CloseIcon width={10} height={10} aria-hidden="true" />
+          </button>
+        </div>
 
-        {isAllDay ? (
-          <div className="mt-[21px] grid grid-cols-[14px_1fr_10px_1fr] items-center gap-2">
-            <FieldIcon>
-              <ClockLineIcon width={16} height={16} />
-            </FieldIcon>
+        <div className="px-4 pb-[18px]">
+          <input
+            value={draft.title ?? ''}
+            onChange={(event) =>
+              onChangeDraft({
+                ...draft,
+                title: event.target.value,
+              })
+            }
+            placeholder="제목"
+            aria-required="true"
+            className="mt-[6px] h-[28px] w-full border-0 border-b border-gray-300 bg-transparent px-0 text-[12px] text-gray-900 outline-none placeholder:text-gray-500 focus:border-gray-400"
+          />
 
-            <DisplayDateField value={draft.start} active onChange={updateAllDayStart} />
-
-            <span className="text-center text-[12px] text-gray-500">-</span>
-
-            <DisplayDateField value={allDayDisplayEndValue} onChange={updateAllDayEnd} />
-          </div>
-        ) : showDateOnlyTimedField ? (
-          <div className="mt-[21px] grid grid-cols-[14px_1fr] items-center gap-2">
-            <FieldIcon>
-              <CalendarLineIcon width={16} height={16} />
-            </FieldIcon>
-
-            <DisplayDateField value={draft.start} active onChange={updateTimedDateOnlyDraft} />
-          </div>
-        ) : (
-          <div className="mt-[21px] space-y-1.5">
-            <div className="grid grid-cols-[14px_1fr_10px_1fr] items-center gap-2">
+          {isAllDay ? (
+            <div className="mt-[21px] grid grid-cols-[14px_1fr_10px_1fr] items-center gap-2">
               <FieldIcon>
-                <ClockLineIcon width={16} height={16} />
+                <CalendarLineIcon width={16} height={16} />
               </FieldIcon>
 
-              <DisplayTimeField
-                value={draft.start}
-                onChange={(nextValue) => updateTimedStart(timedStartDateValue, nextValue)}
-              />
+              <DisplayDateField value={draft.start} onChange={updateAllDayStart} />
 
               <span className="text-center text-[12px] text-gray-500">-</span>
 
-              <DisplayTimeField
-                value={draft.end}
-                onChange={(nextValue) => updateTimedEnd(nextValue)}
-              />
+              <DisplayDateField value={allDayDisplayEndValue} onChange={updateAllDayEnd} />
             </div>
-
-            <div className="grid grid-cols-[14px_1fr] items-center gap-2">
+          ) : showDateOnlyTimedField ? (
+            <div className="mt-[21px] grid grid-cols-[14px_1fr] items-center gap-2">
               <FieldIcon>
                 <CalendarLineIcon width={16} height={16} />
               </FieldIcon>
 
               <DisplayDateField value={draft.start} onChange={updateTimedDateOnlyDraft} />
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="mt-[21px] space-y-1.5">
+              <div className="grid grid-cols-[14px_1fr_10px_1fr] items-center gap-2">
+                <FieldIcon>
+                  <ClockLineIcon width={16} height={16} />
+                </FieldIcon>
 
-        <textarea
-          value={draft.memo ?? ''}
-          onChange={(event) =>
-            onChangeDraft({
-              ...draft,
-              memo: event.target.value,
-            })
-          }
-          className="mt-[10px] h-[100px] w-full resize-none rounded-[6px] border border-gray-300 px-2.5 py-2 text-[11px] leading-[15px] text-gray-700 outline-none focus:border-gray-400"
-        />
+                <DisplayTimeField
+                  value={draft.start}
+                  onChange={(nextValue) => updateTimedStart(timedStartDateValue, nextValue)}
+                />
 
-        <div className="mt-3">
-          <div className="mb-[10px] text-[11px] leading-[14px] font-medium text-gray-700">
-            일정 색상
-          </div>
+                <span className="text-center text-[12px] text-gray-500">-</span>
 
-          <div className="flex items-center gap-2">
-            {QUICK_EVENT_COLORS.map((color) => (
-              <button
-                key={color.id}
-                type="button"
-                onClick={() => handleSelectColor(color.id)}
-                className={cn(
-                  'h-5 w-5 shrink-0 rounded-[6px] border border-transparent transition-transform duration-150 hover:scale-105 hover:border-gray-300',
-                  color.chipClassName,
-                )}
-                style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.52)' }}
-                aria-label={color.label}
-                aria-pressed={(draft.colorId ?? DEFAULT_EVENT_COLOR) === color.id}
-              />
-            ))}
-          </div>
-        </div>
+                <DisplayTimeField
+                  value={draft.end}
+                  onChange={(nextValue) => updateTimedEnd(nextValue)}
+                />
+              </div>
 
-        <div className="mt-[21px] space-y-[3px]">
-          <div className="grid h-[30px] grid-cols-[14px_1fr] items-center gap-2 rounded-[6px] border border-gray-300 px-2.5">
-            <FieldIcon>
-              <LocationLineIcon width={16} height={16} />
-            </FieldIcon>
+              <div className="grid grid-cols-[14px_1fr] items-center gap-2">
+                <FieldIcon>
+                  <CalendarLineIcon width={16} height={16} />
+                </FieldIcon>
 
+                <DisplayDateField value={draft.start} onChange={updateTimedDateOnlyDraft} />
+              </div>
+            </div>
+          )}
+
+          <label className="mt-[10px] flex h-4 w-fit cursor-pointer items-center gap-3 text-[11px] text-gray-600">
             <input
-              value={draft.location ?? ''}
-              onChange={(event) =>
-                onChangeDraft({
-                  ...draft,
-                  location: event.target.value,
-                })
-              }
-              placeholder="장소"
-              className="h-[28px] w-full border-0 bg-transparent px-0 text-[12px] outline-none placeholder:text-gray-500"
+              type="checkbox"
+              checked={isAllDay}
+              onChange={handleToggleAllDay}
+              className="peer sr-only"
             />
+            <span className="peer-checked:border-secondary-600 peer-checked:text-secondary-600 flex h-4 w-4 items-center justify-center rounded-[2px] border border-gray-300 bg-white text-transparent">
+              <CheckIcon width={10} height={10} aria-hidden="true" />
+            </span>
+            <span>종일</span>
+          </label>
+
+          <textarea
+            value={draft.memo ?? ''}
+            onChange={(event) =>
+              onChangeDraft({
+                ...draft,
+                memo: event.target.value,
+              })
+            }
+            placeholder={'메모\n메모\n메모\n메모\n메모'}
+            className="mt-[25px] h-[100px] w-full resize-none overflow-y-auto rounded-[6px] border border-gray-300 px-2.5 py-2 text-[11px] leading-[15px] text-gray-700 outline-none placeholder:text-gray-500 focus:border-gray-400"
+          />
+
+          <div className="mt-5">
+            <div className="mb-[10px] text-[11px] leading-[14px] font-medium text-gray-700">
+              일정 색상
+            </div>
+
+            <div className="flex items-center gap-2">
+              {QUICK_EVENT_COLORS.map((color) => (
+                <button
+                  key={color.id}
+                  type="button"
+                  onClick={() => handleSelectColor(color.id)}
+                  className={cn(
+                    'h-5 w-5 shrink-0 rounded-[6px] border border-transparent transition-transform duration-150 hover:scale-105 hover:border-gray-300',
+                    color.chipClassName,
+                  )}
+                  style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.52)' }}
+                  aria-label={color.label}
+                  aria-pressed={(draft.colorId ?? DEFAULT_EVENT_COLOR) === color.id}
+                />
+              ))}
+            </div>
           </div>
 
-          <div className="grid h-[30px] grid-cols-[14px_1fr] items-center gap-2 rounded-[6px] border border-gray-300 px-2.5">
-            <FieldIcon>
-              <LinkLineIcon width={16} height={16} />
-            </FieldIcon>
+          <div className="mt-[21px] space-y-[3px]">
+            <div className="grid h-[30px] grid-cols-[14px_1fr] items-center gap-2 rounded-[6px] border border-gray-300 px-2.5">
+              <FieldIcon>
+                <LocationLineIcon width={16} height={16} />
+              </FieldIcon>
 
-            <input
-              value={(draft as CalendarEventDraft & { url?: string }).url ?? ''}
-              onChange={(event) =>
+              <input
+                value={draft.location ?? ''}
+                onChange={(event) =>
+                  onChangeDraft({
+                    ...draft,
+                    location: event.target.value,
+                  })
+                }
+                placeholder="장소"
+                className="h-[28px] w-full border-0 bg-transparent px-0 text-[12px] outline-none placeholder:text-gray-500"
+              />
+            </div>
+
+            <div className="grid h-[30px] grid-cols-[14px_1fr] items-center gap-2 rounded-[6px] border border-gray-300 px-2.5">
+              <FieldIcon>
+                <LinkLineIcon width={16} height={16} />
+              </FieldIcon>
+
+              <input
+                value={(draft as CalendarEventDraft & { url?: string }).url ?? ''}
+                onChange={(event) =>
+                  onChangeDraft({
+                    ...draft,
+                    url: event.target.value,
+                  } as CalendarEventDraft)
+                }
+                placeholder="채용정보 URL"
+                className="h-[28px] w-full border-0 bg-transparent px-0 text-[12px] outline-none placeholder:text-gray-500"
+              />
+            </div>
+          </div>
+
+          <div className="mt-[3px] grid grid-cols-2 gap-2">
+            <CustomDropdown
+              value={draft.reminderMinutes !== undefined ? draft.reminderMinutes : ''}
+              options={REMINDER_OPTIONS}
+              leadingIcon={<ClockLineIcon width={16} height={16} />}
+              onChange={(nextValue) => {
                 onChangeDraft({
                   ...draft,
-                  url: event.target.value,
+                  reminderMinutes: nextValue === '' ? undefined : (nextValue as ReminderMinutes),
+                });
+              }}
+            />
+
+            <CustomDropdown
+              value={(draft as CalendarEventDraft & { category?: string }).category ?? ''}
+              options={CATEGORY_OPTIONS}
+              onChange={(nextValue) =>
+                onChangeDraft({
+                  ...draft,
+                  category: nextValue || undefined,
                 } as CalendarEventDraft)
               }
-              placeholder="채용정보 URL"
-              className="h-[28px] w-full border-0 bg-transparent px-0 text-[12px] outline-none placeholder:text-gray-500"
             />
           </div>
         </div>
-
-        <div className="mt-[3px] grid grid-cols-2 gap-2">
-          <CustomDropdown
-            value={draft.reminderMinutes !== undefined ? draft.reminderMinutes : ''}
-            options={REMINDER_OPTIONS}
-            onChange={(nextValue) => {
-              onChangeDraft({
-                ...draft,
-                reminderMinutes: nextValue === '' ? undefined : (nextValue as ReminderMinutes),
-              });
-            }}
-          />
-
-          <CustomDropdown
-            value={(draft as CalendarEventDraft & { category?: string }).category ?? ''}
-            options={CATEGORY_OPTIONS}
-            onChange={(nextValue) =>
-              onChangeDraft({
-                ...draft,
-                category: nextValue || undefined,
-              } as CalendarEventDraft)
-            }
-          />
-        </div>
       </div>
-    </div>
+    </>
   );
 }

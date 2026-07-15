@@ -16,8 +16,8 @@ import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 
 import {
-  addDaysToCalendarDate,
   addHoursToCalendarDateTime,
+  combineDateAndTime,
   formatCalendarTitle,
   formatEnglishHourLabel,
   formatKoreanWeekday,
@@ -239,13 +239,18 @@ export function CalendarCore({
       if (!dateKey) return;
       if (view !== 'month' && !arg.allDay) return;
 
+      const start = combineDateAndTime(dateKey, '22:00');
+      const end = combineDateAndTime(dateKey, '23:30');
+
+      if (!start || !end) return;
+
       onClickDateCell?.({
         rect,
         draft: {
           title: '',
-          start: dateKey,
-          end: addDaysToCalendarDate(dateKey, 1),
-          allDay: true,
+          start,
+          end,
+          allDay: false,
         },
       });
     },
@@ -314,6 +319,8 @@ export function CalendarCore({
 
       return (
         <span
+          aria-label={isActive ? `${date.getDate()}일, 오늘` : `${date.getDate()}일`}
+          title={isActive ? '오늘' : undefined}
           className={
             isActive
               ? 'calendar-month-day-number calendar-month-day-number--active'

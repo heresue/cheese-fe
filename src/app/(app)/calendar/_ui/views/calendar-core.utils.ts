@@ -14,10 +14,8 @@ import {
   ALL_DAY_CHIP_GAP,
   MONTH_CHIP_GAP,
   MONTH_LAYOUT_EPSILON,
-  MONTH_MAX_VISIBLE_EVENT_ROWS,
   MONTH_MIN_ROW_HEIGHT,
   TIMEGRID_SLOT_HEIGHT,
-  getVisibleChipStackHeight,
 } from './calendar-core.constants';
 import type {
   CalendarRenderEventExtendedProps,
@@ -396,6 +394,5 @@ export function buildCalendarStyleVariables(options: {
     '--calendar-time-slot-height': `${TIMEGRID_SLOT_HEIGHT}px`,
     '--calendar-timegrid-scrollbar-width': `${timeGridScrollbarWidth}px`,
     '--calendar-allday-section-height': `${allDaySectionHeight}px`,
-    '--calendar-month-max-visible-events-height': `${getVisibleChipStackHeight(MONTH_MAX_VISIBLE_EVENT_ROWS, MONTH_CHIP_GAP)}px`,
   } as CSSProperties;
 }

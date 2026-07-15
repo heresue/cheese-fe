@@ -8,7 +8,6 @@
   --calendar-time-slot-height: 48px;
   --calendar-timegrid-scrollbar-width: 0px;
   --calendar-allday-section-height: 24px;
-  --calendar-month-max-visible-events-height: 142px;
   --calendar-grid-color: var(--color-gray-200);
   --calendar-accent-color: var(--color-secondary-600);
   --calendar-accent-strong: var(--color-secondary-700);
@@ -212,14 +211,17 @@
 [data-calendar-view='month'] .fc .fc-dayGridMonth-view .fc-daygrid-body tbody td {
   height: var(--calendar-month-day-height) !important;
   min-height: var(--calendar-month-day-height) !important;
+  max-height: var(--calendar-month-day-height) !important;
 }
 
 [data-calendar-view='month'] .fc .fc-dayGridMonth-view .fc-daygrid-day-frame {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  min-height: 100%;
+  height: var(--calendar-month-day-height) !important;
+  min-height: 0 !important;
+  max-height: var(--calendar-month-day-height) !important;
+  overflow: hidden;
   padding: 0;
 }
 
@@ -249,11 +251,13 @@
   align-content: start;
   row-gap: var(--calendar-month-chip-gap);
   margin: 2px 12px 8px 8px;
-  flex: 0 1 auto;
+  height: 0;
+  flex: 1 1 0;
   min-height: 0 !important;
-  max-height: var(--calendar-month-max-visible-events-height);
+  max-height: none;
   overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior: contain;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -867,8 +871,12 @@
 }
 
 .calendar-event-chip__delete-icon {
-  height: 11px;
-  width: 11px;
+  height: 14px;
+  width: 14px;
+}
+
+[data-calendar-view='month'] .fc .fc-day-other .calendar-event-chip {
+  opacity: 0.45;
 }
 
 [data-calendar-view='week'] .fc .fc-timegrid-now-indicator-line,

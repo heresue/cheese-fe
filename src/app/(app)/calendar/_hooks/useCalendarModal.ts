@@ -30,7 +30,7 @@ type OpenEditPopoverPayload = {
 };
 
 const CREATE_POPOVER_WIDTH = 300;
-const CREATE_POPOVER_HEIGHT = 442;
+const CREATE_POPOVER_HEIGHT = 520;
 const CREATE_POPOVER_GAP = 0;
 const VIEWPORT_PADDING = 12;
 const CELL_CENTER_BOTTOM_OFFSET = 12;
@@ -48,7 +48,7 @@ function toEditableDraft(draft: Partial<CalendarEventDraft>): CalendarEventDraft
     title: draft.title ?? '',
     start: draft.start ?? '',
     end: draft.end ?? draft.start ?? '',
-    allDay: draft.allDay ?? true,
+    allDay: draft.allDay ?? false,
     colorId: draft.colorId ?? DEFAULT_EVENT_COLOR,
     memo: draft.memo ?? '',
     location: draft.location ?? '',
