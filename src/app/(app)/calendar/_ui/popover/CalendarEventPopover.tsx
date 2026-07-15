@@ -572,7 +572,7 @@ export function CalendarEventPopover({
           <div className="mt-[21px] space-y-[3px]">
             <div className="grid h-[30px] grid-cols-[14px_1fr] items-center gap-2 rounded-[6px] border border-gray-300 px-2.5">
               <FieldIcon>
-                <LocationIcon width={14} height={16} />
+                <LocationIcon width={12} height={12} />
               </FieldIcon>
 
               <input
