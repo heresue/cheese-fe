@@ -10,6 +10,16 @@ type ModalScope = 'viewport' | 'content';
 
 type ModalInteraction = 'default' | 'interactive';
 
+type DefaultInteractionProps = {
+  interaction?: 'default';
+  hasOverlay?: boolean;
+};
+
+type InteractiveInteractionProps = {
+  interaction: 'interactive';
+  hasOverlay?: false;
+};
+
 type BaseModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -24,7 +34,7 @@ type BaseModalProps = {
 
   draggable?: boolean;
   dragHandleSelector?: string;
-};
+} & (DefaultInteractionProps | InteractiveInteractionProps);
 
 export default function BaseModal({
   isOpen,
@@ -50,9 +60,14 @@ export default function BaseModal({
   if (!isOpen) return null;
   if (typeof window === 'undefined') return null;
 
-  const portalTarget = scope === 'content' ? document.getElementById('app-main') : document.body;
+  const contentTarget = document.getElementById('app-main');
 
-  if (!portalTarget) return null;
+  if (scope === 'content' && !contentTarget && process.env.NODE_ENV === 'development') {
+    console.warn('BaseModal: #app-main target was not found. Falling back to document.body.');
+  }
+
+  const isContentScope = scope === 'content' && !!contentTarget;
+  const portalTarget = isContentScope ? contentTarget : document.body;
 
   const modalContent = (
     <div
@@ -79,7 +94,7 @@ export default function BaseModal({
     <div
       className={cn(
         'z-50 overflow-hidden',
-        scope === 'viewport' ? 'fixed inset-0' : 'absolute inset-0',
+        isContentScope ? 'absolute inset-0' : 'fixed inset-0',
         isInteractive && 'pointer-events-none',
         hasOverlay && 'bg-overlay-dim',
       )}

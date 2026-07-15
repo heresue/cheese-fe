@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type Position = {
   x: number;
@@ -35,6 +35,26 @@ export default function DraggableModal({
   });
 
   const dragStartRef = useRef<DragStart | null>(null);
+
+  useEffect(() => {
+    const modalElement = containerRef.current;
+
+    if (!modalElement) return;
+
+    const dragHandles = modalElement.querySelectorAll<HTMLElement>(dragHandleSelector);
+
+    dragHandles.forEach((handle) => {
+      handle.style.touchAction = 'none';
+      handle.style.userSelect = 'none';
+    });
+
+    return () => {
+      dragHandles.forEach((handle) => {
+        handle.style.touchAction = '';
+        handle.style.userSelect = '';
+      });
+    };
+  }, [dragHandleSelector]);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
