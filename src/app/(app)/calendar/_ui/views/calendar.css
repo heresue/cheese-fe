@@ -917,8 +917,8 @@ input[type='time'] {
   flex: 0 0 16px;
 }
 
-.calendar-all-day-checkbox-icon--checked rect:last-of-type {
-  stroke: var(--color-secondary-600);
+.calendar-all-day-checkbox-icon--checked rect:first-of-type {
+  fill: var(--color-secondary-600);
 }
 
 .calendar-all-day-checkbox-icon--checked path {
