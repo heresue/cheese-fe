@@ -10,6 +10,16 @@ type ModalScope = 'viewport' | 'content';
 
 type ModalInteraction = 'default' | 'interactive';
 
+type DefaultInteractionProps = {
+  interaction?: 'default';
+  hasOverlay?: boolean;
+};
+
+type InteractiveInteractionProps = {
+  interaction: 'interactive';
+  hasOverlay?: false;
+};
+
 type BaseModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -24,7 +34,7 @@ type BaseModalProps = {
 
   draggable?: boolean;
   dragHandleSelector?: string;
-};
+} & (DefaultInteractionProps | InteractiveInteractionProps);
 
 export default function BaseModal({
   isOpen,
