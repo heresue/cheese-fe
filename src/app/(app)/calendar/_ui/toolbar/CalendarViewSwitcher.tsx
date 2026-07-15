@@ -26,8 +26,8 @@ export function CalendarViewSwitcher({ value, onChange }: Props) {
               type="button"
               onClick={() => onChange(item.value)}
               className={[
-                'flex h-6 w-[60px] items-center justify-center rounded-[10px] text-xs leading-none font-medium transition',
-                active ? 'bg-bg-white text-text' : 'text-text-muted bg-transparent',
+                'flex h-6 w-[60px] items-center justify-center rounded-[10px] text-xs leading-none font-medium transition outline-none',
+                active ? 'bg-bg-white text-gray-700' : 'bg-transparent text-gray-700',
               ].join(' ')}
             >
               {item.label}

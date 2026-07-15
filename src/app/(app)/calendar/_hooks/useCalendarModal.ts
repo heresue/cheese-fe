@@ -29,9 +29,9 @@ type OpenEditPopoverPayload = {
   placement?: CalendarPopoverPlacement;
 };
 
-const CREATE_POPOVER_WIDTH = 320;
-const CREATE_POPOVER_HEIGHT = 455;
-const CREATE_POPOVER_GAP = 8;
+const CREATE_POPOVER_WIDTH = 300;
+const CREATE_POPOVER_HEIGHT = 442;
+const CREATE_POPOVER_GAP = 0;
 const VIEWPORT_PADDING = 12;
 const CELL_CENTER_BOTTOM_OFFSET = 12;
 
@@ -96,7 +96,7 @@ export function getPopoverPosition(
   }
 
   let x = rect.right + CREATE_POPOVER_GAP;
-  let y = rect.top;
+  let y = rect.top - 6;
 
   if (x + CREATE_POPOVER_WIDTH > (boundsRect?.right ?? window.innerWidth) - VIEWPORT_PADDING) {
     x = rect.left - CREATE_POPOVER_WIDTH - CREATE_POPOVER_GAP;

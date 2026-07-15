@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { cn } from '@/lib/cn';
 import { getTagColor } from '@/lib/tagPalette';
@@ -71,9 +71,6 @@ const QUICK_EVENT_COLORS = QUICK_EVENT_COLOR_IDS.map((id) => ({
   id,
 }));
 
-const COLOR_SWATCH_SIZE = 20;
-const COLOR_SWATCH_GAP = 8;
-
 function FieldIcon({ children }: { children: React.ReactNode }) {
   return (
     <span className="flex h-4 w-4 shrink-0 items-center justify-center text-gray-400">
@@ -122,7 +119,7 @@ function CustomDropdown<T extends string | number>({
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex h-[32px] w-full items-center justify-between rounded-[10px] border border-gray-300 bg-white px-2.5 text-[12px] outline-none"
+        className="flex h-[30px] w-full items-center justify-between rounded-[6px] border border-gray-300 bg-white px-2.5 text-[12px] outline-none"
       >
         <span className={isPlaceholder ? 'text-gray-500' : 'text-gray-700'}>
           {getLabel(options, value)}
@@ -163,10 +160,11 @@ function CustomDropdown<T extends string | number>({
 
 type DisplayDateFieldProps = {
   value?: string;
+  active?: boolean;
   onChange: (nextValue: string) => void;
 };
 
-function DisplayDateField({ value, onChange }: DisplayDateFieldProps) {
+function DisplayDateField({ value, active = false, onChange }: DisplayDateFieldProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const displayText = formatDisplayDate(value);
   const inputValue = toDateInputValue(value);
@@ -187,7 +185,10 @@ function DisplayDateField({ value, onChange }: DisplayDateFieldProps) {
       <button
         type="button"
         onClick={openPicker}
-        className="flex h-[28px] w-full items-center justify-center rounded-[6px] border border-gray-300 bg-white px-2 text-[12px] leading-[28px] text-gray-700"
+        className={cn(
+          'flex h-[28px] w-full items-center justify-center rounded-[6px] border border-gray-300 px-2 text-[12px] leading-[28px] text-gray-700',
+          active ? 'bg-gray-200' : 'bg-white',
+        )}
       >
         <span className="truncate">{displayText}</span>
       </button>
@@ -266,26 +267,6 @@ export function CalendarEventPopover({
   onCommit,
 }: CalendarEventPopoverProps) {
   const popoverRef = useRef<HTMLDivElement | null>(null);
-  const colorPickerRef = useRef<HTMLDivElement | null>(null);
-  const [isColorPaletteOpen, setIsColorPaletteOpen] = useState(false);
-
-  const selectedColorId = draft.colorId ?? DEFAULT_EVENT_COLOR;
-  const selectedColor = useMemo(
-    () => QUICK_EVENT_COLORS.find((color) => color.id === selectedColorId) ?? QUICK_EVENT_COLORS[0],
-    [selectedColorId],
-  );
-  const paletteColors = useMemo(
-    () => QUICK_EVENT_COLORS.filter((color) => color.id !== selectedColorId),
-    [selectedColorId],
-  );
-
-  const colorPaletteWidth =
-    COLOR_SWATCH_SIZE +
-    (paletteColors.length > 0
-      ? COLOR_SWATCH_GAP +
-        paletteColors.length * COLOR_SWATCH_SIZE +
-        (paletteColors.length - 1) * COLOR_SWATCH_GAP
-      : 0);
 
   const isAllDay = draft.allDay ?? !hasTimePart(draft.start);
   const showDateOnlyTimedField = hideTimeFields && !isAllDay;
@@ -307,7 +288,6 @@ export function CalendarEventPopover({
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        setIsColorPaletteOpen(false);
         onClose();
       }
     };
@@ -321,28 +301,8 @@ export function CalendarEventPopover({
     };
   }, [open, onClose, onCommit]);
 
-  useEffect(() => {
-    const handlePointerDown = (event: MouseEvent) => {
-      if (!colorPickerRef.current) return;
-      if (colorPickerRef.current.contains(event.target as Node)) return;
-
-      setIsColorPaletteOpen(false);
-    };
-
-    document.addEventListener('mousedown', handlePointerDown);
-
-    return () => {
-      document.removeEventListener('mousedown', handlePointerDown);
-    };
-  }, []);
-
   const handleClosePopover = () => {
-    setIsColorPaletteOpen(false);
     onClose();
-  };
-
-  const handleColorTriggerClick = () => {
-    setIsColorPaletteOpen((prev) => !prev);
   };
 
   const handleSelectColor = (colorId: EventColorId) => {
@@ -350,7 +310,6 @@ export function CalendarEventPopover({
       ...draft,
       colorId,
     });
-    setIsColorPaletteOpen(false);
   };
 
   const updateAllDayStart = (nextStart: string) => {
@@ -420,53 +379,18 @@ export function CalendarEventPopover({
     });
   };
 
-  const handleToggleAllDay = (checked: boolean) => {
-    if (checked) {
-      const start = toDateInputValue(draft.start);
-      if (!start) return;
-
-      const displayEnd = toDateInputValue(draft.end) || start;
-      const normalizedDisplayEnd =
-        parseCalendarDate(displayEnd) &&
-        parseCalendarDate(start) &&
-        parseCalendarDate(displayEnd)! >= parseCalendarDate(start)!
-          ? displayEnd
-          : start;
-
-      onChangeDraft({
-        ...draft,
-        allDay: true,
-        start,
-        end: addDaysToCalendarDate(normalizedDisplayEnd, 1),
-      });
-      return;
-    }
-
-    const baseDate = toDateInputValue(draft.start);
-    if (!baseDate) return;
-
-    const nextStart = combineDateAndTime(baseDate, timedStartTimeValue);
-    const nextEnd = combineDateAndTime(baseDate, timedEndTimeValue || '10:00');
-
-    if (!nextStart) return;
-
-    onChangeDraft({
-      ...draft,
-      allDay: false,
-      start: nextStart,
-      end: nextEnd || addHoursToCalendarDateTime(nextStart, 1),
-    });
-  };
-
   if (!open) return null;
 
   return (
     <div
       ref={popoverRef}
-      className="fixed z-50 min-h-[455px] w-[320px] overflow-visible rounded-[12px] border border-gray-300 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.12)]"
+      className={cn(
+        'fixed z-50 w-[300px] overflow-visible rounded-[10px] border border-gray-300 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.12)]',
+        isAllDay || showDateOnlyTimedField ? 'h-[442px]' : 'min-h-[476px]',
+      )}
       style={{ left: x, top: y }}
     >
-      <div className="flex items-center justify-between px-3 py-[10px]">
+      <div className="flex h-12 items-center justify-between px-4">
         <span className="text-[12px] leading-[16px] font-semibold text-gray-900">일정</span>
 
         <button
@@ -479,7 +403,7 @@ export function CalendarEventPopover({
         </button>
       </div>
 
-      <div className="space-y-3 px-3 pb-3">
+      <div className="px-4 pb-[18px]">
         <input
           value={draft.title ?? ''}
           onChange={(event) =>
@@ -489,31 +413,31 @@ export function CalendarEventPopover({
             })
           }
           placeholder="제목"
-          className="h-[28px] w-full border-0 bg-transparent px-0 text-[12px] text-gray-900 outline-none placeholder:text-gray-500"
+          className="mt-[6px] h-[28px] w-full border-0 bg-transparent px-0 text-[12px] text-gray-900 outline-none placeholder:text-gray-500"
         />
 
         {isAllDay ? (
-          <div className="grid grid-cols-[14px_1fr_10px_1fr] items-center gap-2">
+          <div className="mt-[21px] grid grid-cols-[14px_1fr_10px_1fr] items-center gap-2">
             <FieldIcon>
-              <CalendarLineIcon width={16} height={16} />
+              <ClockLineIcon width={16} height={16} />
             </FieldIcon>
 
-            <DisplayDateField value={draft.start} onChange={updateAllDayStart} />
+            <DisplayDateField value={draft.start} active onChange={updateAllDayStart} />
 
             <span className="text-center text-[12px] text-gray-500">-</span>
 
             <DisplayDateField value={allDayDisplayEndValue} onChange={updateAllDayEnd} />
           </div>
         ) : showDateOnlyTimedField ? (
-          <div className="grid grid-cols-[14px_1fr] items-center gap-2">
+          <div className="mt-[21px] grid grid-cols-[14px_1fr] items-center gap-2">
             <FieldIcon>
               <CalendarLineIcon width={16} height={16} />
             </FieldIcon>
 
-            <DisplayDateField value={draft.start} onChange={updateTimedDateOnlyDraft} />
+            <DisplayDateField value={draft.start} active onChange={updateTimedDateOnlyDraft} />
           </div>
         ) : (
-          <div className="space-y-1.5">
+          <div className="mt-[21px] space-y-1.5">
             <div className="grid grid-cols-[14px_1fr_10px_1fr] items-center gap-2">
               <FieldIcon>
                 <ClockLineIcon width={16} height={16} />
@@ -542,16 +466,6 @@ export function CalendarEventPopover({
           </div>
         )}
 
-        <label className="flex items-center gap-2 text-[12px] leading-[14px] text-gray-700">
-          <input
-            type="checkbox"
-            checked={isAllDay}
-            onChange={(event) => handleToggleAllDay(event.target.checked)}
-            className="accent-secondary-700 h-[14px] w-[14px] rounded-[4px] border border-gray-300"
-          />
-          <span>종일</span>
-        </label>
-
         <textarea
           value={draft.memo ?? ''}
           onChange={(event) =>
@@ -560,70 +474,34 @@ export function CalendarEventPopover({
               memo: event.target.value,
             })
           }
-          className="h-[96px] w-full resize-none rounded-[8px] border border-gray-300 px-2.5 py-2 text-[11px] leading-[15px] text-gray-700 outline-none focus:border-gray-400"
+          className="mt-[10px] h-[100px] w-full resize-none rounded-[6px] border border-gray-300 px-2.5 py-2 text-[11px] leading-[15px] text-gray-700 outline-none focus:border-gray-400"
         />
 
-        <div>
-          <div className="mb-2 text-[11px] leading-[14px] font-medium text-gray-700">일정 색상</div>
+        <div className="mt-3">
+          <div className="mb-[10px] text-[11px] leading-[14px] font-medium text-gray-700">
+            일정 색상
+          </div>
 
-          <div ref={colorPickerRef} className="flex items-center">
-            <div
-              className="overflow-hidden"
-              style={{
-                width: `${isColorPaletteOpen ? colorPaletteWidth : COLOR_SWATCH_SIZE}px`,
-                transition: 'width 240ms cubic-bezier(0.22, 1, 0.36, 1)',
-              }}
-            >
-              <div className="flex items-center">
-                <button
-                  type="button"
-                  onClick={handleColorTriggerClick}
-                  className={cn(
-                    'flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-[6px] border border-gray-300 transition-transform duration-200',
-                    selectedColor.chipClassName,
-                  )}
-                  style={{
-                    boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.68)',
-                    transform: isColorPaletteOpen ? 'scale(1.04)' : 'scale(1)',
-                  }}
-                  aria-label="색상 팔레트 열기"
-                  aria-expanded={isColorPaletteOpen}
-                />
-
-                <div
-                  className="flex min-w-0 items-center gap-[8px]"
-                  style={{
-                    marginLeft: `${COLOR_SWATCH_GAP}px`,
-                    opacity: isColorPaletteOpen ? 1 : 0,
-                    transform: `translateX(${isColorPaletteOpen ? '0px' : '-10px'})`,
-                    pointerEvents: isColorPaletteOpen ? 'auto' : 'none',
-                    transition:
-                      'opacity 180ms ease, transform 240ms cubic-bezier(0.22, 1, 0.36, 1)',
-                  }}
-                >
-                  {paletteColors.map((color) => (
-                    <button
-                      key={color.id}
-                      type="button"
-                      onClick={() => handleSelectColor(color.id)}
-                      className={cn(
-                        'h-[20px] w-[20px] shrink-0 rounded-[6px] border border-transparent transition-transform duration-150 hover:scale-105 hover:border-gray-300',
-                        color.chipClassName,
-                      )}
-                      style={{
-                        boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.52)',
-                      }}
-                      aria-label={color.label}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
+          <div className="flex items-center gap-2">
+            {QUICK_EVENT_COLORS.map((color) => (
+              <button
+                key={color.id}
+                type="button"
+                onClick={() => handleSelectColor(color.id)}
+                className={cn(
+                  'h-5 w-5 shrink-0 rounded-[6px] border border-transparent transition-transform duration-150 hover:scale-105 hover:border-gray-300',
+                  color.chipClassName,
+                )}
+                style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.52)' }}
+                aria-label={color.label}
+                aria-pressed={(draft.colorId ?? DEFAULT_EVENT_COLOR) === color.id}
+              />
+            ))}
           </div>
         </div>
 
-        <div className="space-y-1.5">
-          <div className="grid grid-cols-[14px_1fr] items-center gap-2 rounded-[8px] border border-gray-300 px-2.5">
+        <div className="mt-[21px] space-y-[3px]">
+          <div className="grid h-[30px] grid-cols-[14px_1fr] items-center gap-2 rounded-[6px] border border-gray-300 px-2.5">
             <FieldIcon>
               <LocationLineIcon width={16} height={16} />
             </FieldIcon>
@@ -637,11 +515,11 @@ export function CalendarEventPopover({
                 })
               }
               placeholder="장소"
-              className="h-[31px] w-full border-0 bg-transparent px-0 text-[12px] outline-none placeholder:text-gray-500"
+              className="h-[28px] w-full border-0 bg-transparent px-0 text-[12px] outline-none placeholder:text-gray-500"
             />
           </div>
 
-          <div className="grid grid-cols-[14px_1fr] items-center gap-2 rounded-[8px] border border-gray-300 px-2.5">
+          <div className="grid h-[30px] grid-cols-[14px_1fr] items-center gap-2 rounded-[6px] border border-gray-300 px-2.5">
             <FieldIcon>
               <LinkLineIcon width={16} height={16} />
             </FieldIcon>
@@ -655,12 +533,12 @@ export function CalendarEventPopover({
                 } as CalendarEventDraft)
               }
               placeholder="채용정보 URL"
-              className="h-[31px] w-full border-0 bg-transparent px-0 text-[12px] outline-none placeholder:text-gray-500"
+              className="h-[28px] w-full border-0 bg-transparent px-0 text-[12px] outline-none placeholder:text-gray-500"
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
+        <div className="mt-[3px] grid grid-cols-2 gap-2">
           <CustomDropdown
             value={draft.reminderMinutes !== undefined ? draft.reminderMinutes : ''}
             options={REMINDER_OPTIONS}

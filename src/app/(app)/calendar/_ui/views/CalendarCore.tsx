@@ -84,6 +84,10 @@ export function CalendarCore({
   const fcEvents = useMemo(() => {
     return buildFullCalendarEvents(events, view, visibleRange);
   }, [events, view, visibleRange]);
+  const hasVisibleAllDayEvents = useMemo(
+    () => view !== 'month' && fcEvents.some((event) => event.allDay),
+    [fcEvents, view],
+  );
 
   // 주간/일간의 종일 영역 높이는 실제 보이는 일정 개수에 따라 달라진다.
   const allDaySectionHeight = useMemo(() => {
@@ -534,7 +538,7 @@ export function CalendarCore({
         contentHeight="100%"
         now={now}
         expandRows={view !== 'month'}
-        fixedWeekCount={false}
+        fixedWeekCount={true}
         nowIndicator={view !== 'month'}
         nowIndicatorSnap={false}
         selectable={Boolean(onSelectSlot)}
@@ -573,7 +577,7 @@ export function CalendarCore({
         datesSet={handleDatesSet}
         slotMinTime="00:00:00"
         slotMaxTime="24:00:00"
-        scrollTime="01:00:00"
+        scrollTime="00:00:00"
         scrollTimeReset={false}
         slotDuration="01:00:00"
         slotLabelInterval="01:00:00"
@@ -598,23 +602,23 @@ export function CalendarCore({
                 );
               }
         }
-        allDaySlot={view !== 'month'}
+        allDaySlot={hasVisibleAllDayEvents}
         allDayText="종일 일정"
         allDayClassNames={
-          view === 'month'
+          !hasVisibleAllDayEvents
             ? undefined
             : () => {
                 return ['calendar-timegrid-allday-axis-cell'];
               }
         }
         allDayContent={
-          view === 'month'
+          !hasVisibleAllDayEvents
             ? undefined
             : (arg) => {
                 return <span className="calendar-timegrid-allday-label">{arg.text}</span>;
               }
         }
-        allDayDidMount={view === 'month' ? undefined : handleAllDayDidMount}
+        allDayDidMount={hasVisibleAllDayEvents ? handleAllDayDidMount : undefined}
         dayMaxEvents={false}
         dayMaxEventRows={false}
         slotEventOverlap={false}

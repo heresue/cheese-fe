@@ -78,14 +78,14 @@ export default function AppSidebar() {
   return (
     <>
       <aside className="border-border bg-sidebar-bg z-50 flex h-dvh w-[260px] shrink-0 flex-col border-r-2">
-        <div className="px-4 pt-[33px] pb-20">
+        <div className="flex px-4 pt-[33px] pb-20">
           <Link
             href="/calendar"
             aria-label="Cheese 홈"
             className="inline-flex"
             onClick={() => setIsNotificationSidebarOpen(false)}
           >
-            <Image src="/brands/cheese-logo.svg" alt="CHEESE" width={137} height={38} priority />
+            <Image src="/brands/cheese-logo.svg" alt="CHEESE" width={150} height={41} priority />
           </Link>
         </div>
 
@@ -160,7 +160,7 @@ export default function AppSidebar() {
           </nav>
         </div>
 
-        <div className="mt-9 px-5">
+        <div className="mt-[29px] px-4">
           <MiniCalendar />
         </div>
       </aside>
