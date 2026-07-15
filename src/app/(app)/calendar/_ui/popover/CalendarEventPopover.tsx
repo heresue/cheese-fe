@@ -5,10 +5,10 @@ import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/cn';
 import { getTagColor } from '@/lib/tagPalette';
 import CheckboxIcon from '@/assets/icons/calendar/checkbox.svg';
+import DateIcon from '@/assets/icons/calendar/calendar.svg';
 import ThinCloseIcon from '@/assets/icons/calendar/thinclose.svg';
 import WatchIcon from '@/assets/icons/calendar/watch.svg';
 import Watch2Icon from '@/assets/icons/calendar/watch2.svg';
-import DateIcon from '@/assets/icons/common/calendar.svg';
 import LinkIcon from '@/assets/icons/common/link.svg';
 import LocationIcon from '@/assets/icons/settings/location.svg';
 
@@ -468,7 +468,7 @@ export function CalendarEventPopover({
           {isAllDay ? (
             <div className="mt-[21px] grid grid-cols-[14px_1fr_10px_1fr] items-center gap-2">
               <FieldIcon>
-                <DateIcon width={14} height={16} />
+                <DateIcon width={15} height={16} />
               </FieldIcon>
 
               <DisplayDateField value={draft.start} onChange={updateAllDayStart} />
@@ -480,7 +480,7 @@ export function CalendarEventPopover({
           ) : showDateOnlyTimedField ? (
             <div className="mt-[21px] grid grid-cols-[14px_1fr] items-center gap-2">
               <FieldIcon>
-                <DateIcon width={14} height={16} />
+                <DateIcon width={15} height={16} />
               </FieldIcon>
 
               <DisplayDateField value={draft.start} onChange={updateTimedDateOnlyDraft} />
@@ -507,7 +507,7 @@ export function CalendarEventPopover({
 
               <div className="grid grid-cols-[14px_1fr] items-center gap-2">
                 <FieldIcon>
-                  <DateIcon width={14} height={16} />
+                  <DateIcon width={15} height={16} />
                 </FieldIcon>
 
                 <DisplayDateField value={draft.start} onChange={updateTimedDateOnlyDraft} />
@@ -525,6 +525,7 @@ export function CalendarEventPopover({
             <CheckboxIcon
               width={16}
               height={16}
+              data-calendar-all-day-checkbox-icon="true"
               aria-hidden="true"
               className={cn('calendar-all-day-checkbox-icon', {
                 'calendar-all-day-checkbox-icon--checked': isAllDay,
@@ -571,7 +572,7 @@ export function CalendarEventPopover({
           <div className="mt-[21px] space-y-[3px]">
             <div className="grid h-[30px] grid-cols-[14px_1fr] items-center gap-2 rounded-[6px] border border-gray-300 px-2.5">
               <FieldIcon>
-                <LocationIcon width={12} height={16} />
+                <LocationIcon width={14} height={16} />
               </FieldIcon>
 
               <input
