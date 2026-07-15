@@ -37,7 +37,7 @@ export default function ApplyModal({ post, isOpen, onClose }: ApplyModalProps) {
       scope="content"
       draggable
     >
-      <section className="bg-bg-white flex w-[540px] flex-col rounded-xl border border-gray-400 pb-15">
+      <section className="bg-bg-white flex w-[540px] flex-col rounded-[10px] border border-gray-400 pb-15">
         <header
           data-drag-handle
           className="flex cursor-grab justify-end pt-5 pb-[10px] active:cursor-grabbing"
