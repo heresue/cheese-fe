@@ -87,12 +87,7 @@ export default function BaseModal({
     >
       <div
         className="flex h-full w-full items-center justify-center p-5"
-        onClick={(event) => {
-          if (!closeOnOutsideClick) return;
-          if (event.target !== event.currentTarget) return;
-
-          onClose();
-        }}
+        onClick={handleOutsideClick}
       >
         {draggable ? (
           <DraggableModal dragHandleSelector={dragHandleSelector}>{modalContent}</DraggableModal>
