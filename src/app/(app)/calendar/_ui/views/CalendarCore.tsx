@@ -589,6 +589,8 @@ export function CalendarCore({
           view === 'month'
             ? undefined
             : (arg) => {
+                if (arg.date.getHours() === 0) return null;
+
                 const isActiveHour =
                   isCalendarDateWithinRange(now, arg.view.activeStart, arg.view.activeEnd) &&
                   arg.date.getHours() === now.getHours();
