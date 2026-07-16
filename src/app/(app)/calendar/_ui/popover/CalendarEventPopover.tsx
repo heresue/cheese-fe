@@ -420,7 +420,10 @@ export function CalendarEventPopover({
       <div
         aria-hidden="true"
         className="fixed inset-0 z-40 bg-transparent"
-        onMouseDown={(event) => event.stopPropagation()}
+        onMouseDown={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
         onClick={(event) => {
           event.preventDefault();
           event.stopPropagation();
@@ -431,6 +434,7 @@ export function CalendarEventPopover({
       <div
         ref={popoverRef}
         role="dialog"
+        aria-modal="true"
         aria-label="일정"
         className={cn(
           'fixed z-50 w-[300px] overflow-visible rounded-[10px] border border-gray-300 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.12)]',
@@ -463,7 +467,6 @@ export function CalendarEventPopover({
               })
             }
             placeholder="제목"
-            aria-required="true"
             className="mt-[6px] h-[28px] w-full border-0 border-b border-gray-300 bg-transparent px-0 text-[14px] leading-[20px] font-medium tracking-normal text-gray-950 outline-none placeholder:text-gray-500 focus:border-gray-400"
           />
 

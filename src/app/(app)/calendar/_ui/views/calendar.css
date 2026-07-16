@@ -12,6 +12,7 @@
   --calendar-accent-color: var(--color-secondary-600);
   --calendar-accent-strong: var(--color-secondary-700);
   --calendar-now-line-color: #eb5b49;
+  --calendar-selection-line-color: var(--color-error-subtle);
 }
 
 .fc {
@@ -134,6 +135,10 @@
 .fc .fc-daygrid-day:hover {
   background: var(--color-background-3) !important;
   cursor: pointer;
+}
+
+[data-calendar-view='month'] .fc .fc-daygrid-day.calendar-month-cell--selected {
+  background: var(--color-background-3) !important;
 }
 
 .fc .fc-daygrid-day-number {
@@ -608,6 +613,31 @@
   background: var(--color-primary-200) !important;
 }
 
+[data-calendar-view='week']
+  .fc
+  [data-calendar-all-day-section='true']
+  .fc-daygrid-day.calendar-allday-cell--selected,
+[data-calendar-view='day']
+  .fc
+  [data-calendar-all-day-section='true']
+  .fc-daygrid-day.calendar-allday-cell--selected {
+  background: var(--color-primary-200) !important;
+  box-shadow:
+    inset -1px 0 0 var(--calendar-grid-color),
+    inset 0 -1px 0 var(--calendar-selection-line-color);
+}
+
+[data-calendar-view='week']
+  .fc
+  [data-calendar-all-day-section='true']
+  .fc-daygrid-day:last-child.calendar-allday-cell--selected,
+[data-calendar-view='day']
+  .fc
+  [data-calendar-all-day-section='true']
+  .fc-daygrid-day:last-child.calendar-allday-cell--selected {
+  box-shadow: inset 0 -1px 0 var(--calendar-selection-line-color);
+}
+
 [data-calendar-view='week'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-day-frame,
 [data-calendar-view='day'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-day-frame {
   display: flex;
@@ -800,8 +830,14 @@
 }
 
 .calendar-timegrid-slot-overlay__button:active {
-  background: #f3f5fc;
-  box-shadow: inset 0 -1px 0 #eb5b49;
+  background: var(--color-background-3);
+  box-shadow: inset 0 -1px 0 var(--calendar-selection-line-color);
+}
+
+.calendar-timegrid-slot-overlay__button--selected,
+.calendar-timegrid-slot-overlay__button--selected:disabled {
+  background: var(--color-background-3);
+  box-shadow: inset 0 -1px 0 var(--calendar-selection-line-color);
 }
 
 .calendar-event-chip {
@@ -946,7 +982,7 @@ input[type='time'] {
 
 /* 월간의 오늘 날짜와 주말 배경 */
 .fc .fc-daygrid-day.fc-day-today {
-  background-color: var(--color-background-3) !important;
+  background-color: transparent !important;
 }
 
 .fc .fc-daygrid-day.fc-day-sun,
@@ -956,7 +992,7 @@ input[type='time'] {
 
 .fc .fc-daygrid-day.fc-day-sun.fc-day-today,
 .fc .fc-daygrid-day.fc-day-sat.fc-day-today {
-  background-color: var(--color-background-3) !important;
+  background-color: var(--color-gray-100) !important;
 }
 
 /* 평일 hover와 동일한 hover 배경 */

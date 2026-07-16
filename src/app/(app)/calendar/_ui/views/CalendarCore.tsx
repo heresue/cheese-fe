@@ -16,6 +16,7 @@ import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 
 import {
+  addDaysToCalendarDate,
   addHoursToCalendarDateTime,
   combineDateAndTime,
   formatCalendarTitle,
@@ -61,6 +62,8 @@ export function CalendarCore({
   view,
   events,
   selectedEventId,
+  selectedCreateDraft,
+  interactionLocked = false,
   onTitleChange,
   onSelectSlot,
   onClickEvent,
@@ -79,6 +82,13 @@ export function CalendarCore({
   const [timeGridScrollbarWidth, setTimeGridScrollbarWidth] = useState(0);
   const [visibleRange, setVisibleRange] = useState<VisibleDateRange | null>(null);
   const today = now;
+  const selectedCreateDate = useMemo(() => {
+    return normalizeCalendarValue(selectedCreateDraft?.start, { allDay: true });
+  }, [selectedCreateDraft?.start]);
+  const selectedTimedStart = useMemo(() => {
+    if (selectedCreateDraft?.allDay) return '';
+    return normalizeCalendarValue(selectedCreateDraft?.start);
+  }, [selectedCreateDraft?.allDay, selectedCreateDraft?.start]);
 
   // FullCalendar에 전달할 이벤트 배열을 현재 뷰 기준으로 변환한다.
   const fcEvents = useMemo(() => {
@@ -184,6 +194,8 @@ export function CalendarCore({
 
   const handleSelect = useCallback(
     (arg: DateSelectArg) => {
+      if (interactionLocked) return;
+
       onSelectSlot?.({
         start: arg.startStr,
         end: arg.endStr,
@@ -192,7 +204,7 @@ export function CalendarCore({
 
       arg.view.calendar.unselect();
     },
-    [onSelectSlot],
+    [interactionLocked, onSelectSlot],
   );
 
   /**
@@ -200,6 +212,8 @@ export function CalendarCore({
    */
   const handleEventClick = useCallback(
     (arg: EventClickArg) => {
+      if (interactionLocked) return;
+
       const clickTarget = arg.jsEvent.target as HTMLElement | null;
       if (clickTarget?.closest('[data-calendar-event-delete]')) return;
 
@@ -222,7 +236,7 @@ export function CalendarCore({
         },
       });
     },
-    [onClickEvent],
+    [interactionLocked, onClickEvent],
   );
 
   /**
@@ -230,11 +244,26 @@ export function CalendarCore({
    */
   const handleDateClick = useCallback(
     (arg: DateClickArg) => {
+      if (interactionLocked) return;
+
       const rect = resolveDateClickRect(arg);
       const dateKey = normalizeCalendarValue(arg.date, { allDay: true });
 
       if (!dateKey) return;
       if (view !== 'month' && !arg.allDay) return;
+
+      if (view !== 'month') {
+        onClickDateCell?.({
+          rect,
+          draft: {
+            title: '',
+            start: dateKey,
+            end: addDaysToCalendarDate(dateKey, 1),
+            allDay: true,
+          },
+        });
+        return;
+      }
 
       const start = combineDateAndTime(dateKey, '22:00');
       const end = combineDateAndTime(dateKey, '23:30');
@@ -251,7 +280,7 @@ export function CalendarCore({
         },
       });
     },
-    [onClickDateCell, view],
+    [interactionLocked, onClickDateCell, view],
   );
 
   /**
@@ -259,6 +288,8 @@ export function CalendarCore({
    */
   const openTimedSlotPopover = useCallback(
     (date: Date, slotEl: HTMLElement) => {
+      if (interactionLocked) return;
+
       const start = normalizeCalendarValue(date);
       const end = addHoursToCalendarDateTime(start, 1);
 
@@ -273,14 +304,37 @@ export function CalendarCore({
         },
       });
     },
-    [onClickDateCell, view],
+    [interactionLocked, onClickDateCell, view],
   );
 
   const renderTimeGridSlotOverlay = useCallback(
     (arg: DayCellContentArg) => {
-      return <CalendarTimeGridSlotOverlay date={arg.date} onClickSlot={openTimedSlotPopover} />;
+      return (
+        <CalendarTimeGridSlotOverlay
+          date={arg.date}
+          selectedStart={selectedTimedStart}
+          disabled={interactionLocked}
+          onClickSlot={openTimedSlotPopover}
+        />
+      );
     },
-    [openTimedSlotPopover],
+    [interactionLocked, openTimedSlotPopover, selectedTimedStart],
+  );
+
+  const getDayCellClassNames = useCallback(
+    (date: Date) => {
+      if (!selectedCreateDate) return [];
+
+      const dateKey = normalizeCalendarValue(date, { allDay: true });
+      if (dateKey !== selectedCreateDate) return [];
+
+      if (view === 'month') {
+        return ['calendar-month-cell--selected'];
+      }
+
+      return selectedCreateDraft?.allDay ? ['calendar-allday-cell--selected'] : [];
+    },
+    [selectedCreateDate, selectedCreateDraft?.allDay, view],
   );
 
   const handleDatesSet = useCallback(
@@ -560,6 +614,7 @@ export function CalendarCore({
         eventDisplay="block"
         displayEventTime={false}
         events={fcEvents}
+        dayCellClassNames={(arg) => getDayCellClassNames(arg.date)}
         dayCellContent={
           view === 'month'
             ? (arg) => {
