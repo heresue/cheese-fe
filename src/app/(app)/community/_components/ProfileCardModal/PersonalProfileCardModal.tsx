@@ -36,7 +36,13 @@ export function PersonalProfileCardModal({
     { label: '관심 분야', value: profile.interests.join(', ') },
     {
       label: '이력서 및 기타문서',
-      value: <DocumentLinkItemList document={profile.additionalDocument} className="gap-2.5" />,
+      value: (
+        <DocumentLinkItemList
+          document={profile.additionalDocument}
+          urlLabel={`${profile.nickname} 포트폴리오 URL`}
+          className="gap-2.5"
+        />
+      ),
       valueClassName: '',
     },
     {

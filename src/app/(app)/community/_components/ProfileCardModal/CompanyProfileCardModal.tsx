@@ -29,7 +29,13 @@ export function CompanyProfileCardModal({
     },
     {
       label: '이력서 양식',
-      value: <DocumentLinkItemList document={profile.resumeTemplate} className="gap-2.5" />,
+      value: (
+        <DocumentLinkItemList
+          document={profile.resumeTemplate}
+          urlLabel={`${profile.companyName} 홈페이지 URL`}
+          className="gap-2.5"
+        />
+      ),
       valueClassName: '',
     },
   ];

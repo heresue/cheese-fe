@@ -35,6 +35,7 @@ type SettingItemData = {
   label: string;
   value?: string;
   document?: ProfileDocument;
+  urlLabel?: string;
   icon: ReactNode;
   buttonIcon: ReactNode;
   buttonText: string;
@@ -68,7 +69,8 @@ export function getPersonalProfileItems(profile: PersonalProfile): SettingItemDa
     },
     {
       label: '자기소개서',
-      document: { ...profile.coverLetter, urlLabel: `${profile.nickname} 자기소개서 URL` },
+      document: profile.coverLetter,
+      urlLabel: `${profile.nickname} 자기소개서 URL`,
       icon: <DocumentsIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
@@ -76,10 +78,8 @@ export function getPersonalProfileItems(profile: PersonalProfile): SettingItemDa
     },
     {
       label: '이력서 및 기타문서',
-      document: {
-        ...profile.additionalDocument,
-        urlLabel: `${profile.nickname} 이력서 및 기타문서 URL`,
-      },
+      document: profile.additionalDocument,
+      urlLabel: `${profile.nickname} 이력서 및 기타문서 URL`,
       icon: <CompanyIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
@@ -133,7 +133,8 @@ export function getCompanyProfileItems(profile: CompanyProfile): SettingItemData
     },
     {
       label: '이력서 양식 및 기업 홈페이지',
-      document: { ...profile.resumeTemplate, urlLabel: `${profile.companyName} 기업 홈페이지 URL` },
+      document: profile.resumeTemplate,
+      urlLabel: `${profile.companyName} 기업 홈페이지 URL`,
       icon: <CompanyIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',

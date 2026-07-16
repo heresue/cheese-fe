@@ -7,6 +7,7 @@ type SettingItemProps = {
   label: string;
   value?: string;
   document?: ProfileDocument;
+  urlLabel?: string;
   icon?: React.ReactNode;
   buttonIcon?: React.ReactNode;
   buttonIconPosition?: 'left' | 'right';
@@ -19,6 +20,7 @@ export default function SettingItem({
   label,
   value,
   document,
+  urlLabel,
   icon,
   buttonIcon,
   buttonIconPosition = 'left',
@@ -36,7 +38,11 @@ export default function SettingItem({
         <div className="text-[14px] leading-[30px] text-gray-700">
           <h3 className="font-bold">{label}</h3>
 
-          {document ? <DocumentLinkItemList document={document} /> : <span>{value}</span>}
+          {document ? (
+            <DocumentLinkItemList document={document} urlLabel={urlLabel} />
+          ) : (
+            <span>{value}</span>
+          )}
         </div>
       </div>
 
