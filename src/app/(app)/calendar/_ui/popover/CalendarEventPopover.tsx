@@ -122,7 +122,7 @@ function CustomDropdown<T extends string | number>({
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex h-[30px] w-full items-center justify-between rounded-[6px] border border-gray-300 bg-white px-2.5 text-[12px] outline-none"
+        className="flex h-[30px] w-full items-center justify-between rounded-[6px] border border-gray-300 bg-white px-2.5 text-[14px] leading-[20px] font-normal tracking-normal outline-none"
       >
         <span className="flex min-w-0 items-center gap-2">
           {leadingIcon ? <FieldIcon>{leadingIcon}</FieldIcon> : null}
@@ -132,7 +132,7 @@ function CustomDropdown<T extends string | number>({
         </span>
 
         <span className="text-gray-500">
-          <ChevronIcon direction="down" width={16} height={16} aria-hidden="true" />
+          <ChevronIcon direction="down" width={8} height={14} aria-hidden="true" />
         </span>
       </button>
 
@@ -150,8 +150,8 @@ function CustomDropdown<T extends string | number>({
                   setOpen(false);
                 }}
                 className={cn(
-                  'flex h-[30px] w-full items-center px-3 text-left text-[12px] hover:bg-gray-200',
-                  selected ? 'text-gray-900' : 'text-gray-700',
+                  'flex h-[30px] w-full items-center px-3 text-left text-[12px] leading-[16px] font-medium tracking-normal text-gray-950 hover:bg-gray-200',
+                  selected ? 'bg-gray-200' : '',
                 )}
               >
                 {option.label}
@@ -190,7 +190,7 @@ function DisplayDateField({ value, onChange }: DisplayDateFieldProps) {
       <button
         type="button"
         onClick={openPicker}
-        className="flex h-[28px] w-full items-center justify-center rounded-[6px] border border-gray-300 bg-white px-2 text-[12px] leading-[28px] text-gray-700"
+        className="flex h-[28px] w-full items-center justify-center rounded-[6px] border border-gray-300 bg-white px-2 text-[12px] leading-[16px] font-normal tracking-normal text-gray-700"
       >
         <span className="truncate">{displayText}</span>
       </button>
@@ -244,7 +244,7 @@ function DisplayTimeField({ value, onChange }: DisplayTimeFieldProps) {
       <button
         type="button"
         onClick={openPicker}
-        className="flex h-[28px] w-full items-center justify-center rounded-[6px] border border-gray-300 bg-white px-2 text-[12px] leading-[28px] text-gray-700"
+        className="flex h-[28px] w-full items-center justify-center rounded-[6px] border border-gray-300 bg-white px-2 text-[12px] leading-[16px] font-normal tracking-normal text-gray-700"
       >
         <span className="truncate">{formatDisplayTime(value)}</span>
       </button>
@@ -439,7 +439,9 @@ export function CalendarEventPopover({
         style={{ left: x, top: y }}
       >
         <div className="flex h-12 items-center justify-between px-4">
-          <span className="text-[12px] leading-[16px] font-semibold text-gray-900">일정</span>
+          <span className="text-[12px] leading-[16px] font-medium tracking-normal text-gray-950">
+            일정
+          </span>
 
           <button
             type="button"
@@ -462,7 +464,7 @@ export function CalendarEventPopover({
             }
             placeholder="제목"
             aria-required="true"
-            className="mt-[6px] h-[28px] w-full border-0 border-b border-gray-300 bg-transparent px-0 text-[12px] text-gray-900 outline-none placeholder:text-gray-500 focus:border-gray-400"
+            className="mt-[6px] h-[28px] w-full border-0 border-b border-gray-300 bg-transparent px-0 text-[14px] leading-[20px] font-medium tracking-normal text-gray-950 outline-none placeholder:text-gray-500 focus:border-gray-400"
           />
 
           {isAllDay ? (
@@ -515,7 +517,7 @@ export function CalendarEventPopover({
             </div>
           )}
 
-          <label className="mt-[10px] flex h-4 w-fit cursor-pointer items-center gap-3 text-[11px] text-gray-600">
+          <label className="mt-[10px] flex h-4 w-fit cursor-pointer items-center gap-3 text-[12px] leading-[16px] font-normal tracking-normal text-gray-700">
             <input
               type="checkbox"
               checked={isAllDay}
@@ -543,11 +545,11 @@ export function CalendarEventPopover({
               })
             }
             placeholder="메모"
-            className="mt-[25px] h-[100px] w-full resize-none overflow-y-auto rounded-[6px] border border-gray-300 px-2.5 py-2 text-[11px] leading-[15px] text-gray-700 outline-none placeholder:text-gray-500 focus:border-gray-400"
+            className="mt-[25px] h-[100px] w-full resize-none overflow-y-auto rounded-[6px] border border-gray-300 px-2.5 py-2 text-[12px] leading-[16px] font-medium tracking-[-0.02em] text-gray-950 outline-none placeholder:text-gray-500 focus:border-gray-400"
           />
 
           <div className="mt-5">
-            <div className="mb-[10px] text-[11px] leading-[14px] font-medium text-gray-700">
+            <div className="mb-[10px] text-[12px] leading-[16px] font-normal tracking-normal text-gray-600">
               일정 색상
             </div>
 
@@ -584,7 +586,7 @@ export function CalendarEventPopover({
                   })
                 }
                 placeholder="장소"
-                className="h-[28px] w-full border-0 bg-transparent px-0 text-[12px] outline-none placeholder:text-gray-500"
+                className="h-[28px] w-full border-0 bg-transparent px-0 text-[14px] leading-[20px] font-normal tracking-[-0.02em] text-gray-950 outline-none placeholder:text-gray-500"
               />
             </div>
 
@@ -602,7 +604,7 @@ export function CalendarEventPopover({
                   } as CalendarEventDraft)
                 }
                 placeholder="채용정보 URL"
-                className="h-[28px] w-full border-0 bg-transparent px-0 text-[12px] outline-none placeholder:text-gray-500"
+                className="h-[28px] w-full border-0 bg-transparent px-0 text-[14px] leading-[20px] font-normal tracking-[-0.02em] text-gray-950 outline-none placeholder:text-gray-500"
               />
             </div>
           </div>

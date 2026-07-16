@@ -95,8 +95,10 @@
 }
 
 [data-calendar-view='month'] .fc .fc-col-header-cell-cushion {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 .calendar-month-header-label {
@@ -105,6 +107,10 @@
   align-items: center;
   justify-content: center;
   color: var(--color-gray-600);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 .fc .fc-daygrid-day {
@@ -131,8 +137,10 @@
 .fc .fc-daygrid-day-number {
   margin: 0 !important;
   padding: 0 !important;
-  font-size: 12px;
+  font-size: 14px;
+  line-height: 20px;
   font-weight: 400;
+  letter-spacing: 0;
   color: var(--color-gray-950);
   text-decoration: none;
 }
@@ -151,11 +159,7 @@
 .calendar-month-day-number--active {
   background: var(--calendar-accent-color);
   color: var(--color-bg-white);
-  font-weight: 600;
-}
-
-.fc .fc-day-other .fc-daygrid-day-number {
-  color: var(--color-gray-400);
+  font-weight: 400;
 }
 
 .fc .fc-daygrid-event {
@@ -223,6 +227,10 @@
   max-height: var(--calendar-month-day-height) !important;
   overflow: hidden;
   padding: 0;
+}
+
+[data-calendar-view='month'] .fc .fc-dayGridMonth-view .fc-day-other .fc-daygrid-day-frame {
+  opacity: 0.5;
 }
 
 [data-calendar-view='month'] .fc .fc-dayGridMonth-view .fc-daygrid-day-top {
@@ -488,9 +496,10 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  letter-spacing: 0;
   color: var(--color-gray-600);
 }
 
@@ -505,13 +514,13 @@
   align-items: center;
   justify-content: center;
   border-radius: 6px;
-  color: var(--color-gray-700);
+  color: var(--color-gray-600);
 }
 
 .calendar-timegrid-header-label__date--active {
   background: var(--calendar-accent-color);
   color: var(--color-bg-white);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .calendar-timegrid-allday-label {
@@ -830,9 +839,10 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 .calendar-event-chip__delete {
@@ -873,10 +883,6 @@
 .calendar-event-chip__delete-icon {
   height: 14px;
   width: 14px;
-}
-
-[data-calendar-view='month'] .fc .fc-day-other .calendar-event-chip {
-  opacity: 0.45;
 }
 
 [data-calendar-view='week'] .fc .fc-timegrid-now-indicator-line,
