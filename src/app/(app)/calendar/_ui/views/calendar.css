@@ -489,7 +489,7 @@
 .calendar-timegrid-axis-label--active {
   background: var(--calendar-accent-color);
   color: var(--color-bg-white);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .calendar-timegrid-header-label {
@@ -517,13 +517,15 @@
   align-items: center;
   justify-content: center;
   border-radius: 6px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
   color: var(--color-gray-600);
 }
 
 .calendar-timegrid-header-label__date--active {
   background: var(--calendar-accent-color);
   color: var(--color-bg-white);
-  font-weight: 400;
 }
 
 .calendar-timegrid-allday-label {
