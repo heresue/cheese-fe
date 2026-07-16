@@ -91,6 +91,13 @@ type CustomDropdownProps<T extends string | number> = {
   leadingIcon?: React.ReactNode;
 };
 
+type DropdownPlacement = 'top' | 'bottom';
+
+const DROPDOWN_GAP = 6;
+const DROPDOWN_OPTION_HEIGHT = 30;
+const DROPDOWN_VERTICAL_CHROME = 10;
+const DROPDOWN_VIEWPORT_PADDING = 12;
+
 function CustomDropdown<T extends string | number>({
   value,
   options,
@@ -98,7 +105,28 @@ function CustomDropdown<T extends string | number>({
   leadingIcon,
 }: CustomDropdownProps<T>) {
   const [open, setOpen] = useState(false);
+  const [placement, setPlacement] = useState<DropdownPlacement>('bottom');
   const rootRef = useRef<HTMLDivElement | null>(null);
+
+  const handleToggle = () => {
+    if (open) {
+      setOpen(false);
+      return;
+    }
+
+    const rootRect = rootRef.current?.getBoundingClientRect();
+    if (rootRect) {
+      const menuHeight = options.length * DROPDOWN_OPTION_HEIGHT + DROPDOWN_VERTICAL_CHROME;
+      const viewportHeight = document.documentElement.clientHeight;
+      const spaceBelow =
+        viewportHeight - rootRect.bottom - DROPDOWN_GAP - DROPDOWN_VIEWPORT_PADDING;
+      const spaceAbove = rootRect.top - DROPDOWN_GAP - DROPDOWN_VIEWPORT_PADDING;
+
+      setPlacement(spaceBelow < menuHeight && spaceAbove > spaceBelow ? 'top' : 'bottom');
+    }
+
+    setOpen(true);
+  };
 
   useEffect(() => {
     const handlePointerDown = (event: MouseEvent) => {
@@ -121,7 +149,7 @@ function CustomDropdown<T extends string | number>({
     <div ref={rootRef} className="relative">
       <button
         type="button"
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={handleToggle}
         className="flex h-[30px] w-full items-center justify-between rounded-[6px] border border-gray-300 bg-white px-2.5 text-[14px] leading-[20px] font-normal tracking-normal outline-none"
       >
         <span className="flex min-w-0 items-center gap-2">
@@ -132,12 +160,23 @@ function CustomDropdown<T extends string | number>({
         </span>
 
         <span className="text-gray-500">
-          <ChevronIcon direction="down" width={8} height={14} aria-hidden="true" />
+          <ChevronIcon
+            direction={open && placement === 'top' ? 'up' : 'down'}
+            width={8}
+            height={14}
+            aria-hidden="true"
+          />
         </span>
       </button>
 
       {open ? (
-        <div className="absolute top-[36px] left-0 z-20 w-full rounded-[12px] border border-gray-300 bg-white py-1 shadow-[0_8px_24px_rgba(15,23,42,0.12)]">
+        <div
+          data-dropdown-placement={placement}
+          className={cn(
+            'absolute left-0 z-20 w-full rounded-[12px] border border-gray-300 bg-white py-1 shadow-[0_8px_24px_rgba(15,23,42,0.12)]',
+            placement === 'top' ? 'bottom-[36px]' : 'top-[36px]',
+          )}
+        >
           {options.map((option) => {
             const selected = option.value === value;
 
