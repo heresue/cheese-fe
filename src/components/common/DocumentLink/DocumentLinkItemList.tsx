@@ -1,4 +1,4 @@
-import { DocumentLinkItem } from '@/components/common/DocumentLink';
+import { DocumentLinkItem } from './';
 
 import { cn } from '@/lib/cn';
 

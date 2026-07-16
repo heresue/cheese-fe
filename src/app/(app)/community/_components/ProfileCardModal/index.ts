@@ -1,4 +1,4 @@
-export { CompanyProfileCardModal } from './CompanyProfileCardModal';
-export { PersonalProfileCardModal } from './PersonalProfileCardModal';
-export { ProfileCardItem } from './ProfileCardItem';
-export { ProfileCardModal } from './ProfileCardModal';
+export { default as CompanyProfileCardModal } from './CompanyProfileCardModal';
+export { default as PersonalProfileCardModal } from './PersonalProfileCardModal';
+export { default as ProfileCardItem } from './ProfileCardItem';
+export { default as ProfileCardModal } from './ProfileCardModal';

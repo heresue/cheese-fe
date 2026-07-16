@@ -1,4 +1,4 @@
-import InfoPostCard from '@/components/community/info/InfoPostCard';
+import InfoPostCard from '@/components/community/info';
 
 import { useBookmarkedPosts } from '../hooks/useBookmarkedPosts';
 

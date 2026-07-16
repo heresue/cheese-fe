@@ -2,21 +2,22 @@
 
 import Link from 'next/link';
 
-import JobApplyAction from '@/components/community/jobs/JobApplyAction';
-import { formatDeadline, isRecruitClosed } from '@/lib/formatDeadline';
-
-import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
-import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
+import JobApplyAction from './JobApplyAction';
 
 import { cn } from '@/lib/cn';
+import { formatDeadline, isRecruitClosed } from '@/lib/formatDeadline';
 import { getOptionLabel } from '@/lib/getOptionLabel';
+import { toFieldSelectValue } from '@/lib/jobField';
+
 import {
   CAREER_OPTIONS,
   EDUCATION_OPTIONS,
   EMPLOYMENT_TYPE_OPTIONS,
   FIELD_OPTIONS,
 } from '@/constants/profileOptions';
-import { toFieldSelectValue } from '@/lib/jobField';
+
+import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
+import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 
 import type { JobPost } from '@/types/community';
 

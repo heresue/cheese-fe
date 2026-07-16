@@ -6,16 +6,18 @@ import {
   PostDetailAsideInfoItem,
   PostDetailAsideProfile,
 } from '../../_components/PostDetailAside';
-import GroupDetailHeader from '../_components/GroupDetailHeader';
+import { GroupDetailHeader } from '../_components';
 
-import { groupPosts } from '@/mocks/posts';
 import { getOptionLabel } from '@/lib/getOptionLabel';
 import { isRecruitClosed } from '@/lib/formatDeadline';
 
 import { WORK_METHOD_OPTIONS } from '@/constants/profileOptions';
+
 import { POST_CONTENT_CLASS } from '../../_constants/community';
 
 import type { Field } from '@/types/community';
+
+import { groupPosts } from '@/mocks/posts';
 
 const APPLY_METHOD_LABEL = '치즈';
 

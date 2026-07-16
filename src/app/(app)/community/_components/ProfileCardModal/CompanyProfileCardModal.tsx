@@ -1,7 +1,9 @@
 import { DocumentLinkItemList } from '@/components/common/DocumentLink';
+
 import { ProfileCardModal } from './';
 
 import { getOptionLabel } from '@/lib/getOptionLabel';
+
 import { CONTACT_METHOD_OPTIONS } from '@/constants/profileOptions';
 
 import type { CompanyProfile } from '@/types/profile';
@@ -12,7 +14,7 @@ type CompanyProfileCardModalProps = {
   profile: CompanyProfile;
 };
 
-export function CompanyProfileCardModal({
+export default function CompanyProfileCardModal({
   isOpen,
   onClose,
   profile,

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { ProfileImage } from '@/components/common/ProfileImage';
+import ProfileImage from '@/components/common/ProfileImage';
 import { Button } from '@/components/common/Button';
 import CategoryTabs, { type CategoryTabItem } from '@/components/common/CategoryTabs';
 

@@ -1,14 +1,15 @@
 import type { ReactNode } from 'react';
 
-import { BaseModal } from '@/components/common/Modal';
-import { ProfileImage } from '@/components/common/ProfileImage';
+import BaseModal from '@/components/common/Modal';
+import ProfileImage from '@/components/common/ProfileImage';
 import { Button } from '@/components/common/Button';
+
 import { ProfileCardItem } from './';
+
+import { cn } from '@/lib/cn';
 
 import CloseIcon from '@/assets/icons/common/close.svg';
 import ContactIcon from '@/assets/icons/common/contact.svg';
-
-import { cn } from '@/lib/cn';
 
 import type { ProfileType } from '@/types/profile';
 
@@ -38,7 +39,7 @@ type ProfileCardModalProps = {
   onContact: () => void;
 };
 
-export function ProfileCardModal({
+export default function ProfileCardModal({
   isOpen,
   onClose,
   profileType,

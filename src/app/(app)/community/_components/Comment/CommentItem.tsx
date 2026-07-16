@@ -1,4 +1,4 @@
-import { ProfileImage } from '@/components/common/ProfileImage';
+import ProfileImage from '@/components/common/ProfileImage';
 import { Button } from '@/components/common/Button';
 
 import { resizeTextarea } from './utils';

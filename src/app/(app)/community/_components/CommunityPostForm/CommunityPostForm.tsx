@@ -3,12 +3,14 @@
 import { useState, type ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
-import EditIcon from '@/assets/icons/common/edit.svg';
 import { BackButton } from '@/components/common/BackButton';
 import { Button } from '@/components/common/Button';
 
-import { CommunityPostEditor } from '../CommunityPostEditor';
+import CommunityPostEditor from '../CommunityPostEditor';
+
 import { COMMUNITY_CATEGORY_TABS } from '../../_constants/community';
+
+import EditIcon from '@/assets/icons/common/edit.svg';
 
 type CommunityPostFormProps = {
   mode?: 'create' | 'edit';

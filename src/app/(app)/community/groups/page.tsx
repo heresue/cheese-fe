@@ -3,9 +3,10 @@
 import { useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-import GroupPostCard from '@/components/community/groups/GroupPostCard';
+import GroupPostCard from '@/components/community/groups';
 
 import { useLikeToggle } from '@/hooks/useLikeToggle';
+
 import { getDeadlineTime, isRecruitClosed } from '@/lib/formatDeadline';
 
 import { groupPosts as GROUP_POSTS } from '@/mocks/posts';

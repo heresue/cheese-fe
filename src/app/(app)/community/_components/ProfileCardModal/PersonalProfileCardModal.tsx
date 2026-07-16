@@ -1,10 +1,12 @@
 import { DocumentLinkItem, DocumentLinkItemList } from '@/components/common/DocumentLink';
+
 import { ProfileCardModal } from './';
 
-import FileIcon from '@/assets/icons/common/file.svg';
-
 import { getOptionLabel } from '@/lib/getOptionLabel';
+
 import { CONTACT_METHOD_OPTIONS } from '@/constants/profileOptions';
+
+import FileIcon from '@/assets/icons/common/file.svg';
 
 import type { PersonalProfile } from '@/types/profile';
 
@@ -14,7 +16,7 @@ type PersonalProfileCardModalProps = {
   profile: PersonalProfile;
 };
 
-export function PersonalProfileCardModal({
+export default function PersonalProfileCardModal({
   isOpen,
   onClose,
   profile,

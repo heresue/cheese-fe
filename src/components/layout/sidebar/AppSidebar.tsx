@@ -15,7 +15,7 @@ import {
 } from '@/assets/icons/sidebar';
 import { MiniCalendar } from '@/app/(app)/calendar/_ui/sidebar/MiniCalendar';
 
-import { ProfileImage } from '@/components/common/ProfileImage';
+import ProfileImage from '@/components/common/ProfileImage';
 import { NotificationSidebar } from './NotificationSidebar';
 
 import { cn } from '@/lib/cn';

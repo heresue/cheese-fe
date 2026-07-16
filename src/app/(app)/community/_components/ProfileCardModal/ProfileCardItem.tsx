@@ -6,7 +6,7 @@ type ProfileCardItemProps = {
   valueClassName?: string;
 };
 
-export function ProfileCardItem({
+export default function ProfileCardItem({
   label,
   value,
   valueClassName = 'border border-gray-400 py-2 text-gray-700 h-[46px]',

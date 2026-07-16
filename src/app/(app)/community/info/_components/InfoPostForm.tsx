@@ -3,19 +3,20 @@
 import { useState } from 'react';
 
 import { Input } from '@/components/common/Input';
+import { Button } from '@/components/common/Button';
 
 import { CommunityPostForm } from '../../_components/CommunityPostForm';
 import { FormField, FormDropdown, POST_INPUT_CLASS } from '../../_components/CommunityPostForm';
 
-import { INFO_SORT_OPTIONS } from '../../_constants/community';
+import useFileUpload from '@/hooks/useFileUpload';
+import useTagInput from '@/hooks/useTagInput';
+
 import { cn } from '@/lib/cn';
-import { Button } from '@/components/common/Button';
+
+import { INFO_SORT_OPTIONS } from '../../_constants/community';
 
 import UploadIcon from '@/assets/icons/common/upload.svg';
 import CloseIcon from '@/assets/icons/common/close.svg';
-
-import useFileUpload from '@/hooks/useFileUpload';
-import useTagInput from '@/hooks/useTagInput';
 
 import type { InfoPost } from '@/types/community';
 

@@ -2,11 +2,11 @@ import { notFound } from 'next/navigation';
 
 import { PostDetailAside, PostDetailAsideProfile } from '../../_components/PostDetailAside';
 import Comment from '../../_components/Comment';
-import InfoDetailHeader from '../_components/InfoDetailHeader';
-
-import DownloadIcon from '@/assets/icons/common/download.svg';
+import { InfoDetailHeader } from '../_components';
 
 import { POST_CONTENT_CLASS } from '../../_constants/community';
+
+import DownloadIcon from '@/assets/icons/common/download.svg';
 
 import { infoPosts } from '@/mocks/posts';
 

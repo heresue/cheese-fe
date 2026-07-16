@@ -3,7 +3,8 @@
 import { useState } from 'react';
 
 import { Button } from '@/components/common/Button';
-import { ProfileImage } from '@/components/common/ProfileImage';
+import ProfileImage from '@/components/common/ProfileImage';
+
 import { CompanyProfileCardModal, PersonalProfileCardModal } from '../ProfileCardModal';
 
 import type { UserSummary } from '@/types/community';
@@ -14,7 +15,7 @@ type PostDetailAsideProfileProps = {
   author: UserSummary;
 };
 
-export function PostDetailAsideProfile({ author }: PostDetailAsideProfileProps) {
+export default function PostDetailAsideProfile({ author }: PostDetailAsideProfileProps) {
   const [isProfileCardOpen, setIsProfileCardOpen] = useState(false);
 
   const isPersonalProfile = author.profileType === 'personal';
