@@ -53,7 +53,7 @@ export function CompanyProfileCardModal({
     <ProfileCardModal
       isOpen={isOpen}
       onClose={onClose}
-      profileType="personal"
+      profileType="company"
       name={profile.companyName}
       email={profile.email}
       profileImageUrl={profile.profileImageUrl}

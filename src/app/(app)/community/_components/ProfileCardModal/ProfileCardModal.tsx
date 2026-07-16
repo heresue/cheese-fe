@@ -52,7 +52,7 @@ export function ProfileCardModal({
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} scope="content" hasOverlay>
       <div className="w-[calc(100vw-558px)] max-w-[1362px] min-w-[720px] overflow-hidden rounded-[10px]">
-        <div className="max-h-200 overflow-auto">
+        <div className="max-h-[901px] overflow-auto">
           <div className="bg-bg-2 flex w-full flex-col gap-6 px-10 py-13">
             <header className="flex items-center justify-between">
               <div className="h-[61px]">
