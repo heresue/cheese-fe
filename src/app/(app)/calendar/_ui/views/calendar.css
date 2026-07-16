@@ -590,13 +590,15 @@
 [data-calendar-view='week'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-day,
 [data-calendar-view='day'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-day {
   background: var(--color-primary-100) !important;
-  border-right: 1px solid var(--calendar-grid-color) !important;
+  border-right: none !important;
   border-bottom: none !important;
+  box-shadow: inset -1px 0 0 var(--calendar-grid-color);
 }
 
 [data-calendar-view='week'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-day:last-child,
 [data-calendar-view='day'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-day:last-child {
   border-right: none !important;
+  box-shadow: none;
 }
 
 [data-calendar-view='week'] .fc [data-calendar-all-day-section='true'] .fc-daygrid-day:hover,
