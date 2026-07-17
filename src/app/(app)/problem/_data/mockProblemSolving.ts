@@ -20,21 +20,11 @@ export const mockProblemQuestions: ProblemQuestion[] = [
     id: 'cursor-role',
     no: 1,
     title: 'cursor의 역할',
-    question:
-      '표준모드(standards mode)와 쿼크모드(quirks mode)의 차이와 동작 조건에 대해 설명하시오.',
-    type: 'shortAnswer',
-    gradingMode: 'self',
-    correctAnswer: '쿼크모드는 구버전 브라우저 호환을 위해 사용됩니다.',
-    hint: '구버전 브라우저 호환을 위해 사용',
-  },
-  {
-    id: 'next-project-structure',
-    no: 2,
-    title: 'Next.js의 프로젝트 구조',
-    question: '다음 중 쿼크모드(quirks mode)의 특징으로 옳은 것은?',
+    question: '다음 중 퀵모드(quirks mode)의 특징으로 옳은 것은?',
     type: 'multipleChoice',
-    gradingMode: 'self',
-    correctAnswer: '구버전 브라우저 호환을 위해 사용',
+    gradingMode: 'auto',
+    correctAnswer: '구버전 브라우저 렌더링을 흉내냄',
+    explanation: '퀵모드는 구버전 브라우저 호환을 위해 사용됩니다.',
     hint: '구버전 브라우저 호환을 위해 사용',
     choices: [
       { id: '1', label: '최신 HTML/CSS 표준을 엄격히 적용' },
@@ -43,6 +33,19 @@ export const mockProblemQuestions: ProblemQuestion[] = [
       { id: '4', label: 'CSS가 적용되지 않음' },
       { id: '5', label: '구버전 브라우저 호환을 위해 사용' },
     ],
+    savedChoiceId: '1',
+  },
+  {
+    id: 'next-project-structure',
+    no: 2,
+    title: 'Next.js의 프로젝트 구조',
+    question:
+      '표준모드(standards mode)와 퀵모드(quirks mode)의 차이와 동작 조건에 대해 설명하시오.',
+    type: 'shortAnswer',
+    gradingMode: 'self',
+    correctAnswer: '퀵모드는 구버전 브라우저 호환을 위해 사용됩니다.',
+    hint: '구버전 브라우저 호환을 위해 사용',
+    savedAnswer: '내가 원래 썼던 답',
   },
   {
     id: 'v0-setting',
@@ -63,7 +66,7 @@ export const mockProblemQuestions: ProblemQuestion[] = [
     type: 'shortAnswer',
     gradingMode: 'self',
     correctAnswer:
-      'Supabase는 백엔드/DB, DrizzleORM은 타입 기반 ORM, Clerk는 인증 관리를 담당합니다.',
+      'Supabase는 백엔드와 DB, DrizzleORM은 타입 기반 ORM, Clerk는 인증 관리를 담당합니다.',
     hint: 'DB, ORM, 인증 역할을 구분',
   },
   {

@@ -2,19 +2,20 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import ProblemStatusIcon from './ProblemStatusIcon';
-import DoubleArrowIcon from '@/assets/icons/problem/double-arrow.svg';
 import CorrectCircleIcon from '@/assets/icons/common/cancel-circle.svg';
-import IncorrectCircleIcon from '@/assets/icons/problem/check-circle.svg';
 import DocumentsIcon from '@/assets/icons/settings/documents.svg';
-import ReturnIcon from '@/assets/icons/problem/return.svg';
 import SkillsIcon from '@/assets/icons/settings/skills.svg';
+import DoubleArrowIcon from '@/assets/icons/problem/double-arrow.svg';
+import IncorrectCircleIcon from '@/assets/icons/problem/check-circle.svg';
+import ReturnIcon from '@/assets/icons/problem/return.svg';
 
 import type { ProblemQuestion } from '../_types/problemSolving';
+import ProblemStatusIcon from './ProblemStatusIcon';
 
 type ProblemQuestionCardProps = {
   question: ProblemQuestion;
   isLastQuestion: boolean;
+  isReviewMode?: boolean;
   onNext: () => void;
   onRetry: () => void;
 };
@@ -22,6 +23,7 @@ type ProblemQuestionCardProps = {
 type SelfCheckStatus = 'correct' | 'incorrect' | '';
 
 const SELF_CHECK_DELAY_MS = 500;
+const CIRCLED_NUMBERS = ['①', '②', '③', '④', '⑤'];
 
 function cn(...classNames: Array<string | false | null | undefined>) {
   return classNames.filter(Boolean).join(' ');
@@ -44,35 +46,43 @@ function AnswerResultMessage({ status }: { status: 'correct' | 'incorrect' }) {
           isCorrect ? 'text-success-subtle' : 'text-error',
         )}
       >
-        {isCorrect ? '정답입니다!' : '오답입니다.'}
+        {isCorrect ? '정답입니다!' : '오답입니다'}
       </p>
     </div>
   );
 }
+
 export default function ProblemQuestionCard({
   question,
   isLastQuestion,
+  isReviewMode = false,
   onNext,
   onRetry,
 }: ProblemQuestionCardProps) {
   const selfCheckTimerIdRef = useRef<number | null>(null);
 
-  const [textAnswer, setTextAnswer] = useState('');
-  const [selectedChoiceId, setSelectedChoiceId] = useState('');
-  const [isHintVisible, setIsHintVisible] = useState(false);
+  const [textAnswer, setTextAnswer] = useState(isReviewMode ? (question.savedAnswer ?? '') : '');
+  const [selectedChoiceId, setSelectedChoiceId] = useState(
+    isReviewMode ? (question.savedChoiceId ?? '') : '',
+  );
+  const [isHintVisible, setIsHintVisible] = useState(isReviewMode);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selfCheck, setSelfCheck] = useState<SelfCheckStatus>('');
   const [pendingSelfCheck, setPendingSelfCheck] = useState<SelfCheckStatus>('');
 
   const selectedChoice = question.choices?.find((choice) => choice.id === selectedChoiceId);
+  const correctChoiceIndex = question.choices?.findIndex(
+    (choice) => normalizeAnswer(choice.label) === normalizeAnswer(question.correctAnswer),
+  );
+  const correctChoiceNumber =
+    correctChoiceIndex !== undefined && correctChoiceIndex >= 0
+      ? CIRCLED_NUMBERS[correctChoiceIndex]
+      : question.correctAnswer;
 
   const answerValue = question.type === 'shortAnswer' ? textAnswer : (selectedChoice?.label ?? '');
-
   const isAutoCorrect = normalizeAnswer(answerValue) === normalizeAnswer(question.correctAnswer);
-
   const canSubmit =
     question.type === 'shortAnswer' ? textAnswer.trim().length > 0 : selectedChoiceId.length > 0;
-
   const canMoveNext = question.gradingMode === 'self' ? selfCheck.length > 0 : isSubmitted;
 
   useEffect(() => {
@@ -92,7 +102,6 @@ export default function ProblemQuestionCard({
 
   const resetQuestionState = () => {
     clearSelfCheckTimer();
-
     setTextAnswer('');
     setSelectedChoiceId('');
     setIsHintVisible(false);
@@ -102,11 +111,9 @@ export default function ProblemQuestionCard({
   };
 
   const handleSubmit = () => {
-    if (!canSubmit) {
-      return;
+    if (canSubmit) {
+      setIsSubmitted(true);
     }
-
-    setIsSubmitted(true);
   };
 
   const handleRetry = () => {
@@ -120,7 +127,6 @@ export default function ProblemQuestionCard({
     }
 
     setPendingSelfCheck(nextSelfCheck);
-
     selfCheckTimerIdRef.current = window.setTimeout(() => {
       setSelfCheck(nextSelfCheck);
       setPendingSelfCheck('');
@@ -131,19 +137,21 @@ export default function ProblemQuestionCard({
   return (
     <section className="bg-bg-white w-[960px] rounded-[15px] px-[40px] py-[40px]">
       <div className="flex items-center gap-[12px] text-[14px] leading-[20px] font-medium">
-        <span className="text-secondary-600">문제 {question.no}.</span>
+        <span className="text-secondary-600">문제 {String(question.no).padStart(2, '0')}.</span>
         <span className="text-gray-700">{question.title}</span>
       </div>
 
-      <h1 className="mt-[34px] text-[20px] leading-[30px] font-bold">{question.question}</h1>
+      <h1 className="mt-[34px] text-[20px] leading-[30px] font-bold text-gray-950">
+        {question.question}
+      </h1>
 
       {question.type === 'shortAnswer' && (
         <div className="mt-[64px] border-b border-gray-400">
           <input
             value={textAnswer}
             disabled={isSubmitted}
-            placeholder=""
-            className="h-[38px] w-full bg-transparent px-[12px] text-[16px] leading-[24px] font-medium outline-none placeholder:text-gray-700 disabled:text-gray-900"
+            aria-label="주관식 답안"
+            className="h-[38px] w-full bg-transparent px-[12px] text-[16px] leading-[24px] font-medium text-gray-900 outline-none disabled:text-gray-900"
             onChange={(event) => {
               setTextAnswer(event.target.value);
             }}
@@ -155,9 +163,7 @@ export default function ProblemQuestionCard({
         <ol className="mt-[36px] flex flex-col gap-[12px]">
           {question.choices?.map((choice) => {
             const isSelected = choice.id === selectedChoiceId;
-
             const selectedTextClassName = isSubmitted ? 'text-success' : 'text-secondary-600';
-
             const selectedCircleClassName = isSubmitted
               ? 'border-success text-success'
               : 'border-secondary-600 text-secondary-600';
@@ -183,7 +189,6 @@ export default function ProblemQuestionCard({
                   >
                     {choice.id}
                   </span>
-
                   <span>{choice.label}</span>
                 </button>
               </li>
@@ -195,9 +200,11 @@ export default function ProblemQuestionCard({
       {isSubmitted && question.gradingMode === 'auto' && (
         <>
           <AnswerResultMessage status={isAutoCorrect ? 'correct' : 'incorrect'} />
-
-          <p className="mt-[18px] text-[16px] leading-[24px] font-medium">
-            정답 : {question.correctAnswer}
+          <p className="mt-[18px] text-[16px] leading-[24px] font-medium text-gray-900">
+            정답 : <span className="text-[24px] leading-[24px]">{correctChoiceNumber}</span>
+          </p>
+          <p className="mt-[12px] text-[16px] leading-[24px] font-medium text-gray-900">
+            {question.explanation ?? question.correctAnswer}
           </p>
         </>
       )}
@@ -268,7 +275,7 @@ export default function ProblemQuestionCard({
 
           {selfCheck && <AnswerResultMessage status={selfCheck} />}
 
-          <p className="mt-[18px] text-[16px] leading-[24px] font-medium">
+          <p className="mt-[18px] text-[16px] leading-[24px] font-medium text-gray-900">
             정답 : {question.correctAnswer}
           </p>
         </div>
@@ -276,7 +283,7 @@ export default function ProblemQuestionCard({
 
       {isHintVisible && (
         <div className="border-primary-700 mt-[28px] flex h-[96px] flex-col justify-center rounded-[10px] border-2 px-[16px]">
-          <p className="text-[14px] leading-[20px] font-bold">Hint 1.</p>
+          <p className="text-[14px] leading-[20px] font-bold text-gray-900">Hint 1.</p>
           <p className="mt-[10px] text-[16px] leading-[24px] font-medium text-gray-700">
             {question.hint}
           </p>

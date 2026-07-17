@@ -19,8 +19,11 @@ export type ProblemQuestion = {
   type: ProblemQuestionType;
   gradingMode: ProblemGradingMode;
   correctAnswer: string;
+  explanation?: string;
   hint: string;
   choices?: ProblemChoice[];
+  savedAnswer?: string;
+  savedChoiceId?: string;
 };
 
 export type ProblemSetSummary = {

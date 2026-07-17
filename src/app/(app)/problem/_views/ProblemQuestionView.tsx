@@ -15,12 +15,14 @@ type ProblemQuestionViewProps = {
   problemSetId: string;
   question: ProblemQuestion;
   questionIndex: number;
+  isReviewMode?: boolean;
 };
 
 export default function ProblemQuestionView({
   problemSetId,
   question,
   questionIndex,
+  isReviewMode = false,
 }: ProblemQuestionViewProps) {
   const router = useRouter();
 
@@ -31,6 +33,7 @@ export default function ProblemQuestionView({
   const isLastQuestion = questionIndex === mockProblemQuestions.length - 1;
   const previousQuestion = mockProblemQuestions[questionIndex - 1];
   const nextQuestion = mockProblemQuestions[questionIndex + 1];
+  const reviewQuery = isReviewMode ? '?from=result' : '';
 
   useEffect(() => {
     const timerId = window.setInterval(() => {
@@ -48,7 +51,7 @@ export default function ProblemQuestionView({
       return;
     }
 
-    router.push(`/problem/${problemSetId}/questions/${nextQuestion.id}`);
+    router.push(`/problem/${problemSetId}/questions/${nextQuestion.id}${reviewQuery}`);
   };
 
   const handleRetry = () => {
@@ -72,8 +75,12 @@ export default function ProblemQuestionView({
   return (
     <main className="bg-bg-1 min-h-dvh">
       <ProblemSolvingHeader
-        title={`${String(question.no).padStart(2, '0')}. ${question.title}`}
-        backHref={`/problem/${problemSetId}`}
+        title={
+          isReviewMode
+            ? '최종 결과로 돌아가기'
+            : `${String(question.no).padStart(2, '0')}. ${question.title}`
+        }
+        backHref={isReviewMode ? `/problem/${problemSetId}/result` : `/problem/${problemSetId}`}
         elapsedTime={formatElapsedTime(elapsedSeconds)}
         current={question.no}
         total={mockProblemQuestions.length}
@@ -84,8 +91,10 @@ export default function ProblemQuestionView({
 
       <div className="flex min-h-[calc(100dvh-80px)] items-center justify-center py-[60px]">
         <ProblemQuestionCard
+          key={question.id}
           question={question}
           isLastQuestion={isLastQuestion}
+          isReviewMode={isReviewMode}
           onNext={handleNext}
           onRetry={handleRetry}
         />
@@ -100,15 +109,16 @@ export default function ProblemQuestionView({
         }}
         navigation={{
           previousHref: previousQuestion
-            ? `/problem/${problemSetId}/questions/${previousQuestion.id}`
+            ? `/problem/${problemSetId}/questions/${previousQuestion.id}${reviewQuery}`
             : undefined,
           nextHref: nextQuestion
-            ? `/problem/${problemSetId}/questions/${nextQuestion.id}`
+            ? `/problem/${problemSetId}/questions/${nextQuestion.id}${reviewQuery}`
             : `/problem/${problemSetId}/result`,
           previousDisabled: !previousQuestion,
           nextDisabled: false,
           onExitClick: handleOpenExitModal,
         }}
+        questionHrefSuffix={reviewQuery}
       />
 
       <ProblemExitConfirmModal

@@ -1,5 +1,7 @@
 'use client';
 
+import CloseIcon from '@/assets/icons/common/close.svg';
+
 type ProblemExitConfirmModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -28,10 +30,10 @@ export default function ProblemExitConfirmModal({
         <button
           type="button"
           aria-label="닫기"
-          className="absolute top-[20px] right-[32px] flex h-[24px] w-[24px] items-center justify-center text-[28px] leading-none font-light text-gray-700"
+          className="absolute top-[20px] right-[32px] flex h-[24px] w-[24px] items-center justify-center text-gray-700"
           onClick={onClose}
         >
-          ×
+          <CloseIcon className="h-[14px] w-[14px]" aria-hidden="true" focusable="false" />
         </button>
 
         <div className="bg-secondary-100 text-secondary-600 flex h-[80px] w-[80px] items-center justify-center rounded-full text-[48px] leading-none font-bold">
@@ -40,7 +42,7 @@ export default function ProblemExitConfirmModal({
 
         <h2
           id="problem-exit-confirm-title"
-          className="mt-[20px] text-[24px] leading-[32px] font-bold"
+          className="mt-[20px] text-[24px] leading-[32px] font-bold text-gray-950"
         >
           진행도를 저장하고 나가시겠어요?
         </h2>
@@ -52,7 +54,7 @@ export default function ProblemExitConfirmModal({
         <div className="mt-[32px] flex items-center gap-[12px]">
           <button
             type="button"
-            className="bg-secondary-600 flex h-[56px] w-[150px] items-center justify-center rounded-[10px] text-[16px] font-bold text-white"
+            className="bg-secondary-600 flex h-[54px] w-[133px] items-center justify-center rounded-[10px] text-[16px] leading-[24px] font-bold text-white"
             onClick={onSaveAndExit}
           >
             저장하고 나가기
@@ -60,7 +62,7 @@ export default function ProblemExitConfirmModal({
 
           <button
             type="button"
-            className="flex h-[56px] w-[180px] items-center justify-center rounded-[10px] bg-gray-500 text-[16px] font-bold text-white"
+            className="flex h-[54px] w-[165px] items-center justify-center rounded-[10px] bg-gray-500 text-[16px] leading-[24px] font-bold text-white"
             onClick={onExitWithoutSave}
           >
             저장하지 않고 나가기

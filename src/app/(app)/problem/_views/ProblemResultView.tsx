@@ -20,19 +20,16 @@ type ProblemResultViewProps = {
 
 export default function ProblemResultView({ problemSetId }: ProblemResultViewProps) {
   const router = useRouter();
-
   const [isTocOpen, setIsTocOpen] = useState(false);
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
   const firstQuestion = mockProblemQuestions[0];
   const lastQuestion = mockProblemQuestions[mockProblemQuestions.length - 1];
-
   const firstQuestionHref = firstQuestion
     ? `/problem/${problemSetId}/questions/${firstQuestion.id}`
     : `/problem/${problemSetId}`;
-
   const lastQuestionHref = lastQuestion
-    ? `/problem/${problemSetId}/questions/${lastQuestion.id}`
+    ? `/problem/${problemSetId}/questions/${lastQuestion.id}?from=result`
     : undefined;
 
   const handleOpenExitModal = () => {
@@ -78,6 +75,7 @@ export default function ProblemResultView({ problemSetId }: ProblemResultViewPro
         onClose={() => {
           setIsTocOpen(false);
         }}
+        questionHrefSuffix="?from=result"
         navigation={{
           previousHref: lastQuestionHref,
           previousDisabled: !lastQuestion,
