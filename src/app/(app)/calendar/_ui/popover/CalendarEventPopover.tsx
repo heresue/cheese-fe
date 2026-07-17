@@ -24,7 +24,6 @@ import {
   toTimeInputValue,
 } from '../../_lib/date';
 import { ChevronIcon } from '../../../../../assets/icons/calendar';
-import { DEFAULT_EVENT_COLOR } from '../../_model/constants';
 import type { CalendarEventDraft, EventColorId, ReminderMinutes } from '../../_model/types';
 
 type CalendarEventPopoverProps = {
@@ -603,7 +602,7 @@ export function CalendarEventPopover({
             </div>
 
             <CollapsibleColorPicker
-              value={draft.colorId ?? DEFAULT_EVENT_COLOR}
+              value={draft.colorId}
               options={QUICK_EVENT_COLOR_OPTIONS}
               onChange={handleSelectColor}
             />

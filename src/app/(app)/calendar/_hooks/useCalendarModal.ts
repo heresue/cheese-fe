@@ -2,7 +2,6 @@
 
 import { useCallback, useState } from 'react';
 
-import { DEFAULT_EVENT_COLOR } from '@/app/(app)/calendar/_model/constants';
 import type { CalendarEventDraft } from '@/app/(app)/calendar/_model/types';
 
 export type CalendarPopoverPlacement = 'auto' | 'cell-center';
@@ -49,7 +48,7 @@ function toEditableDraft(draft: Partial<CalendarEventDraft>): CalendarEventDraft
     start: draft.start ?? '',
     end: draft.end ?? draft.start ?? '',
     allDay: draft.allDay ?? false,
-    colorId: draft.colorId ?? DEFAULT_EVENT_COLOR,
+    colorId: draft.colorId,
     memo: draft.memo ?? '',
     location: draft.location ?? '',
     reminderMinutes: draft.reminderMinutes,
