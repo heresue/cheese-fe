@@ -282,7 +282,7 @@ function ProblemListView() {
     <main className="min-h-0">
       <div
         ref={scrollAreaRef}
-        className="h-dvh min-h-0 overflow-y-auto overscroll-contain px-10 pt-10"
+        className="h-dvh min-h-0 overflow-y-auto overscroll-contain px-10 pt-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         <section className="mx-auto mb-8 flex w-full max-w-[1100px] flex-col gap-8 pb-[100px]">
           <div className="flex flex-col gap-5">

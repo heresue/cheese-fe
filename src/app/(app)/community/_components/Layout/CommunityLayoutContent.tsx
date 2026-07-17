@@ -49,7 +49,7 @@ export default function CommunityLayoutContent({ children }: { children: React.R
   };
 
   return (
-    <div className="h-dvh overflow-y-auto px-10 pt-10">
+    <div className="h-dvh overflow-y-auto px-10 pt-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <div className="mx-auto mb-8 flex w-full max-w-[1100px] flex-col gap-8">
         <div className="flex flex-col gap-5">
           {shouldShowFilterBar && (
