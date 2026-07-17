@@ -1,0 +1,103 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+
+import { cn } from '@/lib/cn';
+
+type ColorPickerOption<T extends string> = {
+  value: T;
+  label: string;
+  swatchClassName?: string;
+};
+
+type CollapsibleColorPickerProps<T extends string> = {
+  value?: T;
+  options: Array<ColorPickerOption<T>>;
+  onChange: (value: T) => void;
+};
+
+const COLOR_SWATCH_SIZE = 20;
+const COLOR_SWATCH_GAP = 8;
+
+export function CollapsibleColorPicker<T extends string>({
+  value,
+  options,
+  onChange,
+}: CollapsibleColorPickerProps<T>) {
+  const [open, setOpen] = useState(!value);
+  const pickerRef = useRef<HTMLDivElement | null>(null);
+
+  const selectedOption = options.find((option) => option.value === value);
+  const isCollapsed = Boolean(selectedOption) && !open;
+  const visibleOptions = isCollapsed && selectedOption ? [selectedOption] : options;
+  const paletteWidth =
+    visibleOptions.length * COLOR_SWATCH_SIZE +
+    Math.max(visibleOptions.length - 1, 0) * COLOR_SWATCH_GAP;
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handlePointerDown = (event: globalThis.MouseEvent) => {
+      if (!pickerRef.current) return;
+      if (pickerRef.current.contains(event.target as Node)) return;
+
+      if (value) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+    };
+  }, [open, value]);
+
+  return (
+    <div
+      ref={pickerRef}
+      className="flex items-center"
+      data-color-picker-expanded={open ? 'true' : 'false'}
+    >
+      <div
+        className="overflow-hidden"
+        style={{
+          width: `${paletteWidth}px`,
+          transition: 'width 240ms cubic-bezier(0.22, 1, 0.36, 1)',
+        }}
+      >
+        <div className="flex items-center gap-[8px]">
+          {visibleOptions.map((option) => {
+            const selected = value === option.value;
+
+            return (
+              <button
+                key={option.value}
+                type="button"
+                aria-label={`${option.label} 색상 선택`}
+                aria-pressed={selected}
+                onClick={() => {
+                  if (selected) {
+                    setOpen((prev) => !prev);
+                    return;
+                  }
+
+                  onChange(option.value);
+                  setOpen(false);
+                }}
+                className={cn(
+                  'h-[20px] w-[20px] shrink-0 rounded-[5px] border border-transparent transition-transform duration-150 hover:scale-105 hover:border-gray-300',
+                  option.swatchClassName,
+                  selected && 'border-gray-300',
+                )}
+                style={{
+                  boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.52)',
+                }}
+              />
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}

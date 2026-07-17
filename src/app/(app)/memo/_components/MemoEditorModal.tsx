@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react';
+import { useRef, useState, type MouseEvent as ReactMouseEvent } from 'react';
 
 import ArrowIcon from '@/assets/icons/common/arrow.svg';
 import CreateIcon from '@/assets/icons/common/create.svg';
@@ -9,7 +9,7 @@ import MemoDeleteIcon from '@/assets/icons/memo/delete.svg';
 import MemoPictureIcon from '@/assets/icons/memo/picture.svg';
 import MemoPinIcon from '@/assets/icons/memo/pin.svg';
 import MemoPinFilledIcon from '@/assets/icons/memo/pin-filled.svg';
-import { cn } from '@/lib/cn';
+import { CollapsibleColorPicker } from '@/components/common/CollapsibleColorPicker';
 
 import { MemoRichEditor } from './MemoRichEditor';
 import { getMemoTagColor, MEMO_COLOR_OPTIONS } from '../_constants/memoColors';
@@ -22,18 +22,23 @@ type MemoEditorModalProps = {
   onSubmit: (
     memo: Omit<Memo, 'id' | 'createdAt'> & Partial<Pick<Memo, 'id' | 'createdAt'>>,
   ) => void;
+  onDelete: (id: string) => void;
 };
 
 type MemoEditorModalContentProps = {
   memo?: Memo | null;
   onClose: () => void;
   onSubmit: MemoEditorModalProps['onSubmit'];
+  onDelete: MemoEditorModalProps['onDelete'];
 };
 
 const NO_PICTURE_IMAGE_SRC = '/images/nopicture.png';
 
-const COLOR_SWATCH_SIZE = 20;
-const COLOR_SWATCH_GAP = 8;
+const MEMO_COLOR_PICKER_OPTIONS = MEMO_COLOR_OPTIONS.map((option) => ({
+  value: option.color,
+  label: option.label,
+  swatchClassName: getMemoTagColor(option.color)?.chipClassName,
+}));
 
 function PhotoPlaceholder() {
   return (
@@ -62,95 +67,16 @@ function MemoImagePreview({ src }: { src: string }) {
   );
 }
 
-function MemoColorPicker({
-  value,
-  onChange,
-}: {
-  value?: MemoColor;
-  onChange: (color: MemoColor) => void;
-}) {
-  const [open, setOpen] = useState(!value);
-  const pickerRef = useRef<HTMLDivElement | null>(null);
-
-  const isCollapsed = Boolean(value) && !open;
-  const visibleColors = isCollapsed
-    ? MEMO_COLOR_OPTIONS.filter((option) => option.color === value)
-    : MEMO_COLOR_OPTIONS;
-
-  const paletteWidth =
-    visibleColors.length * COLOR_SWATCH_SIZE +
-    Math.max(visibleColors.length - 1, 0) * COLOR_SWATCH_GAP;
-
-  useEffect(() => {
-    if (!open) return;
-
-    const handlePointerDown = (event: globalThis.MouseEvent) => {
-      if (!pickerRef.current) return;
-      if (pickerRef.current.contains(event.target as Node)) return;
-
-      if (value) {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handlePointerDown);
-
-    return () => {
-      document.removeEventListener('mousedown', handlePointerDown);
-    };
-  }, [open, value]);
-
-  return (
-    <div ref={pickerRef} className="flex items-center">
-      <div
-        className="overflow-hidden"
-        style={{
-          width: `${paletteWidth}px`,
-          transition: 'width 240ms cubic-bezier(0.22, 1, 0.36, 1)',
-        }}
-      >
-        <div className="flex items-center gap-[8px]">
-          {visibleColors.map((option) => {
-            const tagColor = getMemoTagColor(option.color);
-            const selected = value === option.color;
-
-            return (
-              <button
-                key={option.color}
-                type="button"
-                aria-label={`${option.label} 색상 선택`}
-                aria-pressed={selected}
-                onClick={() => {
-                  if (selected) {
-                    setOpen((prev) => !prev);
-                    return;
-                  }
-
-                  onChange(option.color);
-                  setOpen(false);
-                }}
-                className={cn(
-                  'h-[20px] w-[20px] shrink-0 rounded-[5px] border border-transparent transition-transform duration-150 hover:scale-105 hover:border-gray-300',
-                  tagColor?.chipClassName,
-                  selected && 'border-gray-300',
-                )}
-                style={{
-                  boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.52)',
-                }}
-              />
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function removeContentImages(html: string) {
   return html.replace(/<img\b[^>]*>/gi, '').trim();
 }
 
-function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalContentProps) {
+function MemoEditorModalContent({
+  memo,
+  onClose,
+  onSubmit,
+  onDelete,
+}: MemoEditorModalContentProps) {
   const imageInputRef = useRef<HTMLInputElement | null>(null);
 
   const [title, setTitle] = useState(memo?.title ?? '');
@@ -158,6 +84,7 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
   const [color, setColor] = useState<MemoColor | undefined>(memo?.color);
   const [pinned, setPinned] = useState(Boolean(memo?.pinned));
   const [imageSrc, setImageSrc] = useState(memo?.imageSrc ?? '');
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
   const handleBackdropMouseDown = (event: ReactMouseEvent<HTMLDivElement>) => {
     if (event.target !== event.currentTarget) return;
@@ -181,10 +108,6 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
     reader.readAsDataURL(file);
   };
 
-  const handleRemoveImage = () => {
-    setImageSrc('');
-  };
-
   const handleSubmit = () => {
     onSubmit({
       id: memo?.id,
@@ -197,6 +120,14 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
       selected: memo?.selected,
       deleted: memo?.deleted,
     });
+
+    onClose();
+  };
+
+  const handleConfirmDelete = () => {
+    if (memo?.id) {
+      onDelete(memo.id);
+    }
 
     onClose();
   };
@@ -237,7 +168,11 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
               메모 색상 설정
             </span>
 
-            <MemoColorPicker value={color} onChange={setColor} />
+            <CollapsibleColorPicker
+              value={color}
+              options={MEMO_COLOR_PICKER_OPTIONS}
+              onChange={setColor}
+            />
           </div>
 
           <div className="flex items-center gap-[22px] text-gray-600">
@@ -248,9 +183,15 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
               className="flex h-[20px] w-[20px] items-center justify-center"
             >
               {pinned ? (
-                <MemoPinFilledIcon className="h-[20px] w-[20px] text-gray-950" aria-hidden="true" />
+                <MemoPinFilledIcon
+                  className="block h-[20px] w-[20px] shrink-0 text-gray-950"
+                  aria-hidden="true"
+                />
               ) : (
-                <MemoPinIcon className="h-[20px] w-[20px] text-gray-600" aria-hidden="true" />
+                <MemoPinIcon
+                  className="block h-[20px] w-[20px] shrink-0 text-gray-600"
+                  aria-hidden="true"
+                />
               )}
             </button>
 
@@ -258,19 +199,18 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
               type="button"
               aria-label="대표 이미지 추가"
               onClick={openImagePicker}
-              className="text-gray-600"
+              className="flex h-[20px] w-[20px] items-center justify-center text-gray-600"
             >
-              <MemoPictureIcon className="h-[20px] w-[20px]" aria-hidden="true" />
+              <MemoPictureIcon className="block h-[20px] w-[20px] shrink-0" aria-hidden="true" />
             </button>
 
             <button
               type="button"
-              aria-label="대표 이미지 삭제"
-              onClick={handleRemoveImage}
-              disabled={!imageSrc}
-              className="text-gray-600 disabled:cursor-not-allowed disabled:opacity-40"
+              aria-label="메모 삭제"
+              onClick={() => setIsDeleteConfirmOpen(true)}
+              className="flex h-[20px] w-[20px] items-center justify-center text-gray-600"
             >
-              <MemoDeleteIcon className="h-[20px] w-[20px]" aria-hidden="true" />
+              <MemoDeleteIcon className="block h-[20px] w-[20px] shrink-0" aria-hidden="true" />
             </button>
 
             <input
@@ -297,11 +237,56 @@ function MemoEditorModalContent({ memo, onClose, onSubmit }: MemoEditorModalCont
           {imageSrc ? <MemoImagePreview src={imageSrc} /> : <PhotoPlaceholder />}
         </MemoRichEditor>
       </section>
+
+      {isDeleteConfirmOpen ? (
+        <div
+          className="bg-overlay-dim absolute inset-0 z-[60] flex items-center justify-center"
+          onMouseDown={(event) => {
+            event.stopPropagation();
+
+            if (event.target === event.currentTarget) {
+              setIsDeleteConfirmOpen(false);
+            }
+          }}
+        >
+          <section
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="memo-delete-confirm-title"
+            className="w-[340px] rounded-[10px] border border-gray-300 bg-white px-[24px] py-[22px] shadow-[0_10px_30px_rgba(15,23,42,0.18)]"
+          >
+            <h3
+              id="memo-delete-confirm-title"
+              className="text-[16px] leading-[24px] font-medium text-gray-950"
+            >
+              메모를 삭제하시겠습니까?
+            </h3>
+
+            <div className="mt-[24px] flex justify-end gap-[8px]">
+              <button
+                type="button"
+                onClick={() => setIsDeleteConfirmOpen(false)}
+                className="flex h-[36px] items-center justify-center rounded-[8px] border border-gray-300 px-[16px] text-[14px] font-medium text-gray-700"
+              >
+                취소
+              </button>
+
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                className="bg-error flex h-[36px] items-center justify-center rounded-[8px] px-[16px] text-[14px] font-medium text-white"
+              >
+                삭제
+              </button>
+            </div>
+          </section>
+        </div>
+      ) : null}
     </div>
   );
 }
 
-export function MemoEditorModal({ open, memo, onClose, onSubmit }: MemoEditorModalProps) {
+export function MemoEditorModal({ open, memo, onClose, onSubmit, onDelete }: MemoEditorModalProps) {
   if (!open) return null;
 
   return (
@@ -310,6 +295,7 @@ export function MemoEditorModal({ open, memo, onClose, onSubmit }: MemoEditorMod
       memo={memo}
       onClose={onClose}
       onSubmit={onSubmit}
+      onDelete={onDelete}
     />
   );
 }

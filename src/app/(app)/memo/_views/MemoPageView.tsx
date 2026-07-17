@@ -254,6 +254,7 @@ export function MemoPageView() {
         memo={editingMemo}
         onClose={() => setIsEditorOpen(false)}
         onSubmit={handleSubmitMemo}
+        onDelete={handleDelete}
       />
     </main>
   );
