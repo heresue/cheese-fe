@@ -7,6 +7,7 @@ import ProblemExitConfirmModal from '../_components/ProblemExitConfirmModal';
 import ProblemQuestionCard from '../_components/ProblemQuestionCard';
 import ProblemSideToc from '../_components/ProblemSideToc';
 import ProblemSolvingHeader from '../_components/ProblemSolvingHeader';
+import { useProblemSolvingSession } from '../_contexts/ProblemSolvingSessionContext';
 import { mockProblemQuestions } from '../_data/mockProblemSolving';
 import type { ProblemQuestion } from '../_types/problemSolving';
 import { formatElapsedTime } from '../_utils/formatElapsedTime';
@@ -26,7 +27,20 @@ export default function ProblemQuestionView({
 }: ProblemQuestionViewProps) {
   const router = useRouter();
 
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const {
+    totalElapsedSeconds,
+    attempts,
+    isHydrated,
+    startQuestion,
+    saveDraft,
+    submitQuestion,
+    gradeQuestion,
+    retryQuestion,
+    pauseSession,
+    finishSession,
+    resetSession,
+  } = useProblemSolvingSession();
+
   const [isTocOpen, setIsTocOpen] = useState(false);
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
@@ -36,17 +50,14 @@ export default function ProblemQuestionView({
   const reviewQuery = isReviewMode ? '?from=result' : '';
 
   useEffect(() => {
-    const timerId = window.setInterval(() => {
-      setElapsedSeconds((prevElapsedSeconds) => prevElapsedSeconds + 1);
-    }, 1000);
-
-    return () => {
-      window.clearInterval(timerId);
-    };
-  }, []);
+    if (isHydrated) {
+      startQuestion(question.id, { review: isReviewMode });
+    }
+  }, [isHydrated, isReviewMode, question.id, startQuestion]);
 
   const handleNext = () => {
     if (isLastQuestion) {
+      finishSession();
       router.push(`/problem/${problemSetId}/result`);
       return;
     }
@@ -55,7 +66,7 @@ export default function ProblemQuestionView({
   };
 
   const handleRetry = () => {
-    setElapsedSeconds(0);
+    retryQuestion(question.id);
   };
 
   const handleOpenExitModal = () => {
@@ -64,11 +75,12 @@ export default function ProblemQuestionView({
   };
 
   const handleSaveAndExit = () => {
-    // TODO: 진행도 저장 API 연결 예정
+    pauseSession();
     router.push(`/problem/${problemSetId}`);
   };
 
   const handleExitWithoutSave = () => {
+    resetSession();
     router.push(`/problem/${problemSetId}`);
   };
 
@@ -81,7 +93,7 @@ export default function ProblemQuestionView({
             : `${String(question.no).padStart(2, '0')}. ${question.title}`
         }
         backHref={isReviewMode ? `/problem/${problemSetId}/result` : `/problem/${problemSetId}`}
-        elapsedTime={formatElapsedTime(elapsedSeconds)}
+        elapsedTime={formatElapsedTime(totalElapsedSeconds)}
         current={question.no}
         total={mockProblemQuestions.length}
         onMenuClick={() => {
@@ -90,14 +102,26 @@ export default function ProblemQuestionView({
       />
 
       <div className="flex min-h-[calc(100dvh-80px)] items-center justify-center py-[60px]">
-        <ProblemQuestionCard
-          key={question.id}
-          question={question}
-          isLastQuestion={isLastQuestion}
-          isReviewMode={isReviewMode}
-          onNext={handleNext}
-          onRetry={handleRetry}
-        />
+        {isHydrated && (
+          <ProblemQuestionCard
+            key={`${question.id}:${isReviewMode ? 'review' : 'solve'}`}
+            question={question}
+            initialAttempt={attempts[question.id]}
+            isLastQuestion={isLastQuestion}
+            isReviewMode={isReviewMode}
+            onDraftChange={(draft) => {
+              saveDraft(question.id, draft);
+            }}
+            onSubmitAnswer={(submission) => {
+              submitQuestion(question.id, submission);
+            }}
+            onSelfCheck={(status) => {
+              gradeQuestion(question.id, status);
+            }}
+            onNext={handleNext}
+            onRetry={handleRetry}
+          />
+        )}
       </div>
 
       <ProblemSideToc

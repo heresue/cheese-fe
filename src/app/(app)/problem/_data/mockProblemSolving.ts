@@ -1,17 +1,13 @@
 import cssThumbnail from '../../../../../public/images/problem/css.png';
 
-import type {
-  ProblemQuestion,
-  ProblemResultRow,
-  ProblemSetSummary,
-} from '../_types/problemSolving';
+import type { ProblemQuestion, ProblemSetSummary } from '../_types/problemSolving';
 
 export const mockProblemSetSummary: ProblemSetSummary = {
   id: 'css-basic',
   title: 'CSS : 실무 신입 개발자가 알아야할 C언어',
   lastProgressDate: '2026.02.27',
   thumbnailSrc: cssThumbnail,
-  solvedCount: 3,
+  solvedCount: 0,
   totalCount: 8,
 };
 
@@ -33,7 +29,6 @@ export const mockProblemQuestions: ProblemQuestion[] = [
       { id: '4', label: 'CSS가 적용되지 않음' },
       { id: '5', label: '구버전 브라우저 호환을 위해 사용' },
     ],
-    savedChoiceId: '1',
   },
   {
     id: 'next-project-structure',
@@ -45,7 +40,6 @@ export const mockProblemQuestions: ProblemQuestion[] = [
     gradingMode: 'self',
     correctAnswer: '퀵모드는 구버전 브라우저 호환을 위해 사용됩니다.',
     hint: '구버전 브라우저 호환을 위해 사용',
-    savedAnswer: '내가 원래 썼던 답',
   },
   {
     id: 'v0-setting',
@@ -108,65 +102,6 @@ export const mockProblemQuestions: ProblemQuestion[] = [
     gradingMode: 'self',
     correctAnswer: 'commit은 로컬 저장소에 기록하고 push는 원격 저장소에 업로드합니다.',
     hint: '로컬 저장소와 원격 저장소',
-  },
-];
-
-export const mockProblemResultRows: ProblemResultRow[] = [
-  {
-    questionId: 'cursor-role',
-    no: 1,
-    title: 'cursor의 역할',
-    status: 'correct',
-    elapsedTime: '02:28',
-  },
-  {
-    questionId: 'next-project-structure',
-    no: 2,
-    title: 'Next.js의 프로젝트 구조',
-    status: 'incorrect',
-    elapsedTime: '01:19',
-  },
-  {
-    questionId: 'v0-setting',
-    no: 3,
-    title: 'V0 가입 및 설정',
-    status: 'pending',
-    elapsedTime: '',
-  },
-  {
-    questionId: 'supabase-drizzle-clerk',
-    no: 4,
-    title: 'Supabase, DrizzleORM, Clerk 설명',
-    status: 'pending',
-    elapsedTime: '',
-  },
-  {
-    questionId: 'vercel-storage',
-    no: 5,
-    title: 'Vercel 배포 및 스토리지 설명',
-    status: 'correct',
-    elapsedTime: '02:28',
-  },
-  {
-    questionId: 'next-routing',
-    no: 6,
-    title: 'Next.js의 라우팅 시스템',
-    status: 'incorrect',
-    elapsedTime: '01:19',
-  },
-  {
-    questionId: 'next-route-handlers',
-    no: 7,
-    title: 'Next.js의 Route Handlers',
-    status: 'incorrect',
-    elapsedTime: '01:19',
-  },
-  {
-    questionId: 'git-commit-push',
-    no: 8,
-    title: 'git commit, git push 실습',
-    status: 'incorrect',
-    elapsedTime: '01:19',
   },
 ];
 

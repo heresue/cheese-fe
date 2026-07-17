@@ -9,6 +9,7 @@ type ProblemSetSummaryCardProps = {
   summary: ProblemSetSummary;
   actionLabel: string;
   actionHref: string;
+  onActionClick?: () => void;
   showProgress?: boolean;
 };
 
@@ -17,6 +18,7 @@ export default function ProblemSetSummaryCard({
   summary,
   actionLabel,
   actionHref,
+  onActionClick,
   showProgress = true,
 }: ProblemSetSummaryCardProps) {
   const progressPercent =
@@ -63,6 +65,7 @@ export default function ProblemSetSummaryCard({
 
         <Link
           href={actionHref}
+          onClick={onActionClick}
           className="bg-secondary-600 ml-[32px] flex h-[46px] w-[128px] shrink-0 items-center justify-center gap-[16px] rounded-[10px] text-[14px] leading-[24px] font-medium text-white"
         >
           <ProblemActionIcon className="h-[16px] w-[16px] shrink-0" />

@@ -9,13 +9,21 @@ import DoubleArrowIcon from '@/assets/icons/problem/double-arrow.svg';
 import IncorrectCircleIcon from '@/assets/icons/problem/check-circle.svg';
 import ReturnIcon from '@/assets/icons/problem/return.svg';
 
-import type { ProblemQuestion } from '../_types/problemSolving';
+import type { ProblemAttempt, ProblemQuestion, ProblemSolveStatus } from '../_types/problemSolving';
 import ProblemStatusIcon from './ProblemStatusIcon';
 
 type ProblemQuestionCardProps = {
   question: ProblemQuestion;
+  initialAttempt?: ProblemAttempt;
   isLastQuestion: boolean;
   isReviewMode?: boolean;
+  onDraftChange: (draft: { answer?: string; selectedChoiceId?: string }) => void;
+  onSubmitAnswer: (submission: {
+    answer: string;
+    selectedChoiceId: string;
+    status: ProblemSolveStatus;
+  }) => void;
+  onSelfCheck: (status: Exclude<ProblemSolveStatus, 'pending'>) => void;
   onNext: () => void;
   onRetry: () => void;
 };
@@ -54,20 +62,28 @@ function AnswerResultMessage({ status }: { status: 'correct' | 'incorrect' }) {
 
 export default function ProblemQuestionCard({
   question,
+  initialAttempt,
   isLastQuestion,
   isReviewMode = false,
+  onDraftChange,
+  onSubmitAnswer,
+  onSelfCheck,
   onNext,
   onRetry,
 }: ProblemQuestionCardProps) {
   const selfCheckTimerIdRef = useRef<number | null>(null);
 
-  const [textAnswer, setTextAnswer] = useState(isReviewMode ? (question.savedAnswer ?? '') : '');
-  const [selectedChoiceId, setSelectedChoiceId] = useState(
-    isReviewMode ? (question.savedChoiceId ?? '') : '',
-  );
+  const [textAnswer, setTextAnswer] = useState(initialAttempt?.answer ?? '');
+  const [selectedChoiceId, setSelectedChoiceId] = useState(initialAttempt?.selectedChoiceId ?? '');
   const [isHintVisible, setIsHintVisible] = useState(isReviewMode);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [selfCheck, setSelfCheck] = useState<SelfCheckStatus>('');
+  const [isSubmitted, setIsSubmitted] = useState(
+    isReviewMode ? false : Boolean(initialAttempt?.submitted),
+  );
+  const [selfCheck, setSelfCheck] = useState<SelfCheckStatus>(
+    !isReviewMode && initialAttempt?.selfChecked && initialAttempt.status !== 'pending'
+      ? initialAttempt.status
+      : '',
+  );
   const [pendingSelfCheck, setPendingSelfCheck] = useState<SelfCheckStatus>('');
 
   const selectedChoice = question.choices?.find((choice) => choice.id === selectedChoiceId);
@@ -113,6 +129,12 @@ export default function ProblemQuestionCard({
   const handleSubmit = () => {
     if (canSubmit) {
       setIsSubmitted(true);
+      onSubmitAnswer({
+        answer: textAnswer,
+        selectedChoiceId,
+        status:
+          question.gradingMode === 'auto' ? (isAutoCorrect ? 'correct' : 'incorrect') : 'pending',
+      });
     }
   };
 
@@ -129,6 +151,7 @@ export default function ProblemQuestionCard({
     setPendingSelfCheck(nextSelfCheck);
     selfCheckTimerIdRef.current = window.setTimeout(() => {
       setSelfCheck(nextSelfCheck);
+      onSelfCheck(nextSelfCheck);
       setPendingSelfCheck('');
       selfCheckTimerIdRef.current = null;
     }, SELF_CHECK_DELAY_MS);
@@ -153,7 +176,9 @@ export default function ProblemQuestionCard({
             aria-label="주관식 답안"
             className="h-[38px] w-full bg-transparent px-[12px] text-[16px] leading-[24px] font-medium text-gray-900 outline-none disabled:text-gray-900"
             onChange={(event) => {
-              setTextAnswer(event.target.value);
+              const nextAnswer = event.target.value;
+              setTextAnswer(nextAnswer);
+              onDraftChange({ answer: nextAnswer });
             }}
           />
         </div>
@@ -179,6 +204,7 @@ export default function ProblemQuestionCard({
                   )}
                   onClick={() => {
                     setSelectedChoiceId(choice.id);
+                    onDraftChange({ selectedChoiceId: choice.id });
                   }}
                 >
                   <span

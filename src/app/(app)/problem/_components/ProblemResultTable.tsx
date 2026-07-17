@@ -56,7 +56,7 @@ export default function ProblemResultTable({ problemSetId, rows }: ProblemResult
               </div>
 
               <div className="absolute top-0 left-[580px] flex h-[46px] w-[120px] items-center justify-center text-[20px] leading-[30px] font-medium">
-                {row.elapsedTime || '-'}
+                {row.elapsedTime}
               </div>
 
               <Link

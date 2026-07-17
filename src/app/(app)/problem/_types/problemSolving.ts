@@ -22,8 +22,15 @@ export type ProblemQuestion = {
   explanation?: string;
   hint: string;
   choices?: ProblemChoice[];
-  savedAnswer?: string;
-  savedChoiceId?: string;
+};
+
+export type ProblemAttempt = {
+  answer: string;
+  selectedChoiceId: string;
+  status: ProblemSolveStatus;
+  elapsedSeconds: number;
+  submitted: boolean;
+  selfChecked: boolean;
 };
 
 export type ProblemSetSummary = {
