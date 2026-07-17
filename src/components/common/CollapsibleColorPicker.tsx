@@ -86,13 +86,9 @@ export function CollapsibleColorPicker<T extends string>({
                   setOpen(false);
                 }}
                 className={cn(
-                  'h-[20px] w-[20px] shrink-0 rounded-[5px] border border-transparent transition-transform duration-150 hover:scale-105 hover:border-gray-300',
+                  'h-[20px] w-[20px] shrink-0 rounded-[5px] transition-transform duration-150 outline-none hover:scale-105',
                   option.swatchClassName,
-                  selected && 'border-gray-300',
                 )}
-                style={{
-                  boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.52)',
-                }}
               />
             );
           })}

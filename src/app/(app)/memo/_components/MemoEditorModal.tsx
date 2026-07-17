@@ -146,7 +146,7 @@ function MemoEditorModalContent({
               aria-label="닫기"
               className="flex h-[28px] w-[28px] items-center justify-center text-gray-700"
             >
-              <ArrowIcon className="h-[24px] w-[14px]" aria-hidden="true" />
+              <ArrowIcon className="h-[16px] w-[9px]" aria-hidden="true" />
             </button>
 
             <h2 className="text-[20px] leading-[30px] font-medium text-gray-950">메모</h2>
@@ -175,21 +175,21 @@ function MemoEditorModalContent({
             />
           </div>
 
-          <div className="flex items-center gap-[22px] text-gray-600">
+          <div className="flex items-center gap-[16px] text-gray-600">
             <button
               type="button"
               aria-label="고정"
               onClick={() => setPinned((prev) => !prev)}
-              className="flex h-[20px] w-[20px] items-center justify-center"
+              className="flex h-[24px] w-[24px] items-center justify-center"
             >
               {pinned ? (
                 <MemoPinFilledIcon
-                  className="block h-[20px] w-[20px] shrink-0 text-gray-950"
+                  className="block h-[18px] w-[18px] shrink-0 text-gray-950"
                   aria-hidden="true"
                 />
               ) : (
                 <MemoPinIcon
-                  className="block h-[20px] w-[20px] shrink-0 text-gray-600"
+                  className="block h-[18px] w-[18px] shrink-0 text-gray-600"
                   aria-hidden="true"
                 />
               )}
@@ -199,18 +199,18 @@ function MemoEditorModalContent({
               type="button"
               aria-label="대표 이미지 추가"
               onClick={openImagePicker}
-              className="flex h-[20px] w-[20px] items-center justify-center text-gray-600"
+              className="flex h-[24px] w-[24px] items-center justify-center text-gray-600"
             >
-              <MemoPictureIcon className="block h-[20px] w-[20px] shrink-0" aria-hidden="true" />
+              <MemoPictureIcon className="block h-[18px] w-[18px] shrink-0" aria-hidden="true" />
             </button>
 
             <button
               type="button"
               aria-label="메모 삭제"
               onClick={() => setIsDeleteConfirmOpen(true)}
-              className="flex h-[20px] w-[20px] items-center justify-center text-gray-600"
+              className="flex h-[24px] w-[24px] items-center justify-center text-gray-600"
             >
-              <MemoDeleteIcon className="block h-[20px] w-[20px] shrink-0" aria-hidden="true" />
+              <MemoDeleteIcon className="block h-[18px] w-[16px] shrink-0" aria-hidden="true" />
             </button>
 
             <input
