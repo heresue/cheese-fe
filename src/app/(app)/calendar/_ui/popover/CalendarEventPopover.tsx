@@ -11,6 +11,7 @@ import WatchIcon from '@/assets/icons/calendar/watch.svg';
 import Watch2Icon from '@/assets/icons/calendar/watch2.svg';
 import LinkIcon from '@/assets/icons/common/link.svg';
 import LocationIcon from '@/assets/icons/settings/location.svg';
+import { CollapsibleColorPicker } from '@/components/common/CollapsibleColorPicker';
 
 import {
   addDaysToCalendarDate,
@@ -70,6 +71,12 @@ const QUICK_EVENT_COLOR_IDS = [
 const QUICK_EVENT_COLORS = QUICK_EVENT_COLOR_IDS.map((id) => ({
   ...getTagColor(id),
   id,
+}));
+
+const QUICK_EVENT_COLOR_OPTIONS = QUICK_EVENT_COLORS.map((color) => ({
+  value: color.id,
+  label: color.label,
+  swatchClassName: color.chipClassName,
 }));
 
 function FieldIcon({ children }: { children: React.ReactNode }) {
@@ -595,22 +602,11 @@ export function CalendarEventPopover({
               일정 색상
             </div>
 
-            <div className="flex items-center gap-2">
-              {QUICK_EVENT_COLORS.map((color) => (
-                <button
-                  key={color.id}
-                  type="button"
-                  onClick={() => handleSelectColor(color.id)}
-                  className={cn(
-                    'h-5 w-5 shrink-0 rounded-[6px] border border-transparent transition-transform duration-150 hover:scale-105 hover:border-gray-300',
-                    color.chipClassName,
-                  )}
-                  style={{ boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.52)' }}
-                  aria-label={color.label}
-                  aria-pressed={(draft.colorId ?? DEFAULT_EVENT_COLOR) === color.id}
-                />
-              ))}
-            </div>
+            <CollapsibleColorPicker
+              value={draft.colorId ?? DEFAULT_EVENT_COLOR}
+              options={QUICK_EVENT_COLOR_OPTIONS}
+              onChange={handleSelectColor}
+            />
           </div>
 
           <div className="mt-[21px] space-y-[3px]">
