@@ -84,7 +84,7 @@ function MemoEditorModalContent({
   const [color, setColor] = useState<MemoColor | undefined>(memo?.color);
   const [pinned, setPinned] = useState(Boolean(memo?.pinned));
   const [imageSrc, setImageSrc] = useState(memo?.imageSrc ?? '');
-  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [isDeleteWarningVisible, setIsDeleteWarningVisible] = useState(false);
 
   const handleBackdropMouseDown = (event: ReactMouseEvent<HTMLDivElement>) => {
     if (event.target !== event.currentTarget) return;
@@ -130,6 +130,15 @@ function MemoEditorModalContent({
     }
 
     onClose();
+  };
+
+  const handleDeleteClick = () => {
+    if (isDeleteWarningVisible) {
+      handleConfirmDelete();
+      return;
+    }
+
+    setIsDeleteWarningVisible(true);
   };
 
   return (
@@ -201,13 +210,16 @@ function MemoEditorModalContent({
               onClick={openImagePicker}
               className="flex h-[24px] w-[24px] items-center justify-center text-gray-600"
             >
-              <MemoPictureIcon className="block h-[18px] w-[18px] shrink-0" aria-hidden="true" />
+              <MemoPictureIcon
+                className="block h-[18px] w-[18px] shrink-0 -translate-y-px"
+                aria-hidden="true"
+              />
             </button>
 
             <button
               type="button"
               aria-label="메모 삭제"
-              onClick={() => setIsDeleteConfirmOpen(true)}
+              onClick={handleDeleteClick}
               className="flex h-[24px] w-[24px] items-center justify-center text-gray-600"
             >
               <MemoDeleteIcon className="block h-[18px] w-[16px] shrink-0" aria-hidden="true" />
@@ -238,48 +250,13 @@ function MemoEditorModalContent({
         </MemoRichEditor>
       </section>
 
-      {isDeleteConfirmOpen ? (
+      {isDeleteWarningVisible ? (
         <div
-          className="bg-overlay-dim absolute inset-0 z-[60] flex items-center justify-center"
-          onMouseDown={(event) => {
-            event.stopPropagation();
-
-            if (event.target === event.currentTarget) {
-              setIsDeleteConfirmOpen(false);
-            }
-          }}
+          role="alert"
+          aria-live="assertive"
+          className="bg-tag-red-100 text-error pointer-events-none absolute top-[20px] left-1/2 z-[60] flex min-h-[44px] -translate-x-1/2 items-center rounded-[8px] px-[18px] py-[10px] text-[14px] leading-[20px] font-medium whitespace-nowrap shadow-[0_6px_20px_rgba(15,23,42,0.14)]"
         >
-          <section
-            role="alertdialog"
-            aria-modal="true"
-            aria-labelledby="memo-delete-confirm-title"
-            className="w-[340px] rounded-[10px] border border-gray-300 bg-white px-[24px] py-[22px] shadow-[0_10px_30px_rgba(15,23,42,0.18)]"
-          >
-            <h3
-              id="memo-delete-confirm-title"
-              className="text-[16px] leading-[24px] font-medium text-gray-950"
-            >
-              메모를 삭제하시겠습니까?
-            </h3>
-
-            <div className="mt-[24px] flex justify-end gap-[8px]">
-              <button
-                type="button"
-                onClick={() => setIsDeleteConfirmOpen(false)}
-                className="flex h-[36px] items-center justify-center rounded-[8px] border border-gray-300 px-[16px] text-[14px] font-medium text-gray-700"
-              >
-                취소
-              </button>
-
-              <button
-                type="button"
-                onClick={handleConfirmDelete}
-                className="bg-error flex h-[36px] items-center justify-center rounded-[8px] px-[16px] text-[14px] font-medium text-white"
-              >
-                삭제
-              </button>
-            </div>
-          </section>
+          메모를 삭제하시겠습니까? 삭제 버튼을 한 번 더 눌러주세요.
         </div>
       ) : null}
     </div>
