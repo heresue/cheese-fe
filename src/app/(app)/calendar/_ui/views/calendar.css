@@ -11,7 +11,7 @@
   --calendar-grid-color: var(--color-gray-200);
   --calendar-accent-color: var(--color-secondary-600);
   --calendar-accent-strong: var(--color-secondary-700);
-  --calendar-now-line-color: #eb5b49;
+  --calendar-now-line-color: var(--color-error-subtle);
   --calendar-selection-line-color: var(--color-error-subtle);
 }
 
@@ -920,13 +920,13 @@
 
 .calendar-event-chip__delete:hover {
   opacity: 1;
-  background: rgba(47, 47, 47, 0.08);
+  background: color-mix(in srgb, var(--color-gray-900) 8%, transparent);
 }
 
 .calendar-event-chip__delete:focus-visible {
   opacity: 1;
   pointer-events: auto;
-  outline: 1px solid rgba(47, 47, 47, 0.18);
+  outline: 1px solid color-mix(in srgb, var(--color-gray-900) 18%, transparent);
 }
 
 .calendar-event-chip__delete-icon {

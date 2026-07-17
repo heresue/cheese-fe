@@ -28,13 +28,13 @@ type ToolbarButtonProps = {
 };
 
 const TEXT_COLORS = [
-  { label: '검정', hex: '#111111' },
-  { label: '회색', hex: '#6B7280' },
-  { label: '빨강', hex: '#EB5B49' },
-  { label: '노랑', hex: '#F4C340' },
-  { label: '초록', hex: '#9CC04B' },
-  { label: '파랑', hex: '#5B9EF7' },
-  { label: '보라', hex: '#9B59D0' },
+  { label: '검정', hex: 'var(--color-gray-950)' },
+  { label: '회색', hex: 'var(--color-gray-600)' },
+  { label: '빨강', hex: 'var(--color-tag-red-500)' },
+  { label: '노랑', hex: 'var(--color-tag-yellow-500)' },
+  { label: '초록', hex: 'var(--color-tag-green-500)' },
+  { label: '파랑', hex: 'var(--color-tag-blue-500)' },
+  { label: '보라', hex: 'var(--color-tag-purple-500)' },
 ];
 
 function ToolbarButton({ active, disabled, label, children, onClick }: ToolbarButtonProps) {
