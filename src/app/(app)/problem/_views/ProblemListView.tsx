@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 
 import { CategoryTabs } from '@/components/common/CategoryTabs';
 import { ListFilterBar } from '@/components/common/ListFilterBar';
@@ -14,12 +14,84 @@ import {
   PROBLEM_SUB_CATEGORY_TABS,
 } from '../_constants/problemFilters';
 import { mockProblemSets } from '../_data/mockProblemSets';
-import type { ProblemMainCategory, ProblemSortValue, ProblemSubCategory } from '../_types/problem';
+import type {
+  ProblemMainCategory,
+  ProblemSet,
+  ProblemSortValue,
+  ProblemSubCategory,
+} from '../_types/problem';
 import { filterProblemSets } from '../_utils/filterProblemSets';
 
 const PAGE_SIZE = 12;
 
 const PROBLEM_SEARCH_HISTORIES = ['CSS', 'Next.js', 'cursor', '표준모드', '라우팅'] as const;
+
+type SavedProblemProgress = Pick<ProblemSet, 'lastProgressDate' | 'solvedCount'>;
+
+function getSavedProblemProgress(problemSet: ProblemSet): SavedProblemProgress | null {
+  try {
+    const storedValue = window.sessionStorage.getItem(`cheese:problem-session:${problemSet.id}`);
+
+    if (!storedValue) {
+      return null;
+    }
+
+    const storedSession = JSON.parse(storedValue) as {
+      attempts?: Record<string, { submitted?: unknown }>;
+      lastProgressDate?: unknown;
+    };
+    const attempts =
+      storedSession.attempts && typeof storedSession.attempts === 'object'
+        ? storedSession.attempts
+        : {};
+    const solvedCount = Object.values(attempts).filter(
+      (attempt) => attempt?.submitted === true,
+    ).length;
+
+    if (solvedCount === 0) {
+      return null;
+    }
+
+    return {
+      solvedCount: Math.min(solvedCount, problemSet.totalCount),
+      lastProgressDate:
+        typeof storedSession.lastProgressDate === 'string' ? storedSession.lastProgressDate : null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function getSavedProgressSnapshot() {
+  if (typeof window === 'undefined') {
+    return '{}';
+  }
+
+  const savedProgress = mockProblemSets.reduce<Record<string, SavedProblemProgress>>(
+    (nextProgress, problemSet) => {
+      const problemProgress = getSavedProblemProgress(problemSet);
+
+      if (problemProgress) {
+        nextProgress[problemSet.id] = problemProgress;
+      }
+
+      return nextProgress;
+    },
+    {},
+  );
+
+  return JSON.stringify(savedProgress);
+}
+
+const getEmptyProgressSnapshot = () => '{}';
+
+function subscribeToSavedProgress(onStoreChange: () => void) {
+  window.addEventListener('storage', onStoreChange);
+
+  return () => {
+    window.removeEventListener('storage', onStoreChange);
+  };
+}
 
 function ProblemListView() {
   const [sort, setSort] = useState<ProblemSortValue>('latest');
@@ -27,6 +99,15 @@ function ProblemListView() {
   const [mainCategory, setMainCategory] = useState<ProblemMainCategory>('all');
   const [subCategory, setSubCategory] = useState<ProblemSubCategory>('all');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const savedProgressSnapshot = useSyncExternalStore(
+    subscribeToSavedProgress,
+    getSavedProgressSnapshot,
+    getEmptyProgressSnapshot,
+  );
+  const savedProgressByProblemSetId = useMemo(
+    () => JSON.parse(savedProgressSnapshot) as Record<string, SavedProblemProgress>,
+    [savedProgressSnapshot],
+  );
 
   const scrollAreaRef = useRef<HTMLDivElement | null>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -36,15 +117,24 @@ function ProblemListView() {
 
   const subCategoryItems = PROBLEM_SUB_CATEGORY_TABS[mainCategory] ?? [];
 
+  const problemSetsWithProgress = useMemo(
+    () =>
+      mockProblemSets.map((problemSet) => ({
+        ...problemSet,
+        ...savedProgressByProblemSetId[problemSet.id],
+      })),
+    [savedProgressByProblemSetId],
+  );
+
   const filteredProblemSets = useMemo(() => {
     return filterProblemSets({
-      problemSets: mockProblemSets,
+      problemSets: problemSetsWithProgress,
       mainCategory,
       subCategory,
       keyword,
       sort,
     });
-  }, [keyword, mainCategory, sort, subCategory]);
+  }, [keyword, mainCategory, problemSetsWithProgress, sort, subCategory]);
 
   const visibleProblemSets = filteredProblemSets.slice(0, visibleCount);
   const hasMoreProblemSets = visibleCount < filteredProblemSets.length;

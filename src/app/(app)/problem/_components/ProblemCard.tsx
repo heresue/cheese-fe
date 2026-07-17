@@ -16,6 +16,7 @@ const thumbnailSrcMap: Record<ProblemThumbnailType, string | StaticImageData> = 
 };
 
 export default function ProblemCard({ problemSet }: ProblemCardProps) {
+  const hasProgress = problemSet.solvedCount > 0;
   const progressPercent =
     problemSet.totalCount <= 0
       ? 0
@@ -46,7 +47,11 @@ export default function ProblemCard({ problemSet }: ProblemCardProps) {
         </h3>
 
         <p className="text-[12px] leading-[20px] font-normal text-gray-600">
-          {problemSet.lastProgressDate} 진행
+          {problemSet.lastProgressDate
+            ? `${problemSet.lastProgressDate} 진행`
+            : hasProgress
+              ? '진행 중'
+              : '미진행'}
         </p>
 
         <div className="mt-auto">

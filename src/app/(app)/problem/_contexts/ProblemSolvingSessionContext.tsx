@@ -17,6 +17,7 @@ const MAX_SESSION_SECONDS = 60 * 60;
 type ProblemSolvingSessionState = {
   totalElapsedSeconds: number;
   attempts: Record<string, ProblemAttempt>;
+  lastProgressDate: string | null;
   activeQuestionId: string | null;
   isRunning: boolean;
 };
@@ -58,9 +59,18 @@ const createEmptyAttempt = (): ProblemAttempt => ({
 const createInitialState = (): ProblemSolvingSessionState => ({
   totalElapsedSeconds: 0,
   attempts: {},
+  lastProgressDate: null,
   activeQuestionId: null,
   isRunning: false,
 });
+
+const formatCurrentProgressDate = () => {
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+
+  return `${now.getFullYear()}.${month}.${day}`;
+};
 
 const ProblemSolvingSessionContext = createContext<ProblemSolvingSessionContextValue | null>(null);
 
@@ -106,6 +116,7 @@ function sanitizeStoredState(value: unknown): ProblemSolvingSessionState {
   return {
     totalElapsedSeconds,
     attempts,
+    lastProgressDate: typeof stored.lastProgressDate === 'string' ? stored.lastProgressDate : null,
     activeQuestionId: null,
     isRunning: false,
   };
@@ -224,6 +235,7 @@ export function ProblemSolvingSessionProvider({
           selfChecked: submission.status !== 'pending',
         },
       },
+      lastProgressDate: formatCurrentProgressDate(),
       activeQuestionId:
         currentState.activeQuestionId === questionId ? null : currentState.activeQuestionId,
     }));
@@ -242,6 +254,7 @@ export function ProblemSolvingSessionProvider({
             selfChecked: true,
           },
         },
+        lastProgressDate: formatCurrentProgressDate(),
       }));
     },
     [],
