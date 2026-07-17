@@ -239,7 +239,7 @@ export function MemoPageView() {
 
       <div
         ref={scrollAreaRef}
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-[56px] pb-[80px]"
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-[56px] pb-[80px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {filteredMemos.length === 0 ? (
           <section className="mx-auto flex h-[320px] max-w-[1320px] items-center justify-center rounded-[10px] border border-gray-300 bg-white">
