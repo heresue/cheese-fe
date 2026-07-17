@@ -11,6 +11,7 @@ import {
 } from 'react';
 
 import type { ProblemAttempt, ProblemSolveStatus } from '../_types/problemSolving';
+import { formatProgressDate } from '../_utils/formatProgressDate';
 
 const MAX_SESSION_SECONDS = 60 * 60;
 
@@ -64,14 +65,6 @@ const createInitialState = (): ProblemSolvingSessionState => ({
   isRunning: false,
 });
 
-const formatCurrentProgressDate = () => {
-  const now = new Date();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-
-  return `${now.getFullYear()}.${month}.${day}`;
-};
-
 const ProblemSolvingSessionContext = createContext<ProblemSolvingSessionContextValue | null>(null);
 
 function sanitizeStoredState(value: unknown): ProblemSolvingSessionState {
@@ -116,7 +109,12 @@ function sanitizeStoredState(value: unknown): ProblemSolvingSessionState {
   return {
     totalElapsedSeconds,
     attempts,
-    lastProgressDate: typeof stored.lastProgressDate === 'string' ? stored.lastProgressDate : null,
+    lastProgressDate:
+      typeof stored.lastProgressDate === 'string'
+        ? stored.lastProgressDate
+        : Object.values(attempts).some((attempt) => attempt.submitted)
+          ? formatProgressDate()
+          : null,
     activeQuestionId: null,
     isRunning: false,
   };
@@ -235,7 +233,7 @@ export function ProblemSolvingSessionProvider({
           selfChecked: submission.status !== 'pending',
         },
       },
-      lastProgressDate: formatCurrentProgressDate(),
+      lastProgressDate: formatProgressDate(),
       activeQuestionId:
         currentState.activeQuestionId === questionId ? null : currentState.activeQuestionId,
     }));
@@ -254,7 +252,7 @@ export function ProblemSolvingSessionProvider({
             selfChecked: true,
           },
         },
-        lastProgressDate: formatCurrentProgressDate(),
+        lastProgressDate: formatProgressDate(),
       }));
     },
     [],

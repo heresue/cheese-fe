@@ -21,8 +21,10 @@ import type {
   ProblemSubCategory,
 } from '../_types/problem';
 import { filterProblemSets } from '../_utils/filterProblemSets';
+import { formatProgressDate } from '../_utils/formatProgressDate';
 
 const PAGE_SIZE = 12;
+const PROBLEM_PROGRESS_EVENT = 'cheese:problem-progress-change';
 
 const PROBLEM_SEARCH_HISTORIES = ['CSS', 'Next.js', 'cursor', '표준모드', '라우팅'] as const;
 
@@ -55,7 +57,9 @@ function getSavedProblemProgress(problemSet: ProblemSet): SavedProblemProgress |
     return {
       solvedCount: Math.min(solvedCount, problemSet.totalCount),
       lastProgressDate:
-        typeof storedSession.lastProgressDate === 'string' ? storedSession.lastProgressDate : null,
+        typeof storedSession.lastProgressDate === 'string'
+          ? storedSession.lastProgressDate
+          : formatProgressDate(),
     };
   } catch {
     return null;
@@ -85,11 +89,53 @@ function getSavedProgressSnapshot() {
 
 const getEmptyProgressSnapshot = () => '{}';
 
+function migrateSavedProgressDates() {
+  let didMigrate = false;
+
+  mockProblemSets.forEach((problemSet) => {
+    const storageKey = `cheese:problem-session:${problemSet.id}`;
+
+    try {
+      const storedValue = window.sessionStorage.getItem(storageKey);
+
+      if (!storedValue) {
+        return;
+      }
+
+      const storedSession = JSON.parse(storedValue) as {
+        attempts?: Record<string, { submitted?: unknown }>;
+        lastProgressDate?: unknown;
+      };
+      const hasSubmittedAttempt = Object.values(storedSession.attempts ?? {}).some(
+        (attempt) => attempt?.submitted === true,
+      );
+
+      if (!hasSubmittedAttempt || typeof storedSession.lastProgressDate === 'string') {
+        return;
+      }
+
+      window.sessionStorage.setItem(
+        storageKey,
+        JSON.stringify({ ...storedSession, lastProgressDate: formatProgressDate() }),
+      );
+      didMigrate = true;
+    } catch {
+      return;
+    }
+  });
+
+  if (didMigrate) {
+    window.dispatchEvent(new Event(PROBLEM_PROGRESS_EVENT));
+  }
+}
+
 function subscribeToSavedProgress(onStoreChange: () => void) {
   window.addEventListener('storage', onStoreChange);
+  window.addEventListener(PROBLEM_PROGRESS_EVENT, onStoreChange);
 
   return () => {
     window.removeEventListener('storage', onStoreChange);
+    window.removeEventListener(PROBLEM_PROGRESS_EVENT, onStoreChange);
   };
 }
 
@@ -195,6 +241,10 @@ function ProblemListView() {
     setSubCategory(value);
     resetVisibleProblemSets();
   };
+
+  useEffect(() => {
+    migrateSavedProgressDates();
+  }, []);
 
   useEffect(() => {
     const scrollArea = scrollAreaRef.current;
