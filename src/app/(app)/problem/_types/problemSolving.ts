@@ -1,3 +1,5 @@
+import type { StaticImageData } from 'next/image';
+
 export type ProblemQuestionType = 'shortAnswer' | 'multipleChoice';
 
 export type ProblemGradingMode = 'auto' | 'self';
@@ -25,7 +27,7 @@ export type ProblemSetSummary = {
   id: string;
   title: string;
   lastProgressDate: string;
-  thumbnailSrc: string;
+  thumbnailSrc: string | StaticImageData;
   solvedCount: number;
   totalCount: number;
 };

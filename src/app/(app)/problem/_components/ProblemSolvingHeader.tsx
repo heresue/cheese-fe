@@ -39,21 +39,21 @@ export default function ProblemSolvingHeader({
       </Link>
 
       <div className="flex h-full items-center gap-[24px]">
-        <span className="text-[24px] leading-[30px] font-medium">{elapsedTime}</span>
+        <span className="text-[24px] leading-[30px] font-medium text-gray-950">{elapsedTime}</span>
 
-        <div className="h-[70px] w-px bg-gray-300" />
+        <div className="h-[50px] w-px bg-gray-300" />
 
         <div className="flex items-center gap-[12px]">
           <div className="h-[6px] w-[300px] overflow-hidden rounded-full bg-gray-300">
             <div className="bg-secondary-600 h-full" style={{ width: `${progressPercent}%` }} />
           </div>
 
-          <span className="text-[12px] leading-[18px] font-medium whitespace-nowrap text-gray-700">
+          <span className="text-[14px] leading-[20px] font-medium whitespace-nowrap text-gray-700">
             {current}/{total} 진행중
           </span>
         </div>
 
-        <div className="h-[70px] w-px bg-gray-300" />
+        <div className="h-[50px] w-px bg-gray-300" />
 
         <button
           type="button"

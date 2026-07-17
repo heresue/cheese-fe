@@ -24,16 +24,16 @@ function TocDotLine() {
 export default function ProblemTocCard({ problemSetId, questions }: ProblemTocCardProps) {
   return (
     <section className="bg-bg-white mt-[32px] h-[720px] w-[1060px] rounded-[15px] px-[40px] py-[40px]">
-      <h2 className="text-[24px] leading-[30px] font-bold">목차</h2>
+      <h2 className="text-[24px] leading-[30px] font-bold text-gray-950">목차</h2>
 
       <div className="mt-[28px] h-px w-full bg-gray-300" />
 
       <div className="mx-auto mt-[24px] flex w-[893px] flex-col gap-[24px]">
         {questions.map((question) => (
           <div key={question.id} className="flex h-[46px] w-[893px] items-center gap-[30px]">
-            <p className="flex shrink-0 items-center gap-[8px] text-[18px] leading-[30px] font-semibold">
-              <span>{String(question.no).padStart(2, '0')}.</span>
-              <span>{question.title}</span>
+            <p className="flex shrink-0 items-center gap-[8px] leading-[30px] tracking-[-0.02em] text-gray-950">
+              <span className="text-[20px] font-bold">{String(question.no).padStart(2, '0')}.</span>
+              <span className="text-[20px] font-medium">{question.title}</span>
             </p>
 
             <TocDotLine />

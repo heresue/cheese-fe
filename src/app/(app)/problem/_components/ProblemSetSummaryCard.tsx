@@ -26,13 +26,13 @@ export default function ProblemSetSummaryCard({
 
   return (
     <section className="bg-bg-white mx-auto flex h-[151.52px] w-[1060px] overflow-hidden rounded-[15px]">
-      <div className="relative h-[151.52px] w-[250px] shrink-0 overflow-hidden">
+      <div className="relative h-[151.52px] w-[250px] shrink-0 overflow-hidden rounded-[15px]">
         <Image
           src={summary.thumbnailSrc}
           alt={`${summary.title} 썸네일`}
           fill
           sizes="250px"
-          className="object-cover"
+          className="rounded-[15px] object-cover"
         />
 
         <span className="bg-bg-white absolute top-[12px] left-[12px] flex h-[24px] w-[38px] items-center justify-center rounded-full text-[12px] leading-[24px] font-bold">
@@ -42,7 +42,7 @@ export default function ProblemSetSummaryCard({
 
       <div className="flex flex-1 items-center pr-[28px] pl-[32px]">
         <div className="flex flex-1 flex-col justify-center">
-          <h1 className="text-[20px] leading-[30px] font-bold">{summary.title}</h1>
+          <h1 className="text-[20px] leading-[30px] font-bold text-gray-950">{summary.title}</h1>
 
           <p className="mt-[12px] text-[14px] leading-[20px] font-medium text-gray-600">
             마지막 진행일 : {summary.lastProgressDate}

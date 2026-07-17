@@ -1,3 +1,5 @@
+import cssThumbnail from '../../../../../public/images/problem/css.png';
+
 import type {
   ProblemQuestion,
   ProblemResultRow,
@@ -8,7 +10,7 @@ export const mockProblemSetSummary: ProblemSetSummary = {
   id: 'css-basic',
   title: 'CSS : 실무 신입 개발자가 알아야할 C언어',
   lastProgressDate: '2026.02.27',
-  thumbnailSrc: '/images/problem/css.png',
+  thumbnailSrc: cssThumbnail,
   solvedCount: 3,
   totalCount: 8,
 };
