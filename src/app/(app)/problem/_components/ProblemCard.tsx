@@ -1,5 +1,7 @@
-import Image from 'next/image';
+import Image, { type StaticImageData } from 'next/image';
 import Link from 'next/link';
+
+import cssThumbnail from '../../../../../public/images/problem/css.png';
 
 import type { ProblemSet, ProblemThumbnailType } from '../_types/problem';
 
@@ -7,8 +9,8 @@ type ProblemCardProps = {
   problemSet: ProblemSet;
 };
 
-const thumbnailSrcMap: Record<ProblemThumbnailType, string> = {
-  css: '/images/problem/css.png',
+const thumbnailSrcMap: Record<ProblemThumbnailType, string | StaticImageData> = {
+  css: cssThumbnail,
   html: '/images/problem/html.png',
   js: '/images/problem/js.png',
 };
