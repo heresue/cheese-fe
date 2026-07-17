@@ -58,6 +58,8 @@ const CATEGORY_OPTIONS: Array<DropdownOption<string>> = [
   { label: '기타', value: 'etc' },
 ];
 
+const FIELD_TEXT_CLASS_NAME = 'text-[14px] leading-[20px] font-normal tracking-[-0.02em]';
+
 const QUICK_EVENT_COLOR_IDS = [
   'tag-gray',
   'tag-red',
@@ -156,11 +158,20 @@ function CustomDropdown<T extends string | number>({
       <button
         type="button"
         onClick={handleToggle}
-        className="flex h-[30px] w-full items-center justify-between rounded-[6px] border border-gray-300 bg-white px-2.5 text-[14px] leading-[20px] font-normal tracking-normal outline-none"
+        className={cn(
+          'flex h-[30px] w-full items-center justify-between rounded-[6px] border border-gray-300 bg-white px-2.5 outline-none',
+          FIELD_TEXT_CLASS_NAME,
+        )}
       >
         <span className="flex min-w-0 items-center gap-2">
           {leadingIcon ? <FieldIcon>{leadingIcon}</FieldIcon> : null}
-          <span className={isPlaceholder ? 'truncate text-gray-500' : 'truncate text-gray-700'}>
+          <span
+            className={cn(
+              'truncate',
+              FIELD_TEXT_CLASS_NAME,
+              isPlaceholder ? 'text-gray-500' : 'text-gray-700',
+            )}
+          >
             {getLabel(options, value)}
           </span>
         </span>
@@ -623,7 +634,10 @@ export function CalendarEventPopover({
                   })
                 }
                 placeholder="장소"
-                className="h-[28px] w-full border-0 bg-transparent px-0 text-[14px] leading-[20px] font-normal tracking-[-0.02em] text-gray-950 outline-none placeholder:text-gray-500"
+                className={cn(
+                  'h-[28px] w-full border-0 bg-transparent px-0 text-gray-700 outline-none placeholder:font-normal placeholder:text-gray-500',
+                  FIELD_TEXT_CLASS_NAME,
+                )}
               />
             </div>
 
@@ -641,7 +655,10 @@ export function CalendarEventPopover({
                   } as CalendarEventDraft)
                 }
                 placeholder="채용정보 URL"
-                className="h-[28px] w-full border-0 bg-transparent px-0 text-[14px] leading-[20px] font-normal tracking-[-0.02em] text-gray-950 outline-none placeholder:text-gray-500"
+                className={cn(
+                  'h-[28px] w-full border-0 bg-transparent px-0 text-gray-700 outline-none placeholder:font-normal placeholder:text-gray-500',
+                  FIELD_TEXT_CLASS_NAME,
+                )}
               />
             </div>
           </div>
