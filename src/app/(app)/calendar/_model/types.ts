@@ -16,12 +16,6 @@ export type EventColorId =
   | 'tag-purple'
   | 'tag-gray';
 
-export interface CalendarSpace {
-  id: string;
-  name: string;
-  colorId: EventColorId;
-}
-
 export type ReminderMinutes = 0 | 5 | 10 | 15 | 30 | 60 | 120 | 1440;
 
 export interface CalendarEvent {
@@ -36,7 +30,7 @@ export interface CalendarEvent {
   allDay?: boolean;
 
   // 분류/색상
-  spaceId?: CalendarSpace['id'];
+  spaceId?: string;
   colorId?: EventColorId;
 
   // 옵션
