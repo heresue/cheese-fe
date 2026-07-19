@@ -6,7 +6,7 @@ import { CalendarViewSwitcher } from './CalendarViewSwitcher';
 
 type Props = {
   view: CalendarView;
-  title?: string;
+  title: string;
   onChangeView: (next: CalendarView) => void;
   onClickToday: () => void;
   onClickPrev: () => void;
@@ -15,7 +15,7 @@ type Props = {
 
 export function CalendarToolbar({
   view,
-  title = '2026년 3월',
+  title,
   onChangeView,
   onClickToday,
   onClickPrev,

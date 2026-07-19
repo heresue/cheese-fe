@@ -70,8 +70,27 @@ export default function ProblemQuestionView({
   };
 
   const handleOpenExitModal = () => {
+    pauseSession();
     setIsTocOpen(false);
     setIsExitModalOpen(true);
+  };
+
+  const handleCloseExitModal = () => {
+    setIsExitModalOpen(false);
+
+    if (isReviewMode || !attempts[question.id]?.submitted) {
+      startQuestion(question.id, { review: isReviewMode });
+    }
+  };
+
+  const handleHeaderBack = () => {
+    if (isReviewMode) {
+      pauseSession();
+      router.push(`/problem/${problemSetId}/result`);
+      return;
+    }
+
+    handleOpenExitModal();
   };
 
   const handleSaveAndExit = () => {
@@ -93,6 +112,7 @@ export default function ProblemQuestionView({
             : `${String(question.no).padStart(2, '0')}. ${question.title}`
         }
         backHref={isReviewMode ? `/problem/${problemSetId}/result` : `/problem/${problemSetId}`}
+        onBack={handleHeaderBack}
         elapsedTime={formatElapsedTime(totalElapsedSeconds)}
         current={question.no}
         total={mockProblemQuestions.length}
@@ -147,9 +167,7 @@ export default function ProblemQuestionView({
 
       <ProblemExitConfirmModal
         isOpen={isExitModalOpen}
-        onClose={() => {
-          setIsExitModalOpen(false);
-        }}
+        onClose={handleCloseExitModal}
         onSaveAndExit={handleSaveAndExit}
         onExitWithoutSave={handleExitWithoutSave}
       />

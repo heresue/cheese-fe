@@ -125,14 +125,15 @@ function MemoEditorModalContent({
   };
 
   const handleConfirmDelete = () => {
-    if (memo?.id) {
-      onDelete(memo.id);
-    }
+    if (!memo?.id) return;
 
+    onDelete(memo.id);
     onClose();
   };
 
   const handleDeleteClick = () => {
+    if (!memo?.id) return;
+
     if (isDeleteWarningVisible) {
       handleConfirmDelete();
       return;
@@ -216,14 +217,16 @@ function MemoEditorModalContent({
               />
             </button>
 
-            <button
-              type="button"
-              aria-label="메모 삭제"
-              onClick={handleDeleteClick}
-              className="flex h-[24px] w-[24px] items-center justify-center text-gray-600"
-            >
-              <MemoDeleteIcon className="block h-[18px] w-[16px] shrink-0" aria-hidden="true" />
-            </button>
+            {memo?.id ? (
+              <button
+                type="button"
+                aria-label="메모 삭제"
+                onClick={handleDeleteClick}
+                className="flex h-[24px] w-[24px] items-center justify-center text-gray-600"
+              >
+                <MemoDeleteIcon className="block h-[18px] w-[16px] shrink-0" aria-hidden="true" />
+              </button>
+            ) : null}
 
             <input
               ref={imageInputRef}

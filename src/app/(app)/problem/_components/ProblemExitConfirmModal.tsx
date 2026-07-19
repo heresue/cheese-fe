@@ -1,6 +1,7 @@
 'use client';
 
 import CloseIcon from '@/assets/icons/common/close.svg';
+import { BaseModal } from '@/components/common/Modal';
 
 type ProblemExitConfirmModalProps = {
   isOpen: boolean;
@@ -15,12 +16,8 @@ export default function ProblemExitConfirmModal({
   onSaveAndExit,
   onExitWithoutSave,
 }: ProblemExitConfirmModalProps) {
-  if (!isOpen) {
-    return null;
-  }
-
   return (
-    <div className="bg-overlay-dim fixed inset-0 z-[100] flex items-center justify-center">
+    <BaseModal isOpen={isOpen} onClose={onClose} hasOverlay>
       <section
         role="dialog"
         aria-modal="true"
@@ -69,6 +66,6 @@ export default function ProblemExitConfirmModal({
           </button>
         </div>
       </section>
-    </div>
+    </BaseModal>
   );
 }

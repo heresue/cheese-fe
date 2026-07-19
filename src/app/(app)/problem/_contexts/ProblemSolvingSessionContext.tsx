@@ -234,8 +234,8 @@ export function ProblemSolvingSessionProvider({
         },
       },
       lastProgressDate: formatProgressDate(),
-      activeQuestionId:
-        currentState.activeQuestionId === questionId ? null : currentState.activeQuestionId,
+      activeQuestionId: null,
+      isRunning: false,
     }));
   }, []);
 

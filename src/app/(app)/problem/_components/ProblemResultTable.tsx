@@ -21,7 +21,7 @@ function ResultStatusIcon({ status }: { status: ProblemResultRow['status'] }) {
 
 export default function ProblemResultTable({ problemSetId, rows }: ProblemResultTableProps) {
   return (
-    <section className="bg-bg-white mt-[32px] h-[720px] w-[1060px] rounded-[15px] px-[40px] py-[40px]">
+    <section className="bg-bg-white mt-[32px] min-h-[720px] w-[1060px] rounded-[15px] px-[40px] py-[40px]">
       <div className="relative h-[64px] border-b border-gray-300 text-gray-950">
         <span className="absolute top-[12px] left-[80px] text-[24px] leading-[30px] font-bold">
           문제명
