@@ -981,26 +981,26 @@ input[type='time'] {
 }
 
 /* 월간의 오늘 날짜와 주말 배경 */
-.fc .fc-daygrid-day.fc-day-today {
+[data-calendar-view='month'] .fc .fc-daygrid-day.fc-day-today {
   background-color: transparent !important;
 }
 
-.fc .fc-daygrid-day.fc-day-sun,
-.fc .fc-daygrid-day.fc-day-sat {
+[data-calendar-view='month'] .fc .fc-daygrid-day.fc-day-sun,
+[data-calendar-view='month'] .fc .fc-daygrid-day.fc-day-sat {
   background-color: var(--color-gray-100) !important;
 }
 
-.fc .fc-daygrid-day.fc-day-sun.fc-day-today,
-.fc .fc-daygrid-day.fc-day-sat.fc-day-today {
+[data-calendar-view='month'] .fc .fc-daygrid-day.fc-day-sun.fc-day-today,
+[data-calendar-view='month'] .fc .fc-daygrid-day.fc-day-sat.fc-day-today {
   background-color: var(--color-gray-100) !important;
 }
 
 /* 평일 hover와 동일한 hover 배경 */
-.fc .fc-daygrid-day:hover,
-.fc .fc-daygrid-day.fc-day-sun:hover,
-.fc .fc-daygrid-day.fc-day-sat:hover,
-.fc .fc-daygrid-day.fc-day-today:hover,
-.fc .fc-daygrid-day.fc-day-sun.fc-day-today:hover,
-.fc .fc-daygrid-day.fc-day-sat.fc-day-today:hover {
+[data-calendar-view='month'] .fc .fc-daygrid-day:hover,
+[data-calendar-view='month'] .fc .fc-daygrid-day.fc-day-sun:hover,
+[data-calendar-view='month'] .fc .fc-daygrid-day.fc-day-sat:hover,
+[data-calendar-view='month'] .fc .fc-daygrid-day.fc-day-today:hover,
+[data-calendar-view='month'] .fc .fc-daygrid-day.fc-day-sun.fc-day-today:hover,
+[data-calendar-view='month'] .fc .fc-daygrid-day.fc-day-sat.fc-day-today:hover {
   background-color: var(--color-background-3) !important;
 }
