@@ -6,6 +6,7 @@ import ChevronIcon from '@/assets/icons/common/chevron.svg';
 import CreateIcon from '@/assets/icons/common/create.svg';
 import MemoCheckIcon from '@/assets/icons/memo/check.svg';
 import MemoDeleteIcon from '@/assets/icons/memo/delete.svg';
+import MemoPinFilledIcon from '@/assets/icons/memo/pin-filled.svg';
 import MemoPinIcon from '@/assets/icons/memo/pin.svg';
 import { useSearchHistories } from '@/hooks/useSearchHistories';
 import { cn } from '@/lib/cn';
@@ -350,7 +351,11 @@ export function MemoToolbar({
         active={isPinnedActive}
         onClick={() => onChangeFilter(isPinnedActive ? 'all' : 'pinned')}
       >
-        <MemoPinIcon className="h-[18px] w-[18px]" aria-hidden="true" />
+        {isPinnedActive ? (
+          <MemoPinFilledIcon className="h-[18px] w-[18px]" aria-hidden="true" />
+        ) : (
+          <MemoPinIcon className="h-[18px] w-[18px]" aria-hidden="true" />
+        )}
       </ToolbarIconButton>
 
       <ToolbarIconButton label="선택 모드" onClick={onToggleSelectMode}>

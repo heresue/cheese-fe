@@ -247,7 +247,7 @@ export function MemoPageView() {
           </section>
         ) : (
           <>
-            <section className="mx-auto grid max-w-[1320px] grid-cols-[repeat(5,250px)] gap-x-[34px] gap-y-[20px]">
+            <section className="mx-auto grid w-fit grid-cols-[repeat(5,250px)] gap-x-[32px] gap-y-[20px]">
               {visibleMemos.map((memo) => (
                 <MemoCard
                   key={memo.id}

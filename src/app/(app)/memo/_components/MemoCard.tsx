@@ -109,7 +109,7 @@ function MemoActionButton({
         event.stopPropagation();
         onClick();
       }}
-      className="hover:text-secondary-700 flex h-[22px] w-[22px] items-center justify-center text-gray-500 transition-colors"
+      className="hover:text-secondary-700 flex h-[24px] w-[24px] items-center justify-center text-gray-500 transition-colors"
     >
       {children}
     </button>
@@ -162,13 +162,13 @@ export function MemoCard({
         <div className="h-[176px] px-[16px] pt-[16px]">
           <MemoTitle title={memo.title} color={memo.color} variant="text" />
 
-          <p className="mt-[10px] [display:-webkit-box] overflow-hidden text-[12px] leading-[18px] font-medium text-gray-600 [-webkit-box-orient:vertical] [-webkit-line-clamp:9]">
+          <p className="mt-[8px] [display:-webkit-box] overflow-hidden text-[12px] leading-[18px] font-medium text-gray-600 [-webkit-box-orient:vertical] [-webkit-line-clamp:9]">
             {previewContent || '최대 9줄'}
           </p>
         </div>
       )}
 
-      <div className={cn('px-[16px]', hasImage ? 'pt-[12px]' : 'pt-0')}>
+      <div className={cn('px-[16px]', hasImage ? 'pt-[16px]' : 'pt-0')}>
         {hasImage ? (
           <div className="mb-[12px]">
             <MemoTitle title={memo.title} color={memo.color} variant="image" />
@@ -176,7 +176,7 @@ export function MemoCard({
         ) : null}
 
         <div className="absolute right-[16px] bottom-[14px] left-[16px] flex items-center justify-between">
-          <span className="text-[12px] leading-[18px] font-medium text-gray-500">
+          <span className="text-[12px] text-gray-500">
             {memo.createdAt}
             {memo.deleted ? ' 삭제됨' : ''}
           </span>
@@ -185,12 +185,12 @@ export function MemoCard({
             {memo.deleted ? (
               <>
                 <MemoActionButton label="복구" onClick={() => onRestore(memo.id)}>
-                  <MemoReturnIcon className="h-[16px] w-[16px] text-gray-500" aria-hidden="true" />
+                  <MemoReturnIcon className="h-[18px] w-[18px] text-gray-500" aria-hidden="true" />
                 </MemoActionButton>
 
                 <MemoActionButton label="영구 삭제" onClick={() => onPermanentDelete(memo.id)}>
                   <MemoDeletePermanentIcon
-                    className="h-[16px] w-[16px] text-gray-500"
+                    className="h-[18px] w-[18px] text-gray-500"
                     aria-hidden="true"
                   />
                 </MemoActionButton>
@@ -204,23 +204,23 @@ export function MemoCard({
                 >
                   {isPinned ? (
                     <MemoPinFilledIcon
-                      className="h-[16px] w-[16px] shrink-0 text-gray-950"
+                      className="h-[18px] w-[18px] shrink-0 text-gray-950"
                       aria-hidden="true"
                     />
                   ) : (
                     <MemoPinIcon
-                      className="h-[16px] w-[16px] shrink-0 text-gray-500"
+                      className="h-[18px] w-[18px] shrink-0 text-gray-500"
                       aria-hidden="true"
                     />
                   )}
                 </MemoActionButton>
 
                 <MemoActionButton label="수정" onClick={() => onEdit(memo)}>
-                  <EditIcon className="h-[16px] w-[16px] text-gray-500" aria-hidden="true" />
+                  <EditIcon className="h-[18px] w-[18px] text-gray-500" aria-hidden="true" />
                 </MemoActionButton>
 
                 <MemoActionButton label="삭제" onClick={() => onDelete(memo.id)}>
-                  <MemoDeleteIcon className="h-[16px] w-[16px] text-gray-500" aria-hidden="true" />
+                  <MemoDeleteIcon className="h-[18px] w-[16px] text-gray-500" aria-hidden="true" />
                 </MemoActionButton>
               </>
             )}

@@ -148,13 +148,13 @@ function MemoEditorModalContent({
       onMouseDown={handleBackdropMouseDown}
     >
       <section className="flex h-[780px] w-[990px] flex-col overflow-hidden rounded-[8px] border border-gray-300 bg-white shadow-[0_12px_30px_rgba(0,0,0,0.18)]">
-        <header className="flex h-[66px] shrink-0 items-center justify-between border-b border-gray-300 bg-gray-100 px-[32px]">
-          <div className="flex items-center gap-[16px]">
+        <header className="flex h-[68px] shrink-0 items-center justify-between border-b border-gray-300 bg-gray-100 px-[24px]">
+          <div className="flex items-center gap-[8px]">
             <button
               type="button"
               onClick={onClose}
               aria-label="닫기"
-              className="flex h-[28px] w-[28px] items-center justify-center text-gray-700"
+              className="flex h-[30px] w-[30px] items-center justify-center text-gray-700"
             >
               <ArrowIcon className="h-[16px] w-[9px]" aria-hidden="true" />
             </button>
@@ -173,8 +173,8 @@ function MemoEditorModalContent({
         </header>
 
         <div className="flex h-[54px] shrink-0 items-center justify-between border-b border-gray-300 px-[32px]">
-          <div className="flex items-center gap-[10px]">
-            <span className="text-[12px] leading-[18px] font-medium text-gray-500">
+          <div className="flex items-center gap-[6px]">
+            <span className="text-[12px] leading-[18px] font-medium text-gray-600">
               메모 색상 설정
             </span>
 
