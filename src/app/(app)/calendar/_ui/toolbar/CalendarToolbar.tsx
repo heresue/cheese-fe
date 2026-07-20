@@ -44,7 +44,7 @@ export function CalendarToolbar({
             aria-label="이전"
             className="bg-bg-white hover:bg-bg-2 flex h-8 w-10 items-center justify-center rounded-[13px] border border-gray-300 text-gray-500 transition outline-none"
           >
-            <ChevronIcon direction={prevDirection} width={8} height={14} className="block" />
+            <ChevronIcon direction={prevDirection} width={14} className="block" />
           </button>
 
           <button
@@ -53,7 +53,7 @@ export function CalendarToolbar({
             aria-label="다음"
             className="bg-bg-white hover:bg-bg-2 flex h-8 w-10 items-center justify-center rounded-[13px] border border-gray-300 text-gray-500 transition outline-none"
           >
-            <ChevronIcon direction={nextDirection} width={8} height={14} className="block" />
+            <ChevronIcon direction={nextDirection} width={14} className="block" />
           </button>
         </div>
 

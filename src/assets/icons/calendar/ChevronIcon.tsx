@@ -27,7 +27,7 @@ export function ChevronIcon({ direction, ...props }: ChevronIconProps) {
                 : 'M0.5 5.25L4 8.75L7.5 5.25'
         }
         stroke="var(--color-gray-500)"
-        strokeWidth="1.5"
+        strokeWidth="1"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
