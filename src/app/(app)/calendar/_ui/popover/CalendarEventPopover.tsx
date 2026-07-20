@@ -12,6 +12,7 @@ import Watch2Icon from '@/assets/icons/calendar/watch2.svg';
 import LinkIcon from '@/assets/icons/common/link.svg';
 import LocationIcon from '@/assets/icons/settings/location.svg';
 import { CollapsibleColorPicker } from '@/components/common/CollapsibleColorPicker';
+import { Input } from '@/components/common/Input';
 
 import {
   addDaysToCalendarDate,
@@ -88,6 +89,21 @@ function FieldIcon({ children }: { children: React.ReactNode }) {
   );
 }
 
+function RangeSeparatorIcon() {
+  return (
+    <svg
+      width="10"
+      height="16"
+      viewBox="0 0 10 16"
+      fill="none"
+      aria-hidden="true"
+      className="text-gray-400"
+    >
+      <path d="M1.5 8H8.5" stroke="currentColor" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function getLabel<T extends string | number>(options: Array<DropdownOption<T>>, value: T) {
   return options.find((option) => option.value === value)?.label ?? options[0].label;
 }
@@ -159,7 +175,7 @@ function CustomDropdown<T extends string | number>({
         type="button"
         onClick={handleToggle}
         className={cn(
-          'flex h-[30px] w-full items-center justify-between rounded-[6px] border border-gray-300 bg-white px-2.5 outline-none',
+          'flex h-[30px] w-full items-center justify-between rounded-[6px] border border-gray-400 bg-white px-[10px] outline-none',
           FIELD_TEXT_CLASS_NAME,
         )}
       >
@@ -176,7 +192,7 @@ function CustomDropdown<T extends string | number>({
           </span>
         </span>
 
-        <span className="text-gray-500">
+        <span className="text-gray-400">
           <ChevronIcon
             direction={open && placement === 'top' ? 'up' : 'down'}
             width={8}
@@ -190,7 +206,7 @@ function CustomDropdown<T extends string | number>({
         <div
           data-dropdown-placement={placement}
           className={cn(
-            'absolute left-0 z-20 w-full rounded-[12px] border border-gray-300 bg-white py-1 shadow-[0_8px_24px_rgba(15,23,42,0.12)]',
+            'absolute left-0 z-20 w-full rounded-[12px] border border-gray-400 bg-white py-1 shadow-[0_8px_24px_rgba(15,23,42,0.12)]',
             placement === 'top' ? 'bottom-[36px]' : 'top-[36px]',
           )}
         >
@@ -246,7 +262,10 @@ function DisplayDateField({ value, onChange }: DisplayDateFieldProps) {
       <button
         type="button"
         onClick={openPicker}
-        className="flex h-[28px] w-full items-center justify-center rounded-[6px] border border-gray-300 bg-white px-2 text-[12px] leading-[16px] font-normal tracking-normal text-gray-700"
+        className={cn(
+          'flex h-[25px] w-full items-center justify-center rounded-[6px] border border-gray-400 bg-white px-2 text-gray-700',
+          FIELD_TEXT_CLASS_NAME,
+        )}
       >
         <span className="truncate">{displayText}</span>
       </button>
@@ -300,7 +319,10 @@ function DisplayTimeField({ value, onChange }: DisplayTimeFieldProps) {
       <button
         type="button"
         onClick={openPicker}
-        className="flex h-[28px] w-full items-center justify-center rounded-[6px] border border-gray-300 bg-white px-2 text-[12px] leading-[16px] font-normal tracking-normal text-gray-700"
+        className={cn(
+          'flex h-[25px] w-full items-center justify-center rounded-[6px] border border-gray-400 bg-white px-2 text-gray-700',
+          FIELD_TEXT_CLASS_NAME,
+        )}
       >
         <span className="truncate">{formatDisplayTime(value)}</span>
       </button>
@@ -493,7 +515,7 @@ export function CalendarEventPopover({
         aria-modal="true"
         aria-label="일정"
         className={cn(
-          'fixed z-50 w-[300px] overflow-visible rounded-[10px] border border-gray-300 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.12)]',
+          'fixed z-50 w-[300px] overflow-visible rounded-[10px] border border-gray-400 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.12)]',
           isAllDay || showDateOnlyTimedField ? 'h-[486px]' : 'h-[520px]',
         )}
         style={{ left: x, top: y }}
@@ -513,8 +535,9 @@ export function CalendarEventPopover({
           </button>
         </div>
 
-        <div className="px-4 pb-[18px]">
-          <input
+        <div className="px-4 pb-[20px]">
+          <Input
+            label="일정 제목"
             value={draft.title ?? ''}
             onChange={(event) =>
               onChangeDraft({
@@ -523,23 +546,25 @@ export function CalendarEventPopover({
               })
             }
             placeholder="제목"
-            className="mt-[6px] h-[28px] w-full border-0 border-b border-gray-300 bg-transparent px-0 text-[14px] leading-[20px] font-medium tracking-normal text-gray-950 outline-none placeholder:text-gray-500 focus:border-gray-400"
+            hideMessageSpace
+            className="mt-[6px] gap-0 border-gray-400 px-0 py-0 focus-within:border-gray-400"
+            inputClassName="my-0 h-[28px] text-[14px] leading-[20px] font-medium tracking-normal text-gray-950 placeholder:text-gray-500"
           />
 
           {isAllDay ? (
-            <div className="mt-[21px] grid grid-cols-[14px_1fr_10px_1fr] items-center gap-2">
+            <div className="mt-[21px] grid grid-cols-[16px_1fr_10px_1fr] items-center gap-x-[8.5px]">
               <FieldIcon>
                 <DateIcon width={15} height={16} />
               </FieldIcon>
 
               <DisplayDateField value={draft.start} onChange={updateAllDayStart} />
 
-              <span className="text-center text-[12px] text-gray-500">-</span>
+              <RangeSeparatorIcon />
 
               <DisplayDateField value={allDayDisplayEndValue} onChange={updateAllDayEnd} />
             </div>
           ) : showDateOnlyTimedField ? (
-            <div className="mt-[21px] grid grid-cols-[14px_1fr] items-center gap-2">
+            <div className="mt-[21px] grid grid-cols-[16px_1fr] items-center gap-x-[8.5px]">
               <FieldIcon>
                 <DateIcon width={15} height={16} />
               </FieldIcon>
@@ -547,8 +572,8 @@ export function CalendarEventPopover({
               <DisplayDateField value={draft.start} onChange={updateTimedDateOnlyDraft} />
             </div>
           ) : (
-            <div className="mt-[21px] space-y-1.5">
-              <div className="grid grid-cols-[14px_1fr_10px_1fr] items-center gap-2">
+            <div className="mt-[21px] grid gap-y-[8.5px]">
+              <div className="grid grid-cols-[16px_1fr_10px_1fr] items-center gap-x-[8.5px]">
                 <FieldIcon>
                   <WatchIcon width={16} height={16} />
                 </FieldIcon>
@@ -558,7 +583,7 @@ export function CalendarEventPopover({
                   onChange={(nextValue) => updateTimedStart(timedStartDateValue, nextValue)}
                 />
 
-                <span className="text-center text-[12px] text-gray-500">-</span>
+                <RangeSeparatorIcon />
 
                 <DisplayTimeField
                   value={draft.end}
@@ -566,7 +591,7 @@ export function CalendarEventPopover({
                 />
               </div>
 
-              <div className="grid grid-cols-[14px_1fr] items-center gap-2">
+              <div className="grid grid-cols-[16px_1fr] items-center gap-x-[8.5px]">
                 <FieldIcon>
                   <DateIcon width={15} height={16} />
                 </FieldIcon>
@@ -576,7 +601,7 @@ export function CalendarEventPopover({
             </div>
           )}
 
-          <label className="mt-[10px] flex h-4 w-fit cursor-pointer items-center gap-3 text-[12px] leading-[16px] font-normal tracking-normal text-gray-700">
+          <label className="mt-[8.5px] flex h-4 w-fit cursor-pointer items-center gap-3 text-[12px] leading-[16px] font-normal tracking-normal text-gray-700">
             <input
               type="checkbox"
               checked={isAllDay}
@@ -604,11 +629,11 @@ export function CalendarEventPopover({
               })
             }
             placeholder="메모"
-            className="mt-[25px] h-[100px] w-full resize-none overflow-y-auto rounded-[6px] border border-gray-300 px-2.5 py-2 text-[12px] leading-[16px] font-medium tracking-[-0.02em] text-gray-950 outline-none placeholder:text-gray-500 focus:border-gray-400"
+            className="mt-[25px] h-[100px] w-full resize-none overflow-y-auto rounded-[6px] border border-gray-400 px-[10px] py-2 text-[12px] leading-[16px] font-medium tracking-[-0.02em] text-gray-950 outline-none placeholder:text-gray-500 focus:border-gray-500"
           />
 
-          <div className="mt-5">
-            <div className="mb-[10px] text-[12px] leading-[16px] font-normal tracking-normal text-gray-600">
+          <div className="mt-[20px]">
+            <div className="mb-[8px] text-[12px] leading-[16px] font-normal tracking-normal text-gray-600">
               일정 색상
             </div>
 
@@ -619,8 +644,8 @@ export function CalendarEventPopover({
             />
           </div>
 
-          <div className="mt-[21px] space-y-[3px]">
-            <div className="grid h-[30px] grid-cols-[14px_1fr] items-center gap-2 rounded-[6px] border border-gray-300 px-2.5">
+          <div className="mt-[21px] grid gap-y-[4px]">
+            <div className="grid h-[30px] grid-cols-[16px_1fr] items-center gap-x-2 rounded-[6px] border border-gray-400 px-[10px]">
               <FieldIcon>
                 <LocationIcon width={12} height={12} />
               </FieldIcon>
@@ -641,7 +666,7 @@ export function CalendarEventPopover({
               />
             </div>
 
-            <div className="grid h-[30px] grid-cols-[14px_1fr] items-center gap-2 rounded-[6px] border border-gray-300 px-2.5">
+            <div className="grid h-[30px] grid-cols-[16px_1fr] items-center gap-x-2 rounded-[6px] border border-gray-400 px-[10px]">
               <FieldIcon>
                 <LinkIcon width={12} height={6} />
               </FieldIcon>
@@ -661,31 +686,30 @@ export function CalendarEventPopover({
                 )}
               />
             </div>
-          </div>
+            <div className="grid grid-cols-2 gap-x-2">
+              <CustomDropdown
+                value={draft.reminderMinutes !== undefined ? draft.reminderMinutes : ''}
+                options={REMINDER_OPTIONS}
+                leadingIcon={<Watch2Icon width={12} height={12} />}
+                onChange={(nextValue) => {
+                  onChangeDraft({
+                    ...draft,
+                    reminderMinutes: nextValue === '' ? undefined : (nextValue as ReminderMinutes),
+                  });
+                }}
+              />
 
-          <div className="mt-[3px] grid grid-cols-2 gap-2">
-            <CustomDropdown
-              value={draft.reminderMinutes !== undefined ? draft.reminderMinutes : ''}
-              options={REMINDER_OPTIONS}
-              leadingIcon={<Watch2Icon width={12} height={12} />}
-              onChange={(nextValue) => {
-                onChangeDraft({
-                  ...draft,
-                  reminderMinutes: nextValue === '' ? undefined : (nextValue as ReminderMinutes),
-                });
-              }}
-            />
-
-            <CustomDropdown
-              value={(draft as CalendarEventDraft & { category?: string }).category ?? ''}
-              options={CATEGORY_OPTIONS}
-              onChange={(nextValue) =>
-                onChangeDraft({
-                  ...draft,
-                  category: nextValue || undefined,
-                } as CalendarEventDraft)
-              }
-            />
+              <CustomDropdown
+                value={(draft as CalendarEventDraft & { category?: string }).category ?? ''}
+                options={CATEGORY_OPTIONS}
+                onChange={(nextValue) =>
+                  onChangeDraft({
+                    ...draft,
+                    category: nextValue || undefined,
+                  } as CalendarEventDraft)
+                }
+              />
+            </div>
           </div>
         </div>
       </div>
