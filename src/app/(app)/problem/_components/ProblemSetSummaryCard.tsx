@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { Button } from '@/components/common/Button';
+
 import ProblemActionIcon from './ProblemActionIcon';
 import type { ProblemSetSummary } from '../_types/problemSolving';
 
@@ -42,18 +44,21 @@ export default function ProblemSetSummaryCard({
         </span>
       </div>
 
-      <div className="flex flex-1 items-center pr-[28px] pl-[32px]">
+      <div className="flex flex-1 items-center pr-[40px] pl-[32px]">
         <div className="flex flex-1 flex-col justify-center">
           <h1 className="text-[20px] leading-[30px] font-bold text-gray-950">{summary.title}</h1>
 
-          <p className="mt-[12px] text-[14px] leading-[20px] font-medium text-gray-600">
+          <p className="mt-[12px] text-[14px] leading-[30px] font-medium text-gray-600">
             마지막 진행일 : {summary.lastProgressDate}
           </p>
 
           {showProgress && (
             <div className="mt-[12px] flex w-[500px] flex-col items-end">
               <div className="h-[16px] w-full rounded-full bg-gray-300">
-                <div className="bg-secondary-600 h-full" style={{ width: `${progressPercent}%` }} />
+                <div
+                  className="bg-secondary-600 h-full rounded-full"
+                  style={{ width: `${progressPercent}%` }}
+                />
               </div>
 
               <span className="mt-[4px] text-[14px] leading-[20px] font-medium text-gray-700">
@@ -63,14 +68,17 @@ export default function ProblemSetSummaryCard({
           )}
         </div>
 
-        <Link
-          href={actionHref}
-          onClick={onActionClick}
-          className="bg-secondary-600 ml-[32px] flex h-[46px] w-[128px] shrink-0 items-center justify-center gap-[16px] rounded-[10px] text-[14px] leading-[24px] font-medium text-white"
+        <Button
+          asChild
+          size={46}
+          width={128}
+          className="ml-[32px] shrink-0 gap-[16px] !text-[14px] leading-[24px]"
         >
-          <ProblemActionIcon className="h-[16px] w-[16px] shrink-0" />
-          <span>{actionLabel}</span>
-        </Link>
+          <Link href={actionHref} onClick={onActionClick}>
+            <ProblemActionIcon className="h-[16px] w-[16px] shrink-0" />
+            <span>{actionLabel}</span>
+          </Link>
+        </Button>
       </div>
 
       <span className="sr-only">문제 세트 ID: {problemSetId}</span>

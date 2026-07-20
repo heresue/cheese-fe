@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 import ArrowIcon from '@/assets/icons/common/arrow.svg';
 import DoubleArrowIcon from '@/assets/icons/problem/double-arrow.svg';
+import { Button } from '@/components/common/Button';
 
 import type { ProblemQuestion } from '../_types/problemSolving';
 
@@ -40,10 +41,7 @@ function SideNavigationArrow({ direction }: { direction: 'previous' | 'next' }) 
       aria-hidden="true"
     >
       <ArrowIcon
-        className={cn(
-          'block h-[24px] w-[14px] shrink-0 origin-center scale-[0.6667]',
-          direction === 'next' && 'rotate-180',
-        )}
+        className={cn('block h-[16px] w-[10px] shrink-0', direction === 'next' && 'rotate-180')}
         focusable="false"
       />
     </span>
@@ -64,25 +62,30 @@ function SideNavigationButton({
       {direction === 'next' && <SideNavigationArrow direction="next" />}
     </>
   );
-  const className = cn(
-    'flex h-[46px] items-center justify-center gap-[5px] rounded-[10px] border text-[16px] leading-[24px] font-medium',
-    isDisabled
-      ? 'border-gray-300 bg-gray-100 text-gray-500'
-      : 'border-secondary-600 bg-bg-white text-gray-900',
-  );
-
   if (isDisabled || !href) {
     return (
-      <button type="button" disabled className={className}>
+      <Button
+        variant="outlineLightGray"
+        size={46}
+        fullWidth
+        disabled
+        className="gap-[5px] !border-gray-300 !bg-gray-100 leading-[24px] !text-gray-500"
+      >
         {content}
-      </button>
+      </Button>
     );
   }
 
   return (
-    <Link href={href} className={className}>
-      {content}
-    </Link>
+    <Button
+      asChild
+      variant="outlineLightGray"
+      size={46}
+      fullWidth
+      className="!border-secondary-600 gap-[5px] leading-[24px] !text-gray-900"
+    >
+      <Link href={href}>{content}</Link>
+    </Button>
   );
 }
 
@@ -111,27 +114,35 @@ export default function ProblemSideToc({
           className="flex h-[32px] w-[32px] items-center justify-center text-gray-500"
           onClick={onClose}
         >
-          <DoubleArrowIcon className="h-[24px] w-[20px]" aria-hidden="true" focusable="false" />
+          <DoubleArrowIcon className="h-[16px] w-[14px]" aria-hidden="true" focusable="false" />
         </button>
       </div>
 
       <div className="mt-[20px] h-px w-full bg-gray-300" />
 
-      <nav className="mt-[20px] flex-1 overflow-y-auto">
+      <nav className="mt-[12px] flex-1 overflow-y-auto">
         <ul className="flex flex-col gap-[20px]">
           {questions.map((question) => (
             <li key={question.id} className="flex h-[46px] items-center justify-between gap-[12px]">
-              <p className="flex min-w-0 flex-1 items-center gap-[6px] text-[16px] leading-[24px] font-medium text-gray-950">
-                <span className="shrink-0 font-bold">{String(question.no).padStart(2, '0')}.</span>
+              <p className="flex min-w-0 flex-1 items-center gap-[4px] text-[16px] leading-[24px] font-medium text-gray-950">
+                <span className="shrink-0 font-medium">
+                  {String(question.no).padStart(2, '0')}.
+                </span>
                 <span className="truncate">{question.title}</span>
               </p>
 
-              <Link
-                href={`/problem/${problemSetId}/questions/${question.id}${questionHrefSuffix}`}
-                className="bg-secondary-600 flex h-[38px] w-[68px] shrink-0 items-center justify-center rounded-[10px] text-[14px] leading-[20px] font-medium text-white"
+              <Button
+                asChild
+                size={38}
+                width={68}
+                className="shrink-0 !rounded-[10px] !text-[14px] leading-[20px]"
               >
-                문제 선택
-              </Link>
+                <Link
+                  href={`/problem/${problemSetId}/questions/${question.id}${questionHrefSuffix}`}
+                >
+                  문제 선택
+                </Link>
+              </Button>
             </li>
           ))}
         </ul>
@@ -154,13 +165,14 @@ export default function ProblemSideToc({
             />
           </div>
 
-          <button
-            type="button"
-            className="bg-secondary-600 mt-[10px] flex h-[46px] w-full items-center justify-center rounded-[10px] text-[14px] leading-[20px] font-medium text-white"
+          <Button
+            size={46}
+            fullWidth
+            className="mt-[10px] !text-[14px] leading-[20px]"
             onClick={navigation.onExitClick}
           >
             저장하고 종료하기
-          </button>
+          </Button>
         </div>
       )}
     </aside>

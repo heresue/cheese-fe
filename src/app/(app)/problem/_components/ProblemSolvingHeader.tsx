@@ -55,7 +55,7 @@ export default function ProblemSolvingHeader({
         <div className="h-[50px] w-px bg-gray-300" />
 
         <div className="flex items-center gap-[12px]">
-          <div className="h-[6px] w-[300px] overflow-hidden rounded-full bg-gray-300">
+          <div className="h-[6px] w-[300px] overflow-hidden rounded-full border border-gray-500 bg-gray-300">
             <div className="bg-secondary-600 h-full" style={{ width: `${progressPercent}%` }} />
           </div>
 
@@ -69,7 +69,7 @@ export default function ProblemSolvingHeader({
         <button
           type="button"
           aria-label="목차 열기"
-          className="flex h-[44px] w-[44px] items-center justify-center text-gray-700"
+          className="flex h-[44px] w-[44px] items-center justify-center text-gray-600"
           onClick={onMenuClick}
         >
           <span className="flex flex-col gap-[5px]">

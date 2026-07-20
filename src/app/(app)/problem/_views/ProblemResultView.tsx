@@ -84,7 +84,7 @@ export default function ProblemResultView({ problemSetId }: ProblemResultViewPro
       />
 
       <div className="h-[calc(100dvh-80px)] overflow-y-auto">
-        <div className="mx-auto w-[1060px] pt-[28px] pb-[68px]">
+        <div className="mx-auto w-[1060px] pt-[28px] pb-[46px]">
           <ProblemSetSummaryCard
             problemSetId={problemSetId}
             summary={mockProblemSetSummary}

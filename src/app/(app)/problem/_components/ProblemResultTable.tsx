@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import { Button } from '@/components/common/Button';
+
 import type { ProblemResultRow } from '../_types/problemSolving';
 import ProblemActionIcon from './ProblemActionIcon';
 import ProblemStatusIcon from './ProblemStatusIcon';
@@ -21,7 +23,7 @@ function ResultStatusIcon({ status }: { status: ProblemResultRow['status'] }) {
 
 export default function ProblemResultTable({ problemSetId, rows }: ProblemResultTableProps) {
   return (
-    <section className="bg-bg-white mt-[32px] min-h-[720px] w-[1060px] rounded-[15px] px-[40px] py-[40px]">
+    <section className="bg-bg-white mt-[32px] w-[1060px] rounded-[15px] px-[40px] py-[40px]">
       <div className="relative h-[64px] border-b border-gray-300 text-gray-950">
         <span className="absolute top-[12px] left-[80px] text-[24px] leading-[30px] font-bold">
           문제명
@@ -59,13 +61,17 @@ export default function ProblemResultTable({ problemSetId, rows }: ProblemResult
                 {row.elapsedTime}
               </div>
 
-              <Link
-                href={reviewHref}
-                className="bg-secondary-600 absolute top-0 right-[40px] flex h-[46px] w-[114px] items-center justify-center gap-[12px] rounded-[10px] text-[14px] leading-[20px] font-medium text-white"
+              <Button
+                asChild
+                size={46}
+                width={114}
+                className="absolute top-0 right-[40px] gap-[12px] !text-[14px] leading-[20px]"
               >
-                <ProblemActionIcon className="h-[16px] w-[16px] shrink-0" />
-                <span>다시 풀기</span>
-              </Link>
+                <Link href={reviewHref}>
+                  <ProblemActionIcon className="h-[16px] w-[16px] shrink-0" />
+                  <span>다시 풀기</span>
+                </Link>
+              </Button>
             </div>
           );
         })}

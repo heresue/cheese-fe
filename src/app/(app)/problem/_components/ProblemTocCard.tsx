@@ -1,5 +1,7 @@
 import Link from 'next/link';
 
+import { Button } from '@/components/common/Button';
+
 import ProblemActionIcon from './ProblemActionIcon';
 import type { ProblemQuestion } from '../_types/problemSolving';
 
@@ -38,13 +40,17 @@ export default function ProblemTocCard({ problemSetId, questions }: ProblemTocCa
 
             <TocDotLine />
 
-            <Link
-              href={`/problem/${problemSetId}/questions/${question.id}`}
-              className="bg-secondary-600 flex h-[46px] w-[114px] shrink-0 items-center justify-center gap-[16px] rounded-[10px] text-[14px] leading-[24px] font-medium text-white"
+            <Button
+              asChild
+              size={46}
+              width={114}
+              className="shrink-0 gap-[16px] !text-[14px] leading-[24px]"
             >
-              <ProblemActionIcon className="h-[16px] w-[16px] shrink-0" />
-              <span>문제 선택</span>
-            </Link>
+              <Link href={`/problem/${problemSetId}/questions/${question.id}`}>
+                <ProblemActionIcon className="h-[16px] w-[16px] shrink-0" />
+                <span>문제 선택</span>
+              </Link>
+            </Button>
           </div>
         ))}
       </div>

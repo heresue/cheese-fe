@@ -8,6 +8,7 @@ import SkillsIcon from '@/assets/icons/settings/skills.svg';
 import DoubleArrowIcon from '@/assets/icons/problem/double-arrow.svg';
 import IncorrectCircleIcon from '@/assets/icons/problem/check-circle.svg';
 import ReturnIcon from '@/assets/icons/problem/return.svg';
+import { Button } from '@/components/common/Button';
 
 import type { ProblemAttempt, ProblemQuestion, ProblemSolveStatus } from '../_types/problemSolving';
 import ProblemStatusIcon from './ProblemStatusIcon';
@@ -41,11 +42,17 @@ function normalizeAnswer(value: string) {
   return value.replace(/\s+/g, '').toLowerCase();
 }
 
-function AnswerResultMessage({ status }: { status: 'correct' | 'incorrect' }) {
+function AnswerResultMessage({
+  status,
+  className,
+}: {
+  status: 'correct' | 'incorrect';
+  className?: string;
+}) {
   const isCorrect = status === 'correct';
 
   return (
-    <div className="mt-[28px] flex items-center gap-[10px]">
+    <div className={cn('flex items-center gap-[10px]', className)}>
       <ProblemStatusIcon type={isCorrect ? 'correct' : 'incorrect'} />
 
       <p
@@ -159,22 +166,22 @@ export default function ProblemQuestionCard({
 
   return (
     <section className="bg-bg-white w-[960px] rounded-[15px] px-[40px] py-[40px]">
-      <div className="flex items-center gap-[12px] text-[14px] leading-[20px] font-medium">
-        <span className="text-secondary-600">문제 {String(question.no).padStart(2, '0')}.</span>
+      <div className="flex items-center gap-[12px] text-[16px] leading-[30px] font-medium tracking-[-0.04em]">
+        <span className="text-secondary-700">문제 {String(question.no).padStart(2, '0')}.</span>
         <span className="text-gray-700">{question.title}</span>
       </div>
 
-      <h1 className="mt-[34px] text-[20px] leading-[30px] font-bold text-gray-950">
+      <h1 className="mt-[16px] text-[20px] leading-[30px] font-bold tracking-normal text-gray-950">
         {question.question}
       </h1>
 
       {question.type === 'shortAnswer' && (
-        <div className="mt-[64px] border-b border-gray-400">
+        <div className="mt-[60px] border-b border-gray-400">
           <input
             value={textAnswer}
             disabled={isSubmitted}
             aria-label="주관식 답안"
-            className="h-[38px] w-full bg-transparent px-[12px] text-[16px] leading-[24px] font-medium text-gray-900 outline-none disabled:text-gray-900"
+            className="h-[38px] w-full bg-transparent px-[12px] text-[18px] leading-[24px] font-medium tracking-normal text-gray-900 outline-none disabled:text-gray-900"
             onChange={(event) => {
               const nextAnswer = event.target.value;
               setTextAnswer(nextAnswer);
@@ -199,7 +206,7 @@ export default function ProblemQuestionCard({
                   type="button"
                   disabled={isSubmitted}
                   className={cn(
-                    'flex items-center gap-[12px] text-[18px] leading-[24px] font-medium',
+                    'flex items-center gap-[12px] text-[18px] leading-[24px] font-medium tracking-normal',
                     isSelected ? selectedTextClassName : 'text-gray-900',
                   )}
                   onClick={() => {
@@ -209,8 +216,8 @@ export default function ProblemQuestionCard({
                 >
                   <span
                     className={cn(
-                      'flex h-[24px] w-[24px] items-center justify-center rounded-full border text-[14px] leading-none font-medium',
-                      isSelected ? selectedCircleClassName : 'border-gray-500 text-gray-500',
+                      'flex h-[24px] w-[24px] items-center justify-center rounded-full border-2 text-[20px] leading-[20px] font-medium',
+                      isSelected ? selectedCircleClassName : 'border-gray-500 text-gray-600',
                     )}
                   >
                     {choice.id}
@@ -225,30 +232,36 @@ export default function ProblemQuestionCard({
 
       {isSubmitted && question.gradingMode === 'auto' && (
         <>
-          <AnswerResultMessage status={isAutoCorrect ? 'correct' : 'incorrect'} />
-          <p className="mt-[18px] text-[16px] leading-[24px] font-medium text-gray-900">
-            정답 : <span className="text-[24px] leading-[24px]">{correctChoiceNumber}</span>
+          <AnswerResultMessage
+            status={isAutoCorrect ? 'correct' : 'incorrect'}
+            className="mt-[28px]"
+          />
+          <p className="mt-[18px] flex items-center gap-[10px] font-medium tracking-normal text-gray-900">
+            <span className="text-[20px] leading-[24px]">정답 :</span>
+            <span className="flex h-[24px] items-center text-[18px] leading-[24px]">
+              {correctChoiceNumber}
+            </span>
           </p>
-          <p className="mt-[12px] text-[16px] leading-[24px] font-medium text-gray-900">
+          <p className="mt-[12px] text-[18px] leading-[24px] font-medium tracking-normal text-gray-900">
             {question.explanation ?? question.correctAnswer}
           </p>
         </>
       )}
 
       {isSubmitted && question.gradingMode === 'self' && (
-        <div className="mt-[28px]">
+        <div className="mt-[40px]">
           {!selfCheck && (
             <>
               <p className="text-[18px] leading-[24px] font-bold text-gray-600">
                 정답을 맞추셨나요?
               </p>
 
-              <div className="mt-[14px] w-[330px] overflow-hidden rounded-[8px] border border-gray-300">
+              <div className="mt-[16px] w-[330px] overflow-hidden rounded-[10px] border border-gray-300">
                 <button
                   type="button"
                   disabled={Boolean(pendingSelfCheck)}
                   className={cn(
-                    'flex h-[64px] w-full items-center gap-[18px] px-[20px] text-[16px] leading-[24px] font-medium',
+                    'flex h-[72px] w-full items-center gap-[16px] px-[20px] text-[16px] leading-[20px] font-medium tracking-normal',
                     pendingSelfCheck === 'correct'
                       ? 'bg-tag-green-500 text-white'
                       : 'bg-bg-white text-gray-700',
@@ -261,8 +274,8 @@ export default function ProblemQuestionCard({
                     className={cn(
                       'h-[36px] w-[36px] shrink-0',
                       pendingSelfCheck === 'correct'
-                        ? 'text-tag-green-500 [&_circle]:!fill-white [&_path]:!fill-current [&_path]:!stroke-current'
-                        : 'text-gray-300 [&_circle]:!fill-current [&_path]:!fill-white [&_path]:!stroke-white',
+                        ? 'text-tag-green-500 [&_path]:!fill-current [&_rect]:!fill-white'
+                        : 'text-gray-300 [&_path]:!fill-white [&_rect]:!fill-current',
                     )}
                     aria-hidden="true"
                     focusable="false"
@@ -274,7 +287,7 @@ export default function ProblemQuestionCard({
                   type="button"
                   disabled={Boolean(pendingSelfCheck)}
                   className={cn(
-                    'flex h-[64px] w-full items-center gap-[18px] border-t border-gray-300 px-[20px] text-[16px] leading-[24px] font-medium',
+                    'flex h-[72px] w-full items-center gap-[16px] border-t border-gray-300 px-[20px] text-[16px] leading-[20px] font-medium tracking-normal',
                     pendingSelfCheck === 'incorrect'
                       ? 'bg-error text-white'
                       : 'bg-bg-white text-gray-700',
@@ -287,8 +300,8 @@ export default function ProblemQuestionCard({
                     className={cn(
                       'h-[36px] w-[36px] shrink-0',
                       pendingSelfCheck === 'incorrect'
-                        ? 'text-error [&_circle]:!fill-white [&_path]:!fill-current [&_path]:!stroke-current'
-                        : 'text-gray-300 [&_circle]:!fill-current [&_path]:!fill-white [&_path]:!stroke-white',
+                        ? 'text-error [&_path]:!fill-current [&_rect]:!fill-white'
+                        : 'text-gray-300 [&_path]:!fill-white [&_rect]:!fill-current',
                     )}
                     aria-hidden="true"
                     focusable="false"
@@ -301,56 +314,69 @@ export default function ProblemQuestionCard({
 
           {selfCheck && <AnswerResultMessage status={selfCheck} />}
 
-          <p className="mt-[18px] text-[16px] leading-[24px] font-medium text-gray-900">
-            정답 : {question.correctAnswer}
+          <p
+            className={cn(
+              'flex items-center gap-[10px] font-medium tracking-normal text-gray-900',
+              selfCheck ? 'mt-[18px]' : 'mt-[16px]',
+            )}
+          >
+            <span className="text-[20px] leading-[24px]">정답 :</span>
+            <span className="text-[18px] leading-[24px]">{question.correctAnswer}</span>
           </p>
         </div>
       )}
 
       {isHintVisible && (
-        <div className="border-primary-700 mt-[28px] flex h-[96px] flex-col justify-center rounded-[10px] border-2 px-[16px]">
-          <p className="text-[14px] leading-[20px] font-bold text-gray-900">Hint 1.</p>
-          <p className="mt-[10px] text-[16px] leading-[24px] font-medium text-gray-700">
+        <div className="border-primary-700 mt-[32px] flex h-[96px] flex-col rounded-[10px] border-2 p-[20px]">
+          <p className="text-[16px] leading-[24px] font-medium tracking-[-0.04em] text-gray-900">
+            Hint 1.
+          </p>
+          <p className="mt-[8px] text-[18px] leading-[24px] font-medium tracking-normal text-gray-700">
             {question.hint}
           </p>
         </div>
       )}
 
-      <div className="mt-[34px] flex justify-end gap-[10px]">
+      <div className="mt-[32px] flex justify-end gap-[10px]">
         {isSubmitted ? (
           <>
-            <button
-              type="button"
-              className="border-secondary-600 flex h-[54px] w-[110px] items-center justify-center gap-[10px] rounded-[8px] border text-[16px] leading-[24px] font-medium text-gray-700"
+            <Button
+              variant="outlineLightGray"
+              size={54}
+              width={110}
+              className="!border-secondary-600 gap-[12px] leading-[24px] !text-gray-700"
               onClick={handleRetry}
             >
               <ReturnIcon
-                className="h-[24px] w-[20px] shrink-0 text-gray-600 [&_*]:!fill-current [&_*]:!stroke-current"
+                className="h-[24px] w-[20px] shrink-0 text-gray-600 [&_path]:!fill-current"
                 aria-hidden="true"
                 focusable="false"
               />
               <span>다시풀기</span>
-            </button>
+            </Button>
 
-            <button
-              type="button"
-              className="bg-secondary-600 flex h-[54px] w-[110px] items-center justify-center gap-[10px] rounded-[8px] text-[16px] leading-[24px] font-medium text-white disabled:bg-gray-400 disabled:text-gray-100"
+            <Button
+              size={54}
+              width={110}
+              className="gap-[12px] leading-[24px]"
               disabled={!canMoveNext}
               onClick={onNext}
             >
               <DoubleArrowIcon
-                className="h-[24px] w-[20px] shrink-0 [&_*]:!fill-current [&_*]:!stroke-current"
+                className="h-[24px] w-[20px] shrink-0 [&_path]:!fill-current"
                 aria-hidden="true"
                 focusable="false"
               />
               <span>{isLastQuestion ? '결과보기' : '다음문제'}</span>
-            </button>
+            </Button>
           </>
         ) : (
           <>
-            <button
-              type="button"
-              className="border-secondary-600 flex h-[54px] w-[110px] items-center justify-center gap-[10px] rounded-[8px] border text-[16px] leading-[24px] font-medium text-gray-700"
+            <Button
+              variant="outlineLightGray"
+              size={54}
+              width={110}
+              className="!border-secondary-600 gap-[12px] leading-[24px] !text-gray-700"
               onClick={() => {
                 setIsHintVisible(true);
               }}
@@ -361,12 +387,13 @@ export default function ProblemQuestionCard({
                 focusable="false"
               />
               <span>힌트보기</span>
-            </button>
+            </Button>
 
-            <button
-              type="button"
+            <Button
+              size={54}
+              width={110}
               disabled={!canSubmit}
-              className="bg-secondary-600 flex h-[54px] w-[110px] items-center justify-center gap-[10px] rounded-[8px] text-[16px] leading-[24px] font-medium text-white disabled:bg-gray-400 disabled:text-gray-100"
+              className="gap-[12px] leading-[24px]"
               onClick={handleSubmit}
             >
               <DocumentsIcon
@@ -375,7 +402,7 @@ export default function ProblemQuestionCard({
                 focusable="false"
               />
               <span>정답제출</span>
-            </button>
+            </Button>
           </>
         )}
       </div>

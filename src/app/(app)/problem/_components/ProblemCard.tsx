@@ -25,7 +25,7 @@ export default function ProblemCard({ problemSet }: ProblemCardProps) {
   return (
     <Link
       href={`/problem/${problemSet.id}`}
-      className="group bg-bg-white block h-[250px] w-[231px] overflow-hidden rounded-[8px] border border-gray-300 shadow-none transition-shadow duration-200 hover:shadow-[0_4px_10px_rgba(0,0,0,0.10)] focus-visible:shadow-[0_4px_10px_rgba(0,0,0,0.10)] focus-visible:outline-none"
+      className="group bg-bg-white block h-[250px] w-[231px] overflow-hidden rounded-[10px] border border-gray-300 shadow-none transition-shadow duration-200 hover:shadow-[0_4px_10px_rgba(0,0,0,0.10)] focus-visible:shadow-[0_4px_10px_rgba(0,0,0,0.10)] focus-visible:outline-none"
     >
       <div className="relative h-[140px] w-full overflow-hidden">
         <Image
@@ -54,7 +54,7 @@ export default function ProblemCard({ problemSet }: ProblemCardProps) {
               : '미진행'}
         </p>
 
-        <div className="mt-auto">
+        <div className="mt-[12px] mb-0">
           <div className="h-[4px] w-full overflow-hidden rounded-full bg-gray-200">
             <div
               className="bg-secondary-600 h-full rounded-full"
@@ -62,7 +62,7 @@ export default function ProblemCard({ problemSet }: ProblemCardProps) {
             />
           </div>
 
-          <div className="mt-[6px] flex justify-end text-[12px] leading-[20px] font-normal text-gray-600">
+          <div className="flex justify-end text-[12px] leading-[20px] font-normal text-gray-600">
             {problemSet.solvedCount}/{problemSet.totalCount}
           </div>
         </div>
