@@ -149,7 +149,7 @@ export function MemoCard({
       className={cn(
         'relative h-[270px] w-[250px] overflow-hidden rounded-[8px] border bg-white transition-colors',
         memo.deleted ? 'cursor-default' : 'cursor-pointer',
-        isSelected && !memo.deleted ? 'border-secondary-700 border-2' : 'border-gray-300',
+        isSelected && !memo.deleted ? 'border-secondary-600 border-2' : 'border-gray-300',
       )}
     >
       <MemoCheckButton selected={isSelected} onClick={() => onToggleSelect(memo.id)} />
