@@ -2,9 +2,11 @@
 
 import { createPortal } from 'react-dom';
 
+import DraggableModal from './DraggableModal';
+
 import { useModalBehavior } from '@/hooks/useModalBehavior';
+
 import { cn } from '@/lib/cn';
-import DraggableModal from '@/components/common/Modal/DraggableModal';
 
 type ModalScope = 'viewport' | 'content';
 

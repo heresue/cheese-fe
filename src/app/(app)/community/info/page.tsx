@@ -3,10 +3,12 @@
 import { useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-import InfoPostCard from '@/components/community/info/InfoPostCard';
+import InfoPostCard from '@/components/community/info';
 
 import { useLikeToggle } from '@/hooks/useLikeToggle';
+
 import { getOptionLabel } from '@/lib/getOptionLabel';
+
 import { INFO_SORT_OPTIONS } from '../_constants/community';
 
 import { infoPosts as INFO_POSTS } from '@/mocks/posts';

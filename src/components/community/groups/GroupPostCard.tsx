@@ -3,15 +3,16 @@
 import Link from 'next/link';
 
 import { Chip } from '@/components/common/Chip';
-import { ProfileImage } from '@/components/common/ProfileImage';
+import ProfileImage from '@/components/common/ProfileImage';
+
+import { cn } from '@/lib/cn';
+import { formatDeadline, isRecruitClosed } from '@/lib/formatDeadline';
 
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 import CommentIcon from '@/assets/icons/common/comment.svg';
-import { formatDeadline, isRecruitClosed } from '@/lib/formatDeadline';
 
 import type { Field, GroupPost } from '@/types/community';
-import { cn } from '@/lib/cn';
 
 type GroupPostCardProps = {
   post: GroupPost;

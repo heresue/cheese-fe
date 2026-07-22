@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import PostDetailHeader from '../../_components/PostDetail/PostDetailHeader';
+import PostDetailHeader from '../../_components/PostDetail';
 
 import type { GroupPost } from '@/types/community';
 

@@ -4,9 +4,11 @@ import { useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import JobPostCard from '@/components/community/jobs/JobPostCard';
-import ApplyModal from '../_components/ApplyModal/ApplyModal';
+
+import ApplyModal from '../_components/ApplyModal';
 
 import { useLikeToggle } from '@/hooks/useLikeToggle';
+
 import { getDeadlineTime, isRecruitClosed } from '@/lib/formatDeadline';
 
 import type { JobPost } from '@/types/community';

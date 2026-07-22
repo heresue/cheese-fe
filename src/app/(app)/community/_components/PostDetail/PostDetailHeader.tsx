@@ -4,11 +4,12 @@ import { useRouter } from 'next/navigation';
 
 import { BackButton } from '@/components/common/BackButton';
 
+import { getOptionLabel } from '@/lib/getOptionLabel';
+
+import { INFO_SORT_OPTIONS } from '../../_constants/community';
+
 import ViewIcon from '@/assets/icons/common/view.svg';
 import MoreIcon from '@/assets/icons/common/more.svg';
-
-import { getOptionLabel } from '@/lib/getOptionLabel';
-import { INFO_SORT_OPTIONS } from '../../_constants/community';
 
 type PostDetailHeaderProps = {
   category?: string;

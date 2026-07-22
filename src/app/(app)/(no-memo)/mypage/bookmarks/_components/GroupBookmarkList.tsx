@@ -1,4 +1,4 @@
-import GroupPostCard from '@/components/community/groups/GroupPostCard';
+import GroupPostCard from '@/components/community/groups';
 
 import { useBookmarkedPosts } from '../hooks/useBookmarkedPosts';
 
