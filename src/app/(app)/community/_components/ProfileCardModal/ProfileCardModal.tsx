@@ -4,7 +4,7 @@ import BaseModal from '@/components/common/Modal';
 import ProfileImage from '@/components/common/ProfileImage';
 import { Button } from '@/components/common/Button';
 
-import { ProfileCardItem } from './';
+import ProfileCardItem from './ProfileCardItem';
 
 import { cn } from '@/lib/cn';
 

@@ -1,4 +1,4 @@
-import { DocumentLinkItem } from './';
+import DocumentLinkItem from './DocumentLinkItem';
 
 import { cn } from '@/lib/cn';
 

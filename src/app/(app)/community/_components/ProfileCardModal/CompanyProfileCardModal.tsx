@@ -1,6 +1,6 @@
 import { DocumentLinkItemList } from '@/components/common/DocumentLink';
 
-import { ProfileCardModal } from './';
+import ProfileCardModal from './ProfileCardModal';
 
 import { getOptionLabel } from '@/lib/getOptionLabel';
 
