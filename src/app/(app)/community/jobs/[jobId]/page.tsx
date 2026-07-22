@@ -6,13 +6,14 @@ import {
   PostDetailAsideInfoItem,
   PostDetailAsideProfile,
 } from '../../_components/PostDetailAside';
-import JobDetailHeader from '../_components/JobDetailHeader';
-
-import { APPLY_LABEL } from '@/components/community/jobs/constants';
+import { JobDetailHeader } from '../_components';
 
 import { getOptionLabel } from '@/lib/getOptionLabel';
 import { isRecruitClosed } from '@/lib/formatDeadline';
+
+import { APPLY_LABEL } from '@/components/community/jobs/constants';
 import { EDUCATION_OPTIONS, EMPLOYMENT_TYPE_OPTIONS } from '@/constants/profileOptions';
+
 import { POST_CONTENT_CLASS } from '../../_constants/community';
 
 import type { Field } from '@/types/community';

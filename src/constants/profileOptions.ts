@@ -1,9 +1,8 @@
-import { Field } from '@/types/community';
-
 export const FIELD_OPTIONS = [
   { label: 'FE', value: 'FE' },
   { label: 'BE', value: 'BE' },
-] satisfies { label: string; value: Field }[];
+  { label: 'FE, BE', value: 'FE_BE' },
+];
 
 export const EMPLOYMENT_TYPE_OPTIONS = [
   { label: '인턴직', value: 'intern' },
@@ -17,6 +16,12 @@ export const EDUCATION_OPTIONS = [
   { label: '고졸', value: 'highSchool' },
   { label: '대학원(석사/박사)', value: 'graduateSchool' },
   { label: '학력무관', value: 'none' },
+];
+
+export const CAREER_OPTIONS = [
+  { label: '신입', value: 'new' },
+  { label: '경력', value: 'experienced' },
+  { label: '경력무관', value: 'any' },
 ];
 
 export const WORK_METHOD_OPTIONS = [

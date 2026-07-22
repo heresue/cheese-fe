@@ -6,7 +6,7 @@ import { cn } from '@/lib/cn';
 
 import ArrowIcon from '@/assets/icons/common/arrow.svg';
 
-type DropdownProps = {
+type FormDropdownProps = {
   value: string;
   options: {
     label: string;
@@ -16,12 +16,12 @@ type DropdownProps = {
   onChange: (value: string) => void;
 };
 
-export default function Dropdown({
+export default function FormDropdown({
   value,
   options,
   placeholder = '선택',
   onChange,
-}: DropdownProps) {
+}: FormDropdownProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
 

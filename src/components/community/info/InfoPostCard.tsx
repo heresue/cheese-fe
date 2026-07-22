@@ -2,14 +2,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 import { cn } from '@/lib/cn';
+import { getOptionLabel } from '@/lib/getOptionLabel';
+
+import { INFO_SORT_OPTIONS, POST_CONTENT_CLASS } from '@/app/(app)/community/_constants/community';
 
 import ViewIcon from '@/assets/icons/common/view.svg';
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 import CommentIcon from '@/assets/icons/common/comment.svg';
-
-import { getOptionLabel } from '@/lib/getOptionLabel';
-import { INFO_SORT_OPTIONS, POST_CONTENT_CLASS } from '@/app/(app)/community/_constants/community';
 
 import type { InfoPost } from '@/types/community';
 

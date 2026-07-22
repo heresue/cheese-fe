@@ -1,18 +1,21 @@
 'use client';
 
-import PersonalProfileCard from '@/app/(app)/community/_components/ProfileCard/PersonalProfileCard';
-import CompanyProfileCard from '@/app/(app)/community/_components/ProfileCard/CompanyProfileCard';
-import { Button } from '@/components/common/Button';
-import { ProfileImage } from '@/components/common/ProfileImage';
 import { useState } from 'react';
-import { UserSummary } from '@/types/community';
+
+import { Button } from '@/components/common/Button';
+import ProfileImage from '@/components/common/ProfileImage';
+
+import { CompanyProfileCardModal, PersonalProfileCardModal } from '../ProfileCardModal';
+
+import type { UserSummary } from '@/types/community';
+
 import { getMockCompanyProfile, getMockPersonalProfile } from '@/mocks/profile/userProfiles';
 
 type PostDetailAsideProfileProps = {
   author: UserSummary;
 };
 
-export function PostDetailAsideProfile({ author }: PostDetailAsideProfileProps) {
+export default function PostDetailAsideProfile({ author }: PostDetailAsideProfileProps) {
   const [isProfileCardOpen, setIsProfileCardOpen] = useState(false);
 
   const isPersonalProfile = author.profileType === 'personal';
@@ -43,13 +46,13 @@ export function PostDetailAsideProfile({ author }: PostDetailAsideProfileProps) 
       </Button>
 
       {isPersonalProfile ? (
-        <PersonalProfileCard
+        <PersonalProfileCardModal
           isOpen={isProfileCardOpen}
           onClose={() => setIsProfileCardOpen(false)}
           profile={getMockPersonalProfile(author.id)}
         />
       ) : (
-        <CompanyProfileCard
+        <CompanyProfileCardModal
           isOpen={isProfileCardOpen}
           onClose={() => setIsProfileCardOpen(false)}
           profile={getMockCompanyProfile(author.id)}

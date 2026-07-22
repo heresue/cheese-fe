@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { BaseModal } from '@/components/common/Modal';
+import BaseModal from '@/components/common/Modal';
 
 import ApplyFormContent from './ApplyFormContent';
 import ApplyCompleteContent from './ApplyCompleteContent';

@@ -3,7 +3,8 @@
 import { useState } from 'react';
 
 import { Button } from '@/components/common/Button';
-import ApplyModal from '../ApplyModal/ApplyModal';
+
+import ApplyModal from '../ApplyModal';
 
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
@@ -17,7 +18,7 @@ type PostDetailAsideActionsProps = {
   buttonText?: string;
 };
 
-export function PostDetailAsideActions({
+export default function PostDetailAsideActions({
   post,
   isClosed,
   buttonText = '지원하기',

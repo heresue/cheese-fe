@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { BaseModal } from '@/components/common/Modal';
+import BaseModal from '@/components/common/Modal';
 import EmailVerifyForm, { EmailVerifyBaseProps } from './EmailVerifyForm';
 
 type EmailVerifyPopupProps = EmailVerifyBaseProps & {
