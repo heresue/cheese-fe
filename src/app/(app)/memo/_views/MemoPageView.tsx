@@ -89,6 +89,8 @@ export function MemoPageView() {
       .map(({ memo }) => memo);
   }, [filter, memos, searchValue, sortOrder]);
 
+  const selectModeActive = filteredMemos.length > 0 && filteredMemos.every((memo) => memo.selected);
+
   const visibleMemos = filteredMemos.slice(0, visibleCount);
   const hasMoreMemos = visibleCount < filteredMemos.length;
 
@@ -228,6 +230,7 @@ export function MemoPageView() {
           sortOrder={sortOrder}
           searchValue={searchValue}
           selectedCount={selectedCount}
+          selectModeActive={selectModeActive}
           onChangeFilter={handleChangeFilter}
           onChangeSortOrder={handleChangeSortOrder}
           onChangeSearchValue={handleChangeSearchValue}
@@ -247,7 +250,7 @@ export function MemoPageView() {
           </section>
         ) : (
           <>
-            <section className="mx-auto grid w-fit grid-cols-[repeat(5,250px)] gap-x-[32px] gap-y-[20px]">
+            <section className="mx-auto grid w-fit grid-cols-[repeat(5,240px)] gap-x-8 gap-y-5">
               {visibleMemos.map((memo) => (
                 <MemoCard
                   key={memo.id}
