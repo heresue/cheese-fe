@@ -28,8 +28,8 @@ type OpenEditPopoverPayload = {
   placement?: CalendarPopoverPlacement;
 };
 
-const CREATE_POPOVER_WIDTH = 300;
-const CREATE_POPOVER_HEIGHT = 520;
+const CREATE_POPOVER_WIDTH = 301;
+const CREATE_POPOVER_HEIGHT = 518;
 const CREATE_POPOVER_GAP = 0;
 const VIEWPORT_PADDING = 12;
 const CELL_CENTER_BOTTOM_OFFSET = 12;

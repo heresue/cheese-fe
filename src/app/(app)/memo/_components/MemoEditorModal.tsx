@@ -172,7 +172,7 @@ function MemoEditorModalContent({
           </button>
         </header>
 
-        <div className="flex h-[54px] shrink-0 items-center justify-between border-b border-gray-300 px-[32px]">
+        <div className="flex h-[56px] shrink-0 items-center justify-between border-b border-gray-300 px-[32px]">
           <div className="flex items-center gap-[6px]">
             <span className="text-[12px] leading-[18px] font-medium text-gray-600">
               메모 색상 설정

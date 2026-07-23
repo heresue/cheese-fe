@@ -14,15 +14,18 @@ type CollapsibleColorPickerProps<T extends string> = {
   value?: T;
   options: Array<ColorPickerOption<T>>;
   onChange: (value: T) => void;
+  swatchSlotSize?: number;
+  swatchGap?: number;
 };
 
 const COLOR_SWATCH_SIZE = 20;
-const COLOR_SWATCH_GAP = 8;
 
 export function CollapsibleColorPicker<T extends string>({
   value,
   options,
   onChange,
+  swatchSlotSize = COLOR_SWATCH_SIZE,
+  swatchGap = 8,
 }: CollapsibleColorPickerProps<T>) {
   const [open, setOpen] = useState(!value);
   const pickerRef = useRef<HTMLDivElement | null>(null);
@@ -31,8 +34,8 @@ export function CollapsibleColorPicker<T extends string>({
   const isCollapsed = Boolean(selectedOption) && !open;
   const visibleOptions = isCollapsed && selectedOption ? [selectedOption] : options;
   const paletteWidth =
-    visibleOptions.length * COLOR_SWATCH_SIZE +
-    Math.max(visibleOptions.length - 1, 0) * COLOR_SWATCH_GAP;
+    visibleOptions.length * swatchSlotSize + Math.max(visibleOptions.length - 1, 0) * swatchGap;
+  const swatchSlotPadding = Math.max((swatchSlotSize - COLOR_SWATCH_SIZE) / 2, 0);
 
   useEffect(() => {
     if (!open) return;
@@ -66,7 +69,7 @@ export function CollapsibleColorPicker<T extends string>({
           transition: 'width 240ms cubic-bezier(0.22, 1, 0.36, 1)',
         }}
       >
-        <div className="flex items-center gap-[8px]">
+        <div className="flex items-center" style={{ gap: `${swatchGap}px` }}>
           {visibleOptions.map((option) => {
             const selected = value === option.value;
 
@@ -85,11 +88,18 @@ export function CollapsibleColorPicker<T extends string>({
                   onChange(option.value);
                   setOpen(false);
                 }}
-                className={cn(
-                  'h-[20px] w-[20px] shrink-0 rounded-[5px] transition-transform duration-150 outline-none hover:scale-105',
-                  option.swatchClassName,
-                )}
-              />
+                className="shrink-0 rounded-[5px] transition-transform duration-150 outline-none hover:scale-105"
+                style={{
+                  width: `${swatchSlotSize}px`,
+                  height: `${swatchSlotSize}px`,
+                  padding: `${swatchSlotPadding}px`,
+                }}
+              >
+                <span
+                  aria-hidden="true"
+                  className={cn('block h-full w-full rounded-[5px]', option.swatchClassName)}
+                />
+              </button>
             );
           })}
         </div>

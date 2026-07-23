@@ -6,6 +6,8 @@ import { cn } from '@/lib/cn';
 import { getTagColor } from '@/lib/tagPalette';
 import CheckboxIcon from '@/assets/icons/calendar/checkbox.svg';
 import DateIcon from '@/assets/icons/calendar/calendar.svg';
+import DropdownChevronIcon from '@/assets/icons/calendar/dropdown-chevron.svg';
+import RangeSeparatorIcon from '@/assets/icons/calendar/range-separator.svg';
 import ThinCloseIcon from '@/assets/icons/calendar/thinclose.svg';
 import WatchIcon from '@/assets/icons/calendar/watch.svg';
 import Watch2Icon from '@/assets/icons/calendar/watch2.svg';
@@ -24,7 +26,6 @@ import {
   toDateInputValue,
   toTimeInputValue,
 } from '../../_lib/date';
-import { ChevronIcon } from '../../../../../assets/icons/calendar';
 import type { CalendarEventDraft, EventColorId, ReminderMinutes } from '../../_model/types';
 
 type CalendarEventPopoverProps = {
@@ -59,7 +60,9 @@ const CATEGORY_OPTIONS: Array<DropdownOption<string>> = [
   { label: '기타', value: 'etc' },
 ];
 
-const FIELD_TEXT_CLASS_NAME = 'text-[14px] leading-[20px] font-normal tracking-[-0.02em]';
+const DATE_TIME_TEXT_CLASS_NAME = 'text-[14px] leading-[17px] font-normal tracking-normal';
+const FORM_FIELD_TEXT_CLASS_NAME = 'text-[14px] leading-[17px] font-normal tracking-normal';
+const COMPACT_INPUT_TEXT_CLASS_NAME = 'text-[14px] leading-[17px] font-normal tracking-[-0.02em]';
 
 const QUICK_EVENT_COLOR_IDS = [
   'tag-gray',
@@ -81,26 +84,19 @@ const QUICK_EVENT_COLOR_OPTIONS = QUICK_EVENT_COLORS.map((color) => ({
   swatchClassName: color.chipClassName,
 }));
 
-function FieldIcon({ children }: { children: React.ReactNode }) {
+function ScheduleFieldIcon({ children }: { children: React.ReactNode }) {
   return (
-    <span className="flex h-4 w-4 shrink-0 items-center justify-center text-gray-400">
+    <span className="flex h-[26px] w-[26px] shrink-0 items-center justify-center text-gray-400">
       {children}
     </span>
   );
 }
 
-function RangeSeparatorIcon() {
+function CompactFieldIcon({ children }: { children: React.ReactNode }) {
   return (
-    <svg
-      width="10"
-      height="16"
-      viewBox="0 0 10 16"
-      fill="none"
-      aria-hidden="true"
-      className="text-gray-400"
-    >
-      <path d="M1.5 8H8.5" stroke="currentColor" strokeLinecap="round" />
-    </svg>
+    <span className="flex h-3 w-3 shrink-0 items-center justify-center text-gray-400">
+      {children}
+    </span>
   );
 }
 
@@ -175,16 +171,16 @@ function CustomDropdown<T extends string | number>({
         type="button"
         onClick={handleToggle}
         className={cn(
-          'flex h-[30px] w-full items-center justify-between rounded-[6px] border border-gray-400 bg-white px-[10px] outline-none',
-          FIELD_TEXT_CLASS_NAME,
+          'flex h-[29px] w-full items-center justify-between rounded-[5px] bg-white px-2 ring-1 ring-gray-300 outline-none ring-inset',
+          FORM_FIELD_TEXT_CLASS_NAME,
         )}
       >
         <span className="flex min-w-0 items-center gap-2">
-          {leadingIcon ? <FieldIcon>{leadingIcon}</FieldIcon> : null}
+          {leadingIcon ? <CompactFieldIcon>{leadingIcon}</CompactFieldIcon> : null}
           <span
             className={cn(
               'truncate',
-              FIELD_TEXT_CLASS_NAME,
+              FORM_FIELD_TEXT_CLASS_NAME,
               isPlaceholder ? 'text-gray-500' : 'text-gray-700',
             )}
           >
@@ -192,12 +188,14 @@ function CustomDropdown<T extends string | number>({
           </span>
         </span>
 
-        <span className="text-gray-400">
-          <ChevronIcon
-            direction={open && placement === 'top' ? 'up' : 'down'}
-            width={8}
-            height={14}
-            aria-hidden="true"
+        <span className="flex h-3 w-3 shrink-0 items-center justify-center">
+          <DropdownChevronIcon
+            width={12}
+            height={12}
+            aria-hidden
+            className={cn('transition-transform', {
+              'rotate-180': open && placement === 'top',
+            })}
           />
         </span>
       </button>
@@ -207,7 +205,7 @@ function CustomDropdown<T extends string | number>({
           data-dropdown-placement={placement}
           className={cn(
             'absolute left-0 z-20 w-full rounded-[12px] border border-gray-400 bg-white py-1 shadow-[0_8px_24px_rgba(15,23,42,0.12)]',
-            placement === 'top' ? 'bottom-[36px]' : 'top-[36px]',
+            placement === 'top' ? 'bottom-[35px]' : 'top-[35px]',
           )}
         >
           {options.map((option) => {
@@ -263,11 +261,11 @@ function DisplayDateField({ value, onChange }: DisplayDateFieldProps) {
         type="button"
         onClick={openPicker}
         className={cn(
-          'flex h-[25px] w-full items-center justify-center rounded-[6px] border border-gray-400 bg-white px-2 text-gray-700',
-          FIELD_TEXT_CLASS_NAME,
+          'flex h-[25px] w-full items-center justify-center rounded-[5px] border border-gray-300 bg-white px-5 text-gray-700',
+          DATE_TIME_TEXT_CLASS_NAME,
         )}
       >
-        <span className="truncate">{displayText}</span>
+        <span className="whitespace-nowrap">{displayText}</span>
       </button>
 
       <input
@@ -320,8 +318,8 @@ function DisplayTimeField({ value, onChange }: DisplayTimeFieldProps) {
         type="button"
         onClick={openPicker}
         className={cn(
-          'flex h-[25px] w-full items-center justify-center rounded-[6px] border border-gray-400 bg-white px-2 text-gray-700',
-          FIELD_TEXT_CLASS_NAME,
+          'flex h-[25px] w-full items-center justify-center rounded-[5px] border border-gray-300 bg-white px-5 text-gray-700',
+          DATE_TIME_TEXT_CLASS_NAME,
         )}
       >
         <span className="truncate">{formatDisplayTime(value)}</span>
@@ -514,202 +512,220 @@ export function CalendarEventPopover({
         role="dialog"
         aria-modal="true"
         aria-label="일정"
-        className={cn(
-          'fixed z-50 w-[300px] overflow-visible rounded-[10px] border border-gray-400 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.12)]',
-          isAllDay || showDateOnlyTimedField ? 'h-[486px]' : 'h-[520px]',
-        )}
+        className="fixed z-50 flex w-[301px] flex-col items-start gap-[20px] overflow-visible rounded-[10px] bg-white px-4 py-5 shadow-[0_4px_20px_rgba(85,85,85,0.2)] ring-1 ring-gray-400 ring-inset"
         style={{ left: x, top: y }}
       >
-        <div className="flex h-12 items-center justify-between px-4">
-          <span className="text-[12px] leading-[16px] font-medium tracking-normal text-gray-950">
+        <div className="flex h-[14px] w-full items-center justify-between">
+          <span className="text-[12px] leading-[14px] font-medium tracking-normal text-gray-950">
             일정
           </span>
 
           <button
             type="button"
             onClick={handleClosePopover}
-            className="flex h-5 w-5 items-center justify-center text-gray-400"
+            className="flex h-3 w-3 items-center justify-center"
             aria-label="닫기"
           >
             <ThinCloseIcon width={10} height={10} aria-hidden="true" />
           </button>
         </div>
 
-        <div className="px-4 pb-[20px]">
-          <Input
-            label="일정 제목"
-            value={draft.title ?? ''}
-            onChange={(event) =>
-              onChangeDraft({
-                ...draft,
-                title: event.target.value,
-              })
-            }
-            placeholder="제목"
-            hideMessageSpace
-            className="mt-[6px] gap-0 border-gray-400 px-0 py-0 focus-within:border-gray-400"
-            inputClassName="my-0 h-[28px] text-[14px] leading-[20px] font-medium tracking-normal text-gray-950 placeholder:text-gray-500"
-          />
+        <Input
+          label="일정 제목"
+          value={draft.title ?? ''}
+          onChange={(event) =>
+            onChangeDraft({
+              ...draft,
+              title: event.target.value,
+            })
+          }
+          placeholder="제목"
+          hideMessageSpace
+          className="h-[29px] gap-0 border-b-0 px-[10px] py-0 shadow-[inset_0_-1px_0_var(--color-gray-400)]"
+          inputClassName="my-0 h-[17px] text-[14px] leading-[17px] font-medium tracking-normal text-gray-950 placeholder:text-gray-500"
+        />
 
+        <div className="flex w-full flex-col gap-2">
           {isAllDay ? (
-            <div className="mt-[21px] grid grid-cols-[16px_1fr_10px_1fr] items-center gap-x-[8.5px]">
-              <FieldIcon>
-                <DateIcon width={15} height={16} />
-              </FieldIcon>
+            <div className="flex h-[26px] w-full items-center gap-2">
+              <ScheduleFieldIcon>
+                <DateIcon width={15} height={16} aria-hidden />
+              </ScheduleFieldIcon>
 
-              <DisplayDateField value={draft.start} onChange={updateAllDayStart} />
+              <div className="flex min-w-0 flex-1 items-center gap-1">
+                <div className="min-w-0 flex-1">
+                  <DisplayDateField value={draft.start} onChange={updateAllDayStart} />
+                </div>
 
-              <RangeSeparatorIcon />
+                <RangeSeparatorIcon width={10.5} height={1} className="shrink-0" aria-hidden />
 
-              <DisplayDateField value={allDayDisplayEndValue} onChange={updateAllDayEnd} />
+                <div className="min-w-0 flex-1">
+                  <DisplayDateField value={allDayDisplayEndValue} onChange={updateAllDayEnd} />
+                </div>
+              </div>
             </div>
           ) : showDateOnlyTimedField ? (
-            <div className="mt-[21px] grid grid-cols-[16px_1fr] items-center gap-x-[8.5px]">
-              <FieldIcon>
-                <DateIcon width={15} height={16} />
-              </FieldIcon>
+            <div className="flex h-[26px] w-full items-center gap-2">
+              <ScheduleFieldIcon>
+                <DateIcon width={15} height={16} aria-hidden />
+              </ScheduleFieldIcon>
 
-              <DisplayDateField value={draft.start} onChange={updateTimedDateOnlyDraft} />
-            </div>
-          ) : (
-            <div className="mt-[21px] grid gap-y-[8.5px]">
-              <div className="grid grid-cols-[16px_1fr_10px_1fr] items-center gap-x-[8.5px]">
-                <FieldIcon>
-                  <WatchIcon width={16} height={16} />
-                </FieldIcon>
-
-                <DisplayTimeField
-                  value={draft.start}
-                  onChange={(nextValue) => updateTimedStart(timedStartDateValue, nextValue)}
-                />
-
-                <RangeSeparatorIcon />
-
-                <DisplayTimeField
-                  value={draft.end}
-                  onChange={(nextValue) => updateTimedEnd(nextValue)}
-                />
-              </div>
-
-              <div className="grid grid-cols-[16px_1fr] items-center gap-x-[8.5px]">
-                <FieldIcon>
-                  <DateIcon width={15} height={16} />
-                </FieldIcon>
-
+              <div className="w-[106.75px] shrink-0">
                 <DisplayDateField value={draft.start} onChange={updateTimedDateOnlyDraft} />
               </div>
             </div>
+          ) : (
+            <>
+              <div className="flex h-[26px] w-full items-center gap-2">
+                <ScheduleFieldIcon>
+                  <WatchIcon width={16} height={16} aria-hidden />
+                </ScheduleFieldIcon>
+
+                <div className="flex min-w-0 flex-1 items-center gap-1">
+                  <div className="min-w-0 flex-1">
+                    <DisplayTimeField
+                      value={draft.start}
+                      onChange={(nextValue) => updateTimedStart(timedStartDateValue, nextValue)}
+                    />
+                  </div>
+
+                  <RangeSeparatorIcon width={10.5} height={1} className="shrink-0" aria-hidden />
+
+                  <div className="min-w-0 flex-1">
+                    <DisplayTimeField
+                      value={draft.end}
+                      onChange={(nextValue) => updateTimedEnd(nextValue)}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex h-[26px] w-full items-center gap-2">
+                <ScheduleFieldIcon>
+                  <DateIcon width={15} height={16} aria-hidden />
+                </ScheduleFieldIcon>
+
+                <div className="w-[106.75px] shrink-0">
+                  <DisplayDateField value={draft.start} onChange={updateTimedDateOnlyDraft} />
+                </div>
+              </div>
+            </>
           )}
 
-          <label className="mt-[8.5px] flex h-4 w-fit cursor-pointer items-center gap-3 text-[12px] leading-[16px] font-normal tracking-normal text-gray-700">
+          <label className="flex h-[26px] w-fit cursor-pointer items-center gap-2 text-[12px] leading-[14px] font-normal tracking-normal text-gray-700">
             <input
               type="checkbox"
               checked={isAllDay}
               onChange={handleToggleAllDay}
               className="sr-only"
             />
-            <CheckboxIcon
-              width={16}
-              height={16}
-              data-calendar-all-day-checkbox-icon="true"
-              aria-hidden="true"
-              className={cn('calendar-all-day-checkbox-icon', {
-                'calendar-all-day-checkbox-icon--checked': isAllDay,
-              })}
-            />
+            <ScheduleFieldIcon>
+              <CheckboxIcon
+                width={16}
+                height={16}
+                data-calendar-all-day-checkbox-icon="true"
+                aria-hidden="true"
+                className={cn('calendar-all-day-checkbox-icon', {
+                  'calendar-all-day-checkbox-icon--checked': isAllDay,
+                })}
+              />
+            </ScheduleFieldIcon>
             <span>종일</span>
           </label>
+        </div>
 
-          <textarea
-            value={draft.memo ?? ''}
-            onChange={(event) =>
-              onChangeDraft({
-                ...draft,
-                memo: event.target.value,
-              })
-            }
-            placeholder="메모"
-            className="mt-[25px] h-[100px] w-full resize-none overflow-y-auto rounded-[6px] border border-gray-400 px-[10px] py-2 text-[12px] leading-[16px] font-medium tracking-[-0.02em] text-gray-950 outline-none placeholder:text-gray-500 focus:border-gray-500"
+        <textarea
+          value={draft.memo ?? ''}
+          onChange={(event) =>
+            onChangeDraft({
+              ...draft,
+              memo: event.target.value,
+            })
+          }
+          placeholder="메모"
+          className="ring-tag-gray-200 focus:ring-tag-gray-200 h-[100px] w-full shrink-0 resize-none overflow-y-auto rounded-[5px] px-3 py-[10px] text-[12px] leading-[16px] font-medium tracking-[-0.02em] text-gray-950 ring-1 outline-none ring-inset placeholder:text-gray-500"
+        />
+
+        <div className="flex flex-col items-start gap-2">
+          <div className="h-[14px] text-[12px] leading-[14px] font-medium tracking-normal text-gray-600">
+            일정 색상
+          </div>
+
+          <CollapsibleColorPicker
+            value={draft.colorId}
+            options={QUICK_EVENT_COLOR_OPTIONS}
+            onChange={handleSelectColor}
+            swatchSlotSize={24}
+            swatchGap={4}
           />
+        </div>
 
-          <div className="mt-[20px]">
-            <div className="mb-[8px] text-[12px] leading-[16px] font-normal tracking-normal text-gray-600">
-              일정 색상
-            </div>
+        <div className="flex w-full flex-col gap-1">
+          <div className="flex h-[29px] w-full items-center gap-2 rounded-[5px] px-2 ring-1 ring-gray-300 ring-inset">
+            <CompactFieldIcon>
+              <LocationIcon width={8.4} height={12} aria-hidden />
+            </CompactFieldIcon>
 
-            <CollapsibleColorPicker
-              value={draft.colorId}
-              options={QUICK_EVENT_COLOR_OPTIONS}
-              onChange={handleSelectColor}
+            <input
+              value={draft.location ?? ''}
+              onChange={(event) =>
+                onChangeDraft({
+                  ...draft,
+                  location: event.target.value,
+                })
+              }
+              placeholder="장소"
+              className={cn(
+                'h-[17px] min-w-0 flex-1 border-0 bg-transparent px-0 text-gray-700 outline-none placeholder:font-normal placeholder:text-gray-500',
+                COMPACT_INPUT_TEXT_CLASS_NAME,
+              )}
             />
           </div>
 
-          <div className="mt-[21px] grid gap-y-[4px]">
-            <div className="grid h-[30px] grid-cols-[16px_1fr] items-center gap-x-2 rounded-[6px] border border-gray-400 px-[10px]">
-              <FieldIcon>
-                <LocationIcon width={12} height={12} />
-              </FieldIcon>
+          <div className="flex h-[29px] w-full items-center gap-2 rounded-[5px] px-2 ring-1 ring-gray-300 ring-inset">
+            <CompactFieldIcon>
+              <LinkIcon width={12} height={6} aria-hidden />
+            </CompactFieldIcon>
 
-              <input
-                value={draft.location ?? ''}
-                onChange={(event) =>
-                  onChangeDraft({
-                    ...draft,
-                    location: event.target.value,
-                  })
-                }
-                placeholder="장소"
-                className={cn(
-                  'h-[28px] w-full border-0 bg-transparent px-0 text-gray-700 outline-none placeholder:font-normal placeholder:text-gray-500',
-                  FIELD_TEXT_CLASS_NAME,
-                )}
-              />
-            </div>
+            <input
+              value={(draft as CalendarEventDraft & { url?: string }).url ?? ''}
+              onChange={(event) =>
+                onChangeDraft({
+                  ...draft,
+                  url: event.target.value,
+                } as CalendarEventDraft)
+              }
+              placeholder="채용정보 URL"
+              className={cn(
+                'h-[17px] min-w-0 flex-1 border-0 bg-transparent px-0 text-gray-700 outline-none placeholder:font-normal placeholder:text-gray-500',
+                COMPACT_INPUT_TEXT_CLASS_NAME,
+              )}
+            />
+          </div>
 
-            <div className="grid h-[30px] grid-cols-[16px_1fr] items-center gap-x-2 rounded-[6px] border border-gray-400 px-[10px]">
-              <FieldIcon>
-                <LinkIcon width={12} height={6} />
-              </FieldIcon>
+          <div className="grid grid-cols-2 gap-2">
+            <CustomDropdown
+              value={draft.reminderMinutes !== undefined ? draft.reminderMinutes : ''}
+              options={REMINDER_OPTIONS}
+              leadingIcon={<Watch2Icon width={12} height={12} aria-hidden />}
+              onChange={(nextValue) => {
+                onChangeDraft({
+                  ...draft,
+                  reminderMinutes: nextValue === '' ? undefined : (nextValue as ReminderMinutes),
+                });
+              }}
+            />
 
-              <input
-                value={(draft as CalendarEventDraft & { url?: string }).url ?? ''}
-                onChange={(event) =>
-                  onChangeDraft({
-                    ...draft,
-                    url: event.target.value,
-                  } as CalendarEventDraft)
-                }
-                placeholder="채용정보 URL"
-                className={cn(
-                  'h-[28px] w-full border-0 bg-transparent px-0 text-gray-700 outline-none placeholder:font-normal placeholder:text-gray-500',
-                  FIELD_TEXT_CLASS_NAME,
-                )}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-x-2">
-              <CustomDropdown
-                value={draft.reminderMinutes !== undefined ? draft.reminderMinutes : ''}
-                options={REMINDER_OPTIONS}
-                leadingIcon={<Watch2Icon width={12} height={12} />}
-                onChange={(nextValue) => {
-                  onChangeDraft({
-                    ...draft,
-                    reminderMinutes: nextValue === '' ? undefined : (nextValue as ReminderMinutes),
-                  });
-                }}
-              />
-
-              <CustomDropdown
-                value={(draft as CalendarEventDraft & { category?: string }).category ?? ''}
-                options={CATEGORY_OPTIONS}
-                onChange={(nextValue) =>
-                  onChangeDraft({
-                    ...draft,
-                    category: nextValue || undefined,
-                  } as CalendarEventDraft)
-                }
-              />
-            </div>
+            <CustomDropdown
+              value={(draft as CalendarEventDraft & { category?: string }).category ?? ''}
+              options={CATEGORY_OPTIONS}
+              onChange={(nextValue) =>
+                onChangeDraft({
+                  ...draft,
+                  category: nextValue || undefined,
+                } as CalendarEventDraft)
+              }
+            />
           </div>
         </div>
       </div>

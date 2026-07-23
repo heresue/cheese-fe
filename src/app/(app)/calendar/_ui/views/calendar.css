@@ -973,11 +973,11 @@ input[type='time'] {
 }
 
 .calendar-all-day-checkbox-icon--checked rect:first-of-type {
-  fill: var(--color-secondary-600);
+  fill: var(--color-secondary-700);
 }
 
 .calendar-all-day-checkbox-icon--checked path {
-  fill: var(--color-secondary-600);
+  fill: var(--color-secondary-700);
 }
 
 /* 월간의 오늘 날짜와 주말 배경 */
