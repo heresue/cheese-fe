@@ -48,6 +48,7 @@ export default function SettingItem({
 
       <Button
         variant="outlineLightGray"
+        width={61}
         size={38}
         paddingX={8}
         className={`gap-[7px] ${buttonClassName ?? ''}`}

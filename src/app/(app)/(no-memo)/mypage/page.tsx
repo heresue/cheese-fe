@@ -104,7 +104,7 @@ export default function MyPage() {
             items={PROFILE_SWITCH_OPTIONS}
             activeValue={activeProfileType}
             onChange={handleChangeProfileType}
-            className="[&>button]:h-[46px] [&>button]:px-3"
+            size="sm"
           />
 
           {isPersonalProfile ? (
