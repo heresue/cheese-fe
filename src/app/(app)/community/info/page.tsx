@@ -38,7 +38,7 @@ export default function CommunityInfoPage() {
   }
 
   return (
-    <div className="mx-auto flex flex-col px-[50px]">
+    <div className="mx-auto flex w-full flex-col px-[50px]">
       {infoPosts.map((infoPost) => (
         <InfoPostCard
           key={infoPost.id}
