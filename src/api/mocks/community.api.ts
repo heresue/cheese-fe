@@ -24,6 +24,36 @@ export type GetInfoPostsParams = {
   keyword?: string;
 };
 
+type RecruitPostSortFields = {
+  likeCount: number;
+  deadline: string | null;
+};
+
+function sortRecruitPosts<T extends RecruitPostSortFields>(
+  posts: T[],
+  sort: CommunitySort,
+  getLatestValue: (post: T) => number,
+): T[] {
+  return [...posts].sort((a, b) => {
+    if (sort === 'like') {
+      return b.likeCount - a.likeCount;
+    }
+
+    if (sort === 'deadline') {
+      const aClosed = isRecruitClosed(a.deadline);
+      const bClosed = isRecruitClosed(b.deadline);
+
+      if (aClosed !== bClosed) {
+        return aClosed ? 1 : -1;
+      }
+
+      return getDeadlineTime(a.deadline) - getDeadlineTime(b.deadline);
+    }
+
+    return getLatestValue(b) - getLatestValue(a);
+  });
+}
+
 export async function getJobPosts({
   sort = 'latest',
   keyword = '',
@@ -43,26 +73,7 @@ export async function getJobPosts({
     );
   });
 
-  const sortedPosts = [...filteredPosts].sort((a, b) => {
-    if (sort === 'like') {
-      return b.likeCount - a.likeCount;
-    }
-
-    if (sort === 'deadline') {
-      const aClosed = isRecruitClosed(a.deadline);
-      const bClosed = isRecruitClosed(b.deadline);
-
-      if (aClosed !== bClosed) {
-        return aClosed ? 1 : -1;
-      }
-
-      return getDeadlineTime(a.deadline) - getDeadlineTime(b.deadline);
-    }
-
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  });
-
-  return sortedPosts;
+  return sortRecruitPosts(filteredPosts, sort, (post) => new Date(post.createdAt).getTime());
 }
 
 export async function getGroupPosts({
@@ -83,26 +94,7 @@ export async function getGroupPosts({
     );
   });
 
-  const sortedPosts = [...filteredPosts].sort((a, b) => {
-    if (sort === 'like') {
-      return b.likeCount - a.likeCount;
-    }
-
-    if (sort === 'deadline') {
-      const aClosed = isRecruitClosed(a.deadline);
-      const bClosed = isRecruitClosed(b.deadline);
-
-      if (aClosed !== bClosed) {
-        return aClosed ? 1 : -1;
-      }
-
-      return getDeadlineTime(a.deadline) - getDeadlineTime(b.deadline);
-    }
-
-    return b.id - a.id;
-  });
-
-  return sortedPosts;
+  return sortRecruitPosts(filteredPosts, sort, (post) => new Date(post.createdAt).getTime());
 }
 
 export async function getInfoPosts({
