@@ -80,13 +80,42 @@ export default function MyPage() {
     setPendingProfileType(null);
   };
 
+  const handleProfileImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    const imageUrl = URL.createObjectURL(file);
+
+    setMypage((prev) => {
+      if (activeProfileType === 'personal') {
+        return {
+          ...prev,
+          personalProfile: {
+            ...prev.personalProfile,
+            profileImageUrl: imageUrl,
+          },
+        };
+      }
+
+      return {
+        ...prev,
+        companyProfile: {
+          ...prev.companyProfile,
+          profileImageUrl: imageUrl,
+        },
+      };
+    });
+  };
+
+  // TODO:
+  // - 이미지 업로드 API 연동
+  // - React Query(또는 전역 상태)와 연동하여 사이드바 프로필 이미지까지 함께 갱신
   const handleSaveMypageItem = (
     section: MypageItemSection,
     field: MypageItemField,
     value: string | ProfileDocument | ContactSettings,
   ) => {
-    console.log('저장값 확인:', { section, field, value });
-
     if (section === 'accountAction') return;
 
     setMypage((prev) => {
@@ -177,9 +206,19 @@ export default function MyPage() {
               <span className="text-[14px]">{profileHeader.subText}</span>
             </div>
           </div>
-          <Button variant="outlineLightGray" size={38} paddingX={8}>
-            프로필 사진 변경
-          </Button>
+
+          <label className="cursor-pointer">
+            <Button asChild variant="outlineLightGray" size={38} paddingX={8}>
+              <span>프로필 사진 변경</span>
+            </Button>
+
+            <input
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onChange={handleProfileImageChange}
+            />
+          </label>
         </div>
 
         <div className="flex flex-col gap-5">
