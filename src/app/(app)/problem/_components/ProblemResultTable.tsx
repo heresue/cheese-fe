@@ -24,17 +24,17 @@ function ResultStatusIcon({ status }: { status: ProblemResultRow['status'] }) {
 export default function ProblemResultTable({ problemSetId, rows }: ProblemResultTableProps) {
   return (
     <section className="bg-bg-white mt-[32px] w-[1060px] rounded-[15px] px-[40px] py-[40px]">
-      <div className="relative h-[64px] border-b border-gray-300 text-gray-950">
-        <span className="absolute top-[12px] left-[80px] text-[24px] leading-[30px] font-bold">
+      <div className="relative h-[74px] border-b border-gray-300 text-gray-950">
+        <span className="absolute top-[12px] left-[80px] text-[24px] leading-[30px] font-bold tracking-[-0.02em]">
           문제명
         </span>
-        <span className="absolute top-[12px] left-[410px] text-[24px] leading-[30px] font-bold">
+        <span className="absolute top-[12px] left-[410px] text-[24px] leading-[30px] font-bold tracking-[-0.02em]">
           정답 결과
         </span>
-        <span className="absolute top-[12px] left-[602px] text-[24px] leading-[30px] font-bold">
+        <span className="absolute top-[12px] left-[602px] text-[24px] leading-[30px] font-bold tracking-[-0.02em]">
           소요시간
         </span>
-        <span className="absolute top-[12px] right-[80px] text-[24px] leading-[30px] font-bold">
+        <span className="absolute top-[12px] right-[80px] text-[24px] leading-[30px] font-bold tracking-[-0.02em]">
           복습
         </span>
       </div>
@@ -65,7 +65,7 @@ export default function ProblemResultTable({ problemSetId, rows }: ProblemResult
                 asChild
                 size={46}
                 width={114}
-                className="absolute top-0 right-[40px] gap-[12px] !text-[14px] leading-[20px]"
+                className="absolute top-0 right-[40px] gap-[12px] !text-[16px]"
               >
                 <Link href={reviewHref}>
                   <ProblemActionIcon className="h-[16px] w-[16px] shrink-0" />

@@ -64,26 +64,14 @@ function SideNavigationButton({
   );
   if (isDisabled || !href) {
     return (
-      <Button
-        variant="outlineLightGray"
-        size={46}
-        fullWidth
-        disabled
-        className="gap-[5px] !border-gray-300 !bg-gray-100 leading-[24px] !text-gray-500"
-      >
+      <Button variant="outlinePrimary" size={46} fullWidth disabled className="gap-[5px]">
         {content}
       </Button>
     );
   }
 
   return (
-    <Button
-      asChild
-      variant="outlineLightGray"
-      size={46}
-      fullWidth
-      className="!border-secondary-600 gap-[5px] leading-[24px] !text-gray-900"
-    >
+    <Button asChild variant="outlinePrimary" size={46} fullWidth className="gap-[5px]">
       <Link href={href}>{content}</Link>
     </Button>
   );
@@ -165,12 +153,7 @@ export default function ProblemSideToc({
             />
           </div>
 
-          <Button
-            size={46}
-            fullWidth
-            className="mt-[10px] !text-[14px] leading-[20px]"
-            onClick={navigation.onExitClick}
-          >
+          <Button size={46} fullWidth className="mt-[10px]" onClick={navigation.onExitClick}>
             저장하고 종료하기
           </Button>
         </div>

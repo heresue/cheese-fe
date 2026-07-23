@@ -52,12 +52,12 @@ function AnswerResultMessage({
   const isCorrect = status === 'correct';
 
   return (
-    <div className={cn('flex items-center gap-[10px]', className)}>
+    <div className={cn('flex items-center gap-[12px]', className)}>
       <ProblemStatusIcon type={isCorrect ? 'correct' : 'incorrect'} />
 
       <p
         className={cn(
-          'text-[18px] leading-[24px] font-bold',
+          'text-[18px] leading-[24px] font-bold tracking-normal',
           isCorrect ? 'text-success-subtle' : 'text-error',
         )}
       >
@@ -166,12 +166,14 @@ export default function ProblemQuestionCard({
 
   return (
     <section className="bg-bg-white w-[960px] rounded-[15px] px-[40px] py-[40px]">
-      <div className="flex items-center gap-[12px] text-[16px] leading-[30px] font-medium tracking-[-0.04em]">
-        <span className="text-secondary-700">문제 {String(question.no).padStart(2, '0')}.</span>
-        <span className="text-gray-700">{question.title}</span>
+      <div className="flex items-center gap-[12px] text-[16px] leading-[30px] font-medium">
+        <span className="text-secondary-700 tracking-normal">
+          문제 {String(question.no).padStart(2, '0')}.
+        </span>
+        <span className="tracking-[-0.02em] text-gray-700">{question.title}</span>
       </div>
 
-      <h1 className="mt-[16px] text-[20px] leading-[30px] font-bold tracking-normal text-gray-950">
+      <h1 className="mt-[40px] text-[20px] leading-[30px] font-bold tracking-[-0.04em] text-gray-950">
         {question.question}
       </h1>
 
@@ -192,7 +194,7 @@ export default function ProblemQuestionCard({
       )}
 
       {question.type === 'multipleChoice' && (
-        <ol className="mt-[36px] flex flex-col gap-[12px]">
+        <ol className="mt-[40px] flex flex-col gap-[16px]">
           {question.choices?.map((choice) => {
             const isSelected = choice.id === selectedChoiceId;
             const selectedTextClassName = isSubmitted ? 'text-success' : 'text-secondary-600';
@@ -206,7 +208,7 @@ export default function ProblemQuestionCard({
                   type="button"
                   disabled={isSubmitted}
                   className={cn(
-                    'flex items-center gap-[12px] text-[18px] leading-[24px] font-medium tracking-normal',
+                    'flex items-center gap-[12px] text-[20px] leading-[24px] font-medium tracking-normal',
                     isSelected ? selectedTextClassName : 'text-gray-900',
                   )}
                   onClick={() => {
@@ -280,7 +282,7 @@ export default function ProblemQuestionCard({
                     aria-hidden="true"
                     focusable="false"
                   />
-                  <span>정답</span>
+                  <span className="tracking-normal">정답</span>
                 </button>
 
                 <button
@@ -306,7 +308,7 @@ export default function ProblemQuestionCard({
                     aria-hidden="true"
                     focusable="false"
                   />
-                  <span>오답</span>
+                  <span className="tracking-normal">오답</span>
                 </button>
               </div>
             </>
@@ -341,10 +343,10 @@ export default function ProblemQuestionCard({
         {isSubmitted ? (
           <>
             <Button
-              variant="outlineLightGray"
+              variant="outline"
               size={54}
               width={110}
-              className="!border-secondary-600 gap-[12px] leading-[24px] !text-gray-700"
+              className="gap-[12px] leading-[24px]"
               onClick={handleRetry}
             >
               <ReturnIcon
@@ -373,10 +375,10 @@ export default function ProblemQuestionCard({
         ) : (
           <>
             <Button
-              variant="outlineLightGray"
+              variant="outline"
               size={54}
               width={110}
-              className="!border-secondary-600 gap-[12px] leading-[24px] !text-gray-700"
+              className="gap-[12px] leading-[24px]"
               onClick={() => {
                 setIsHintVisible(true);
               }}

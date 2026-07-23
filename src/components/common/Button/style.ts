@@ -14,6 +14,7 @@ const variantClassMap: Record<Exclude<ButtonVariant, 'circle'>, string> = {
   light: 'bg-secondary-400 text-gray-50',
 
   outline: 'border-2 border-secondary-200 bg-white text-gray-700',
+  outlinePrimary: 'border border-secondary-600 bg-white text-gray-950',
   outlineGray: 'border border-gray-500 bg-white text-gray-950',
   outlineLightGray: 'border border-gray-500 bg-white text-gray-600',
 
@@ -25,6 +26,7 @@ const variantDisabledClassMap: Record<Exclude<ButtonVariant, 'circle' | 'gray'>,
   light: 'bg-secondary-100 text-gray-50',
 
   outline: `border-2 ${outlineDisabled}`,
+  outlinePrimary: `border ${outlineDisabled}`,
   outlineGray: `border ${outlineDisabled}`,
   outlineLightGray: `border ${outlineDisabled}`,
 };

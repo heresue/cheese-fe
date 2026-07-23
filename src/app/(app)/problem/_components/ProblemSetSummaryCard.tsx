@@ -72,7 +72,7 @@ export default function ProblemSetSummaryCard({
           asChild
           size={46}
           width={128}
-          className="ml-[32px] shrink-0 gap-[16px] !text-[14px] leading-[24px]"
+          className="ml-[32px] shrink-0 gap-[16px] !text-[16px]"
         >
           <Link href={actionHref} onClick={onActionClick}>
             <ProblemActionIcon className="h-[16px] w-[16px] shrink-0" />

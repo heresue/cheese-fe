@@ -25,8 +25,8 @@ function TocDotLine() {
 
 export default function ProblemTocCard({ problemSetId, questions }: ProblemTocCardProps) {
   return (
-    <section className="bg-bg-white mt-[32px] h-[720px] w-[1060px] rounded-[15px] px-[40px] py-[40px]">
-      <h2 className="text-[24px] leading-[30px] font-bold text-gray-950">목차</h2>
+    <section className="bg-bg-white mt-[32px] h-[720px] w-[1060px] rounded-[15px] px-[40px] pt-[56px]">
+      <h2 className="ml-[20px] text-[24px] leading-[30px] font-bold text-gray-950">목차</h2>
 
       <div className="mt-[28px] h-px w-full bg-gray-300" />
 
@@ -44,7 +44,7 @@ export default function ProblemTocCard({ problemSetId, questions }: ProblemTocCa
               asChild
               size={46}
               width={114}
-              className="shrink-0 gap-[16px] !text-[14px] leading-[24px]"
+              className="shrink-0 gap-[16px] !text-[16px] leading-[30px]"
             >
               <Link href={`/problem/${problemSetId}/questions/${question.id}`}>
                 <ProblemActionIcon className="h-[16px] w-[16px] shrink-0" />

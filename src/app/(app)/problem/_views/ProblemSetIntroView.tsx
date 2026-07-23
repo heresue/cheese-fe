@@ -63,7 +63,7 @@ export default function ProblemSetIntroView({ problemSetId }: ProblemSetIntroVie
         }}
       />
 
-      <div className="h-[calc(100dvh-80px)] overflow-y-auto">
+      <div className="h-[calc(100dvh-80px)] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <div className="mx-auto w-[1060px] pt-[28px] pb-[68px]">
           <ProblemSetSummaryCard
             problemSetId={problemSetId}

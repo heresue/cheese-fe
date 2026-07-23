@@ -50,7 +50,9 @@ export default function ProblemSolvingHeader({
       )}
 
       <div className="flex h-full items-center gap-[24px]">
-        <span className="text-[24px] leading-[30px] font-medium text-gray-950">{elapsedTime}</span>
+        <span className="mr-[16px] text-[24px] leading-[30px] font-medium text-gray-950">
+          {elapsedTime}
+        </span>
 
         <div className="h-[50px] w-px bg-gray-300" />
 
