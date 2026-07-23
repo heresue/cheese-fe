@@ -44,16 +44,14 @@ export default function CalendarScreen() {
     updateEditDraft,
   } = useCalendarModal(screenRef);
 
+  const hasOpenPopover = Boolean(createPopover || editPopover);
+
   /**
    * 새 일정을 저장한다.
    * 제목이 비어 있으면 기존 동작과 동일하게 팝오버만 닫는다.
    */
   const handleCreateEvent = () => {
     if (!createPopover) return;
-    if (!createPopover.draft.title?.trim()) {
-      closeCreatePopover();
-      return;
-    }
 
     const newEvent = createCalendarEventFromDraft(createPopover.draft, crypto.randomUUID());
     if (!newEvent) {
@@ -131,6 +129,8 @@ export default function CalendarScreen() {
             view={view}
             events={events}
             selectedEventId={editPopover?.draft.id}
+            selectedCreateDraft={createPopover?.draft}
+            interactionLocked={hasOpenPopover}
             onTitleChange={setTitle}
             onClickDateCell={({ draft, rect, placement }) => {
               openCreatePopover({ draft, rect, placement });

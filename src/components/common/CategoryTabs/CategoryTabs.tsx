@@ -31,7 +31,7 @@ export function CategoryTabs<TValue extends string = string>({
               'flex shrink-0 items-center justify-center gap-3 rounded-[10px] border bg-white font-medium transition-colors',
               sizeClassName[size],
               isActive
-                ? 'border-secondary-600 text-secondary-700 [&_svg]:text-secondary-600 border-2 font-bold'
+                ? 'border-secondary-600 text-secondary-800 [&_svg]:text-secondary-600 border-2 font-bold'
                 : 'hover:border-secondary-600 hover:text-secondary-700 hover:[&_svg]:text-secondary-600 border-gray-400 text-gray-700 [&_svg]:text-gray-500',
             )}
           >
