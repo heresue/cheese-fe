@@ -20,11 +20,12 @@ import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 
 import type { JobPost } from '@/types/community';
+import type { ToggleJobPostLikeVariables } from '@/queries/community/useToggleJobPostLike';
 
 type JobPostCardProps = {
   post: JobPost;
   onDirectApply: () => void;
-  onToggleLike: (postId: number) => void;
+  onToggleLike: (variables: ToggleJobPostLikeVariables) => void;
 };
 
 export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPostCardProps) {
@@ -73,7 +74,10 @@ export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPo
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            onToggleLike(post.id);
+            onToggleLike({
+              postId: post.id,
+              isLiked: post.isLiked,
+            });
           }}
           className="flex h-10 min-w-[69px] items-center justify-center gap-1 rounded-[10px] border border-gray-500 px-3"
         >

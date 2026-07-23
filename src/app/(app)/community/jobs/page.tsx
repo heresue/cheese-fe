@@ -8,19 +8,19 @@ import JobPostCard from '@/components/community/jobs/JobPostCard';
 
 import ApplyModal from '../_components/ApplyModal';
 
-import { useLikeToggle } from '@/hooks/useLikeToggle';
-
 import { isCommunitySort } from '@/app/(app)/community/_constants/community';
 
 import { getJobPosts } from '@/api/mocks/community.api';
 import { communityQueryKeys } from '@/queries/community/communityQueryKeys';
+import { useToggleJobPostLike } from '@/queries/community/useToggleJobPostLike';
 
 import type { JobPost } from '@/types/community';
 
 export default function CommunityJobsPage() {
   const searchParams = useSearchParams();
-  // const { posts: jobPosts, toggleLike } = useLikeToggle(JOB_POSTS);
   const [selectedApplyPost, setSelectedApplyPost] = useState<JobPost | null>(null);
+
+  const { mutate: toggleJobPostLike } = useToggleJobPostLike();
 
   const sortParam = searchParams.get('sort');
   const sort = isCommunitySort(sortParam) ? sortParam : 'latest';
@@ -50,7 +50,7 @@ export default function CommunityJobsPage() {
           key={jobPost.id}
           post={jobPost}
           onDirectApply={() => setSelectedApplyPost(jobPost)}
-          // onToggleLike={toggleLike}
+          onToggleLike={toggleJobPostLike}
         />
       ))}
 

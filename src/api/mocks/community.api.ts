@@ -4,7 +4,9 @@ import { getDeadlineTime, isRecruitClosed } from '@/lib/formatDeadline';
 import type { JobPost } from '@/types/community';
 import type { CommunitySort } from '@/app/(app)/community/_constants/community';
 
-// 목록
+/* ================================
+     커뮤니티 목록
+   ================================ */
 
 export type GetJobPostsParams = {
   sort?: CommunitySort;
@@ -50,4 +52,42 @@ export async function getJobPosts({
   });
 
   return sortedPosts;
+}
+
+/* ================================
+     좋아요
+   ================================ */
+
+type LikeablePost = {
+  id: number;
+  isLiked: boolean;
+  likeCount: number;
+};
+
+function updatePostLike(posts: LikeablePost[], postId: number, nextIsLiked: boolean): void {
+  const postIndex = posts.findIndex((post) => post.id === postId);
+
+  if (postIndex === -1) {
+    throw new Error('게시글을 찾을 수 없습니다.');
+  }
+
+  const post = posts[postIndex];
+
+  if (post.isLiked === nextIsLiked) {
+    return;
+  }
+
+  posts[postIndex] = {
+    ...post,
+    isLiked: nextIsLiked,
+    likeCount: Math.max(0, post.likeCount + (nextIsLiked ? 1 : -1)),
+  };
+}
+
+export async function likeJobPost(postId: number): Promise<void> {
+  updatePostLike(jobPosts, postId, true);
+}
+
+export async function unlikeJobPost(postId: number): Promise<void> {
+  updatePostLike(jobPosts, postId, false);
 }
