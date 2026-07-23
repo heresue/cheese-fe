@@ -1,10 +1,14 @@
 import { getDeadlineTime, isRecruitClosed } from '@/lib/formatDeadline';
+import { getOptionLabel } from '@/lib/getOptionLabel';
 
-import type { GroupPost, JobPost } from '@/types/community';
-import type { CommunitySort } from '@/app/(app)/community/_constants/community';
+import type { GroupPost, JobPost, InfoPost } from '@/types/community';
+import {
+  INFO_SORT_OPTIONS,
+  type CommunitySort,
+  type InfoSort,
+} from '@/app/(app)/community/_constants/community';
 
-import { jobPosts } from '@/mocks/posts';
-import { groupPosts } from '@/mocks/posts';
+import { jobPosts, groupPosts, infoPosts } from '@/mocks/posts';
 
 /* ================================
      커뮤니티 목록
@@ -12,6 +16,11 @@ import { groupPosts } from '@/mocks/posts';
 
 export type GetCommunityPostsParams = {
   sort?: CommunitySort;
+  keyword?: string;
+};
+
+export type GetInfoPostsParams = {
+  sort?: InfoSort;
   keyword?: string;
 };
 
@@ -59,7 +68,7 @@ export async function getJobPosts({
 export async function getGroupPosts({
   sort = 'latest',
   keyword = '',
-}: GetCommunityPostsParams): Promise<GroupPost[]> {
+}: GetCommunityPostsParams = {}): Promise<GroupPost[]> {
   const normalizedKeyword = keyword.trim().toLowerCase();
 
   const filteredPosts = groupPosts.filter((post) => {
@@ -94,6 +103,37 @@ export async function getGroupPosts({
   });
 
   return sortedPosts;
+}
+
+export async function getInfoPosts({
+  sort = 'all',
+  keyword = '',
+}: GetInfoPostsParams = {}): Promise<InfoPost[]> {
+  const normalizedKeyword = keyword.trim().toLowerCase();
+
+  const filteredPosts = infoPosts.filter((post) => {
+    const matchesSort = sort === 'all' || post.category === sort;
+
+    if (!matchesSort) {
+      return false;
+    }
+
+    if (!normalizedKeyword) {
+      return true;
+    }
+
+    return (
+      post.title.toLowerCase().includes(normalizedKeyword) ||
+      post.content.toLowerCase().includes(normalizedKeyword) ||
+      post.author.nickname.toLowerCase().includes(normalizedKeyword) ||
+      getOptionLabel(INFO_SORT_OPTIONS, post.category).toLowerCase().includes(normalizedKeyword) ||
+      post.tags.some((tag) => tag.toLowerCase().includes(normalizedKeyword))
+    );
+  });
+
+  return [...filteredPosts].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 }
 
 /* ================================
@@ -140,4 +180,12 @@ export async function likeGroupPost(postId: number): Promise<void> {
 
 export async function unlikeGroupPost(postId: number): Promise<void> {
   updatePostLike(groupPosts, postId, false);
+}
+
+export async function likeInfoPost(postId: number): Promise<void> {
+  updatePostLike(infoPosts, postId, true);
+}
+
+export async function unlikeInfoPost(postId: number): Promise<void> {
+  updatePostLike(infoPosts, postId, false);
 }
