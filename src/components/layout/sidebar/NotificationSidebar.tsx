@@ -5,7 +5,7 @@ import { useMemo, useState, type MouseEvent } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-import PersonalProfileCard from '@/app/(app)/community/_components/ProfileCard/PersonalProfileCard';
+import PersonalProfileCardModal from '@/app/(app)/community/_components/ProfileCardModal/PersonalProfileCardModal';
 import DoubleArrowIcon from '@/assets/icons/problem/double-arrow.svg';
 import DeleteIcon from '@/assets/icons/sidebar/delete.svg';
 import MessageIcon from '@/assets/icons/sidebar/message.svg';
@@ -450,7 +450,7 @@ export function NotificationSidebar({ onClose }: NotificationSidebarProps) {
         {renderSection('읽음', readItems)}
       </div>
 
-      <PersonalProfileCard
+      <PersonalProfileCardModal
         isOpen={profileCardOpen}
         onClose={() => setProfileCardOpen(false)}
         profile={selectedProfile}

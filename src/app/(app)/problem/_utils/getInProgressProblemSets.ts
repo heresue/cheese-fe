@@ -11,7 +11,12 @@ export function isInProgressProblemSet(problemSet: ProblemSet) {
 export function getInProgressProblemSets(problemSets: ProblemSet[]) {
   return problemSets
     .filter(isInProgressProblemSet)
-    .sort((left, right) => right.lastProgressDate.localeCompare(left.lastProgressDate));
+    .sort((left, right) => {
+      const leftDate = left.lastProgressDate ?? '';
+      const rightDate = right.lastProgressDate ?? '';
+
+      return rightDate.localeCompare(leftDate);
+    });
 }
 
 export const PROBLEM_CARD_WIDTH = 231;
