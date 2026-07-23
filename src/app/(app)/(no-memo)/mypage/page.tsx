@@ -9,13 +9,14 @@ import CategoryTabs, { type CategoryTabItem } from '@/components/common/Category
 import PersonalProfiles from './_components/Profiles/PersonalProfiles';
 import CompanyProfiles from './_components/Profiles/CompanyProfiles';
 import AccountSettings from './_components/Profiles/AccountSettings';
-import MypageModalRenderer from './_components/Profiles/MypageModalRenderer';
+import MypageModalRenderer from './_components/Modal/MypageModalRenderer';
 import { useMypageModal } from './_components/Modal/useMypageModal';
 import ConfirmModal from './_components/Modal/ConfirmModal';
 
 import { CompanyIcon, PersonalIcon } from '@/assets/icons/settings';
 
-import type { ProfileType } from '@/types/profile';
+import type { ContactSettings, ProfileDocument, ProfileType } from '@/types/profile';
+import type { MypageItemField, MypageItemSection } from './_components/Modal/types';
 
 import { mockMypage } from '@/mocks/profile/userProfiles';
 
@@ -33,14 +34,13 @@ const PROFILE_SWITCH_OPTIONS: CategoryTabItem<ProfileType>[] = [
 ];
 
 export default function MyPage() {
+  const [mypage, setMypage] = useState(mockMypage);
   const [activeProfileType, setActiveProfileType] = useState<ProfileType>(
     mockMypage.activeProfileType,
   );
   const [pendingProfileType, setPendingProfileType] = useState<ProfileType | null>(null);
 
   const { editingItem, openModal, closeModal } = useMypageModal();
-
-  const mypage = mockMypage;
 
   const isPersonalProfile = activeProfileType === 'personal';
   const nextProfileLabel = PROFILE_SWITCH_OPTIONS.find(
@@ -80,6 +80,91 @@ export default function MyPage() {
     setPendingProfileType(null);
   };
 
+  const handleSaveMypageItem = (
+    section: MypageItemSection,
+    field: MypageItemField,
+    value: string | ProfileDocument | ContactSettings,
+  ) => {
+    console.log('저장값 확인:', { section, field, value });
+
+    if (section === 'accountAction') return;
+
+    setMypage((prev) => {
+      if (section === 'personalProfile') {
+        let nextValue: unknown = value;
+
+        if ((field === 'skills' || field === 'interests') && typeof value === 'string') {
+          nextValue = value
+            .split(',')
+            .map((item) => item.trim())
+            .filter(Boolean);
+        }
+
+        const personalField = field as keyof typeof prev.personalProfile;
+
+        return {
+          ...prev,
+          personalProfile: {
+            ...prev.personalProfile,
+            [personalField]: nextValue,
+          },
+        };
+      }
+
+      if (section === 'companyProfile') {
+        let nextValue: unknown = value;
+
+        if (field === 'industryType' && typeof value === 'string') {
+          nextValue = value
+            .split(',')
+            .map((item) => item.trim())
+            .filter(Boolean);
+        }
+
+        if (field === 'employeeCount' && typeof value === 'string') {
+          nextValue = Number(value.replace(/[^0-9]/g, ''));
+        }
+
+        const companyField = field as keyof typeof prev.companyProfile;
+
+        return {
+          ...prev,
+          companyProfile: {
+            ...prev.companyProfile,
+            [companyField]: nextValue,
+          },
+        };
+      }
+
+      if (section === 'accountSettings') {
+        if (field === 'contactMethod' && typeof value === 'object' && 'contactMethod' in value) {
+          return {
+            ...prev,
+            accountSettings: {
+              ...prev.accountSettings,
+              contactMethod: value.contactMethod,
+              contactUrl: value.contactUrl,
+            },
+          };
+        }
+
+        const accountField = field as keyof typeof prev.accountSettings;
+
+        return {
+          ...prev,
+          accountSettings: {
+            ...prev.accountSettings,
+            [accountField]: value,
+          },
+        };
+      }
+
+      return prev;
+    });
+
+    closeModal();
+  };
+
   return (
     <>
       <div className="flex flex-col gap-8">
@@ -115,7 +200,11 @@ export default function MyPage() {
 
           <AccountSettings profile={mypage.accountSettings} onOpenModal={openModal} />
 
-          <MypageModalRenderer editingItem={editingItem} onClose={closeModal} />
+          <MypageModalRenderer
+            editingItem={editingItem}
+            onClose={closeModal}
+            onSave={handleSaveMypageItem}
+          />
         </div>
       </div>
 

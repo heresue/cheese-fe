@@ -1,16 +1,26 @@
-import TextEditModal from '../Modal/TextEditModal';
-import DocumentEditModal from '../Modal/DocumentEditModal';
-import SelectEditModal from '../Modal/SelectEditModal';
-import ConfirmModal from '../Modal/ConfirmModal';
+import TextEditModal from './TextEditModal';
+import DocumentEditModal from './DocumentEditModal';
+import SelectEditModal from './SelectEditModal';
+import ConfirmModal from './ConfirmModal';
 
-import type { MypageModalItem } from '../Modal/types';
+import type { ContactSettings, ProfileDocument } from '@/types/profile';
+import type { MypageModalItem } from './types';
 
 type MypageModalRendererProps = {
   editingItem: MypageModalItem | null;
   onClose: () => void;
+  onSave: (
+    section: MypageModalItem['section'],
+    field: MypageModalItem['field'],
+    value: string | ProfileDocument | ContactSettings,
+  ) => void;
 };
 
-export default function MypageModalRenderer({ editingItem, onClose }: MypageModalRendererProps) {
+export default function MypageModalRenderer({
+  editingItem,
+  onClose,
+  onSave,
+}: MypageModalRendererProps) {
   if (!editingItem) return null;
 
   const modalKey = `${editingItem.modalType}-${editingItem.label}`;
@@ -20,9 +30,10 @@ export default function MypageModalRenderer({ editingItem, onClose }: MypageModa
   const isSelectModal = editingItem?.modalType === 'select';
   const isConfirmModal = editingItem?.modalType === 'confirm';
 
-  const hasOpenKakaoInput = editingItem?.label === '선호하는 연락방식';
-  const isLogout = isConfirmModal && editingItem.label === '로그아웃';
-  const isDeleteAccount = isConfirmModal && editingItem.label === '내 계정 삭제';
+  const hasOpenKakaoInput =
+    editingItem.section === 'accountSettings' && editingItem.field === 'contactMethod';
+  const isLogout = isConfirmModal && editingItem.field === 'logout';
+  const isDeleteAccount = isConfirmModal && editingItem.field === 'deleteAccount';
 
   const confirmModalTitle = isLogout
     ? '계정에서 로그아웃 하시겠습니까?'
@@ -51,6 +62,9 @@ export default function MypageModalRenderer({ editingItem, onClose }: MypageModa
             : undefined
         }
         onClose={onClose}
+        onSave={(value) => {
+          onSave(editingItem.section, editingItem.field, value);
+        }}
       />
     );
   }
@@ -64,6 +78,9 @@ export default function MypageModalRenderer({ editingItem, onClose }: MypageModa
         inputLabel={editingItem.label}
         document={editingItem.document}
         onClose={onClose}
+        onSave={(document) => {
+          onSave(editingItem.section, editingItem.field, document);
+        }}
       />
     );
   }
@@ -76,9 +93,13 @@ export default function MypageModalRenderer({ editingItem, onClose }: MypageModa
         title={`${editingItem.label} ${editingItem.buttonText}`}
         inputLabel={editingItem.label}
         value={editingItem.value}
+        contactUrl={editingItem.contactUrl}
         options={editingItem.options ?? []}
         hasOpenKakaoInput={hasOpenKakaoInput}
         onClose={onClose}
+        onSave={(value) => {
+          onSave(editingItem.section, editingItem.field, value);
+        }}
       />
     );
   }
@@ -95,11 +116,11 @@ export default function MypageModalRenderer({ editingItem, onClose }: MypageModa
         buttonClassName={confirmButtonClassName}
         onClose={onClose}
         onConfirm={() => {
-          if (editingItem.label === '로그아웃') {
+          if (editingItem.field === 'logout') {
             // TODO: 로그아웃
           }
 
-          if (editingItem.label === '내 계정 삭제') {
+          if (editingItem.field === 'deleteAccount') {
             // TODO: 계정 삭제
           }
 
