@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import CategoryTabs from '@/components/common/CategoryTabs';
 import ListFilterBar from '@/components/common/ListFilterBar';
+
 import { useSearchHistories } from '@/hooks/useSearchHistories';
 
 import { GroupBookmarkList, InfoBookmarkList, JobBookmarkList } from './_components';
@@ -114,25 +115,25 @@ export default function BookmarksPage() {
             className="gap-3"
           />
         )}
+
+        {activeBookmarkTab === 'jobs' && (
+          <div className="flex flex-col gap-5">
+            <JobBookmarkList sort={communitySort} keyword={bookmarkKeyword} />
+          </div>
+        )}
+
+        {activeBookmarkTab === 'groups' && (
+          <div className="">
+            <GroupBookmarkList sort={communitySort} keyword={bookmarkKeyword} />
+          </div>
+        )}
+
+        {activeBookmarkTab === 'info' && (
+          <div className="">
+            <InfoBookmarkList sort={infoSort} keyword={bookmarkKeyword} />
+          </div>
+        )}
       </section>
-
-      {activeBookmarkTab === 'jobs' && (
-        <div className="mt-5 flex flex-col gap-5">
-          <JobBookmarkList sort={communitySort} keyword={bookmarkKeyword} />
-        </div>
-      )}
-
-      {activeBookmarkTab === 'groups' && (
-        <div className="mt-5">
-          <GroupBookmarkList sort={communitySort} keyword={bookmarkKeyword} />
-        </div>
-      )}
-
-      {activeBookmarkTab === 'info' && (
-        <div className="mt-5">
-          <InfoBookmarkList sort={infoSort} keyword={bookmarkKeyword} />
-        </div>
-      )}
     </div>
   );
 }
