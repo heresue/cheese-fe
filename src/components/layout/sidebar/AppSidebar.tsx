@@ -166,8 +166,10 @@ export default function AppSidebar() {
       </aside>
 
       {isNotificationSidebarOpen ? (
-        <div className="fixed top-0 left-[260px] z-40 h-dvh">
-          <NotificationSidebar onClose={() => setIsNotificationSidebarOpen(false)} />
+        <div className="fixed top-0 left-[260px] z-40 h-dvh overflow-hidden">
+          <div className="h-full translate-x-0 transition-transform duration-200 ease-out">
+            <NotificationSidebar onClose={() => setIsNotificationSidebarOpen(false)} />
+          </div>
         </div>
       ) : null}
     </>
