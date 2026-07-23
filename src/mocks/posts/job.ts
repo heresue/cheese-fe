@@ -292,11 +292,10 @@ export const jobPosts: JobPost[] = [
     likeCount: 38,
 
     apply: {
-      type: 'homepage',
-      url: 'https://aws.amazon.com',
+      type: 'direct',
     },
 
     isLiked: true,
-    isApplied: false,
+    isApplied: true,
   },
 ];
