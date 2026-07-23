@@ -1,10 +1,12 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import JobPostCard from '@/components/community/jobs/JobPostCard';
+import ApplyModal from '@/app/(app)/community/_components/ApplyModal';
 
 import { useBookmarkedPosts } from '../hooks/useBookmarkedPosts';
 
-import { CommunitySort } from '@/app/(app)/community/_constants/community';
+import type { JobPost } from '@/types/community';
+import type { CommunitySort } from '@/app/(app)/community/_constants/community';
 
 import { jobPosts } from '@/mocks/posts';
 
@@ -18,6 +20,7 @@ type JobBookmarkListProps = {
 // 현재 화면에서는 목록을 유지하고,
 // 재조회(새로고침/재진입) 시 목록에서 제외되도록 처리
 export default function JobBookmarkList({ sort, keyword }: JobBookmarkListProps) {
+  const [selectedApplyPost, setSelectedApplyPost] = useState<JobPost | null>(null);
   const { bookmarkedPosts: bookmarkedJobPosts, toggleLike } = useBookmarkedPosts(jobPosts);
 
   const filteredJobPosts = useMemo(() => {
@@ -66,16 +69,18 @@ export default function JobBookmarkList({ sort, keyword }: JobBookmarkListProps)
 
   return (
     <>
-      {filteredJobPosts.map((post) => (
+      {filteredJobPosts.map((jobPost) => (
         <JobPostCard
-          key={post.id}
-          post={post}
+          key={jobPost.id}
+          post={jobPost}
           onToggleLike={handleToggleLike}
-          onDirectApply={() => {
-            // 모달 열기
-          }}
+          onDirectApply={() => setSelectedApplyPost(jobPost)}
         />
       ))}
+
+      {selectedApplyPost && (
+        <ApplyModal post={selectedApplyPost} isOpen onClose={() => setSelectedApplyPost(null)} />
+      )}
     </>
   );
 }
