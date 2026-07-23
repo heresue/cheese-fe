@@ -1,3 +1,8 @@
+type Option<T extends string> = {
+  label: string;
+  value: T;
+};
+
 /* ================================
      커뮤니티 탭
    ================================ */
@@ -10,7 +15,10 @@ export const COMMUNITY_CATEGORY_TABS = [
 /* ================================
      커뮤니티 필터
    ================================ */
-export const COMMUNITY_SORT_OPTIONS = [
+
+export type CommunitySort = 'latest' | 'deadline' | 'like';
+
+export const COMMUNITY_SORT_OPTIONS: Option<CommunitySort>[] = [
   { label: '최신순', value: 'latest' },
   { label: '마감일순', value: 'deadline' },
   { label: '좋아요순', value: 'like' },
@@ -22,6 +30,10 @@ export const INFO_SORT_OPTIONS = [
   { label: '정보글', value: 'info' },
   { label: '자료공유', value: 'resource' },
 ];
+
+export function isCommunitySort(value: string | null): value is CommunitySort {
+  return COMMUNITY_SORT_OPTIONS.some((option) => option.value === value);
+}
 
 /* ================================
      게시글 상세 페이지
