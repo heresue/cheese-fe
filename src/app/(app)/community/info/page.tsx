@@ -1,62 +1,49 @@
 'use client';
 
-import { useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 
 import InfoPostCard from '@/components/community/info';
 
-import { useLikeToggle } from '@/hooks/useLikeToggle';
+import { isInfoSort } from '../_constants/community';
 
-import { getOptionLabel } from '@/lib/getOptionLabel';
-
-import { INFO_SORT_OPTIONS } from '../_constants/community';
-
-import { infoPosts as INFO_POSTS } from '@/mocks/posts';
-
-type InfoCategoryValue = (typeof INFO_SORT_OPTIONS)[number]['value'];
+import { getInfoPosts } from '@/api/mocks/community.api';
+import { communityQueryKeys } from '@/queries/community/communityQueryKeys';
+import { useToggleInfoPostLike } from '@/queries/community/useToggleInfoPostLike';
 
 export default function CommunityInfoPage() {
   const searchParams = useSearchParams();
-  const { posts: infoPosts, toggleLike } = useLikeToggle(INFO_POSTS);
 
-  const category = (searchParams.get('sort') ?? 'all') as InfoCategoryValue;
+  const { mutate: toggleInfoPostLike } = useToggleInfoPostLike();
+
+  const sortParam = searchParams.get('sort');
+  const sort = isInfoSort(sortParam) ? sortParam : 'all';
   const keyword = searchParams.get('keyword') ?? '';
 
-  const filteredInfoPosts = useMemo(() => {
-    const normalizedKeyword = keyword.trim().toLowerCase();
+  const {
+    data: infoPosts = [],
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: communityQueryKeys.infoList({ sort, keyword }),
+    queryFn: () => getInfoPosts({ sort, keyword }),
+  });
 
-    return infoPosts
-      .filter((post) => {
-        const matchesCategory = category === 'all' || post.category === category;
+  if (isPending) {
+    return <div>불러오는 중입니다.</div>;
+  }
 
-        if (!matchesCategory) {
-          return false;
-        }
-
-        if (normalizedKeyword.length === 0) {
-          return true;
-        }
-
-        return (
-          post.title.toLowerCase().includes(normalizedKeyword) ||
-          post.content.toLowerCase().includes(normalizedKeyword) ||
-          post.author.nickname.toLowerCase().includes(normalizedKeyword) ||
-          getOptionLabel(INFO_SORT_OPTIONS, post.category)
-            .toLowerCase()
-            .includes(normalizedKeyword) ||
-          post.tags.some((tag) => tag.toLowerCase().includes(normalizedKeyword))
-        );
-      })
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }, [infoPosts, keyword, category]);
+  if (isError) {
+    return <div>정보/자료공유 게시글을 불러오지 못했습니다.</div>;
+  }
 
   return (
     <div className="mx-auto flex flex-col px-[50px]">
-      {filteredInfoPosts.map((infoPost) => (
+      {infoPosts.map((infoPost) => (
         <InfoPostCard
           key={infoPost.id}
           post={infoPost}
-          onToggleLike={toggleLike}
+          onToggleLike={toggleInfoPostLike}
           wrapperClassName="py-8"
         />
       ))}
