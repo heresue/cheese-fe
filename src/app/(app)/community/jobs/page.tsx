@@ -10,10 +10,12 @@ import ApplyModal from '../_components/ApplyModal';
 
 import { useLikeToggle } from '@/hooks/useLikeToggle';
 
+import { isCommunitySort } from '@/app/(app)/community/_constants/community';
+
 import { getJobPosts } from '@/api/mocks/community.api';
+import { communityQueryKeys } from '@/queries/community/communityQueryKeys';
 
 import type { JobPost } from '@/types/community';
-import { isCommunitySort } from '@/app/(app)/community/_constants/community';
 
 export default function CommunityJobsPage() {
   const searchParams = useSearchParams();
@@ -29,7 +31,7 @@ export default function CommunityJobsPage() {
     isPending,
     isError,
   } = useQuery({
-    queryKey: ['jobPosts', { sort, keyword }],
+    queryKey: communityQueryKeys.jobList({ sort, keyword }),
     queryFn: () => getJobPosts({ sort, keyword }),
   });
 
