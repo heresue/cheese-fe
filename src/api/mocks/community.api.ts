@@ -1,14 +1,16 @@
-import { jobPosts } from '@/mocks/posts';
 import { getDeadlineTime, isRecruitClosed } from '@/lib/formatDeadline';
 
-import type { JobPost } from '@/types/community';
+import type { GroupPost, JobPost } from '@/types/community';
 import type { CommunitySort } from '@/app/(app)/community/_constants/community';
+
+import { jobPosts } from '@/mocks/posts';
+import { groupPosts } from '@/mocks/posts';
 
 /* ================================
      커뮤니티 목록
    ================================ */
 
-export type GetJobPostsParams = {
+export type GetCommunityPostsParams = {
   sort?: CommunitySort;
   keyword?: string;
 };
@@ -16,7 +18,7 @@ export type GetJobPostsParams = {
 export async function getJobPosts({
   sort = 'latest',
   keyword = '',
-}: GetJobPostsParams = {}): Promise<JobPost[]> {
+}: GetCommunityPostsParams = {}): Promise<JobPost[]> {
   const normalizedKeyword = keyword.trim().toLowerCase();
 
   const filteredPosts = jobPosts.filter((post) => {
@@ -49,6 +51,46 @@ export async function getJobPosts({
     }
 
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
+  return sortedPosts;
+}
+
+export async function getGroupPosts({
+  sort = 'latest',
+  keyword = '',
+}: GetCommunityPostsParams): Promise<GroupPost[]> {
+  const normalizedKeyword = keyword.trim().toLowerCase();
+
+  const filteredPosts = groupPosts.filter((post) => {
+    if (!normalizedKeyword) {
+      return true;
+    }
+
+    return (
+      post.title.toLowerCase().includes(normalizedKeyword) ||
+      post.author.nickname.toLowerCase().includes(normalizedKeyword) ||
+      post.field.some((field) => field.toLowerCase().includes(normalizedKeyword))
+    );
+  });
+
+  const sortedPosts = [...filteredPosts].sort((a, b) => {
+    if (sort === 'like') {
+      return b.likeCount - a.likeCount;
+    }
+
+    if (sort === 'deadline') {
+      const aClosed = isRecruitClosed(a.deadline);
+      const bClosed = isRecruitClosed(b.deadline);
+
+      if (aClosed !== bClosed) {
+        return aClosed ? 1 : -1;
+      }
+
+      return getDeadlineTime(a.deadline) - getDeadlineTime(b.deadline);
+    }
+
+    return b.id - a.id;
   });
 
   return sortedPosts;
@@ -90,4 +132,12 @@ export async function likeJobPost(postId: number): Promise<void> {
 
 export async function unlikeJobPost(postId: number): Promise<void> {
   updatePostLike(jobPosts, postId, false);
+}
+
+export async function likeGroupPost(postId: number): Promise<void> {
+  updatePostLike(groupPosts, postId, true);
+}
+
+export async function unlikeGroupPost(postId: number): Promise<void> {
+  updatePostLike(groupPosts, postId, false);
 }
