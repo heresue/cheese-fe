@@ -67,7 +67,7 @@ export default function DashboardInterviewPractice() {
 
   return (
     <section className="mb-10">
-      <DashboardSectionHeader icon={<ProblemSolvingIcon />} title="면접 연습" />
+      <DashboardSectionHeader icon={<ProblemSolvingIcon />} title="문제풀이" />
 
       {practiceSets.length > 0 ? (
         <div className="group relative w-full">
@@ -88,7 +88,7 @@ export default function DashboardInterviewPractice() {
 
           {canGoPrev ? (
             <CarouselNavButton
-              label="이전 면접 연습 보기"
+              label="이전 문제풀이 보기"
               direction="left"
               onClick={handlePrev}
               className="left-0"
@@ -97,7 +97,7 @@ export default function DashboardInterviewPractice() {
 
           {canGoNext ? (
             <CarouselNavButton
-              label="다음 면접 연습 보기"
+              label="다음 문제풀이 보기"
               direction="right"
               onClick={handleNext}
               className="right-0"
@@ -105,16 +105,16 @@ export default function DashboardInterviewPractice() {
           ) : null}
         </div>
       ) : (
-        <div className="border-border flex min-h-[188px] flex-col items-center justify-center rounded-[10px] border bg-white p-8 text-center">
+        <div className="flex min-h-[188px] flex-col items-center justify-center rounded-[10px] border border-gray-200 bg-white p-8 text-center">
           <p className="text-dashboard-gray text-[14px] leading-[22px] font-medium">
-            진행 중인 면접 연습이 없습니다.
+            진행 중인 문제풀이가 없습니다.
           </p>
 
           <Link
             href="/problem"
             className="text-dashboard-navy mt-3 text-[14px] leading-[22px] font-medium hover:underline"
           >
-            면접 연습 시작하기
+            문제풀이 시작하기
           </Link>
         </div>
       )}

@@ -1,22 +1,21 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 
 import {
-  getNearestUpcomingWeekdayLabel,
+  getBusiestWeekdayLabel,
   getThisWeekRemainingEvents,
 } from '@/app/(app)/calendar/_lib/dashboard-events';
 import { useCalendarStore } from '@/app/(app)/calendar/_store/CalendarStoreProvider';
 import { getMockPersonalProfile } from '@/mocks/profile/userProfiles';
-
-import Image from 'next/image';
 
 export default function DashboardGreetingSection() {
   const profile = getMockPersonalProfile(1);
   const { events } = useCalendarStore();
 
   const remainingThisWeek = getThisWeekRemainingEvents(events).length;
-  const nearestWeekday = getNearestUpcomingWeekdayLabel(events);
+  const busiestWeekday = getBusiestWeekdayLabel(events);
 
   return (
     <section className="mb-10 flex flex-col items-center text-center">
@@ -39,9 +38,9 @@ export default function DashboardGreetingSection() {
       </div>
 
       <p className="text-dashboard-gray text-[14px] leading-[22px] font-medium">
-        {nearestWeekday ? (
+        {busiestWeekday ? (
           <Link href="/calendar" className="hover:text-dashboard-navy hover:underline">
-            가장 가까운 일정이 있는 날은 {nearestWeekday}이에요
+            이 주에 가장 많은 일정이 있는 날은 {busiestWeekday}이에요
           </Link>
         ) : (
           <Link href="/calendar" className="hover:text-dashboard-navy hover:underline">

@@ -82,20 +82,68 @@ export function getThisWeekRemainingEvents(events: CalendarEvent[]) {
   });
 }
 
-export function getNearestUpcomingWeekdayLabel(events: CalendarEvent[]) {
-  const nearestEvent = getUpcomingEvents(events, 1)[0];
+export function getThisWeekEvents(events: CalendarEvent[]) {
+  const todayStart = getStartOfToday();
+  const dayOfWeek = todayStart.getDay();
+  const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  const weekStart = new Date(todayStart);
+  weekStart.setDate(weekStart.getDate() - daysFromMonday);
+  weekStart.setHours(0, 0, 0, 0);
 
-  if (!nearestEvent) {
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 6);
+  weekEnd.setHours(23, 59, 59, 999);
+
+  return events.filter((event) => {
+    const start = parseCalendarDate(event.start);
+
+    if (!start) {
+      return false;
+    }
+
+    return start >= weekStart && start <= weekEnd;
+  });
+}
+
+export function getBusiestWeekdayLabel(events: CalendarEvent[]) {
+  const weekEvents = getThisWeekEvents(events);
+
+  if (weekEvents.length === 0) {
     return null;
   }
 
-  const start = parseCalendarDate(nearestEvent.start);
+  const counts = new Map<number, number>();
 
-  if (!start) {
+  for (const event of weekEvents) {
+    const start = parseCalendarDate(event.start);
+
+    if (!start) {
+      continue;
+    }
+
+    const weekday = start.getDay();
+    counts.set(weekday, (counts.get(weekday) ?? 0) + 1);
+  }
+
+  let busiestWeekday = -1;
+  let maxCount = 0;
+
+  for (const [weekday, count] of counts) {
+    if (count > maxCount) {
+      maxCount = count;
+      busiestWeekday = weekday;
+    }
+  }
+
+  if (busiestWeekday < 0) {
     return null;
   }
 
-  return new Intl.DateTimeFormat('ko-KR', { weekday: 'long' }).format(start);
+  const sampleDate = new Date();
+  const currentWeekday = sampleDate.getDay();
+  sampleDate.setDate(sampleDate.getDate() + (busiestWeekday - currentWeekday));
+
+  return new Intl.DateTimeFormat('ko-KR', { weekday: 'long' }).format(sampleDate);
 }
 
 export function formatDashboardDeadlineLabel(event: CalendarEvent) {

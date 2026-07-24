@@ -25,14 +25,8 @@ export default function DashboardEventCard({ event }: DashboardEventCardProps) {
   return (
     <Link
       href="/calendar"
-      className="border-border hover:border-secondary-600 relative flex min-h-[188px] w-full flex-col overflow-hidden rounded-[10px] border bg-white p-5 transition-colors"
+      className="border-border hover:border-secondary-600 flex min-h-[188px] w-full flex-col rounded-[10px] border bg-white p-5 transition-colors"
     >
-      <span
-        aria-hidden="true"
-        className="absolute inset-y-0 left-0 w-[6px]"
-        style={{ backgroundColor: colorTokens.selectedBg }}
-      />
-
       <div className="mb-4 flex items-start justify-between gap-3">
         <Chip variant={categoryMeta.chipVariant} size="sm">
           {categoryMeta.label}
@@ -61,11 +55,17 @@ export default function DashboardEventCard({ event }: DashboardEventCardProps) {
       ) : null}
 
       {event.memo ? (
-        <div className="bg-bg-2 mt-auto flex items-center gap-2 rounded-[6px] px-3 py-2">
-          <span className="text-dashboard-sky text-[12px] leading-none" aria-hidden="true">
+        <div
+          className="mt-auto flex items-center gap-2 rounded-[6px] px-3 py-2"
+          style={{
+            backgroundColor: colorTokens.defaultBg,
+            border: `1px solid ${colorTokens.defaultBorder}`,
+          }}
+        >
+          <span className="text-[12px] leading-none" aria-hidden="true">
             📝
           </span>
-          <p className="text-dashboard-gray truncate text-[12px] leading-[18px] font-medium">
+          <p className="truncate text-[12px] leading-[18px] font-medium text-gray-800">
             {event.memo}
           </p>
         </div>
