@@ -30,7 +30,7 @@ export default function NewPasswordStep({ onComplete }: NewPasswordStepProps) {
         />
       </div>
 
-      <Button type="button" onClick={onComplete}>
+      <Button variant="light" type="button" onClick={onComplete}>
         변경 완료
       </Button>
     </div>

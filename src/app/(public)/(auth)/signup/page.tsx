@@ -90,7 +90,9 @@ export default function SignupPage() {
           </div>
         </div>
 
-        <Button type="submit">회원가입</Button>
+        <Button variant="light" type="submit">
+          회원가입
+        </Button>
       </form>
 
       <EmailVerifyModal title="아이디 (이메일) 입력" isOpen={isVerifyOpen} onClose={closeVerify} />

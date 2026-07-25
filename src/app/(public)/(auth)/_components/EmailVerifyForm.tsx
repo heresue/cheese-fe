@@ -67,8 +67,8 @@ export default function EmailVerifyForm({ title, description, onNext }: EmailVer
           rightAddon={
             <InputActionButton
               type="button"
-              disabled={!isSent || isVerified}
               onClick={handleVerify}
+              disabled={!isSent || isVerified}
             >
               인증하기
             </InputActionButton>
@@ -81,11 +81,11 @@ export default function EmailVerifyForm({ title, description, onNext }: EmailVer
         )}
 
         <Button
+          variant="light"
           type="button"
           aria-label="다음"
-          disabled={!isVerified}
           onClick={onNext}
-          className="tracking-normal"
+          disabled={!isVerified}
         >
           다음
         </Button>
