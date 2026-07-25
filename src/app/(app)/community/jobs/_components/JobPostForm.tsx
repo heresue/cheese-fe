@@ -5,12 +5,7 @@ import { useState } from 'react';
 import { Input } from '@/components/common/Input';
 import DatePicker from '@/components/common/DatePicker/DatePicker';
 
-import {
-  CommunityPostForm,
-  FormDropdown,
-  FormField,
-  POST_INPUT_CLASS,
-} from '../../_components/CommunityPostForm';
+import { CommunityPostForm, FormDropdown, FormField } from '../../_components/CommunityPostForm';
 
 import {
   CAREER_OPTIONS,
@@ -90,9 +85,8 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
             name="title"
             placeholder="제목 입력"
             defaultValue={initialValues?.title ?? ''}
-            className={POST_INPUT_CLASS}
+            className="h-[30px]"
             inputClassName="font-medium"
-            hideMessageSpace
           />
         </FormField>
 
@@ -119,9 +113,8 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
               name="location"
               placeholder="근무 지역 입력"
               defaultValue={initialValues?.location ?? ''}
-              className={POST_INPUT_CLASS}
+              className="h-[30px]"
               inputClassName="font-medium"
-              hideMessageSpace
             />
           </FormField>
 
@@ -139,9 +132,8 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
               name="skills"
               placeholder="예) React, TypeScript"
               defaultValue={initialValues?.skills?.join(', ') ?? ''}
-              className={POST_INPUT_CLASS}
+              className="h-[30px]"
               inputClassName="font-medium"
-              hideMessageSpace
             />
           </FormField>
 
@@ -150,7 +142,7 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
               value={date}
               onChange={setDate}
               formatDisplayValue={(value) => value.replaceAll('-', '. ')}
-              buttonClassName={cn('border-b border-gray-400', POST_INPUT_CLASS)}
+              buttonClassName="border-b border-gray-400 h-[30px] focus-within:border-secondary-600 focus-within:border-b-2"
             />
           </FormField>
 
@@ -161,8 +153,7 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
               type="url"
               placeholder="URL 입력"
               defaultValue={applyUrl}
-              className={POST_INPUT_CLASS}
-              hideMessageSpace
+              className="h-[30px]"
             />
           </FormField>
         </div>

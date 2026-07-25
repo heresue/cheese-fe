@@ -68,7 +68,7 @@ export default function DocumentEditModal({
             value={fileName}
             readOnly
             placeholder="파일 첨부"
-            hideMessageSpace
+            className="h-10 px-2"
             inputClassName="cursor-default truncate"
             onClick={handleFileButtonClick}
             rightAddon={
@@ -91,7 +91,7 @@ export default function DocumentEditModal({
           label={`${inputLabel} URL`}
           placeholder="URL 입력"
           value={url}
-          // hideMessageSpace
+          className="h-10 px-2"
           onChange={(e) => setUrl(e.target.value)}
         />
       </form>

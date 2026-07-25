@@ -37,30 +37,33 @@ export default function EmailVerifyForm({ title, description, onNext }: EmailVer
 
   return (
     <div>
-      {title && <h2 className="pb-10 text-[20px] font-bold">{title}</h2>}
+      {title && <h2 className="pb-10 text-[20px] font-bold tracking-normal">{title}</h2>}
 
       <form className="flex flex-col gap-5">
         <Input
           label="아이디"
-          placeholder="아이디 (이메일) 입력"
-          type="email"
           name="email"
+          type="email"
+          placeholder="아이디 (이메일) 입력"
           disabled={isSent}
+          errorMessage={status === 'SEND_ERROR' ? '이메일 형식이 올바르지 않습니다' : undefined}
           rightAddon={
             <InputActionButton type="button" onClick={handleSend}>
               {status === 'IDLE' ? '메일발송' : '재발송'}
             </InputActionButton>
           }
-          errorMessage={status === 'SEND_ERROR' ? '이메일 형식이 올바르지 않습니다' : undefined}
+          className="h-10 px-2 tracking-normal"
         />
 
         <Input
           label="아이디 인증번호"
-          placeholder="인증번호 입력"
+          name="verificationCode"
           type="text"
           inputMode="numeric"
-          name="verificationCode"
+          placeholder="인증번호 입력"
           disabled={!isSent || isVerified}
+          errorMessage={status === 'VERIFY_ERROR' ? '인증번호가 올바르지 않습니다' : undefined}
+          successMessage={status === 'VERIFIED' ? '인증번호가 일치합니다' : undefined}
           rightAddon={
             <InputActionButton
               type="button"
@@ -70,15 +73,20 @@ export default function EmailVerifyForm({ title, description, onNext }: EmailVer
               인증하기
             </InputActionButton>
           }
-          errorMessage={status === 'VERIFY_ERROR' ? '인증번호가 올바르지 않습니다' : undefined}
-          successMessage={status === 'VERIFIED' ? '인증번호가 일치합니다' : undefined}
+          className="h-10 px-2 tracking-normal"
         />
 
         {description && (
           <div className="text-text-muted text-xs leading-relaxed">{description}</div>
         )}
 
-        <Button type="button" aria-label="다음" disabled={!isVerified} onClick={onNext}>
+        <Button
+          type="button"
+          aria-label="다음"
+          disabled={!isVerified}
+          onClick={onNext}
+          className="tracking-normal"
+        >
           다음
         </Button>
       </form>

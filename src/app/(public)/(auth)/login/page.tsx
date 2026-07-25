@@ -22,17 +22,26 @@ export default function LoginPage() {
     <div>
       <form className="flex flex-col gap-5 pb-10" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-5">
-          <Input label="아이디" placeholder="아이디" type="email" name="email" />
+          <Input
+            label="아이디"
+            name="email"
+            type="email"
+            placeholder="아이디"
+            className="h-10 px-2 tracking-normal"
+          />
           <Input
             label="비밀번호"
-            placeholder="비밀번호"
-            type="password"
             name="password"
+            type="password"
+            placeholder="비밀번호"
             errorMessage="아이디 또는 비밀번호가 일치하지 않습니다"
+            className="h-10 px-2 tracking-normal"
           />
         </div>
 
-        <Button type="submit">로그인</Button>
+        <Button type="submit" className="tracking-normal">
+          로그인
+        </Button>
 
         <div className="flex justify-evenly text-gray-600">
           <Link href="/signup">회원가입</Link>

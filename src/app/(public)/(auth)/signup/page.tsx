@@ -26,36 +26,40 @@ export default function SignupPage() {
         <div className="flex flex-col gap-5">
           <Input
             label="닉네임"
-            placeholder="닉네임 입력"
-            type="text"
             name="nickname"
-            rightAddon={<InputActionButton>중복확인</InputActionButton>}
+            type="text"
+            placeholder="닉네임 입력"
             errorMessage={'중복된 닉네임이 있습니다'}
             successMessage={'사용가능한 닉네임 입니다'}
+            rightAddon={<InputActionButton>중복확인</InputActionButton>}
+            className="h-10 px-2 tracking-normal"
           />
           <Input
-            label="아이디"
-            placeholder="아이디 (이메일) 입력"
-            type="email"
-            name="email"
             readOnly
-            rightAddon={<InputActionButton onClick={openVerify}>입력하기</InputActionButton>}
+            label="아이디"
+            name="email"
+            type="email"
+            placeholder="아이디 (이메일) 입력"
             successMessage={'사용가능'}
+            rightAddon={<InputActionButton onClick={openVerify}>입력하기</InputActionButton>}
+            className="h-10 px-2 tracking-normal"
           />
           <Input
             label="비밀번호"
-            placeholder="비밀번호 입력"
-            type="password"
             name="password"
+            type="password"
+            placeholder="비밀번호 입력"
             errorMessage={'영문, 숫자, 특수문자를 포함하여 8자 이상이어야 합니다'}
+            className="h-10 px-2 tracking-normal"
           />
           <Input
             label="비밀번호 확인"
-            placeholder="비밀번호 재입력"
-            type="password"
             name="passwordConfirm"
+            type="password"
+            placeholder="비밀번호 재입력"
             errorMessage="비밀번호가 일치하지 않습니다"
             successMessage={'비밀번호가 일치합니다.'}
+            className="h-10 px-2 tracking-normal"
           />
 
           <div

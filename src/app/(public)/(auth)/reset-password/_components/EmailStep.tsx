@@ -11,15 +11,16 @@ export default function EmailStep({ onNext }: EmailStepProps) {
 
       <Input
         label="아이디"
-        placeholder="이메일 입력"
-        type="email"
         name="email"
+        type="email"
+        placeholder="이메일 입력"
+        errorMessage={'이메일이 올바르지 않습니다'}
         rightAddon={
           <InputActionButton type="button" onClick={onNext}>
             메일발송
           </InputActionButton>
         }
-        errorMessage={'이메일이 올바르지 않습니다'}
+        className="h-10 px-2 tracking-normal"
       />
     </div>
   );

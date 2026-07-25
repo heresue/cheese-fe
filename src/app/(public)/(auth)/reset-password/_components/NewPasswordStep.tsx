@@ -13,18 +13,20 @@ export default function NewPasswordStep({ onComplete }: NewPasswordStepProps) {
       <div className="flex flex-col gap-5">
         <Input
           label="새로운 비밀번호"
-          placeholder="새로운 비밀번호 (영문,숫자,특수문자 포함 8자)"
-          type="password"
           name="newPassword"
+          type="password"
+          placeholder="새로운 비밀번호 (영문,숫자,특수문자 포함 8자)"
           errorMessage={'영문, 숫자, 특수문자를 포함하여 8자 이상이어야합니다.'}
+          className="h-10 px-2 tracking-normal"
         />
         <Input
           label="새로운 비밀번호 확인"
-          placeholder="비밀번호 재입력"
-          type="password"
           name="newPasswordConfirm"
+          type="password"
+          placeholder="비밀번호 재입력"
           errorMessage={'비밀번호가 일치하지 않습니다.'}
           successMessage={'비밀번호가 일치합니다'}
+          className="h-10 px-2 tracking-normal"
         />
       </div>
 

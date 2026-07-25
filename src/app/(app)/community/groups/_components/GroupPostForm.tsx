@@ -5,12 +5,7 @@ import { useState } from 'react';
 import { Input } from '@/components/common/Input';
 import DatePicker from '@/components/common/DatePicker/DatePicker';
 
-import {
-  CommunityPostForm,
-  FormDropdown,
-  FormField,
-  POST_INPUT_CLASS,
-} from '../../_components/CommunityPostForm';
+import { CommunityPostForm, FormDropdown, FormField } from '../../_components/CommunityPostForm';
 
 import { cn } from '@/lib/cn';
 import { toFieldArray, toFieldSelectValue, type FieldSelectValue } from '@/lib/jobField';
@@ -76,9 +71,8 @@ export default function GroupPostForm({ mode, initialValues }: GroupPostFormProp
             name="title"
             placeholder="제목 입력"
             defaultValue={initialValues?.title ?? ''}
-            className={POST_INPUT_CLASS}
+            className="h-[30px]"
             inputClassName="font-medium"
-            hideMessageSpace
           />
         </FormField>
 
@@ -105,9 +99,8 @@ export default function GroupPostForm({ mode, initialValues }: GroupPostFormProp
               name="period"
               placeholder="예상 기간 입력"
               defaultValue={initialValues?.expectedPeriod ?? ''}
-              className={POST_INPUT_CLASS}
+              className="h-[30px]"
               inputClassName="font-medium"
-              hideMessageSpace
             />
           </FormField>
 
@@ -117,32 +110,30 @@ export default function GroupPostForm({ mode, initialValues }: GroupPostFormProp
               name="skills"
               placeholder="예) React, TypeScript"
               defaultValue={initialValues?.skills?.join(', ') ?? ''}
-              className={POST_INPUT_CLASS}
+              className="h-[30px]"
               inputClassName="font-medium"
-              hideMessageSpace
             />
           </FormField>
 
           <FormField label="모집 인원" labelClassName="text-[14px]">
             <Input
               label="모집 인원"
+              name="recruitCount"
               type="number"
               min={1}
-              name="recruitCount"
               placeholder="모집 인원 입력"
               defaultValue={initialValues?.recruitCount ?? ''}
-              className={POST_INPUT_CLASS}
+              className="h-[30px]"
               inputClassName="font-medium"
-              hideMessageSpace
             />
           </FormField>
 
           <FormField label="지원 마감일" labelClassName="text-[14px]">
             <DatePicker
               value={date}
-              onChange={setDate}
               formatDisplayValue={(value) => value.replaceAll('-', '. ')}
-              buttonClassName={cn('border-b border-gray-400', POST_INPUT_CLASS)}
+              onChange={setDate}
+              buttonClassName="border-b border-gray-400 h-[30px] focus-within:border-secondary-600 focus-within:border-b-2"
             />
           </FormField>
         </div>
