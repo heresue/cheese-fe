@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import { Input, InputActionButton } from '@/components/common/Input';
 import { Button } from '@/components/common/Button';
-import { Checkbox } from '@/components/common/Checkbox';
-import Chevron from '@/assets/icons/common/chevron.svg';
+
 import TermsModal from './_components/TermsModal';
 import EmailVerifyModal from '../_components/EmailVerifyModal';
+
+import CheckIcon from '@/assets/icons/common/check.svg';
+import Chevron from '@/assets/icons/common/chevron.svg';
 
 export default function SignupPage() {
   const [isVerifyOpen, setIsVerifyOpen] = useState(false);
@@ -68,10 +70,17 @@ export default function SignupPage() {
             onClick={openTerms}
             className="flex w-full cursor-pointer items-center justify-between"
           >
-            <div className="flex items-center gap-2">
-              <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
-                <Checkbox name="terms" required />
-              </div>
+            <div className="flex items-center gap-1">
+              <label
+                className="flex w-fit cursor-pointer items-center gap-1 select-none"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <input required type="checkbox" className="peer sr-only" />
+                <span className="border-primary-700 peer-checked:bg-secondary-400 relative inline-flex h-5 w-5 items-center justify-center rounded-xs border peer-checked:border-0 peer-checked:[&>svg]:opacity-100">
+                  <CheckIcon className="h-3 w-3 text-gray-50 opacity-0 transition-opacity" />
+                </span>
+              </label>
+
               <span className="text-sm">치즈 이용약관 동의</span>
             </div>
 
