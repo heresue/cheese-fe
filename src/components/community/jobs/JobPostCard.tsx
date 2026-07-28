@@ -20,12 +20,12 @@ import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 
 import type { JobPost } from '@/types/community';
-import type { ToggleJobPostLikeVariables } from '@/queries/community/useToggleJobPostLike';
+import type { TogglePostLikeParams } from '@/types/community';
 
 type JobPostCardProps = {
   post: JobPost;
   onDirectApply: () => void;
-  onToggleLike: (variables: ToggleJobPostLikeVariables) => void;
+  onToggleLike: (variables: TogglePostLikeParams) => void;
 };
 
 export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPostCardProps) {

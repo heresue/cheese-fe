@@ -3,16 +3,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { likeInfoPost, unlikeInfoPost } from '@/api/mocks/community.api';
 import { communityQueryKeys } from './communityQueryKeys';
 
-export type ToggleInfoPostLikeVariables = {
-  postId: number;
-  isLiked: boolean;
-};
+import type { TogglePostLikeParams } from '@/types/community';
 
 export function useToggleInfoPostLike() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ postId, isLiked }: ToggleInfoPostLikeVariables) => {
+    mutationFn: async ({ postId, isLiked }: TogglePostLikeParams) => {
       return isLiked ? unlikeInfoPost(postId) : likeInfoPost(postId);
     },
 
