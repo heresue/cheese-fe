@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import ProfileImage from '@/components/common/ProfileImage';
 import { Button } from '@/components/common/Button';
@@ -40,7 +40,27 @@ export default function MyPage() {
   );
   const [pendingProfileType, setPendingProfileType] = useState<ProfileType | null>(null);
 
+  const previewImageUrlsRef = useRef<Record<ProfileType, string | null>>({
+    personal: null,
+    company: null,
+  });
+
   const { editingItem, openModal, closeModal } = useMypageModal();
+
+  useEffect(() => {
+    return () => {
+      Object.values(previewImageUrlsRef.current).forEach((url) => {
+        if (url) {
+          URL.revokeObjectURL(url);
+        }
+      });
+
+      previewImageUrlsRef.current = {
+        personal: null,
+        company: null,
+      };
+    };
+  }, []);
 
   const isPersonalProfile = activeProfileType === 'personal';
   const nextProfileLabel = PROFILE_SWITCH_OPTIONS.find(
@@ -85,7 +105,14 @@ export default function MyPage() {
 
     if (!file) return;
 
+    const previousUrl = previewImageUrlsRef.current[activeProfileType];
+
+    if (previousUrl) {
+      URL.revokeObjectURL(previousUrl);
+    }
+
     const imageUrl = URL.createObjectURL(file);
+    previewImageUrlsRef.current[activeProfileType] = imageUrl;
 
     setMypage((prev) => {
       if (activeProfileType === 'personal') {
