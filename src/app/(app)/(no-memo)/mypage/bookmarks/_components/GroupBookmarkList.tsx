@@ -4,7 +4,8 @@ import GroupPostCard from '@/components/community/groups';
 
 import { useBookmarkedPosts } from '../hooks/useBookmarkedPosts';
 
-import { CommunitySort } from '@/app/(app)/community/_constants/community';
+import type { CommunitySort } from '@/app/(app)/community/_constants/community';
+import type { TogglePostLikeParams } from '@/types/community/community';
 
 import { groupPosts } from '@/mocks/posts';
 
@@ -61,7 +62,7 @@ export default function GroupBookmarkList({ sort, keyword }: GroupBookmarkListPr
     });
   }, [bookmarkedGroupPosts, sort, keyword]);
 
-  const handleToggleLike = ({ postId }: { postId: number; isLiked: boolean }) => {
+  const handleToggleLike = ({ postId }: TogglePostLikeParams) => {
     toggleLike(postId);
   };
 

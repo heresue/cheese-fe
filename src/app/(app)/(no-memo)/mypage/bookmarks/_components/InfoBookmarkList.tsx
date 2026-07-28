@@ -4,7 +4,8 @@ import InfoPostCard from '@/components/community/info';
 
 import { useBookmarkedPosts } from '../hooks/useBookmarkedPosts';
 
-import { InfoSort } from '@/app/(app)/community/_constants/community';
+import type { InfoSort } from '@/app/(app)/community/_constants/community';
+import type { TogglePostLikeParams } from '@/types/community/community';
 
 import { infoPosts } from '@/mocks/posts';
 
@@ -42,7 +43,7 @@ export default function InfoBookmarkList({ sort, keyword }: InfoBookmarkListProp
     });
   }, [bookmarkedInfoPosts, sort, keyword]);
 
-  const handleToggleLike = ({ postId }: { postId: number; isLiked: boolean }) => {
+  const handleToggleLike = ({ postId }: TogglePostLikeParams) => {
     toggleLike(postId);
   };
 

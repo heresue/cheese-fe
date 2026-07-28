@@ -7,6 +7,7 @@ import { useBookmarkedPosts } from '../hooks/useBookmarkedPosts';
 
 import type { JobPost } from '@/types/community';
 import type { CommunitySort } from '@/app/(app)/community/_constants/community';
+import type { TogglePostLikeParams } from '@/types/community/community';
 
 import { jobPosts } from '@/mocks/posts';
 
@@ -63,7 +64,7 @@ export default function JobBookmarkList({ sort, keyword }: JobBookmarkListProps)
     });
   }, [bookmarkedJobPosts, sort, keyword]);
 
-  const handleToggleLike = ({ postId }: { postId: number; isLiked: boolean }) => {
+  const handleToggleLike = ({ postId }: TogglePostLikeParams) => {
     toggleLike(postId);
   };
 
