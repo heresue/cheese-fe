@@ -10,7 +10,7 @@ import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 import ShareIcon from '@/assets/icons/common/contact.svg';
 
-import type { JobPost, GroupPost } from '@/types/community';
+import type { JobPost, GroupPost } from '@/types/community/community';
 
 type PostDetailAsideActionsProps = {
   post: JobPost | GroupPost;

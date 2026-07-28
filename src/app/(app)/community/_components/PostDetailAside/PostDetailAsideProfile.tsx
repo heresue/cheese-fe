@@ -7,7 +7,7 @@ import ProfileImage from '@/components/common/ProfileImage';
 
 import { CompanyProfileCardModal, PersonalProfileCardModal } from '../ProfileCardModal';
 
-import type { UserSummary } from '@/types/community';
+import type { UserSummary } from '@/types/community/community';
 
 import { getMockCompanyProfile, getMockPersonalProfile } from '@/mocks/profile/userProfiles';
 

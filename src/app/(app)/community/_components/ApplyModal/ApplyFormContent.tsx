@@ -8,7 +8,7 @@ import EditIcon from '@/assets/icons/common/edit.svg';
 import FileIcon from '@/assets/icons/common/file.svg';
 import LinkIcon from '@/assets/icons/common/link.svg';
 
-import type { JobPost, GroupPost } from '@/types/community';
+import type { JobPost, GroupPost } from '@/types/community/community';
 
 import { mockMypage } from '@/mocks/profile/userProfiles';
 

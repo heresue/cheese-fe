@@ -1,28 +1,16 @@
 import { getDeadlineTime, isRecruitClosed } from '@/lib/formatDeadline';
 import { getOptionLabel } from '@/lib/getOptionLabel';
 
-import type { GroupPost, JobPost, InfoPost } from '@/types/community';
-import {
-  INFO_SORT_OPTIONS,
-  type CommunitySort,
-  type InfoSort,
-} from '@/app/(app)/community/_constants/community';
+import { INFO_SORT_OPTIONS, type CommunitySort } from '@/app/(app)/community/_constants/community';
+
+import type { GroupPost, JobPost, InfoPost } from '@/types/community/community';
+import type { CommunityPostsListParams, InfoPostsListParams } from '@/types/community/query';
 
 import { jobPosts, groupPosts, infoPosts } from '@/mocks/posts';
 
 /* ================================
      커뮤니티 목록
    ================================ */
-
-export type GetCommunityPostsParams = {
-  sort?: CommunitySort;
-  keyword?: string;
-};
-
-export type GetInfoPostsParams = {
-  sort?: InfoSort;
-  keyword?: string;
-};
 
 type RecruitPostSortFields = {
   likeCount: number;
@@ -57,7 +45,7 @@ function sortRecruitPosts<T extends RecruitPostSortFields>(
 export async function getJobPosts({
   sort = 'latest',
   keyword = '',
-}: GetCommunityPostsParams = {}): Promise<JobPost[]> {
+}: CommunityPostsListParams = {}): Promise<JobPost[]> {
   const normalizedKeyword = keyword.trim().toLowerCase();
 
   const filteredPosts = jobPosts.filter((post) => {
@@ -79,7 +67,7 @@ export async function getJobPosts({
 export async function getGroupPosts({
   sort = 'latest',
   keyword = '',
-}: GetCommunityPostsParams = {}): Promise<GroupPost[]> {
+}: CommunityPostsListParams = {}): Promise<GroupPost[]> {
   const normalizedKeyword = keyword.trim().toLowerCase();
 
   const filteredPosts = groupPosts.filter((post) => {
@@ -100,7 +88,7 @@ export async function getGroupPosts({
 export async function getInfoPosts({
   sort = 'all',
   keyword = '',
-}: GetInfoPostsParams = {}): Promise<InfoPost[]> {
+}: InfoPostsListParams = {}): Promise<InfoPost[]> {
   const normalizedKeyword = keyword.trim().toLowerCase();
 
   const filteredPosts = infoPosts.filter((post) => {

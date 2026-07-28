@@ -12,12 +12,12 @@ import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 import CommentIcon from '@/assets/icons/common/comment.svg';
 
-import type { Field, GroupPost } from '@/types/community';
-import type { ToggleGroupPostLikeVariables } from '@/queries/community/useToggleGroupPostLike';
+import type { Field, GroupPost } from '@/types/community/community';
+import type { TogglePostLikeParams } from '@/types/community/community';
 
 type GroupPostCardProps = {
   post: GroupPost;
-  onToggleLike: (variables: ToggleGroupPostLikeVariables) => void;
+  onToggleLike: (variables: TogglePostLikeParams) => void;
 };
 
 const FIELD_ORDER: Field[] = ['FE', 'BE'];

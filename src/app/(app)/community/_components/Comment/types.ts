@@ -1,4 +1,4 @@
-import { UserSummary } from '@/types/community';
+import { UserSummary } from '@/types/community/community';
 
 export type Comment = {
   id: number;

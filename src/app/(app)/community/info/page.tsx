@@ -1,33 +1,25 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
 
 import InfoPostCard from '@/components/community/info';
 
 import { isInfoSort } from '../_constants/community';
 
-import { getInfoPosts } from '@/api/mocks/community.api';
-import { communityQueryKeys } from '@/queries/community/communityQueryKeys';
 import { useToggleInfoPostLike } from '@/queries/community/useToggleInfoPostLike';
+import { useInfoPosts } from '@/queries/community/useInfoPosts';
 
 export default function CommunityInfoPage() {
   const searchParams = useSearchParams();
-
-  const { mutate: toggleInfoPostLike } = useToggleInfoPostLike();
 
   const sortParam = searchParams.get('sort');
   const sort = isInfoSort(sortParam) ? sortParam : 'all';
   const keyword = searchParams.get('keyword') ?? '';
 
-  const {
-    data: infoPosts = [],
-    isPending,
-    isError,
-  } = useQuery({
-    queryKey: communityQueryKeys.infoList({ sort, keyword }),
-    queryFn: () => getInfoPosts({ sort, keyword }),
-  });
+  const { data: infoPosts = [], isPending, isError } = useInfoPosts({ sort, keyword });
+
+  // TODO: API 연동 후 좋아요 캐시 갱신 방식 최적화
+  const { mutate: toggleInfoPostLike } = useToggleInfoPostLike();
 
   if (isPending) {
     return <div>불러오는 중입니다.</div>;

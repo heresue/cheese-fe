@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
 
 import JobPostCard from '@/components/community/jobs/JobPostCard';
 
@@ -10,30 +9,23 @@ import ApplyModal from '../_components/ApplyModal';
 
 import { isCommunitySort } from '@/app/(app)/community/_constants/community';
 
-import { getJobPosts } from '@/api/mocks/community.api';
-import { communityQueryKeys } from '@/queries/community/communityQueryKeys';
+import { useJobPosts } from '@/queries/community/useJobPosts';
 import { useToggleJobPostLike } from '@/queries/community/useToggleJobPostLike';
 
-import type { JobPost } from '@/types/community';
+import type { JobPost } from '@/types/community/community';
 
 export default function CommunityJobsPage() {
   const searchParams = useSearchParams();
   const [selectedApplyPost, setSelectedApplyPost] = useState<JobPost | null>(null);
 
-  const { mutate: toggleJobPostLike } = useToggleJobPostLike();
-
   const sortParam = searchParams.get('sort');
   const sort = isCommunitySort(sortParam) ? sortParam : 'latest';
   const keyword = searchParams.get('keyword') ?? '';
 
-  const {
-    data: jobPosts = [],
-    isPending,
-    isError,
-  } = useQuery({
-    queryKey: communityQueryKeys.jobList({ sort, keyword }),
-    queryFn: () => getJobPosts({ sort, keyword }),
-  });
+  const { data: jobPosts = [], isPending, isError } = useJobPosts({ sort, keyword });
+
+  // TODO: API 연동 후 좋아요 캐시 갱신 방식 최적화
+  const { mutate: toggleJobPostLike } = useToggleJobPostLike();
 
   if (isPending) {
     return <div>불러오는 중입니다.</div>;

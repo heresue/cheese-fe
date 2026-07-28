@@ -11,13 +11,13 @@ import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 import CommentIcon from '@/assets/icons/common/comment.svg';
 
-import type { InfoPost } from '@/types/community';
-import type { ToggleGroupPostLikeVariables } from '@/queries/community/useToggleGroupPostLike';
+import type { InfoPost } from '@/types/community/community';
+import type { TogglePostLikeParams } from '@/types/community/community';
 
 type InfoPostCardProps = {
   post: InfoPost;
   wrapperClassName?: string;
-  onToggleLike: (variables: ToggleGroupPostLikeVariables) => void;
+  onToggleLike: (variables: TogglePostLikeParams) => void;
 };
 
 export default function InfoPostCard({ post, wrapperClassName, onToggleLike }: InfoPostCardProps) {
