@@ -5,7 +5,7 @@ import ApplyModal from '@/app/(app)/community/_components/ApplyModal';
 
 import { useBookmarkedPosts } from '../hooks/useBookmarkedPosts';
 
-import type { JobPost } from '@/types/community';
+import type { JobPost } from '@/types/community/community';
 import type { CommunitySort } from '@/app/(app)/community/_constants/community';
 import type { TogglePostLikeParams } from '@/types/community/community';
 
