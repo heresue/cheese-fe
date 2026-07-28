@@ -9,11 +9,12 @@ export function useToggleInfoPostLike() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ postId, isLiked }: TogglePostLikeParams) => {
+    mutationFn: ({ postId, isLiked }: TogglePostLikeParams) => {
       return isLiked ? unlikeInfoPost(postId) : likeInfoPost(postId);
     },
 
     onSuccess: async () => {
+      // TODO: 실제 API 응답 구조에 따라 invalidate 대신 setQueryData 또는 optimistic update 적용 검토
       await queryClient.invalidateQueries({
         queryKey: communityQueryKeys.infoLists(),
       });

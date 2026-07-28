@@ -18,6 +18,7 @@ export default function CommunityGroupsPage() {
 
   const { data: groupPosts = [], isPending, isError } = useGroupPosts({ sort, keyword });
 
+  // TODO: API 연동 후 좋아요 캐시 갱신 방식 최적화
   const { mutate: toggleGroupPostLike } = useToggleGroupPostLike();
 
   if (isPending) {

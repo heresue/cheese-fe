@@ -18,6 +18,7 @@ export default function CommunityInfoPage() {
 
   const { data: infoPosts = [], isPending, isError } = useInfoPosts({ sort, keyword });
 
+  // TODO: API 연동 후 좋아요 캐시 갱신 방식 최적화
   const { mutate: toggleInfoPostLike } = useToggleInfoPostLike();
 
   if (isPending) {
