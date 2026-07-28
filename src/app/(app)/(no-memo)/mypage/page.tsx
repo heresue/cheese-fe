@@ -135,9 +135,12 @@ export default function MyPage() {
     });
   };
 
-  // TODO:
+  // TODO 1:
   // - 이미지 업로드 API 연동
   // - React Query(또는 전역 상태)와 연동하여 사이드바 프로필 이미지까지 함께 갱신
+  // TODO 2:
+  // - employeeCount는 number input으로 분리하여 빈 값 처리 및 숫자 입력 보장
+  // - foundedAt은 date input으로 분리하여 날짜 형식 보장
   const handleSaveMypageItem = (
     section: MypageItemSection,
     field: MypageItemField,
