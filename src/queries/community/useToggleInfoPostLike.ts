@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { likeInfoPost, unlikeInfoPost } from '@/api/mocks/community.api';
 import { communityQueryKeys } from './communityQueryKeys';
 
-import type { TogglePostLikeParams } from '@/types/community';
+import type { TogglePostLikeParams } from '@/types/community/community';
 
 export function useToggleInfoPostLike() {
   const queryClient = useQueryClient();

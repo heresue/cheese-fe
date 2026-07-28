@@ -16,7 +16,7 @@ import { EDUCATION_OPTIONS, EMPLOYMENT_TYPE_OPTIONS } from '@/constants/profileO
 
 import { POST_CONTENT_CLASS } from '../../_constants/community';
 
-import type { Field } from '@/types/community';
+import type { Field } from '@/types/community/community';
 
 import { jobPosts } from '@/mocks/posts';
 

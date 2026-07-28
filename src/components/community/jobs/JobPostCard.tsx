@@ -19,8 +19,8 @@ import {
 import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 
-import type { JobPost } from '@/types/community';
-import type { TogglePostLikeParams } from '@/types/community';
+import type { JobPost } from '@/types/community/community';
+import type { TogglePostLikeParams } from '@/types/community/community';
 
 type JobPostCardProps = {
   post: JobPost;

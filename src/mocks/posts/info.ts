@@ -1,5 +1,5 @@
 import type { Comment } from '@/app/(app)/community/_components/Comment/types';
-import type { InfoPost } from '@/types/community';
+import type { InfoPost } from '@/types/community/community';
 
 import { getMockUserSummary } from '@/mocks/profile/userSummaries';
 
