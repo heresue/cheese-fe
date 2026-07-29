@@ -1,4 +1,4 @@
-import type { UserSummary } from '@/types/community';
+import type { UserSummary } from '@/types/community/community';
 
 export function getMockUserSummary(id: number, type: UserSummary['profileType']) {
   const user = mockUserSummaries.find((user) => user.id === id && user.profileType === type);

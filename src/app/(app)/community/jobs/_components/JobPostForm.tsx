@@ -21,7 +21,7 @@ import {
 
 import { cn } from '@/lib/cn';
 
-import type { JobPost } from '@/types/community';
+import type { JobPost } from '@/types/community/community';
 import { FieldSelectValue, toFieldArray, toFieldSelectValue } from '@/lib/jobField';
 
 type JobPostFormProps = {
