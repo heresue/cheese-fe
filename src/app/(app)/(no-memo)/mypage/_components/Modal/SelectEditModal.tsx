@@ -7,37 +7,62 @@ import MypageModalLayout from './MypageModalLayout';
 
 import ChevronIcon from '@/assets/icons/common/chevron.svg';
 
+import { CONTACT_METHOD_OPTIONS } from '@/constants/profileOptions';
+
+import type { SelectEditValue } from './types';
+
 type SelectEditModalProps = {
   title: string;
   inputLabel: string;
   value?: string;
+  contactUrl?: string;
   options: string[];
   isOpen: boolean;
   onClose: () => void;
   hasOpenKakaoInput?: boolean;
+  onSave: (value: SelectEditValue) => void;
 };
 
 export default function SelectEditModal({
   title,
   inputLabel,
   value,
+  contactUrl,
   options,
   isOpen,
   onClose,
   hasOpenKakaoInput,
+  onSave,
 }: SelectEditModalProps) {
   const formId = useId();
+
   const [selectedValue, setSelectedValue] = useState(value);
-  const [openKakaoUrl, setOpenKakaoUrl] = useState('');
+  const [openKakaoUrl, setOpenKakaoUrl] = useState(contactUrl ?? '');
 
   const isOpenKakaoSelected = hasOpenKakaoInput && selectedValue === '오픈 카카오톡';
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // TODO: API 요청
+    if (!selectedValue) return;
 
-    onClose();
+    if (hasOpenKakaoInput) {
+      const contactMethod = CONTACT_METHOD_OPTIONS.find(
+        (option) => option.label === selectedValue,
+      )?.value;
+
+      if (!contactMethod) return;
+
+      onSave({
+        contactMethod,
+        contactUrl: contactMethod === 'kakaoOpenChat' ? openKakaoUrl : undefined,
+      });
+
+      return;
+    }
+
+    // TODO: API 요청
+    onSave(selectedValue);
   };
 
   return (

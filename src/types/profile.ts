@@ -50,6 +50,8 @@ export type AccountSettings = {
   address: string;
 };
 
+export type ContactSettings = Pick<AccountSettings, 'contactMethod' | 'contactUrl'>;
+
 export type Mypage = {
   activeProfileType: ProfileType;
   personalProfile: PersonalProfile;

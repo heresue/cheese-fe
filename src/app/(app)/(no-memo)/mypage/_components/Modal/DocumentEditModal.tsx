@@ -16,6 +16,7 @@ type DocumentEditModalProps = {
   document?: ProfileDocument;
   isOpen: boolean;
   onClose: () => void;
+  onSave: (document: ProfileDocument) => void;
 };
 
 export default function DocumentEditModal({
@@ -24,6 +25,7 @@ export default function DocumentEditModal({
   document,
   isOpen,
   onClose,
+  onSave,
 }: DocumentEditModalProps) {
   const formId = useId();
 
@@ -40,10 +42,16 @@ export default function DocumentEditModal({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // TODO: 파일 업로드/API 요청
-    // TODO: response.fileUrl 받기
+    // TODO: 실제 파일 업로드 후 서버에서 받은 URL로 교체
+    const nextDocument: ProfileDocument = {
+      ...document,
+      fileName,
+      url,
+      // 실제 API 연동 후 새 파일을 선택한 경우에만 fileUrl 변경
+      // ...(file && { fileUrl: uploadedFileUrl }),
+    };
 
-    onClose();
+    onSave(nextDocument);
   };
 
   return (

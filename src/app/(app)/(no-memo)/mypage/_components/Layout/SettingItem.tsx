@@ -50,11 +50,11 @@ export default function SettingItem({
         variant="outlineLightGray"
         size={38}
         paddingX={8}
-        className={`gap-[7px] ${buttonClassName ?? ''}`}
+        className={`gap-1 tracking-[-0.02em] ${buttonClassName ?? ''}`}
         onClick={onClick}
       >
         {buttonIcon && buttonIconPosition === 'left' && (
-          <span className="inline-flex items-center justify-center">{buttonIcon}</span>
+          <span className="inline-flex h-[30px] w-5 items-center justify-center">{buttonIcon}</span>
         )}
 
         {buttonText}
