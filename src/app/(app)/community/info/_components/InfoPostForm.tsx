@@ -18,7 +18,7 @@ import { INFO_SORT_OPTIONS } from '../../_constants/community';
 import UploadIcon from '@/assets/icons/common/upload.svg';
 import CloseIcon from '@/assets/icons/common/close.svg';
 
-import type { InfoPost } from '@/types/community';
+import type { InfoPost } from '@/types/community/community';
 
 const INFO_CATEGORY_OPTIONS = INFO_SORT_OPTIONS.filter((option) => option.value !== 'all');
 

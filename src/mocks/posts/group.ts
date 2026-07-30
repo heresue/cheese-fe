@@ -1,4 +1,4 @@
-import type { GroupPost } from '@/types/community';
+import type { GroupPost } from '@/types/community/community';
 
 import { getMockUserSummary } from '@/mocks/profile/userSummaries';
 import getMockDeadline from '@/mocks/getMockDeadline';

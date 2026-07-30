@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import BaseModal from '@/components/common/Modal';
 
@@ -9,7 +10,7 @@ import ApplyCompleteContent from './ApplyCompleteContent';
 
 import CloseIcon from '@/assets/icons/common/close.svg';
 
-import type { JobPost, GroupPost } from '@/types/community';
+import type { JobPost, GroupPost } from '@/types/community/community';
 
 export type ApplyModalProps = {
   post: JobPost | GroupPost;
@@ -18,6 +19,7 @@ export type ApplyModalProps = {
 };
 
 export default function ApplyModal({ post, isOpen, onClose }: ApplyModalProps) {
+  const router = useRouter();
   const [isCompleted, setIsCompleted] = useState(false);
 
   const handleApplyClick = () => {
@@ -27,6 +29,11 @@ export default function ApplyModal({ post, isOpen, onClose }: ApplyModalProps) {
   const handleClose = () => {
     setIsCompleted(false);
     onClose();
+  };
+
+  const handleMoveApplications = () => {
+    onClose();
+    router.push('/mypage/applications');
   };
 
   return (
@@ -55,7 +62,7 @@ export default function ApplyModal({ post, isOpen, onClose }: ApplyModalProps) {
 
         <div className="px-8">
           {isCompleted ? (
-            <ApplyCompleteContent title={post.title} />
+            <ApplyCompleteContent title={post.title} onMoveApplications={handleMoveApplications} />
           ) : (
             <ApplyFormContent post={post} onClose={handleClose} onApply={handleApplyClick} />
           )}

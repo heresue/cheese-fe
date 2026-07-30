@@ -11,12 +11,13 @@ import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 import CommentIcon from '@/assets/icons/common/comment.svg';
 
-import type { InfoPost } from '@/types/community';
+import type { InfoPost } from '@/types/community/community';
+import type { TogglePostLikeParams } from '@/types/community/community';
 
 type InfoPostCardProps = {
   post: InfoPost;
   wrapperClassName?: string;
-  onToggleLike: (postId: number) => void;
+  onToggleLike: (variables: TogglePostLikeParams) => void;
 };
 
 export default function InfoPostCard({ post, wrapperClassName, onToggleLike }: InfoPostCardProps) {
@@ -66,7 +67,12 @@ export default function InfoPostCard({ post, wrapperClassName, onToggleLike }: I
 
               <button
                 type="button"
-                onClick={() => onToggleLike(post.id)}
+                onClick={() =>
+                  onToggleLike({
+                    postId: post.id,
+                    isLiked: post.isLiked,
+                  })
+                }
                 className="flex items-center gap-1"
               >
                 {post.isLiked ? (

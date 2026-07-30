@@ -1,3 +1,5 @@
+import { ContactMethod } from '@/types/profile';
+
 export const FIELD_OPTIONS = [
   { label: 'FE', value: 'FE' },
   { label: 'BE', value: 'BE' },
@@ -33,5 +35,8 @@ export const WORK_METHOD_OPTIONS = [
 export const CONTACT_METHOD_OPTIONS = [
   { label: '이메일', value: 'email' },
   { label: '오픈 카카오톡', value: 'kakaoOpenChat' },
-  { label: '구글폼', value: 'googleForm' },
-];
+  { label: '구글 폼', value: 'googleForm' },
+] satisfies readonly {
+  label: string;
+  value: ContactMethod;
+}[];

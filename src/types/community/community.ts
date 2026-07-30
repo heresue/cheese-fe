@@ -99,3 +99,8 @@ export type InfoPost = {
 
   isLiked: boolean;
 };
+
+export type TogglePostLikeParams = {
+  postId: number;
+  isLiked: boolean;
+};

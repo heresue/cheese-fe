@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import PostDetailHeader from '../../_components/PostDetail';
 
-import type { GroupPost } from '@/types/community';
+import type { GroupPost } from '@/types/community/community';
 
 const currentUserId = 1;
 

@@ -1,4 +1,4 @@
-import { Field } from '@/types/community';
+import { Field } from '@/types/community/community';
 
 export type FieldSelectValue = Field | 'FE_BE' | '';
 

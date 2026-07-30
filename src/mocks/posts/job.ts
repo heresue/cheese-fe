@@ -1,4 +1,4 @@
-import type { JobPost } from '@/types/community';
+import type { JobPost } from '@/types/community/community';
 
 import { getMockUserSummary } from '@/mocks/profile/userSummaries';
 import getMockDeadline from '@/mocks/getMockDeadline';
@@ -292,11 +292,10 @@ export const jobPosts: JobPost[] = [
     likeCount: 38,
 
     apply: {
-      type: 'homepage',
-      url: 'https://aws.amazon.com',
+      type: 'direct',
     },
 
     isLiked: true,
-    isApplied: false,
+    isApplied: true,
   },
 ];

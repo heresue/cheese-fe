@@ -11,7 +11,7 @@ import { cn } from '@/lib/cn';
 import { toFieldArray, toFieldSelectValue, type FieldSelectValue } from '@/lib/jobField';
 import { FIELD_OPTIONS, WORK_METHOD_OPTIONS } from '@/constants/profileOptions';
 
-import type { GroupPost } from '@/types/community';
+import type { GroupPost } from '@/types/community/community';
 
 type GroupPostFormProps = {
   mode: 'create' | 'edit';
