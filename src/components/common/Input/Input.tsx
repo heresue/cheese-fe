@@ -1,7 +1,9 @@
 'use client';
 
 import { useId } from 'react';
+
 import { cn } from '@/lib/cn';
+
 import type { InputProps } from './type';
 
 export default function Input({
@@ -63,13 +65,13 @@ export default function Input({
 
       {/* message (optional) */}
       {(hasError || hasSuccess || showMessageSpace) && (
-        <div className={cn(showMessageSpace && 'h-[22px]', 'text-left text-xs font-medium')}>
+        <div className="flex h-[22px] items-end text-xs font-medium tracking-[-0.04em]">
           {hasError ? (
-            <p id={messageId} className="text-text-error mt-2 tracking-[-0.04em]">
+            <p id={messageId} className="text-text-error">
               {errorMessage}
             </p>
           ) : hasSuccess ? (
-            <p className="text-text-success mt-2 tracking-[-0.04em]">{successMessage}</p>
+            <p className="text-text-success">{successMessage}</p>
           ) : null}
         </div>
       )}
