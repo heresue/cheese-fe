@@ -5,7 +5,7 @@ import { Button } from '@/components/common/Button';
 export type EmailVerifyBaseProps = {
   title?: string;
   description?: React.ReactNode;
-  onNext?: () => void;
+  onNext: (email: string) => void;
 };
 
 export type EmailVerifyStatus =
@@ -20,19 +20,31 @@ export type EmailVerifyStatus =
 type EmailVerifyFormProps = EmailVerifyBaseProps;
 
 export default function EmailVerifyForm({ title, description, onNext }: EmailVerifyFormProps) {
+  const [email, setEmail] = useState('');
   const [status, setStatus] = useState<EmailVerifyStatus>('IDLE');
 
   const isSent = status === 'SENT' || status === 'VERIFY_ERROR' || status === 'VERIFIED';
   const isVerified = status === 'VERIFIED';
 
   const handleSend = () => {
-    // UI PR 단계: API/비동기 없이 "발송됨" 상태로만 전이
+    if (!email.trim()) {
+      setStatus('SEND_ERROR');
+      return;
+    }
+
+    // TODO: 이메일 인증번호 발송 API 호출
     setStatus('SENT');
   };
 
   const handleVerify = () => {
-    // UI PR 단계: API/비동기 없이 "인증됨" 상태로만 전이
+    // TODO: 이메일 인증번호 확인 API 호출
     setStatus('VERIFIED');
+  };
+
+  const handleNext = () => {
+    if (!isVerified) return;
+
+    onNext(email);
   };
 
   return (
@@ -41,14 +53,17 @@ export default function EmailVerifyForm({ title, description, onNext }: EmailVer
 
       <form className="flex flex-col gap-5">
         <Input
+          autoFocus
           label="아이디"
           name="email"
           type="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
           placeholder="아이디 (이메일) 입력"
           disabled={isSent}
           errorMessage={status === 'SEND_ERROR' ? '이메일 형식이 올바르지 않습니다' : undefined}
           rightAddon={
-            <InputActionButton type="button" onClick={handleSend}>
+            <InputActionButton onClick={handleSend}>
               {status === 'IDLE' ? '메일발송' : '재발송'}
             </InputActionButton>
           }
@@ -76,17 +91,9 @@ export default function EmailVerifyForm({ title, description, onNext }: EmailVer
           className="h-10 px-2 tracking-normal"
         />
 
-        {description && (
-          <div className="text-text-muted text-xs leading-relaxed">{description}</div>
-        )}
+        {description && <div className="text-xs leading-[17px] text-gray-500">{description}</div>}
 
-        <Button
-          variant="light"
-          type="button"
-          aria-label="다음"
-          onClick={onNext}
-          disabled={!isVerified}
-        >
+        <Button variant="light" aria-label="다음" onClick={handleNext} disabled={!isVerified}>
           다음
         </Button>
       </form>

@@ -1,7 +1,7 @@
 import EmailVerifyForm from '../../_components/EmailVerifyForm';
 
 type VerifyStepProps = {
-  onNext: () => void;
+  onNext: (email: string) => void;
 };
 
 export default function VerifyStep({ onNext }: VerifyStepProps) {

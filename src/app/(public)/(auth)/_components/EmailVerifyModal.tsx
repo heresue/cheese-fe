@@ -24,8 +24,8 @@ export default function EmailVerifyModal({
         <EmailVerifyForm
           title={title}
           description={description}
-          onNext={() => {
-            onNext?.();
+          onNext={(email) => {
+            onNext(email);
             onClose();
           }}
         />
