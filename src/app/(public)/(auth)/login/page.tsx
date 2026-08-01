@@ -8,16 +8,23 @@ import Image from 'next/image';
 import { Button } from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
 
-import Seperator from '@/assets/icons/common/separator-vertival.svg';
+import SeperatorIcon from '@/assets/icons/common/separator-vertival.svg';
 
 export default function LoginPage() {
   const [loginError, setLoginError] = useState<string>();
 
   const router = useRouter();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoginError(undefined);
+
+    const formData = new FormData(event.currentTarget);
+
+    const loginData = {
+      email: String(formData.get('email') ?? '').trim(),
+      password: String(formData.get('password') ?? ''),
+    };
 
     try {
       // TODO: 로그인 API 호출
@@ -63,7 +70,7 @@ export default function LoginPage() {
           <Link className="flex-1 text-center" href="/signup">
             회원가입
           </Link>
-          <Seperator className="h-[13px] text-gray-500" />
+          <SeperatorIcon className="h-[13px] text-gray-500" />
           <Link className="flex-1 text-center" href="/reset-password">
             비밀번호 재설정
           </Link>
