@@ -1,6 +1,9 @@
 import { useState } from 'react';
+
 import { Input, InputActionButton } from '@/components/common/Input';
 import { Button } from '@/components/common/Button';
+
+import { validateEmail } from '@/lib/validation';
 
 export type EmailVerifyBaseProps = {
   title?: string;
@@ -22,18 +25,29 @@ type EmailVerifyFormProps = EmailVerifyBaseProps;
 export default function EmailVerifyForm({ title, description, onNext }: EmailVerifyFormProps) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<EmailVerifyStatus>('IDLE');
+  const [emailError, setEmailError] = useState<string>();
 
   const isSent = status === 'SENT' || status === 'VERIFY_ERROR' || status === 'VERIFIED';
   const isVerified = status === 'VERIFIED';
 
-  const handleSend = () => {
-    if (!email.trim()) {
-      setStatus('SEND_ERROR');
+  const handleSend = async () => {
+    const validationError = validateEmail(email);
+
+    if (validationError) {
+      setEmailError(validationError);
       return;
     }
 
-    // TODO: 이메일 인증번호 발송 API 호출
-    setStatus('SENT');
+    setEmailError(undefined);
+    setStatus('SENDING');
+
+    try {
+      // TODO: 이메일 인증번호 발송 API 호출
+      setStatus('SENT');
+    } catch {
+      setStatus('SEND_ERROR');
+      setEmailError('인증 메일 발송에 실패했습니다');
+    }
   };
 
   const handleVerify = () => {
@@ -54,24 +68,28 @@ export default function EmailVerifyForm({ title, description, onNext }: EmailVer
       <form className="flex flex-col gap-5">
         <Input
           autoFocus
-          label="아이디"
+          label="아이디(이메일)"
           name="email"
           type="email"
           value={email}
-          onChange={(event) => setEmail(event.target.value)}
+          onChange={(event) => {
+            setEmail(event.target.value);
+            setEmailError(undefined);
+          }}
           placeholder="아이디 (이메일) 입력"
           disabled={isSent}
-          errorMessage={status === 'SEND_ERROR' ? '이메일 형식이 올바르지 않습니다' : undefined}
+          errorMessage={emailError}
           rightAddon={
-            <InputActionButton onClick={handleSend}>
-              {status === 'IDLE' ? '메일발송' : '재발송'}
+            <InputActionButton onClick={handleSend} disabled={status === 'SENDING'}>
+              {isSent ? '재발송' : '메일발송'}
             </InputActionButton>
           }
           className="h-10 px-2 tracking-normal"
+          showMessageSpace
         />
 
         <Input
-          label="아이디 인증번호"
+          label="아이디(이메일) 인증번호"
           name="verificationCode"
           type="text"
           inputMode="numeric"
@@ -89,6 +107,7 @@ export default function EmailVerifyForm({ title, description, onNext }: EmailVer
             </InputActionButton>
           }
           className="h-10 px-2 tracking-normal"
+          showMessageSpace
         />
 
         {description && <div className="text-xs leading-[17px] text-gray-500">{description}</div>}
