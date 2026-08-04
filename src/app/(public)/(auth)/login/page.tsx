@@ -48,7 +48,7 @@ export default function LoginPage() {
             name="email"
             type="email"
             placeholder="아이디"
-            className="h-10 px-2 tracking-normal"
+            className="h-10 px-2 font-medium tracking-normal"
             showMessageSpace
           />
           <Input
@@ -57,12 +57,12 @@ export default function LoginPage() {
             type="password"
             placeholder="비밀번호"
             errorMessage={loginError}
-            className="h-10 px-2 tracking-normal"
+            className="h-10 px-2 font-medium tracking-normal"
             showMessageSpace
           />
         </div>
 
-        <Button variant="light" type="submit">
+        <Button variant="light" type="submit" className="text-[16px]">
           로그인
         </Button>
 
@@ -80,7 +80,7 @@ export default function LoginPage() {
       <section>
         <div className="flex items-center gap-4 pb-8">
           <div className="h-px flex-1 bg-gray-400" aria-hidden="true" />
-          <span className="tracking-normal text-gray-500">간편로그인</span>
+          <span className="font-medium tracking-normal text-gray-500">간편로그인</span>
           <div className="h-px flex-1 bg-gray-400" aria-hidden="true" />
         </div>
 

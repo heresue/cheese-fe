@@ -35,26 +35,28 @@ export default function AuthConfirmModal({
           'bg-bg-white rounded-lg shadow-[0_0_4px_rgba(0,0,0,0.25)]',
           'w-[min(385px,calc(100vw-32px))]',
           'max-h-[calc(100dvh-160px)] md:max-h-[calc(100dvh-316px)]',
-          'flex flex-col overflow-hidden',
+          'flex flex-col items-center gap-6 overflow-hidden',
           'px-[42.5px] py-10',
         )}
       >
-        <div className="flex flex-col items-center text-center">
-          {title ? <h2 className="text-[20px] font-bold text-gray-950">{title}</h2> : null}
-          {description ? (
-            <p className={cn('text-[20px] font-normal text-gray-950', title && 'mt-3')}>
-              {description}
-            </p>
+        <div className="flex flex-col gap-3 text-center leading-6">
+          {title ? (
+            <h2 className="text-[20px] font-bold tracking-normal text-gray-950">{title}</h2>
           ) : null}
-
-          {children ? <div className="mt-[29px] w-full">{children}</div> : null}
-
-          <div className="mt-6 w-full">
-            <Button variant="light" onClick={onPrimaryClick ?? onClose} paddingX={20}>
-              {primaryText}
-            </Button>
-          </div>
+          {description ? (
+            <p className="text-[20px] font-medium text-gray-950">{description}</p>
+          ) : null}
+          {children ? <div className="w-full">{children}</div> : null}
         </div>
+
+        <Button
+          variant="light"
+          onClick={onPrimaryClick ?? onClose}
+          paddingX={20}
+          className="w-fit text-[16px]"
+        >
+          {primaryText}
+        </Button>
       </div>
     </BaseModal>
   );

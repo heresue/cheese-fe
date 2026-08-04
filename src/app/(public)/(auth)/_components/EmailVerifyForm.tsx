@@ -84,7 +84,7 @@ export default function EmailVerifyForm({ title, description, onNext }: EmailVer
               {isSent ? '재발송' : '메일발송'}
             </InputActionButton>
           }
-          className="h-10 px-2 tracking-normal"
+          className="h-10 px-2 font-medium tracking-normal"
           showMessageSpace
         />
 
@@ -106,13 +106,23 @@ export default function EmailVerifyForm({ title, description, onNext }: EmailVer
               인증하기
             </InputActionButton>
           }
-          className="h-10 px-2 tracking-normal"
+          className="h-10 px-2 font-medium tracking-normal"
           showMessageSpace
         />
 
-        {description && <div className="text-xs leading-[17px] text-gray-500">{description}</div>}
+        {description && (
+          <div className="text-xs leading-[17px] tracking-[-0.03em] text-gray-500">
+            {description}
+          </div>
+        )}
 
-        <Button variant="light" aria-label="다음" onClick={handleNext} disabled={!isVerified}>
+        <Button
+          variant="light"
+          aria-label="다음"
+          onClick={handleNext}
+          disabled={!isVerified}
+          className="text-[16px]"
+        >
           다음
         </Button>
       </form>

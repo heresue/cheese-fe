@@ -188,7 +188,7 @@ export default function SignupPage() {
                 중복확인
               </InputActionButton>
             }
-            className="h-10 px-2 tracking-normal"
+            className="h-10 px-2 font-medium tracking-normal"
             showMessageSpace
           />
           <Input
@@ -206,7 +206,7 @@ export default function SignupPage() {
                 {verifiedEmail ? '변경하기' : '입력하기'}
               </InputActionButton>
             }
-            className="h-10 px-2 tracking-normal"
+            className="h-10 px-2 font-medium tracking-normal"
             showMessageSpace
           />
           <Input
@@ -217,7 +217,7 @@ export default function SignupPage() {
             onChange={handlePasswordChange}
             placeholder="비밀번호 입력"
             errorMessage={signupErrors.password}
-            className="h-10 px-2 tracking-normal"
+            className="h-10 px-2 font-medium tracking-normal"
             showMessageSpace
           />
           <Input
@@ -229,7 +229,7 @@ export default function SignupPage() {
             placeholder="비밀번호 재입력"
             errorMessage={signupErrors.passwordConfirmation}
             successMessage={isPasswordMatched ? '비밀번호가 일치합니다' : undefined}
-            className="h-10 px-2 tracking-normal"
+            className="h-10 px-2 font-medium tracking-normal"
             showMessageSpace
           />
 
@@ -262,7 +262,7 @@ export default function SignupPage() {
           </div>
         </div>
 
-        <Button variant="light" type="submit" disabled={!termsAgreed}>
+        <Button variant="light" type="submit" disabled={!termsAgreed} className="text-[16px]">
           회원가입
         </Button>
       </form>

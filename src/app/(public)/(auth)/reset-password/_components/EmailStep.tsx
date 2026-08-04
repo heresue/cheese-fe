@@ -20,7 +20,7 @@ export default function EmailStep({ onNext }: EmailStepProps) {
             메일발송
           </InputActionButton>
         }
-        className="h-10 px-2 tracking-normal"
+        className="h-10 px-2 font-medium tracking-normal"
       />
     </div>
   );
