@@ -71,11 +71,10 @@ export function getButtonStyle({
     };
   }
 
-  const finalVariantClass = disabled
-    ? variant === 'gray'
-      ? variantClassMap[variant]
-      : variantDisabledClassMap[variant]
-    : variantClassMap[variant];
+  const finalVariantClass = cn(
+    variantClassMap[variant],
+    disabled && variant !== 'gray' && variantDisabledClassMap[variant],
+  );
 
   return {
     className: cn(
