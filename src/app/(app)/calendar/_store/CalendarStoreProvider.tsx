@@ -23,8 +23,10 @@ const CALENDAR_STORAGE_KEY = 'cheese:calendar-events:v1';
 
 type CalendarStoreContextValue = {
   events: CalendarEvent[];
-  createEvent: (draft: CalendarEventDraft) => boolean;
-  updateEvent: (draft: CalendarEventDraft) => boolean;
+  createEvent: (draft: CalendarEventDraft) => 'success' | 'invalid' | 'conflict';
+  updateEvent: (
+    draft: CalendarEventDraft,
+  ) => 'success' | 'invalid' | 'conflict' | 'not-found';
   deleteEvent: (eventId: string) => void;
 };
 
@@ -109,56 +111,45 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
     const newEvent = createCalendarEventFromDraft(draft, createEventId());
 
     if (!newEvent) {
-      return false;
+      return 'invalid';
     }
 
-    let created = false;
+    if (hasTimedSlotConflict(events, newEvent)) {
+      return 'conflict';
+    }
 
-    setEvents((prevEvents) => {
-      if (hasTimedSlotConflict(prevEvents, newEvent)) {
-        return prevEvents;
-      }
-
-      created = true;
-      return [...prevEvents, newEvent];
-    });
-
-    return created;
-  }, []);
+    setEvents((prevEvents) => [...prevEvents, newEvent]);
+    return 'success';
+  }, [events]);
 
   const updateEvent = useCallback((draft: CalendarEventDraft) => {
     const editingEventId = draft.id;
 
     if (!editingEventId) {
-      return false;
+      return 'invalid';
     }
 
-    let updated = false;
+    const currentEvent = events.find((event) => event.id === editingEventId);
 
-    setEvents((prevEvents) => {
-      const currentEvent = prevEvents.find((event) => event.id === editingEventId);
+    if (!currentEvent) {
+      return 'not-found';
+    }
 
-      if (!currentEvent) {
-        return prevEvents;
-      }
+    const nextEvent = applyDraftToEvent(currentEvent, draft);
 
-      const nextEvent = applyDraftToEvent(currentEvent, draft);
+    if (!nextEvent) {
+      return 'invalid';
+    }
 
-      if (!nextEvent) {
-        return prevEvents;
-      }
+    if (hasTimedSlotConflict(events, nextEvent, nextEvent.id)) {
+      return 'conflict';
+    }
 
-      if (hasTimedSlotConflict(prevEvents, nextEvent, nextEvent.id)) {
-        return prevEvents;
-      }
-
-      updated = true;
-
-      return prevEvents.map((event) => (event.id === nextEvent.id ? nextEvent : event));
-    });
-
-    return updated;
-  }, []);
+    setEvents((prevEvents) =>
+      prevEvents.map((event) => (event.id === nextEvent.id ? nextEvent : event)),
+    );
+    return 'success';
+  }, [events]);
 
   const deleteEvent = useCallback((eventId: string) => {
     setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));

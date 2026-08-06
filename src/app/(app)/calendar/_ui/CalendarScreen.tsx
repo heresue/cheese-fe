@@ -45,10 +45,15 @@ export default function CalendarScreen() {
   const handleCreateEvent = () => {
     if (!createPopover) return;
 
-    const created = createEvent(createPopover.draft);
+    const status = createEvent(createPopover.draft);
 
-    if (!created) {
+    if (status === 'conflict') {
       window.alert('해당 시간 칸에는 이미 일정이 있습니다.');
+      return;
+    }
+
+    if (status !== 'success') {
+      closeCreatePopover();
       return;
     }
 
@@ -65,17 +70,24 @@ export default function CalendarScreen() {
       return;
     }
 
-    const updated = updateEvent(editPopover.draft);
+    const status = updateEvent(editPopover.draft);
 
-    if (!updated) {
+    if (status === 'not-found') {
       const currentEvent = events.find((event) => event.id === editingEventId);
 
       if (!currentEvent) {
         closeEditPopover();
         return;
       }
+    }
 
+    if (status === 'conflict') {
       window.alert('해당 시간 칸에는 이미 일정이 있습니다.');
+      return;
+    }
+
+    if (status !== 'success') {
+      closeEditPopover();
       return;
     }
 

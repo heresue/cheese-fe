@@ -78,6 +78,11 @@ export function getThisWeekRemainingEvents(events: CalendarEvent[]) {
       return false;
     }
 
+    if (event.allDay || !hasTimePart(event.start)) {
+      const eventDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+      return eventDay >= todayStart && eventDay <= weekEnd;
+    }
+
     return start >= now && start <= weekEnd;
   });
 }
