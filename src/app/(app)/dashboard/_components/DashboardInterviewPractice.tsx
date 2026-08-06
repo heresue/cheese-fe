@@ -12,37 +12,9 @@ import {
   PROBLEM_CARD_SCROLL_STEP,
 } from '@/app/(app)/problem/_utils/getInProgressProblemSets';
 import { ProblemSolvingIcon } from '@/assets/icons/sidebar';
-import { cn } from '@/lib/cn';
 
+import DashboardCarouselNavButton from './DashboardCarouselNavButton';
 import DashboardSectionHeader from './DashboardSectionHeader';
-
-function CarouselNavButton({
-  label,
-  direction,
-  onClick,
-  className,
-}: {
-  label: string;
-  direction: 'left' | 'right';
-  onClick: () => void;
-  className?: string;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      onClick={onClick}
-      className={cn(
-        'border-border text-dashboard-gray hover:border-secondary-600 hover:text-dashboard-black absolute top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border bg-white opacity-0 shadow-[0_4px_10px_rgba(0,0,0,0.08)] transition-opacity group-hover:opacity-100 focus-visible:opacity-100',
-        className,
-      )}
-    >
-      <span aria-hidden="true" className="text-[18px] leading-none">
-        {direction === 'left' ? '‹' : '›'}
-      </span>
-    </button>
-  );
-}
 
 export default function DashboardInterviewPractice() {
   const [startIndex, setStartIndex] = useState(0);
@@ -70,7 +42,7 @@ export default function DashboardInterviewPractice() {
       <DashboardSectionHeader icon={<ProblemSolvingIcon />} title="문제풀이" />
 
       {practiceSets.length > 0 ? (
-        <div className="group relative w-full">
+        <div className="group relative w-full overflow-visible">
           <div className="w-full overflow-hidden">
             <div
               className="flex w-max gap-4 transition-transform duration-300 ease-in-out"
@@ -87,20 +59,18 @@ export default function DashboardInterviewPractice() {
           </div>
 
           {canGoPrev ? (
-            <CarouselNavButton
+            <DashboardCarouselNavButton
               label="이전 문제풀이 보기"
               direction="left"
               onClick={handlePrev}
-              className="left-0"
             />
           ) : null}
 
           {canGoNext ? (
-            <CarouselNavButton
+            <DashboardCarouselNavButton
               label="다음 문제풀이 보기"
               direction="right"
               onClick={handleNext}
-              className="right-0"
             />
           ) : null}
         </div>

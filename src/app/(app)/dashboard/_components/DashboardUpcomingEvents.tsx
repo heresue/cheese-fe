@@ -7,40 +7,12 @@ import Link from 'next/link';
 import { getUpcomingEvents } from '@/app/(app)/calendar/_lib/dashboard-events';
 import { useCalendarStore } from '@/app/(app)/calendar/_store/CalendarStoreProvider';
 import { CalendarIcon } from '@/assets/icons/sidebar';
-import { cn } from '@/lib/cn';
 
+import DashboardCarouselNavButton from './DashboardCarouselNavButton';
 import DashboardEventCard from './DashboardEventCard';
 import DashboardSectionHeader from './DashboardSectionHeader';
 
 const VISIBLE_COUNT = 3;
-
-function CarouselNavButton({
-  label,
-  direction,
-  onClick,
-  className,
-}: {
-  label: string;
-  direction: 'left' | 'right';
-  onClick: () => void;
-  className?: string;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      onClick={onClick}
-      className={cn(
-        'border-border text-dashboard-gray hover:border-secondary-600 hover:text-dashboard-black absolute top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border bg-white opacity-0 shadow-[0_4px_10px_rgba(0,0,0,0.08)] transition-opacity group-hover:opacity-100 focus-visible:opacity-100',
-        className,
-      )}
-    >
-      <span aria-hidden="true" className="text-[18px] leading-none">
-        {direction === 'left' ? '‹' : '›'}
-      </span>
-    </button>
-  );
-}
 
 export default function DashboardUpcomingEvents() {
   const { events } = useCalendarStore();
@@ -60,7 +32,7 @@ export default function DashboardUpcomingEvents() {
       <DashboardSectionHeader icon={<CalendarIcon />} title="다가오는 일정" />
 
       {upcomingEvents.length > 0 ? (
-        <div className="group relative w-full">
+        <div className="group relative w-full overflow-visible">
           <div className="grid grid-cols-3 gap-4 overflow-hidden">
             {upcomingEvents.slice(startIndex, startIndex + VISIBLE_COUNT).map((event) => (
               <DashboardEventCard key={event.id} event={event} />
@@ -68,20 +40,18 @@ export default function DashboardUpcomingEvents() {
           </div>
 
           {canGoPrev ? (
-            <CarouselNavButton
+            <DashboardCarouselNavButton
               label="이전 일정 보기"
               direction="left"
               onClick={() => setStartIndex((prev) => Math.max(0, prev - 1))}
-              className="left-0"
             />
           ) : null}
 
           {canGoNext ? (
-            <CarouselNavButton
+            <DashboardCarouselNavButton
               label="다음 일정 보기"
               direction="right"
               onClick={() => setStartIndex((prev) => Math.min(maxStartIndex, prev + 1))}
-              className="right-0"
             />
           ) : null}
         </div>

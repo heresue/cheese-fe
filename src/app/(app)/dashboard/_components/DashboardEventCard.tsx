@@ -46,17 +46,16 @@ export default function DashboardEventCard({ event }: DashboardEventCardProps) {
         {event.title}
       </h3>
 
-      <p className="text-dashboard-gray text-[13px] leading-[20px] font-medium">{timeRange}</p>
-
-      {location ? (
-        <p className="text-dashboard-gray mt-1 truncate text-[13px] leading-[20px] font-medium">
+      <div className="flex flex-col gap-0">
+        <p className="text-dashboard-gray text-[14px] leading-[30px] font-medium">{timeRange}</p>
+        <p className="text-dashboard-gray h-[30px] truncate text-[14px] leading-[30px] font-medium">
           {location}
         </p>
-      ) : null}
+      </div>
 
       {event.memo ? (
         <div
-          className="mt-auto flex items-center gap-2 rounded-[6px] px-3 py-2"
+          className="mt-2 flex items-center gap-2 rounded-[6px] px-3 py-2"
           style={{
             backgroundColor: colorTokens.defaultBg,
             border: `1px solid ${colorTokens.defaultBorder}`,
@@ -70,7 +69,7 @@ export default function DashboardEventCard({ event }: DashboardEventCardProps) {
           </p>
         </div>
       ) : (
-        <div className="mt-auto" />
+        <div className="mt-2" aria-hidden="true" />
       )}
     </Link>
   );
