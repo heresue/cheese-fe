@@ -4,6 +4,7 @@ import { Input, InputActionButton } from '@/components/common/Input';
 import { Button } from '@/components/common/Button';
 
 import { validateEmail } from '@/lib/validation';
+import { AUTH_MESSAGE } from '@/constants/auth';
 
 export type EmailVerifyBaseProps = {
   title?: string;
@@ -62,13 +63,13 @@ export default function EmailVerifyForm({
       setStatus('SENT');
     } catch {
       setStatus('SEND_ERROR');
-      setEmailError('인증 메일 발송에 실패했습니다');
+      setEmailError(AUTH_MESSAGE.EMAIL.SEND_FAILED);
     }
   };
 
   const handleVerify = async () => {
     if (!verificationCode.trim()) {
-      setVerificationError('인증번호를 입력해주세요');
+      setVerificationError(AUTH_MESSAGE.VERIFICATION.REQUIRED);
       return;
     }
 
@@ -80,7 +81,7 @@ export default function EmailVerifyForm({
       setStatus('VERIFIED');
     } catch {
       setStatus('SENT');
-      setVerificationError('인증번호가 올바르지 않습니다');
+      setVerificationError(AUTH_MESSAGE.VERIFICATION.INVALID);
     }
   };
 
@@ -108,7 +109,7 @@ export default function EmailVerifyForm({
           placeholder="아이디 (이메일) 입력"
           disabled={isEmailLocked}
           errorMessage={emailError}
-          successMessage={hasSentEmail ? '인증 메일이 발송되었습니다.' : undefined}
+          successMessage={hasSentEmail ? AUTH_MESSAGE.EMAIL.SEND_SUCCESS : undefined}
           rightAddon={
             <InputActionButton
               onClick={handleSend}
@@ -134,7 +135,7 @@ export default function EmailVerifyForm({
           placeholder="인증번호 입력"
           disabled={!hasSentEmail || isVerifying || isVerified}
           errorMessage={verificationError}
-          successMessage={isVerified ? '인증번호가 일치합니다' : undefined}
+          successMessage={isVerified ? AUTH_MESSAGE.VERIFICATION.MATCHED : undefined}
           rightAddon={
             <InputActionButton
               onClick={handleVerify}

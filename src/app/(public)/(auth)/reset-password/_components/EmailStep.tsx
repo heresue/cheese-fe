@@ -1,7 +1,9 @@
 import { useState } from 'react';
 
 import { Input, InputActionButton } from '@/components/common/Input';
+
 import { validateEmail } from '@/lib/validation';
+import { AUTH_MESSAGE } from '@/constants/auth';
 
 type EmailStepProps = {
   email: string;
@@ -24,9 +26,10 @@ export default function EmailStep({ email, onEmailChange, onNext }: EmailStepPro
 
     try {
       // TODO: 비밀번호 재설정 메일 발송 API
+      // TODO: API 에러 코드에 따라 미가입 이메일과 발송 실패 구분
       onNext();
     } catch {
-      setEmailError('이메일이 올바르지 않습니다');
+      setEmailError(AUTH_MESSAGE.EMAIL.UNREGISTERED);
     }
   };
 
@@ -51,6 +54,7 @@ export default function EmailStep({ email, onEmailChange, onNext }: EmailStepPro
           </InputActionButton>
         }
         className="h-10 px-2 font-medium tracking-normal"
+        showMessageSpace
       />
     </div>
   );

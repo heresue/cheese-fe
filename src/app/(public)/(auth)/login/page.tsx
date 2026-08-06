@@ -8,7 +8,9 @@ import Image from 'next/image';
 import { Button } from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
 
-import SeperatorIcon from '@/assets/icons/common/separator-vertival.svg';
+import { AUTH_MESSAGE } from '@/constants/auth';
+
+import SeparatorIcon from '@/assets/icons/common/separator-vertival.svg';
 
 export default function LoginPage() {
   const [loginError, setLoginError] = useState<string>();
@@ -28,10 +30,9 @@ export default function LoginPage() {
 
     try {
       // TODO: 로그인 API 호출
-
       router.push('/calendar'); // TODO: (대시보드 구현 후) 대시보드로 이동하기
     } catch {
-      setLoginError('아이디 또는 비밀번호가 일치하지 않습니다');
+      setLoginError(AUTH_MESSAGE.LOGIN.INVALID);
     }
   };
 
@@ -70,7 +71,7 @@ export default function LoginPage() {
           <Link className="flex-1 text-center" href="/signup">
             회원가입
           </Link>
-          <SeperatorIcon className="h-[13px] text-gray-500" />
+          <SeparatorIcon className="h-[13px] text-gray-500" />
           <Link className="flex-1 text-center" href="/reset-password">
             비밀번호 재설정
           </Link>

@@ -23,7 +23,7 @@ export function validateEmail(email: string) {
   }
 
   if (!EMAIL_REGEX.test(trimmedEmail)) {
-    return '이메일 형식이 올바르지 않습니다';
+    return '이메일이 올바르지 않습니다';
   }
 
   return undefined;

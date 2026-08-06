@@ -4,6 +4,7 @@ import { Input } from '@/components/common/Input';
 import { Button } from '@/components/common/Button';
 
 import { validatePassword, validatePasswordConfirmation } from '@/lib/validation';
+import { AUTH_MESSAGE } from '@/constants/auth';
 
 type NewPasswordStepProps = {
   onComplete: () => void;
@@ -70,7 +71,7 @@ export default function NewPasswordStep({ onComplete }: NewPasswordStepProps) {
           }}
           placeholder="비밀번호 재입력"
           errorMessage={passwordConfirmationError}
-          successMessage={isPasswordMatched ? '비밀번호가 일치합니다.' : undefined}
+          successMessage={isPasswordMatched ? AUTH_MESSAGE.PASSWORD.MATCHED : undefined}
           className="h-10 px-2 font-medium tracking-normal"
         />
       </div>

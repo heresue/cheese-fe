@@ -8,6 +8,7 @@ import TermsModal from './_components/TermsModal';
 import EmailVerifyModal from '../_components/EmailVerifyModal';
 
 import { validateNickname, validatePassword, validatePasswordConfirmation } from '@/lib/validation';
+import { AUTH_MESSAGE } from '@/constants/auth';
 
 import CheckIcon from '@/assets/icons/common/check.svg';
 import ChevronIcon from '@/assets/icons/common/chevron.svg';
@@ -99,14 +100,14 @@ export default function SignupPage() {
 
       setSignupErrors((prev) => ({
         ...prev,
-        nickname: isDuplicated ? '중복된 닉네임이 있습니다' : undefined,
+        nickname: isDuplicated ? AUTH_MESSAGE.NICKNAME.DUPLICATED : undefined,
       }));
     } catch {
       setNicknameStatus('idle');
 
       setSignupErrors((prev) => ({
         ...prev,
-        nickname: '닉네임 중복 확인에 실패했습니다',
+        nickname: AUTH_MESSAGE.NICKNAME.FAILED,
       }));
     }
   };
@@ -119,11 +120,11 @@ export default function SignupPage() {
     }
 
     if (nicknameStatus === 'duplicated') {
-      return '중복된 닉네임이 있습니다';
+      return AUTH_MESSAGE.NICKNAME.DUPLICATED;
     }
 
     if (nicknameStatus !== 'available') {
-      return '닉네임 중복확인을 완료해 주세요';
+      return AUTH_MESSAGE.NICKNAME.CHECK_REQUIRED;
     }
 
     return undefined;
@@ -178,7 +179,7 @@ export default function SignupPage() {
             placeholder="닉네임 입력"
             errorMessage={signupErrors.nickname}
             successMessage={
-              nicknameStatus === 'available' ? '사용 가능한 닉네임 입니다' : undefined
+              nicknameStatus === 'available' ? AUTH_MESSAGE.NICKNAME.AVAILABLE : undefined
             }
             rightAddon={
               <InputActionButton
@@ -200,7 +201,7 @@ export default function SignupPage() {
             onClick={openVerify}
             placeholder="아이디 (이메일) 입력"
             errorMessage={signupErrors.email}
-            successMessage={verifiedEmail ? '사용 가능' : undefined}
+            successMessage={verifiedEmail ? AUTH_MESSAGE.EMAIL.AVAILABLE : undefined}
             rightAddon={
               <InputActionButton onClick={openVerify}>
                 {verifiedEmail ? '변경하기' : '입력하기'}
@@ -228,7 +229,7 @@ export default function SignupPage() {
             onChange={handlePasswordConfirmationChange}
             placeholder="비밀번호 재입력"
             errorMessage={signupErrors.passwordConfirmation}
-            successMessage={isPasswordMatched ? '비밀번호가 일치합니다' : undefined}
+            successMessage={isPasswordMatched ? AUTH_MESSAGE.PASSWORD.MATCHED : undefined}
             className="h-10 px-2 font-medium tracking-normal"
             showMessageSpace
           />
