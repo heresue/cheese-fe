@@ -1,10 +1,35 @@
+import { useState } from 'react';
+
 import { Input, InputActionButton } from '@/components/common/Input';
+import { validateEmail } from '@/lib/validation';
 
 type EmailStepProps = {
+  email: string;
+  onEmailChange: (email: string) => void;
   onNext: () => void;
 };
 
-export default function EmailStep({ onNext }: EmailStepProps) {
+export default function EmailStep({ email, onEmailChange, onNext }: EmailStepProps) {
+  const [emailError, setEmailError] = useState<string>();
+
+  const handleSendEmail = async () => {
+    const error = validateEmail(email);
+
+    if (error) {
+      setEmailError(error);
+      return;
+    }
+
+    setEmailError(undefined);
+
+    try {
+      // TODO: 비밀번호 재설정 메일 발송 API
+      onNext();
+    } catch {
+      setEmailError('이메일이 올바르지 않습니다');
+    }
+  };
+
   return (
     <div className="flex flex-col gap-10">
       <h2 className="text-[20px] font-bold">비밀번호 재설정</h2>
@@ -13,10 +38,15 @@ export default function EmailStep({ onNext }: EmailStepProps) {
         label="아이디"
         name="email"
         type="email"
+        value={email}
+        onChange={(e) => {
+          setEmailError(undefined);
+          onEmailChange(e.target.value);
+        }}
         placeholder="이메일 입력"
-        errorMessage={'이메일이 올바르지 않습니다'}
+        errorMessage={emailError}
         rightAddon={
-          <InputActionButton type="button" onClick={onNext}>
+          <InputActionButton type="button" onClick={handleSendEmail}>
             메일발송
           </InputActionButton>
         }

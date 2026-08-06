@@ -9,18 +9,21 @@ import DoneModal from './_components/DoneModal';
 type Step = 'EMAIL' | 'VERIFY' | 'NEW_PASSWORD';
 
 export default function ResetPasswordPage() {
+  const [email, setEmail] = useState('');
+  const [verifiedEmail, setVerifiedEmail] = useState('');
+
   const [step, setStep] = useState<Step>('EMAIL');
   const [isDoneOpen, setIsDoneOpen] = useState(false);
 
-  // TODO: 비밀번호 재설정 API 호출 시 사용
-  const [verifiedEmail, setVerifiedEmail] = useState('');
-
   return (
     <>
-      {step === 'EMAIL' && <EmailStep onNext={() => setStep('VERIFY')} />}
+      {step === 'EMAIL' && (
+        <EmailStep email={email} onEmailChange={setEmail} onNext={() => setStep('VERIFY')} />
+      )}
 
       {step === 'VERIFY' && (
         <VerifyStep
+          initialEmail={email}
           onNext={(email) => {
             setVerifiedEmail(email);
             setStep('NEW_PASSWORD');

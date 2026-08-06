@@ -1,10 +1,11 @@
 import EmailVerifyForm from '../../_components/EmailVerifyForm';
 
 type VerifyStepProps = {
+  initialEmail?: string;
   onNext: (email: string) => void;
 };
 
-export default function VerifyStep({ onNext }: VerifyStepProps) {
+export default function VerifyStep({ initialEmail, onNext }: VerifyStepProps) {
   return (
     <EmailVerifyForm
       title="비밀번호 재설정"
@@ -15,6 +16,8 @@ export default function VerifyStep({ onNext }: VerifyStepProps) {
           로그인 후 비밀번호를 재설정 해주세요.
         </>
       }
+      initialEmail={initialEmail}
+      initialStatus="SENT"
       onNext={onNext}
     />
   );

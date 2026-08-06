@@ -8,6 +8,8 @@ import { validateEmail } from '@/lib/validation';
 export type EmailVerifyBaseProps = {
   title?: string;
   description?: React.ReactNode;
+  initialEmail?: string;
+  initialStatus?: EmailVerifyStatus;
   onNext: (email: string) => void;
 };
 
@@ -17,18 +19,30 @@ export type EmailVerifyStatus =
   | 'SENT'
   | 'SEND_ERROR'
   | 'VERIFYING'
-  | 'VERIFIED'
-  | 'VERIFY_ERROR';
+  | 'VERIFIED';
 
 type EmailVerifyFormProps = EmailVerifyBaseProps;
 
-export default function EmailVerifyForm({ title, description, onNext }: EmailVerifyFormProps) {
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<EmailVerifyStatus>('IDLE');
+export default function EmailVerifyForm({
+  title,
+  description,
+  initialEmail = '',
+  initialStatus = 'IDLE',
+  onNext,
+}: EmailVerifyFormProps) {
+  const [email, setEmail] = useState(initialEmail);
+  const [status, setStatus] = useState<EmailVerifyStatus>(initialStatus);
   const [emailError, setEmailError] = useState<string>();
 
-  const isSent = status === 'SENT' || status === 'VERIFY_ERROR' || status === 'VERIFIED';
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationError, setVerificationError] = useState<string>();
+
+  const isSending = status === 'SENDING';
+  const isVerifying = status === 'VERIFYING';
   const isVerified = status === 'VERIFIED';
+
+  const hasSentEmail = status === 'SENT' || isVerifying || isVerified;
+  const isEmailLocked = isSending || hasSentEmail;
 
   const handleSend = async () => {
     const validationError = validateEmail(email);
@@ -43,6 +57,8 @@ export default function EmailVerifyForm({ title, description, onNext }: EmailVer
 
     try {
       // TODO: 이메일 인증번호 발송 API 호출
+      setVerificationCode('');
+      setVerificationError(undefined);
       setStatus('SENT');
     } catch {
       setStatus('SEND_ERROR');
@@ -50,9 +66,22 @@ export default function EmailVerifyForm({ title, description, onNext }: EmailVer
     }
   };
 
-  const handleVerify = () => {
-    // TODO: 이메일 인증번호 확인 API 호출
-    setStatus('VERIFIED');
+  const handleVerify = async () => {
+    if (!verificationCode.trim()) {
+      setVerificationError('인증번호를 입력해주세요');
+      return;
+    }
+
+    setVerificationError(undefined);
+    setStatus('VERIFYING');
+
+    try {
+      // TODO: 이메일 인증번호 확인 API 호출
+      setStatus('VERIFIED');
+    } catch {
+      setStatus('SENT');
+      setVerificationError('인증번호가 올바르지 않습니다');
+    }
   };
 
   const handleNext = () => {
@@ -77,11 +106,15 @@ export default function EmailVerifyForm({ title, description, onNext }: EmailVer
             setEmailError(undefined);
           }}
           placeholder="아이디 (이메일) 입력"
-          disabled={isSent}
+          disabled={isEmailLocked}
           errorMessage={emailError}
+          successMessage={hasSentEmail ? '인증 메일이 발송되었습니다.' : undefined}
           rightAddon={
-            <InputActionButton onClick={handleSend} disabled={status === 'SENDING'}>
-              {isSent ? '재발송' : '메일발송'}
+            <InputActionButton
+              onClick={handleSend}
+              disabled={isSending || isVerifying || isVerified}
+            >
+              {hasSentEmail ? '재발송' : '메일발송'}
             </InputActionButton>
           }
           className="h-10 px-2 font-medium tracking-normal"
@@ -89,19 +122,23 @@ export default function EmailVerifyForm({ title, description, onNext }: EmailVer
         />
 
         <Input
-          label="아이디(이메일) 인증번호"
+          label="인증번호"
           name="verificationCode"
           type="text"
           inputMode="numeric"
+          value={verificationCode}
+          onChange={(event) => {
+            setVerificationCode(event.target.value);
+            setVerificationError(undefined);
+          }}
           placeholder="인증번호 입력"
-          disabled={!isSent || isVerified}
-          errorMessage={status === 'VERIFY_ERROR' ? '인증번호가 올바르지 않습니다' : undefined}
-          successMessage={status === 'VERIFIED' ? '인증번호가 일치합니다' : undefined}
+          disabled={!hasSentEmail || isVerifying || isVerified}
+          errorMessage={verificationError}
+          successMessage={isVerified ? '인증번호가 일치합니다' : undefined}
           rightAddon={
             <InputActionButton
-              type="button"
               onClick={handleVerify}
-              disabled={!isSent || isVerified}
+              disabled={!hasSentEmail || isVerifying || isVerified}
             >
               인증하기
             </InputActionButton>
