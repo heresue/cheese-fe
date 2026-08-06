@@ -5,6 +5,8 @@ import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 
 import ChevronIcon from '@/assets/icons/common/chevron.svg';
 import CloseIcon from '@/assets/icons/common/close.svg';
 import CreateIcon from '@/assets/icons/common/create.svg';
+import FilterChevronIcon from '@/assets/icons/memo/filter-chevron.svg';
+import MemoFilterIcon from '@/assets/icons/memo/filter.svg';
 import { cn } from '@/lib/cn';
 
 export type ListFilterOption<TValue extends string = string> = {
@@ -36,26 +38,6 @@ type ListFilterBarProps<TSort extends string = string> = {
   className?: string;
   searchClassName?: string;
 };
-
-function SortIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" className={className}>
-      <path
-        d="M4 5h8M4 10h6M4 15h4"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      />
-      <path
-        d="M15 4v10M15 14l-2.5-2.5M15 14l2.5-2.5"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 function SearchIcon({ className }: { className?: string }) {
   return (
@@ -142,9 +124,11 @@ function SortDropdown<TSort extends string>({
             : 'hover:border-secondary-700 hover:text-secondary-700 border-gray-300 text-gray-500',
         )}
       >
-        <SortIcon className="h-[20px] w-[20px]" />
-
-        <DropdownChevron open={open} />
+        <MemoFilterIcon className="h-6 w-4 shrink-0 [&_path]:fill-current" aria-hidden="true" />
+        <FilterChevronIcon
+          className="h-6 w-2.5 shrink-0 [&_path]:fill-current"
+          aria-hidden="true"
+        />
       </button>
 
       {open ? (
