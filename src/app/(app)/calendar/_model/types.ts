@@ -18,6 +18,8 @@ export type EventColorId =
 
 export type ReminderMinutes = 0 | 5 | 10 | 15 | 30 | 60 | 120 | 1440;
 
+export type CalendarEventCategory = 'interview' | 'assignment' | 'meeting' | 'etc';
+
 export interface CalendarEvent {
   id: string;
 
@@ -32,10 +34,12 @@ export interface CalendarEvent {
   // 분류/색상
   spaceId?: string;
   colorId?: EventColorId;
+  category?: CalendarEventCategory;
 
   // 옵션
   reminderMinutes?: ReminderMinutes;
   location?: string;
+  url?: string;
 
   // 확장 대비
   createdAt?: string;
