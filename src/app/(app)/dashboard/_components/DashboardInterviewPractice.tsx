@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import Link from 'next/link';
 
@@ -20,21 +20,19 @@ export default function DashboardInterviewPractice() {
   const [startIndex, setStartIndex] = useState(0);
 
   const practiceSets = useMemo(() => getInProgressProblemSets(mockProblemSets), []);
+
   const maxStartIndex = getProblemCarouselMaxStartIndex(practiceSets.length);
+  const visibleStartIndex = Math.min(startIndex, maxStartIndex);
 
-  const canGoPrev = startIndex > 0;
-  const canGoNext = startIndex < maxStartIndex;
-
-  useEffect(() => {
-    setStartIndex((prev) => Math.min(prev, maxStartIndex));
-  }, [maxStartIndex]);
+  const canGoPrev = visibleStartIndex > 0;
+  const canGoNext = visibleStartIndex < maxStartIndex;
 
   const handlePrev = () => {
-    setStartIndex((prev) => Math.max(0, prev - 1));
+    setStartIndex(Math.max(0, visibleStartIndex - 1));
   };
 
   const handleNext = () => {
-    setStartIndex((prev) => Math.min(maxStartIndex, prev + 1));
+    setStartIndex(Math.min(maxStartIndex, visibleStartIndex + 1));
   };
 
   return (
@@ -47,7 +45,7 @@ export default function DashboardInterviewPractice() {
             <div
               className="flex w-max gap-4 transition-transform duration-300 ease-in-out"
               style={{
-                transform: `translateX(-${startIndex * PROBLEM_CARD_SCROLL_STEP}px)`,
+                transform: `translateX(-${visibleStartIndex * PROBLEM_CARD_SCROLL_STEP}px)`,
               }}
             >
               {practiceSets.map((problemSet) => (

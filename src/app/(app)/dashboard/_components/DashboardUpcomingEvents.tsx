@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import Link from 'next/link';
 
@@ -20,12 +20,18 @@ export default function DashboardUpcomingEvents() {
   const [startIndex, setStartIndex] = useState(0);
 
   const maxStartIndex = Math.max(0, upcomingEvents.length - VISIBLE_COUNT);
-  const canGoPrev = startIndex > 0;
-  const canGoNext = startIndex < maxStartIndex;
+  const visibleStartIndex = Math.min(startIndex, maxStartIndex);
 
-  useEffect(() => {
-    setStartIndex((prev) => Math.min(prev, maxStartIndex));
-  }, [maxStartIndex]);
+  const canGoPrev = visibleStartIndex > 0;
+  const canGoNext = visibleStartIndex < maxStartIndex;
+
+  const handlePrev = () => {
+    setStartIndex(Math.max(0, visibleStartIndex - 1));
+  };
+
+  const handleNext = () => {
+    setStartIndex(Math.min(maxStartIndex, visibleStartIndex + 1));
+  };
 
   return (
     <section className="mb-10">
@@ -34,16 +40,18 @@ export default function DashboardUpcomingEvents() {
       {upcomingEvents.length > 0 ? (
         <div className="group relative w-full overflow-visible">
           <div className="grid grid-cols-3 gap-4 overflow-hidden">
-            {upcomingEvents.slice(startIndex, startIndex + VISIBLE_COUNT).map((event) => (
-              <DashboardEventCard key={event.id} event={event} />
-            ))}
+            {upcomingEvents
+              .slice(visibleStartIndex, visibleStartIndex + VISIBLE_COUNT)
+              .map((event) => (
+                <DashboardEventCard key={event.id} event={event} />
+              ))}
           </div>
 
           {canGoPrev ? (
             <DashboardCarouselNavButton
               label="이전 일정 보기"
               direction="left"
-              onClick={() => setStartIndex((prev) => Math.max(0, prev - 1))}
+              onClick={handlePrev}
             />
           ) : null}
 
@@ -51,7 +59,7 @@ export default function DashboardUpcomingEvents() {
             <DashboardCarouselNavButton
               label="다음 일정 보기"
               direction="right"
-              onClick={() => setStartIndex((prev) => Math.min(maxStartIndex, prev + 1))}
+              onClick={handleNext}
             />
           ) : null}
         </div>
