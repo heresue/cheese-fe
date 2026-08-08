@@ -42,7 +42,7 @@ export default function DashboardInterviewPractice() {
 
       {practiceSets.length > 0 ? (
         <div className="group relative h-[250px] w-full overflow-visible">
-          <div className="w-full overflow-hidden pb-3">
+          <div className="-mx-2 overflow-hidden px-2 pb-3">
             <div
               className="flex w-max gap-3 transition-transform duration-300 ease-in-out"
               style={{
