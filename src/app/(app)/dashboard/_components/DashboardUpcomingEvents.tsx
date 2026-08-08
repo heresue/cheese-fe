@@ -1,16 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-
 import Link from 'next/link';
 
 import { getUpcomingEvents } from '@/app/(app)/calendar/_lib/dashboard-events';
 import { useCalendarStore } from '@/app/(app)/calendar/_store/CalendarStoreProvider';
-import { CalendarIcon } from '@/assets/icons/sidebar';
 
 import DashboardCarouselNavButton from './DashboardCarouselNavButton';
 import DashboardEventCard from './DashboardEventCard';
 import DashboardSectionHeader from './DashboardSectionHeader';
+
+import { CalendarIcon } from '@/assets/icons/sidebar';
 
 const VISIBLE_COUNT = 3;
 
@@ -34,12 +34,12 @@ export default function DashboardUpcomingEvents() {
   };
 
   return (
-    <section className="mb-10">
+    <section>
       <DashboardSectionHeader icon={<CalendarIcon />} title="다가오는 일정" />
 
       {upcomingEvents.length > 0 ? (
         <div className="group relative w-full overflow-visible">
-          <div className="grid grid-cols-3 gap-4 overflow-hidden">
+          <div className="grid grid-cols-3 gap-3 overflow-hidden">
             {upcomingEvents
               .slice(visibleStartIndex, visibleStartIndex + VISIBLE_COUNT)
               .map((event) => (
@@ -65,13 +65,13 @@ export default function DashboardUpcomingEvents() {
         </div>
       ) : (
         <div className="border-border flex min-h-[188px] flex-col items-center justify-center rounded-[10px] border bg-white p-8 text-center">
-          <p className="text-dashboard-gray text-[14px] leading-[22px] font-medium">
+          <p className="text-text-muted text-[15px] leading-[22px] font-medium">
             다가오는 일정이 없습니다.
           </p>
 
           <Link
             href="/calendar"
-            className="text-dashboard-navy mt-3 text-[14px] leading-[22px] font-medium hover:underline"
+            className="mt-3 text-[15px] leading-[22px] font-medium hover:underline"
           >
             일정 추가하러 가기
           </Link>

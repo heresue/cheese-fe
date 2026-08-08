@@ -11,6 +11,7 @@ import {
   getProblemCarouselMaxStartIndex,
   PROBLEM_CARD_SCROLL_STEP,
 } from '@/app/(app)/problem/_utils/getInProgressProblemSets';
+
 import { ProblemSolvingIcon } from '@/assets/icons/sidebar';
 
 import DashboardCarouselNavButton from './DashboardCarouselNavButton';
@@ -36,14 +37,14 @@ export default function DashboardInterviewPractice() {
   };
 
   return (
-    <section className="mb-10">
+    <section>
       <DashboardSectionHeader icon={<ProblemSolvingIcon />} title="문제풀이" />
 
       {practiceSets.length > 0 ? (
-        <div className="group relative w-full overflow-visible">
-          <div className="w-full overflow-hidden">
+        <div className="group relative h-[250px] w-full overflow-visible">
+          <div className="w-full overflow-hidden pb-3">
             <div
-              className="flex w-max gap-4 transition-transform duration-300 ease-in-out"
+              className="flex w-max gap-3 transition-transform duration-300 ease-in-out"
               style={{
                 transform: `translateX(-${visibleStartIndex * PROBLEM_CARD_SCROLL_STEP}px)`,
               }}
@@ -73,14 +74,14 @@ export default function DashboardInterviewPractice() {
           ) : null}
         </div>
       ) : (
-        <div className="flex min-h-[188px] flex-col items-center justify-center rounded-[10px] border border-gray-200 bg-white p-8 text-center">
-          <p className="text-dashboard-gray text-[14px] leading-[22px] font-medium">
+        <div className="flex min-h-[188px] flex-col items-center justify-center rounded-[10px] border border-gray-300 bg-white p-8 text-center">
+          <p className="text-text-muted text-[15px] leading-[22px] font-medium">
             진행 중인 문제풀이가 없습니다.
           </p>
 
           <Link
             href="/problem"
-            className="text-dashboard-navy mt-3 text-[14px] leading-[22px] font-medium hover:underline"
+            className="mt-3 text-[15px] leading-[22px] font-medium hover:underline"
           >
             문제풀이 시작하기
           </Link>

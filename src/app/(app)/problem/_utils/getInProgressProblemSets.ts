@@ -9,18 +9,16 @@ export function isInProgressProblemSet(problemSet: ProblemSet) {
 }
 
 export function getInProgressProblemSets(problemSets: ProblemSet[]) {
-  return problemSets
-    .filter(isInProgressProblemSet)
-    .sort((left, right) => {
-      const leftDate = left.lastProgressDate ?? '';
-      const rightDate = right.lastProgressDate ?? '';
+  return problemSets.filter(isInProgressProblemSet).sort((left, right) => {
+    const leftDate = left.lastProgressDate ?? '';
+    const rightDate = right.lastProgressDate ?? '';
 
-      return rightDate.localeCompare(leftDate);
-    });
+    return rightDate.localeCompare(leftDate);
+  });
 }
 
 export const PROBLEM_CARD_WIDTH = 231;
-export const PROBLEM_CARD_GAP = 16;
+export const PROBLEM_CARD_GAP = 12;
 export const PROBLEM_CARD_SCROLL_STEP = PROBLEM_CARD_WIDTH + PROBLEM_CARD_GAP;
 export const PROBLEM_CARD_VISIBLE_COUNT = 4;
 
