@@ -1,4 +1,4 @@
-import type { ProblemSet } from '../_types/problem';
+import type { ProblemSet } from '../../problem/_types/problem';
 
 export function isInProgressProblemSet(problemSet: ProblemSet) {
   return (

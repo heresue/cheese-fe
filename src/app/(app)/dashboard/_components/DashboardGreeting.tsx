@@ -1,12 +1,10 @@
 'use client';
 
-import {
-  getBusiestWeekdayLabel,
-  getThisWeekRemainingEvents,
-} from '@/app/(app)/calendar/_lib/dashboard-events';
+import ProfileImage from '@/components/common/ProfileImage';
+
 import { useCalendarStore } from '@/app/(app)/calendar/_store/CalendarStoreProvider';
 
-import ProfileImage from '@/components/common/ProfileImage';
+import { getBusiestWeekdayLabel, getThisWeekRemainingEvents } from '../_lib/dashboard-events';
 
 import { getMockPersonalProfile } from '@/mocks/profile/userProfiles';
 

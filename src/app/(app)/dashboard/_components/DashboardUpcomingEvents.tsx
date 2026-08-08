@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
-import { getUpcomingEvents } from '@/app/(app)/calendar/_lib/dashboard-events';
-import { useCalendarStore } from '@/app/(app)/calendar/_store/CalendarStoreProvider';
-
 import DashboardCarouselNavButton from './DashboardCarouselNavButton';
 import DashboardEventCard from './DashboardEventCard';
 import DashboardSectionHeader from './DashboardSectionHeader';
+
+import { useCalendarStore } from '@/app/(app)/calendar/_store/CalendarStoreProvider';
+
+import { getUpcomingEvents } from '../_lib/dashboard-events';
 
 import { CalendarIcon } from '@/assets/icons/sidebar';
 

@@ -1,13 +1,14 @@
 import Link from 'next/link';
 
-import { getDashboardCategoryMeta } from '@/app/(app)/calendar/_lib/dashboard-category';
+import { getEventColorTokens } from '@/app/(app)/calendar/_model/constants';
+import type { CalendarEvent } from '@/app/(app)/calendar/_model/types';
+
 import {
   formatDashboardDeadlineLabel,
   formatDashboardTimeRange,
   getDashboardEventLocation,
-} from '@/app/(app)/calendar/_lib/dashboard-events';
-import { getEventColorTokens } from '@/app/(app)/calendar/_model/constants';
-import type { CalendarEvent } from '@/app/(app)/calendar/_model/types';
+} from '../_lib/dashboard-events';
+import { getDashboardCategoryMeta } from '../_lib/dashboard-category';
 
 import { Chip } from '@/components/common/Chip';
 

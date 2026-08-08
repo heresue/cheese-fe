@@ -1,10 +1,11 @@
 import Link from 'next/link';
 
 import { CommunityIcon } from '@/assets/icons/sidebar';
-import { groupPosts, infoPosts, jobPosts } from '@/mocks/posts';
 
 import DashboardPostList from './DashboardPostList';
 import DashboardSectionHeader from './DashboardSectionHeader';
+
+import { groupPosts, infoPosts, jobPosts } from '@/mocks/posts';
 
 type PopularPostItem = {
   id: string;

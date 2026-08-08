@@ -5,17 +5,17 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 
 import ProblemCard from '@/app/(app)/problem/_components/ProblemCard';
-import { mockProblemSets } from '@/app/(app)/problem/_data/mockProblemSets';
 import {
   getInProgressProblemSets,
   getProblemCarouselMaxStartIndex,
   PROBLEM_CARD_SCROLL_STEP,
-} from '@/app/(app)/problem/_utils/getInProgressProblemSets';
+} from '../_lib/getInProgressProblemSets';
+import DashboardCarouselNavButton from './DashboardCarouselNavButton';
+import DashboardSectionHeader from './DashboardSectionHeader';
 
 import { ProblemSolvingIcon } from '@/assets/icons/sidebar';
 
-import DashboardCarouselNavButton from './DashboardCarouselNavButton';
-import DashboardSectionHeader from './DashboardSectionHeader';
+import { mockProblemSets } from '@/app/(app)/problem/_data/mockProblemSets';
 
 export default function DashboardInterviewPractice() {
   const [startIndex, setStartIndex] = useState(0);
