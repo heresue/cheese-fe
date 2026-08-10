@@ -1,23 +1,28 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-
 import Link from 'next/link';
 
 import ProblemCard from '@/app/(app)/problem/_components/ProblemCard';
-import {
-  getInProgressProblemSets,
-  getProblemCarouselMaxStartIndex,
-  PROBLEM_CARD_SCROLL_STEP,
-} from '../_lib/getInProgressProblemSets';
 import DashboardCarouselNavButton from './DashboardCarouselNavButton';
 import DashboardSectionHeader from './DashboardSectionHeader';
+
+import { getInProgressProblemSets } from '../_lib/problem-sets';
 
 import { ProblemSolvingIcon } from '@/assets/icons/sidebar';
 
 import { mockProblemSets } from '@/app/(app)/problem/_data/mockProblemSets';
 
-export default function DashboardInterviewPractice() {
+const PROBLEM_CARD_WIDTH = 231;
+const PROBLEM_CARD_GAP = 12;
+const PROBLEM_CARD_SCROLL_STEP = PROBLEM_CARD_WIDTH + PROBLEM_CARD_GAP;
+const PROBLEM_CARD_VISIBLE_COUNT = 4;
+
+function getProblemCarouselMaxStartIndex(totalCount: number) {
+  return Math.max(0, totalCount - PROBLEM_CARD_VISIBLE_COUNT);
+}
+
+export default function DashboardProblemSets() {
   const [startIndex, setStartIndex] = useState(0);
 
   const practiceSets = useMemo(() => getInProgressProblemSets(mockProblemSets), []);

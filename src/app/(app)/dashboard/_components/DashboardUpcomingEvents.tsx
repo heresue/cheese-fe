@@ -9,18 +9,25 @@ import DashboardSectionHeader from './DashboardSectionHeader';
 
 import { useCalendarStore } from '@/app/(app)/calendar/_store/CalendarStoreProvider';
 
-import { getUpcomingEvents } from '../_lib/dashboard-events';
+import { getUpcomingEvents } from '../_lib/events';
 
 import { CalendarIcon } from '@/assets/icons/sidebar';
 
-const VISIBLE_COUNT = 3;
+const EVENT_CARD_WIDTH = 312;
+const EVENT_CARD_GAP = 12;
+const EVENT_CARD_SCROLL_STEP = EVENT_CARD_WIDTH + EVENT_CARD_GAP;
+const EVENT_CARD_VISIBLE_COUNT = 3;
+
+export function getEventCarouselMaxStartIndex(totalCount: number) {
+  return Math.max(0, totalCount - EVENT_CARD_VISIBLE_COUNT);
+}
 
 export default function DashboardUpcomingEvents() {
   const { events } = useCalendarStore();
   const upcomingEvents = getUpcomingEvents(events);
   const [startIndex, setStartIndex] = useState(0);
 
-  const maxStartIndex = Math.max(0, upcomingEvents.length - VISIBLE_COUNT);
+  const maxStartIndex = getEventCarouselMaxStartIndex(upcomingEvents.length);
   const visibleStartIndex = Math.min(startIndex, maxStartIndex);
 
   const canGoPrev = visibleStartIndex > 0;
@@ -40,12 +47,19 @@ export default function DashboardUpcomingEvents() {
 
       {upcomingEvents.length > 0 ? (
         <div className="group relative w-full overflow-visible">
-          <div className="grid grid-cols-3 gap-3 overflow-hidden">
-            {upcomingEvents
-              .slice(visibleStartIndex, visibleStartIndex + VISIBLE_COUNT)
-              .map((event) => (
-                <DashboardEventCard key={event.id} event={event} />
+          <div className="overflow-hidden">
+            <div
+              className="flex gap-3 transition-transform duration-300 ease-in-out"
+              style={{
+                transform: `translateX(-${visibleStartIndex * EVENT_CARD_SCROLL_STEP}px)`,
+              }}
+            >
+              {upcomingEvents.map((event) => (
+                <div key={event.id} className="w-[312px] shrink-0">
+                  <DashboardEventCard event={event} />
+                </div>
               ))}
+            </div>
           </div>
 
           {canGoPrev ? (

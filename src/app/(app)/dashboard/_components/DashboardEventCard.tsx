@@ -7,8 +7,8 @@ import {
   formatDashboardDeadlineLabel,
   formatDashboardTimeRange,
   getDashboardEventLocation,
-} from '../_lib/dashboard-events';
-import { getDashboardCategoryMeta } from '../_lib/dashboard-category';
+} from '../_lib/events';
+import { getDashboardCategoryMeta } from '../_lib/event-category';
 
 import { Chip } from '@/components/common/Chip';
 
@@ -28,7 +28,7 @@ export default function DashboardEventCard({ event }: DashboardEventCardProps) {
   return (
     <Link
       href="/calendar"
-      className="border-border hover:border-secondary-600 flex h-[226px] w-full max-w-[312px] flex-col rounded-[10px] border bg-white p-5 transition-colors"
+      className="border-border hover:border-secondary-600 flex h-[226px] w-[312px] flex-col rounded-[10px] border bg-white p-5 transition-colors"
     >
       <div className="mb-3 flex items-start justify-between gap-3">
         <Chip variant={categoryMeta.chipVariant} size="md">

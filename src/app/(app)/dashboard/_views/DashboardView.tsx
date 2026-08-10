@@ -1,6 +1,6 @@
 import DashboardCommunitySection from '../_components/DashboardCommunitySection';
 import DashboardGreetingSection from '../_components/DashboardGreeting';
-import DashboardInterviewPractice from '../_components/DashboardInterviewPractice';
+import DashboardProblemSets from '../_components/DashboardProblemSets';
 import DashboardUpcomingEvents from '../_components/DashboardUpcomingEvents';
 
 export default function DashboardView() {
@@ -9,7 +9,7 @@ export default function DashboardView() {
       <div className="mx-auto flex max-w-[1040px] flex-col gap-4 px-10 py-10">
         <DashboardGreetingSection />
         <DashboardUpcomingEvents />
-        <DashboardInterviewPractice />
+        <DashboardProblemSets />
         <DashboardCommunitySection />
       </div>
     </div>

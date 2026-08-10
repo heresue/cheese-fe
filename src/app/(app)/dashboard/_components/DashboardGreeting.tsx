@@ -4,7 +4,7 @@ import ProfileImage from '@/components/common/ProfileImage';
 
 import { useCalendarStore } from '@/app/(app)/calendar/_store/CalendarStoreProvider';
 
-import { getBusiestWeekdayLabel, getThisWeekRemainingEvents } from '../_lib/dashboard-events';
+import { getBusiestWeekdayLabel, getThisWeekRemainingEvents } from '../_lib/events';
 
 import { getMockPersonalProfile } from '@/mocks/profile/userProfiles';
 
