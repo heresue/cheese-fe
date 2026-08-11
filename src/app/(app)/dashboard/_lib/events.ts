@@ -1,5 +1,5 @@
-import { hasTimePart, parseCalendarDate, toTimeInputValue } from '../_lib/date';
-import type { CalendarEvent } from '../_model/types';
+import { hasTimePart, parseCalendarDate, toTimeInputValue } from '../../calendar/_lib/date';
+import type { CalendarEvent } from '../../calendar/_model/types';
 
 function getStartOfToday() {
   const now = new Date();

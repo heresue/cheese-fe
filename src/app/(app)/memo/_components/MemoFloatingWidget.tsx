@@ -111,7 +111,7 @@ function WidgetActionButton({
         event.stopPropagation();
         onClick();
       }}
-      className="flex h-[20px] w-[20px] items-center justify-center text-gray-500 transition-colors hover:text-gray-600"
+      className="flex h-[20px] w-[20px] items-center justify-center text-gray-500 transition-colors hover:text-gray-950"
     >
       {children}
     </button>
@@ -223,7 +223,7 @@ function WidgetMemoCard({
   const previewContent = stripHtml(memo.content);
 
   return (
-    <article className="group box-border w-full rounded-[10px] border border-gray-300 bg-white px-[16px] py-[14px] transition-colors hover:bg-gray-100">
+    <article className="box-border w-full rounded-[10px] border border-gray-300 bg-white px-[16px] py-[14px] transition-colors hover:bg-gray-100">
       <button type="button" onClick={onToggleExpand} className="block w-full text-left">
         <h3 className="truncate text-[14px] leading-[20px] font-bold text-gray-950">
           {memo.title}
@@ -241,7 +241,7 @@ function WidgetMemoCard({
         </p>
       </button>
 
-      <div className="mt-[14px] flex items-center justify-end gap-[12px] opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+      <div className="mt-[14px] flex items-center justify-end gap-[12px]">
         <WidgetActionButton label="메모 고정" onClick={() => onTogglePin(memo.id)}>
           {memo.pinned ? (
             <MemoPinFilledIcon className="h-[16px] w-[16px] text-gray-950" aria-hidden="true" />
@@ -426,60 +426,7 @@ export function MemoFloatingWidget() {
 
           <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <div className="flex w-full flex-col gap-[12px]">
-              {widgetMemos.length > 0 ? (
-                (() => {
-                  const pinnedMemos = widgetMemos.filter((memo) => memo.pinned);
-                  const unpinnedMemos = widgetMemos.filter((memo) => !memo.pinned);
-                  const createEditor =
-                    activeDraft?.mode === 'create' ? (
-                      <WidgetMemoEditorCard
-                        key="create-draft"
-                        draft={activeDraft}
-                        editorRef={activeEditorRef}
-                        onChangeDraft={handleChangeDraft}
-                        onTogglePin={handleToggleDraftPin}
-                        onDelete={handleDeleteDraft}
-                      />
-                    ) : null;
-
-                  const renderMemo = (memo: (typeof widgetMemos)[number]) => {
-                    if (activeDraft?.mode === 'edit' && activeDraft.id === memo.id) {
-                      return (
-                        <WidgetMemoEditorCard
-                          key={memo.id}
-                          draft={activeDraft}
-                          editorRef={activeEditorRef}
-                          onChangeDraft={handleChangeDraft}
-                          onTogglePin={handleToggleDraftPin}
-                          onDelete={handleDeleteDraft}
-                        />
-                      );
-                    }
-
-                    return (
-                      <WidgetMemoCard
-                        key={memo.id}
-                        memo={memo}
-                        expanded={expandedMemoId === memo.id}
-                        onToggleExpand={() =>
-                          setExpandedMemoId((prev) => (prev === memo.id ? null : memo.id))
-                        }
-                        onEdit={handleOpenEditDraft}
-                        onTogglePin={togglePinMemo}
-                        onDelete={deleteMemo}
-                      />
-                    );
-                  };
-
-                  return (
-                    <>
-                      {pinnedMemos.map(renderMemo)}
-                      {createEditor}
-                      {unpinnedMemos.map(renderMemo)}
-                    </>
-                  );
-                })()
-              ) : activeDraft?.mode === 'create' ? (
+              {activeDraft?.mode === 'create' ? (
                 <WidgetMemoEditorCard
                   draft={activeDraft}
                   editorRef={activeEditorRef}
@@ -487,13 +434,44 @@ export function MemoFloatingWidget() {
                   onTogglePin={handleToggleDraftPin}
                   onDelete={handleDeleteDraft}
                 />
-              ) : (
+              ) : null}
+
+              {widgetMemos.length > 0 ? (
+                widgetMemos.map((memo) => {
+                  if (activeDraft?.mode === 'edit' && activeDraft.id === memo.id) {
+                    return (
+                      <WidgetMemoEditorCard
+                        key={memo.id}
+                        draft={activeDraft}
+                        editorRef={activeEditorRef}
+                        onChangeDraft={handleChangeDraft}
+                        onTogglePin={handleToggleDraftPin}
+                        onDelete={handleDeleteDraft}
+                      />
+                    );
+                  }
+
+                  return (
+                    <WidgetMemoCard
+                      key={memo.id}
+                      memo={memo}
+                      expanded={expandedMemoId === memo.id}
+                      onToggleExpand={() =>
+                        setExpandedMemoId((prev) => (prev === memo.id ? null : memo.id))
+                      }
+                      onEdit={handleOpenEditDraft}
+                      onTogglePin={togglePinMemo}
+                      onDelete={deleteMemo}
+                    />
+                  );
+                })
+              ) : activeDraft?.mode !== 'create' ? (
                 <div className="flex h-[160px] items-center justify-center rounded-[10px] border border-gray-300 bg-gray-50">
                   <p className="text-[14px] leading-[20px] font-medium text-gray-500">
                     작성된 메모가 없습니다.
                   </p>
                 </div>
-              )}
+              ) : null}
             </div>
           </div>
 

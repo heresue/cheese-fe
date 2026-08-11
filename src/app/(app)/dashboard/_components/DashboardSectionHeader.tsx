@@ -14,11 +14,11 @@ export default function DashboardSectionHeader({
   className,
 }: DashboardSectionHeaderProps) {
   return (
-    <header className={cn('mb-5 flex items-center gap-2', className)}>
-      <span className="text-dashboard-gray flex h-6 w-6 items-center justify-center [&>svg]:h-5 [&>svg]:w-5">
+    <header className={cn('mb-3 flex items-center gap-[10px]', className)}>
+      <span className="flex h-[30px] w-[30px] items-center justify-center text-gray-500 [&>svg]:w-5">
         {icon}
       </span>
-      <h2 className="text-dashboard-black text-[16px] leading-[20px] font-bold">{title}</h2>
+      <h2 className="text-[14px] leading-[30px] font-bold text-gray-700">{title}</h2>
     </header>
   );
 }

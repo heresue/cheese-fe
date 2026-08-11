@@ -1,15 +1,15 @@
 import DashboardCommunitySection from '../_components/DashboardCommunitySection';
 import DashboardGreetingSection from '../_components/DashboardGreeting';
-import DashboardInterviewPractice from '../_components/DashboardInterviewPractice';
+import DashboardProblemSets from '../_components/DashboardProblemSets';
 import DashboardUpcomingEvents from '../_components/DashboardUpcomingEvents';
 
 export default function DashboardView() {
   return (
     <div className="h-dvh overflow-y-auto bg-white [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      <div className="mx-auto max-w-[1100px] px-10 pt-10 pb-28">
+      <div className="mx-auto flex max-w-[1040px] flex-col gap-4 px-10 py-10">
         <DashboardGreetingSection />
         <DashboardUpcomingEvents />
-        <DashboardInterviewPractice />
+        <DashboardProblemSets />
         <DashboardCommunitySection />
       </div>
     </div>
