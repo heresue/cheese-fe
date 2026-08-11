@@ -51,6 +51,8 @@ function toEditableDraft(draft: Partial<CalendarEventDraft>): CalendarEventDraft
     colorId: draft.colorId,
     memo: draft.memo ?? '',
     location: draft.location ?? '',
+    url: draft.url ?? '',
+    category: draft.category,
     reminderMinutes: draft.reminderMinutes,
     spaceId: draft.spaceId,
   };

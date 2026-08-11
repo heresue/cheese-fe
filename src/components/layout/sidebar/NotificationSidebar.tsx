@@ -1,13 +1,17 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
+import PersonalProfileCardModal from '@/app/(app)/community/_components/ProfileCardModal/PersonalProfileCardModal';
 import DoubleArrowIcon from '@/assets/icons/problem/double-arrow.svg';
 import DeleteIcon from '@/assets/icons/sidebar/delete.svg';
 import MessageIcon from '@/assets/icons/sidebar/message.svg';
 import SendIcon from '@/assets/icons/sidebar/send.svg';
+import { cn } from '@/lib/cn';
+import { getMockPersonalProfile } from '@/mocks/profile/userProfiles';
 
 type NotificationItem = {
   id: string;
@@ -20,13 +24,15 @@ type NotificationItem = {
   showContentBullet?: boolean;
   avatarSrc?: string;
   avatarClassName?: string;
+  href?: string;
+  profileId?: number;
 };
 
 type NotificationSidebarProps = {
   onClose: () => void;
 };
 
-const recentNotifications: NotificationItem[] = [
+const initialRecentNotifications: NotificationItem[] = [
   {
     id: 'recent-1',
     sender: '유혹천',
@@ -37,6 +43,8 @@ const recentNotifications: NotificationItem[] = [
     date: '2월 10일',
     unread: true,
     avatarSrc: '/mock/profile-1.png',
+    href: '/community/groups/1',
+    profileId: 1,
   },
   {
     id: 'recent-2',
@@ -48,6 +56,8 @@ const recentNotifications: NotificationItem[] = [
     unread: true,
     showContentBullet: true,
     avatarClassName: 'bg-error-subtle',
+    href: '/community/jobs/1',
+    profileId: 1,
   },
   {
     id: 'recent-3',
@@ -58,10 +68,11 @@ const recentNotifications: NotificationItem[] = [
     date: '2월 10일',
     unread: true,
     avatarClassName: 'bg-primary-800',
+    href: '/community',
   },
 ];
 
-const readNotifications: NotificationItem[] = [
+const initialReadNotifications: NotificationItem[] = [
   {
     id: 'read-1',
     sender: '한창우',
@@ -70,6 +81,8 @@ const readNotifications: NotificationItem[] = [
     content: '런칭되어 있는 위치 기반 서비스에서 운영과 개선을 함께할 백엔드 개발자분을 모십니다.',
     date: '2월 10일',
     avatarSrc: '/mock/profile-2.png',
+    href: '/community/groups/1',
+    profileId: 1,
   },
   {
     id: 'read-2',
@@ -79,6 +92,8 @@ const readNotifications: NotificationItem[] = [
     content: '보내주신 자료 잘봤습니다.',
     date: '2월 10일',
     avatarSrc: '/mock/profile-3.png',
+    href: '/community/info/1',
+    profileId: 1,
   },
   {
     id: 'read-3',
@@ -88,27 +103,21 @@ const readNotifications: NotificationItem[] = [
     content: '홈페이지 마지막 마무리 페이지 작업자를 찾고 있습니다.',
     date: '2월 10일',
     avatarSrc: '/mock/profile-4.png',
+    href: '/community/jobs/1',
+    profileId: 1,
   },
 ];
 
-function cn(...classNames: Array<string | false | null | undefined>) {
-  return classNames.filter(Boolean).join(' ');
-}
-
-function NotificationAvatar({ item }: { item: NotificationItem }) {
-  if (item.avatarSrc) {
-    return (
-      <Image
-        src={item.avatarSrc}
-        alt=""
-        width={25}
-        height={25}
-        className="h-[25px] w-[25px] shrink-0 rounded-full object-cover"
-      />
-    );
-  }
-
-  return (
+function NotificationAvatar({ item, onClick }: { item: NotificationItem; onClick?: () => void }) {
+  const avatar = item.avatarSrc ? (
+    <Image
+      src={item.avatarSrc}
+      alt=""
+      width={25}
+      height={25}
+      className="h-[25px] w-[25px] shrink-0 rounded-full object-cover"
+    />
+  ) : (
     <span
       className={cn(
         'h-[25px] w-[25px] shrink-0 rounded-full',
@@ -117,16 +126,42 @@ function NotificationAvatar({ item }: { item: NotificationItem }) {
       aria-hidden="true"
     />
   );
+
+  if (!onClick) {
+    return avatar;
+  }
+
+  return (
+    <button
+      type="button"
+      aria-label={`${item.sender} 프로필 보기`}
+      onClick={(event) => {
+        event.stopPropagation();
+        onClick();
+      }}
+      className="shrink-0"
+    >
+      {avatar}
+    </button>
+  );
 }
 
 function NotificationActionMenu({
   open,
   onOpen,
   onClose,
+  onMarkAsRead,
+  onConfirmDelete,
+  onNavigate,
+  showMarkAsRead,
 }: {
   open: boolean;
   onOpen: () => void;
   onClose: () => void;
+  onMarkAsRead: () => void;
+  onConfirmDelete: () => void;
+  onNavigate: () => void;
+  showMarkAsRead: boolean;
 }) {
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -146,21 +181,28 @@ function NotificationActionMenu({
     };
   }, [onClose, open]);
 
-  const menuClassName = cn(
-    'items-center gap-[4px] rounded-[5px] border border-gray-400 bg-gray-50 p-[4px]',
-    open ? 'flex' : 'hidden group-hover:flex',
-  );
-
   return (
     <div ref={menuRef} className="absolute top-[12px] right-0 z-20">
-      <div className={menuClassName}>
-        <button
-          type="button"
-          className="flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[4px] text-gray-500 transition-colors hover:bg-gray-200"
-          aria-label="읽음 처리"
-        >
-          <MessageIcon aria-hidden="true" className="block h-[12px] w-[14px] shrink-0" />
-        </button>
+      <div
+        className={cn(
+          'items-center gap-[4px] rounded-[5px] border border-gray-400 bg-gray-50 p-[4px]',
+          open ? 'flex' : 'hidden group-hover:flex',
+        )}
+      >
+        {showMarkAsRead ? (
+          <button
+            type="button"
+            onClick={onMarkAsRead}
+            className="flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[4px] text-gray-500 transition-colors hover:bg-gray-200"
+            aria-label="읽음 처리"
+          >
+            <MessageIcon aria-hidden="true" className="block h-[12px] w-[14px] shrink-0" />
+          </button>
+        ) : (
+          <span className="flex h-[24px] w-[24px] shrink-0 items-center justify-center text-gray-300">
+            <MessageIcon aria-hidden="true" className="block h-[12px] w-[14px] shrink-0" />
+          </span>
+        )}
 
         <button
           type="button"
@@ -173,6 +215,7 @@ function NotificationActionMenu({
 
         <button
           type="button"
+          onClick={onNavigate}
           className="flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[4px] text-gray-500 transition-colors hover:bg-gray-200"
           aria-label="이동"
         >
@@ -190,7 +233,7 @@ function NotificationActionMenu({
           <div className="flex flex-col gap-[8px]">
             <button
               type="button"
-              onClick={onClose}
+              onClick={onConfirmDelete}
               className="flex h-[20px] w-full items-center rounded-[5px] bg-transparent px-[8px] text-left text-[12px] leading-[20px] font-medium tracking-[-0.24px] text-gray-950 transition-colors hover:bg-gray-200"
             >
               네
@@ -210,85 +253,140 @@ function NotificationActionMenu({
   );
 }
 
-function NotificationCard({ item }: { item: NotificationItem }) {
-  const [isExpanded, setIsExpanded] = useState(false);
+function NotificationCard({
+  item,
+  expanded,
+  onToggleExpand,
+  onMarkAsRead,
+  onDelete,
+  onNavigate,
+  onOpenProfile,
+}: {
+  item: NotificationItem;
+  expanded: boolean;
+  onToggleExpand: () => void;
+  onMarkAsRead: () => void;
+  onDelete: () => void;
+  onNavigate: () => void;
+  onOpenProfile?: () => void;
+}) {
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
   return (
     <article
       className={cn(
         'group relative box-border w-full min-w-0 border-b border-gray-300',
-        isExpanded ? 'py-[12px]' : 'h-[87px] py-[12px]',
+        expanded ? 'py-[12px]' : 'h-[87px] py-[12px]',
       )}
     >
       <NotificationActionMenu
         open={isDeleteConfirmOpen}
         onOpen={() => setIsDeleteConfirmOpen(true)}
         onClose={() => setIsDeleteConfirmOpen(false)}
+        onMarkAsRead={onMarkAsRead}
+        onConfirmDelete={() => {
+          setIsDeleteConfirmOpen(false);
+          onDelete();
+        }}
+        onNavigate={onNavigate}
+        showMarkAsRead={Boolean(item.unread)}
       />
 
-      <button
-        type="button"
-        aria-expanded={isExpanded}
-        onClick={() => setIsExpanded((prev) => !prev)}
-        className={cn(
-          'flex h-full w-full min-w-0 flex-col items-stretch text-left outline-none focus-visible:outline-none',
-          isExpanded ? 'gap-[4px]' : 'gap-[14px]',
-        )}
-      >
-        <div className="flex w-full min-w-0 items-center justify-between gap-[8px]">
-          <div className="flex min-w-0 items-center gap-[12px]">
-            <NotificationAvatar item={item} />
+      <div className="flex h-full w-full min-w-0 items-start gap-[12px] text-left">
+        <NotificationAvatar item={item} onClick={onOpenProfile} />
 
+        <button
+          type="button"
+          aria-expanded={expanded}
+          onClick={onToggleExpand}
+          className={cn(
+            'flex min-w-0 flex-1 flex-col items-stretch text-left outline-none focus-visible:outline-none',
+            expanded ? 'gap-[4px]' : 'gap-[14px]',
+          )}
+        >
+          <div className="flex w-full min-w-0 items-center justify-between gap-[8px]">
             <p className="min-w-0 truncate text-[14px] leading-[24px] font-normal tracking-[-0.28px] text-gray-700">
               <span className="font-medium text-gray-950">{item.sender}</span>
               {item.message}
             </p>
+
+            <div className="flex shrink-0 items-center gap-[8px]">
+              <span
+                className={cn(
+                  'text-[12px] leading-[24px] font-normal tracking-[-0.24px] text-black transition-opacity',
+                  'group-hover:opacity-0',
+                  isDeleteConfirmOpen && 'opacity-0',
+                )}
+              >
+                {item.date}
+              </span>
+
+              <span
+                className={cn(
+                  'h-[8px] w-[8px] rounded-full',
+                  item.unread ? 'bg-secondary-600' : 'bg-gray-300',
+                )}
+                aria-hidden="true"
+              />
+            </div>
           </div>
 
-          <div className="flex shrink-0 items-center gap-[8px]">
-            <span className="text-[12px] leading-[24px] font-normal tracking-[-0.24px] text-black">
-              {item.date}
-            </span>
+          <div className="flex w-full min-w-0 items-start gap-[4px] text-[14px] leading-[24px] tracking-[-0.28px]">
+            <span className="shrink-0 font-medium text-gray-950">[{item.category}]</span>
 
-            <span
+            <p
               className={cn(
-                'h-[8px] w-[8px] rounded-full',
-                item.unread ? 'bg-secondary-600' : 'bg-gray-300',
+                'min-w-0 flex-1 font-normal text-gray-600',
+                expanded ? 'break-words whitespace-pre-line' : 'truncate whitespace-nowrap',
               )}
-              aria-hidden="true"
-            />
+            >
+              {item.showContentBullet ? '· ' : ''}
+              {item.content}
+            </p>
           </div>
-        </div>
-
-        <div className="flex w-full min-w-0 items-start gap-[4px] text-[14px] leading-[24px] tracking-[-0.28px]">
-          <span className="shrink-0 font-medium text-gray-950">[{item.category}]</span>
-
-          <p
-            className={cn(
-              'min-w-0 flex-1 font-normal text-gray-600',
-              isExpanded ? 'break-words whitespace-pre-line' : 'truncate whitespace-nowrap',
-            )}
-          >
-            {item.showContentBullet ? '· ' : ''}
-            {item.content}
-          </p>
-        </div>
-      </button>
+        </button>
+      </div>
     </article>
   );
 }
 
-function NotificationSection({
-  title,
-  items,
-  hasContentGap = false,
-}: {
-  title: string;
-  items: NotificationItem[];
-  hasContentGap?: boolean;
-}) {
-  return (
+export function NotificationSidebar({ onClose }: NotificationSidebarProps) {
+  const router = useRouter();
+  const [recentItems, setRecentItems] = useState(initialRecentNotifications);
+  const [readItems, setReadItems] = useState(initialReadNotifications);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [profileCardOpen, setProfileCardOpen] = useState(false);
+  const [selectedProfileId, setSelectedProfileId] = useState(1);
+
+  const selectedProfile = useMemo(
+    () => getMockPersonalProfile(selectedProfileId),
+    [selectedProfileId],
+  );
+
+  const handleMarkAsRead = (item: NotificationItem) => {
+    if (!item.unread) return;
+
+    setRecentItems((prev) => prev.filter((notification) => notification.id !== item.id));
+    setReadItems((prev) => [{ ...item, unread: false }, ...prev]);
+  };
+
+  const handleDelete = (itemId: string) => {
+    setRecentItems((prev) => prev.filter((notification) => notification.id !== itemId));
+    setReadItems((prev) => prev.filter((notification) => notification.id !== itemId));
+
+    if (expandedId === itemId) {
+      setExpandedId(null);
+    }
+  };
+
+  const handleNavigate = (item: NotificationItem) => {
+    if (!item.href) return;
+
+    router.push(item.href);
+    onClose();
+  };
+
+  const renderSection = (title: string, items: NotificationItem[], hasContentGap = false) => (
     <section className={cn('flex w-full min-w-0 flex-col', hasContentGap && 'gap-[8px]')}>
       <h3 className="px-[20px] text-[14px] leading-[30px] font-medium tracking-[-0.28px] text-gray-500">
         {title}
@@ -296,14 +394,28 @@ function NotificationSection({
 
       <div className="flex w-full min-w-0 flex-col">
         {items.map((item) => (
-          <NotificationCard key={item.id} item={item} />
+          <NotificationCard
+            key={item.id}
+            item={item}
+            expanded={expandedId === item.id}
+            onToggleExpand={() => setExpandedId((prev) => (prev === item.id ? null : item.id))}
+            onMarkAsRead={() => handleMarkAsRead(item)}
+            onDelete={() => handleDelete(item.id)}
+            onNavigate={() => handleNavigate(item)}
+            onOpenProfile={
+              item.profileId
+                ? () => {
+                    setSelectedProfileId(item.profileId!);
+                    setProfileCardOpen(true);
+                  }
+                : undefined
+            }
+          />
         ))}
       </div>
     </section>
   );
-}
 
-export function NotificationSidebar({ onClose }: NotificationSidebarProps) {
   return (
     <aside className="box-border flex h-dvh w-[388px] shrink-0 flex-col gap-[20px] overflow-x-hidden overflow-y-auto border-r-2 border-gray-300 bg-gray-50 p-[20px] shadow-[0_4px_25px_rgba(85,85,85,0.1)]">
       <header className="flex min-h-[30px] w-full shrink-0 items-center justify-between">
@@ -325,9 +437,15 @@ export function NotificationSidebar({ onClose }: NotificationSidebarProps) {
       </header>
 
       <div className="flex w-full min-w-0 flex-col gap-[20px]">
-        <NotificationSection title="최신" items={recentNotifications} hasContentGap />
-        <NotificationSection title="읽음" items={readNotifications} />
+        {renderSection('최신', recentItems, true)}
+        {renderSection('읽음', readItems)}
       </div>
+
+      <PersonalProfileCardModal
+        isOpen={profileCardOpen}
+        onClose={() => setProfileCardOpen(false)}
+        profile={selectedProfile}
+      />
     </aside>
   );
 }
