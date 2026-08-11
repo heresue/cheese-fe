@@ -25,7 +25,7 @@ export default function ProblemCard({ problemSet }: ProblemCardProps) {
   return (
     <Link
       href={`/problem/${problemSet.id}`}
-      className="group bg-bg-white block h-[250px] w-[231px] overflow-hidden rounded-[10px] border border-gray-300 shadow-none transition-shadow duration-200 hover:shadow-[0_4px_10px_rgba(0,0,0,0.10)] focus-visible:shadow-[0_4px_10px_rgba(0,0,0,0.10)] focus-visible:outline-none"
+      className="group/card bg-bg-white block h-[250px] w-[231px] overflow-hidden rounded-[10px] border border-gray-300 shadow-none transition-shadow duration-200 hover:shadow-[0_4px_10px_rgba(0,0,0,0.10)] focus-visible:shadow-[0_4px_10px_rgba(0,0,0,0.10)] focus-visible:outline-none"
     >
       <div className="relative h-[140px] w-full overflow-hidden">
         <Image
@@ -33,7 +33,7 @@ export default function ProblemCard({ problemSet }: ProblemCardProps) {
           alt={`${problemSet.title} 썸네일`}
           fill
           sizes="231px"
-          className="scale-100 object-cover transition-transform duration-200 ease-out group-hover:scale-105 group-focus-visible:scale-105"
+          className="scale-100 object-cover transition-transform duration-200 ease-out group-hover/card:scale-105 group-focus-visible/card:scale-105"
         />
 
         <span className="bg-bg-white absolute top-[12px] left-[12px] flex h-[24px] w-[38px] items-center justify-center rounded-[50px] text-[12px] leading-[24px] font-bold text-gray-950">

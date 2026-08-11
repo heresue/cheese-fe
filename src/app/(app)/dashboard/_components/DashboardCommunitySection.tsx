@@ -1,10 +1,11 @@
 import Link from 'next/link';
 
 import { CommunityIcon } from '@/assets/icons/sidebar';
-import { groupPosts, infoPosts, jobPosts } from '@/mocks/posts';
 
 import DashboardPostList from './DashboardPostList';
 import DashboardSectionHeader from './DashboardSectionHeader';
+
+import { groupPosts, infoPosts, jobPosts } from '@/mocks/posts';
 
 type PopularPostItem = {
   id: string;
@@ -58,12 +59,10 @@ export default function DashboardCommunitySection() {
 
   return (
     <section>
-      <div className="mb-5">
-        <DashboardSectionHeader icon={<CommunityIcon />} title="커뮤니티" className="mb-0" />
-      </div>
+      <DashboardSectionHeader icon={<CommunityIcon />} title="커뮤니티" className="mb-4" />
 
       {popularPosts.daily.length > 0 ? (
-        <div className="grid grid-cols-2 gap-10">
+        <div className="grid grid-cols-2 gap-4">
           <DashboardPostList
             title="일간 인기 게시글"
             href="/community/jobs"
@@ -76,14 +75,14 @@ export default function DashboardCommunitySection() {
           />
         </div>
       ) : (
-        <div className="flex min-h-[160px] flex-col items-center justify-center rounded-[10px] border border-gray-200 bg-white p-8 text-center">
-          <p className="text-dashboard-gray text-[14px] leading-[22px] font-medium">
+        <div className="flex min-h-[160px] flex-col items-center justify-center rounded-[10px] border border-gray-300 bg-white p-8 text-center">
+          <p className="text-text-muted text-[15px] leading-[22px] font-medium">
             인기 게시글이 없습니다.
           </p>
 
           <Link
             href="/community/jobs"
-            className="text-dashboard-navy mt-3 text-[14px] leading-[22px] font-medium hover:underline"
+            className="mt-3 text-[15px] leading-[22px] font-medium hover:underline"
           >
             커뮤니티 둘러보기
           </Link>

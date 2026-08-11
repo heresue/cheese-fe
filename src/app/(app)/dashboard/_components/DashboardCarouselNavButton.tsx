@@ -1,5 +1,6 @@
-import ArrowIcon from '@/assets/icons/common/arrow.svg';
 import { cn } from '@/lib/cn';
+
+import ArrowIcon from '@/assets/icons/common/arrow.svg';
 
 type DashboardCarouselNavButtonProps = {
   label: string;
@@ -20,14 +21,14 @@ export default function DashboardCarouselNavButton({
       aria-label={label}
       onClick={onClick}
       className={cn(
-        'border-border text-dashboard-gray hover:border-secondary-600 hover:text-dashboard-black absolute top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border bg-white opacity-0 shadow-[0_4px_10px_rgba(0,0,0,0.08)] transition-opacity group-hover:opacity-100 focus-visible:opacity-100',
+        'border-border absolute top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border bg-white text-gray-500 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100',
         isLeft ? 'left-0 -translate-x-1/2' : 'right-0 translate-x-1/2',
       )}
     >
       <ArrowIcon
         aria-hidden="true"
         focusable="false"
-        className={cn('h-4 w-[9px] shrink-0', !isLeft && 'rotate-180')}
+        className={cn('h-[18px] w-[10.5px] shrink-0', !isLeft && 'rotate-180')}
       />
     </button>
   );

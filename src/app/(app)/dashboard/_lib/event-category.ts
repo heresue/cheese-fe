@@ -1,4 +1,4 @@
-import type { CalendarEvent, CalendarEventCategory } from '../_model/types';
+import type { CalendarEvent, CalendarEventCategory } from '../../calendar/_model/types';
 
 type DashboardChipVariant = 'interview' | 'document' | 'personal';
 
