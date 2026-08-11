@@ -9,7 +9,8 @@
 ## 2. 파일 및 네이밍
 
 - React 컴포넌트는 PascalCase를 사용한다.
-- 유틸리티, 타입, API 파일은 camelCase를 사용한다.
+- 유틸리티, 타입, 일반 API 파일은 camelCase를 사용한다.
+- page.tsx, layout.tsx, route.ts 등 Next.js App Router에서 정의한 예약 파일은 프레임워크의 파일명 규칙을 따른다.
 - 변수와 함수는 camelCase를 사용한다.
 - 변경되지 않는다는 의미를 강조하는 모듈 수준의 고정 상수는 UPPER_SNAKE_CASE를 사용한다.
 - 타입은 PascalCase를 사용한다.
@@ -65,7 +66,7 @@ CodeRabbit은 PR 리뷰 시 다음 항목을 확인한다.
 - PR 제목이 `<type>: <작업 내용>` 형식인지 확인한다.
 - 컴포넌트 이름이 PascalCase인지 확인한다.
 - 변수와 함수 이름이 camelCase인지 확인한다.
-- 유틸리티, 타입, API 파일명이 camelCase인지 확인한다.
+- 유틸리티, 타입, 일반 API 파일명이 camelCase인지 확인한다. 단, page.tsx, layout.tsx, route.ts 등 Next.js 예약 파일은 프레임워크 규칙을 따른다.
 - 타입 전용 import에 `import type`이 사용되었는지 확인한다.
 - 현재 작업과 관계없는 변경 사항이 PR에 포함되었는지 확인한다.
 - 하나의 PR에 서로 무관한 작업이 과도하게 혼합되었는지 확인한다.
