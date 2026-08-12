@@ -691,12 +691,12 @@ export function CalendarEventPopover({
             </CompactFieldIcon>
 
             <input
-              value={(draft as CalendarEventDraft & { url?: string }).url ?? ''}
+              value={draft.url ?? ''}
               onChange={(event) =>
                 onChangeDraft({
                   ...draft,
                   url: event.target.value,
-                } as CalendarEventDraft)
+                })
               }
               placeholder="채용정보 URL"
               className={cn(
@@ -720,13 +720,13 @@ export function CalendarEventPopover({
             />
 
             <CustomDropdown
-              value={(draft as CalendarEventDraft & { category?: string }).category ?? ''}
+              value={draft.category ?? ''}
               options={CATEGORY_OPTIONS}
               onChange={(nextValue) =>
                 onChangeDraft({
                   ...draft,
-                  category: nextValue || undefined,
-                } as CalendarEventDraft)
+                  category: nextValue ? (nextValue as CalendarEventDraft['category']) : undefined,
+                })
               }
             />
           </div>
