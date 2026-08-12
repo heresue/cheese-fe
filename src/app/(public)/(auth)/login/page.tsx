@@ -30,7 +30,7 @@ export default function LoginPage() {
 
     try {
       // TODO: 로그인 API 호출
-      router.push('/calendar'); // TODO: (대시보드 구현 후) 대시보드로 이동하기
+      router.push('/dashboard');
     } catch {
       setLoginError(AUTH_MESSAGE.LOGIN.INVALID);
     }
