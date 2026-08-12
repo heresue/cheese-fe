@@ -6,7 +6,6 @@ import BaseModal from '@/components/common/Modal/BaseModal';
 
 type AuthConfirmModalProps = {
   isOpen: boolean;
-  onClose: () => void;
 
   title?: string;
   description?: string;
@@ -19,7 +18,6 @@ type AuthConfirmModalProps = {
 
 export default function AuthConfirmModal({
   isOpen,
-  onClose,
   title,
   description,
   primaryText,
@@ -27,7 +25,7 @@ export default function AuthConfirmModal({
   children,
 }: AuthConfirmModalProps) {
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose} hasOverlay>
+    <BaseModal isOpen={isOpen} onClose={() => {}} hasOverlay closeOnEscape={false}>
       <div
         role="dialog"
         aria-modal="true"
@@ -44,14 +42,16 @@ export default function AuthConfirmModal({
             <h2 className="text-[20px] font-bold tracking-normal text-gray-950">{title}</h2>
           ) : null}
           {description ? (
-            <p className="text-[20px] font-medium text-gray-950">{description}</p>
+            <p className="text-[20px] font-medium whitespace-pre-line text-gray-950">
+              {description}
+            </p>
           ) : null}
           {children ? <div className="w-full">{children}</div> : null}
         </div>
 
         <Button
           variant="light"
-          onClick={onPrimaryClick ?? onClose}
+          onClick={onPrimaryClick}
           paddingX={20}
           className="w-fit text-[16px]"
         >
