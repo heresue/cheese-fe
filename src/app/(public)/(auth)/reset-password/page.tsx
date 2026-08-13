@@ -40,7 +40,9 @@ export default function ResetPasswordPage() {
         />
       )}
 
-      {step === 'NEW_PASSWORD' && <NewPasswordStep onComplete={() => setIsDoneOpen(true)} />}
+      {step === 'NEW_PASSWORD' && (
+        <NewPasswordStep email={verifiedEmail} onComplete={() => setIsDoneOpen(true)} />
+      )}
 
       <AuthConfirmModal
         isOpen={isDoneOpen}

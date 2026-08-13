@@ -7,10 +7,11 @@ import { validatePassword, validatePasswordConfirmation } from '@/lib/validation
 import { AUTH_MESSAGE } from '@/constants/auth';
 
 type NewPasswordStepProps = {
+  email: string;
   onComplete: () => void;
 };
 
-export default function NewPasswordStep({ onComplete }: NewPasswordStepProps) {
+export default function NewPasswordStep({ email, onComplete }: NewPasswordStepProps) {
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
 
@@ -37,7 +38,8 @@ export default function NewPasswordStep({ onComplete }: NewPasswordStepProps) {
       return;
     }
 
-    // TODO: 비밀번호 변경 API
+    // TODO: 비밀번호 변경 API 호출
+    // email, password, passwordConfirmation 전달
     onComplete();
   };
 
