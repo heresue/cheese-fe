@@ -34,7 +34,12 @@ export default function TermsModal({ isOpen, onClose }: TermsModalProps) {
           </button>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div
+          tabIndex={0}
+          role="region"
+          aria-label="이용약관 내용"
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
           <TermsContent />
         </div>
       </div>
