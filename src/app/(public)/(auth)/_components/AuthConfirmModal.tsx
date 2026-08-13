@@ -1,13 +1,16 @@
 'use client';
 
-import { cn } from '@/lib/cn';
+import { useId } from 'react';
+
 import { Button } from '@/components/common/Button';
 import BaseModal from '@/components/common/Modal/BaseModal';
+
+import { cn } from '@/lib/cn';
 
 type AuthConfirmModalProps = {
   isOpen: boolean;
 
-  title?: string;
+  title: string;
   description?: string;
 
   primaryText: string;
@@ -24,11 +27,14 @@ export default function AuthConfirmModal({
   onPrimaryClick,
   children,
 }: AuthConfirmModalProps) {
+  const titleId = useId();
+
   return (
     <BaseModal isOpen={isOpen} onClose={() => {}} hasOverlay closeOnEscape={false}>
       <div
         role="dialog"
         aria-modal="true"
+        aria-labelledby={titleId}
         className={cn(
           'bg-bg-white rounded-lg shadow-[0_0_4px_rgba(0,0,0,0.25)]',
           'w-[min(385px,calc(100vw-32px))]',
@@ -38,14 +44,16 @@ export default function AuthConfirmModal({
         )}
       >
         <div className="flex flex-col gap-3 text-center leading-6">
-          {title ? (
-            <h2 className="text-[20px] font-bold tracking-normal text-gray-950">{title}</h2>
-          ) : null}
+          <h2 id={titleId} className="text-[20px] font-bold tracking-normal text-gray-950">
+            {title}
+          </h2>
+
           {description ? (
             <p className="text-[20px] font-medium whitespace-pre-line text-gray-950">
               {description}
             </p>
           ) : null}
+
           {children ? <div className="w-full">{children}</div> : null}
         </div>
 
