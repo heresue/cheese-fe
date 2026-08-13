@@ -11,8 +11,6 @@ import { FormField, FormDropdown } from '../../_components/CommunityPostForm';
 import useFileUpload from '@/hooks/useFileUpload';
 import useTagInput from '@/hooks/useTagInput';
 
-import { cn } from '@/lib/cn';
-
 import { INFO_SORT_OPTIONS } from '../../_constants/community';
 
 import UploadIcon from '@/assets/icons/common/upload.svg';

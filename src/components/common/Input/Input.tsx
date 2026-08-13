@@ -50,7 +50,7 @@ export default function Input({
           aria-invalid={hasError}
           aria-describedby={hasError ? messageId : undefined}
           className={cn(
-            'my-[5px] h-[19px] min-w-0 flex-1',
+            'my-[5px] min-w-0 flex-1',
             'border-0 bg-transparent',
             'placeholder:text-text-placeholder',
             'focus:outline-none',
