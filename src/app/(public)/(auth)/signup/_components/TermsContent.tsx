@@ -53,24 +53,29 @@ export default function TermsContent() {
             회원가입은 이용자가 약관에 동의한 후 회사가 정한 절차에 따라 계정을 생성함으로써
             완료됩니다.
           </li>
-          <li>회사는 다음 각 호에 해당하는 경우 회원가입을 거부할 수 있습니다.</li>
-          <ul className="list-disc pl-5">
-            <li>타인의 정보를 도용한 경우</li>
-            <li>허위 정보를 입력한 경우</li>
-            <li>서비스 운영에 지장을 주는 경우</li>
-          </ul>
+          <li>
+            회사는 다음 각 호에 해당하는 경우 회원가입을 거부할 수 있습니다.
+            <ul className="list-disc pl-5">
+              <li>타인의 정보를 도용한 경우</li>
+              <li>허위 정보를 입력한 경우</li>
+              <li>서비스 운영에 지장을 주는 경우</li>
+            </ul>
+          </li>
         </ul>
       </section>
 
       <section className="space-y-4">
         <h2>제5조 (서비스 제공 및 변경)</h2>
         <ul className="list-decimal pl-5">
-          <li>회사는 다음의 서비스를 제공합니다.</li>
-          <ul className="list-disc pl-5">
-            <li>치즈 웹서비스 관련 기능</li>
-            <li>콘텐츠 게시 및 공유 기능</li>
-            <li>기타 회사가 정하는 기능</li>
-          </ul>
+          <li>
+            회사는 다음의 서비스를 제공합니다.
+            <ul className="list-disc pl-5">
+              <li>치즈 웹서비스 관련 기능</li>
+              <li>콘텐츠 게시 및 공유 기능</li>
+              <li>기타 회사가 정하는 기능</li>
+            </ul>
+          </li>
+
           <li>회사는 서비스 개선을 위해 기능을 추가하거나 변경할 수 있습니다.</li>
         </ul>
       </section>
@@ -78,12 +83,14 @@ export default function TermsContent() {
       <section className="space-y-4">
         <h2>제6조 (서비스 이용의 제한)</h2>
         <ul className="list-decimal pl-5">
-          <li>회사는 다음 각 호에 해당하는 경우 서비스 이용을 제한할 수 있습니다.</li>
-          <ul className="list-disc pl-5">
-            <li>법령 또는 공공질서에 위반되는 행동</li>
-            <li>타인의 권리를 침해하는 경우</li>
-            <li>서비스 운영을 방해하는 경우</li>
-          </ul>
+          <li>
+            회사는 다음 각 호에 해당하는 경우 서비스 이용을 제한할 수 있습니다.
+            <ul className="list-disc pl-5">
+              <li>법령 또는 공공질서에 위반되는 행동</li>
+              <li>타인의 권리를 침해하는 경우</li>
+              <li>서비스 운영을 방해하는 경우</li>
+            </ul>
+          </li>
           <li>회원이 이용 제한 사유를 해소하지 않을 경우 계정이 삭제될 수 있습니다.</li>
         </ul>
       </section>
