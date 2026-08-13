@@ -7,4 +7,5 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   rightAddon?: ReactNode;
   showMessageSpace?: boolean;
   inputClassName?: string;
+  ref?: React.Ref<HTMLInputElement>;
 }

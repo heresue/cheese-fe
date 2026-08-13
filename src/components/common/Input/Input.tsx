@@ -15,6 +15,7 @@ export default function Input({
   id,
   className,
   inputClassName,
+  ref,
   ...rest
 }: InputProps) {
   const autoId = useId();
@@ -46,6 +47,7 @@ export default function Input({
         )}
       >
         <input
+          ref={ref}
           id={inputId}
           aria-invalid={hasError}
           aria-describedby={hasError || hasSuccess ? messageId : undefined}

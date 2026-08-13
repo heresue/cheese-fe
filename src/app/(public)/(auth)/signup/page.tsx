@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { Input, InputActionButton } from '@/components/common/Input';
@@ -40,6 +40,11 @@ export default function SignupPage() {
   const [isVerifyOpen, setIsVerifyOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isDoneOpen, setIsDoneOpen] = useState(false);
+
+  const nicknameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const passwordConfirmationRef = useRef<HTMLInputElement>(null);
 
   const isPasswordMatched =
     Boolean(passwordConfirmation) &&
@@ -161,6 +166,16 @@ export default function SignupPage() {
     const hasError = Object.values(nextErrors).some(Boolean);
 
     if (hasError) {
+      if (nextErrors.nickname) {
+        nicknameRef.current?.focus();
+      } else if (nextErrors.email) {
+        emailRef.current?.focus();
+      } else if (nextErrors.password) {
+        passwordRef.current?.focus();
+      } else if (nextErrors.passwordConfirmation) {
+        passwordConfirmationRef.current?.focus();
+      }
+
       return;
     }
 
@@ -189,6 +204,7 @@ export default function SignupPage() {
         <form className="flex flex-col gap-10" onSubmit={handleSubmit}>
           <div className="flex flex-col gap-5">
             <Input
+              ref={nicknameRef}
               label="닉네임"
               name="nickname"
               type="text"
@@ -211,6 +227,7 @@ export default function SignupPage() {
               showMessageSpace
             />
             <Input
+              ref={emailRef}
               readOnly
               label="아이디"
               name="email"
@@ -229,6 +246,7 @@ export default function SignupPage() {
               showMessageSpace
             />
             <Input
+              ref={passwordRef}
               label="비밀번호"
               name="password"
               type="password"
@@ -240,6 +258,7 @@ export default function SignupPage() {
               showMessageSpace
             />
             <Input
+              ref={passwordConfirmationRef}
               label="비밀번호 확인"
               name="passwordConfirmation"
               type="password"
