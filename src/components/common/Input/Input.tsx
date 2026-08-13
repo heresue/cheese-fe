@@ -48,7 +48,7 @@ export default function Input({
         <input
           id={inputId}
           aria-invalid={hasError}
-          aria-describedby={hasError ? messageId : undefined}
+          aria-describedby={hasError || hasSuccess ? messageId : undefined}
           className={cn(
             'my-[5px] min-w-0 flex-1',
             'border-0 bg-transparent',
@@ -71,7 +71,9 @@ export default function Input({
               {errorMessage}
             </p>
           ) : hasSuccess ? (
-            <p className="text-text-success">{successMessage}</p>
+            <p id={messageId} role="status" className="text-text-success">
+              {successMessage}
+            </p>
           ) : null}
         </div>
       )}
