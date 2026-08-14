@@ -545,9 +545,12 @@ export function CalendarEventPopover({
             })
           }
           placeholder="제목"
-          hideMessageSpace
-          className="h-[29px] gap-0 border-b-0 px-[10px] py-0 shadow-[inset_0_-1px_0_var(--color-gray-400)]"
-          inputClassName="my-0 h-[17px] text-[14px] leading-[17px] font-medium tracking-normal text-gray-950 placeholder:text-gray-500"
+          // TODO: Input 스타일 확인
+          // 기존 스타일 코드
+          // className="h-[29px] gap-0 border-b-0 px-[10px] py-0 shadow-[inset_0_-1px_0_var(--color-gray-400)]"
+          // inputClassName="my-0 h-[17px] text-[14px] leading-[17px] font-medium tracking-normal text-gray-950 placeholder:text-gray-500"
+          className="h-[29px] border-b-0 px-[10px] tracking-normal"
+          inputClassName="text-[14px] font-medium"
         />
 
         <div className="flex w-full flex-col gap-2">

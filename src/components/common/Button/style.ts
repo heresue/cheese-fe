@@ -11,7 +11,7 @@ const outlineDisabled = 'border-gray-400 text-gray-400 bg-white';
 
 const variantClassMap: Record<Exclude<ButtonVariant, 'circle'>, string> = {
   default: 'bg-secondary-600 text-gray-50',
-  light: 'bg-secondary-400 text-gray-50',
+  light: 'bg-secondary-400 text-gray-50 font-bold tracking-normal',
 
   outline: 'border-2 border-secondary-200 bg-white text-gray-700',
   outlinePrimary: 'border border-secondary-600 bg-white text-gray-950',
@@ -71,11 +71,10 @@ export function getButtonStyle({
     };
   }
 
-  const finalVariantClass = disabled
-    ? variant === 'gray'
-      ? variantClassMap[variant]
-      : variantDisabledClassMap[variant]
-    : variantClassMap[variant];
+  const finalVariantClass = cn(
+    variantClassMap[variant],
+    disabled && variant !== 'gray' && variantDisabledClassMap[variant],
+  );
 
   return {
     className: cn(
