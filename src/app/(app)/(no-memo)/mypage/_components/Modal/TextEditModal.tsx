@@ -42,8 +42,7 @@ export default function TextEditModal({
           label={inputLabel}
           value={inputValue}
           placeholder={`${inputLabel} 입력`}
-          inputClassName="my-[5.5px]"
-          hideMessageSpace
+          className="h-10 px-2"
           onChange={(e) => setInputValue(e.target.value)}
         />
 

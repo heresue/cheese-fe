@@ -73,7 +73,7 @@ export default function SelectEditModal({
         </label>
 
         {/* TODO: custom option으로 교체 (공통 컴포넌트) */}
-        <div className="flex w-full items-center gap-2 border-b border-gray-400 px-2 py-[10.5px]">
+        <div className="flex h-10 w-full items-center gap-2 border-b border-gray-400 px-2">
           <select
             id={`${formId}-select`}
             value={selectedValue}
@@ -93,8 +93,8 @@ export default function SelectEditModal({
           <Input
             label="오픈 카카오톡 URL"
             placeholder="오픈 카카오톡 URL 입력"
+            className="h-10 px-2"
             value={openKakaoUrl}
-            hideMessageSpace
             onChange={(e) => setOpenKakaoUrl(e.target.value)}
           />
         )}
