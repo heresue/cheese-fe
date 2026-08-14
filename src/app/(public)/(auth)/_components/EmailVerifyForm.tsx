@@ -48,7 +48,8 @@ export default function EmailVerifyForm({
   const isSentEmail = email === sentEmail;
 
   const handleSend = async () => {
-    const validationError = validateEmail(email);
+    const normalizedEmail = email.trim();
+    const validationError = validateEmail(normalizedEmail);
 
     if (validationError) {
       setEmailError(validationError);
@@ -60,7 +61,8 @@ export default function EmailVerifyForm({
 
     try {
       // TODO: 이메일 인증번호 발송 API 호출
-      setSentEmail(email);
+      setEmail(normalizedEmail);
+      setSentEmail(normalizedEmail);
       setVerificationCode('');
       setVerificationError(undefined);
       setStatus('SENT');
@@ -93,7 +95,7 @@ export default function EmailVerifyForm({
   const handleNext = () => {
     if (!isVerified) return;
 
-    onNext(email);
+    onNext(email.trim());
   };
 
   return (
