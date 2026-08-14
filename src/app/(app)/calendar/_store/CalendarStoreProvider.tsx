@@ -42,6 +42,18 @@ function getInitialEvents() {
   return mockEvents;
 }
 
+function normalizeStoredEvent(event: CalendarEvent): CalendarEvent {
+  if (event.category === 'assignment') {
+    return { ...event, category: 'document' };
+  }
+
+  if (event.category === 'meeting') {
+    return { ...event, category: 'personal' };
+  }
+
+  return event;
+}
+
 function readStoredEvents() {
   try {
     const storedEvents = window.localStorage.getItem(CALENDAR_STORAGE_KEY);
@@ -60,7 +72,7 @@ function readStoredEvents() {
       return null;
     }
 
-    return parsedEvents as CalendarEvent[];
+    return (parsedEvents as CalendarEvent[]).map(normalizeStoredEvent);
   } catch {
     return null;
   }

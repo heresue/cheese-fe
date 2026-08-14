@@ -126,7 +126,10 @@ function SortDropdown<TSort extends string>({
       >
         <MemoFilterIcon className="h-6 w-4 shrink-0 [&_path]:fill-current" aria-hidden="true" />
         <FilterChevronIcon
-          className="h-6 w-2.5 shrink-0 [&_path]:fill-current"
+          className={cn(
+            'h-6 w-2.5 shrink-0 transition-transform [&_path]:fill-current',
+            open && 'rotate-180',
+          )}
           aria-hidden="true"
         />
       </button>

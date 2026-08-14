@@ -186,7 +186,7 @@ function NotificationActionMenu({
       <div
         className={cn(
           'items-center gap-[4px] rounded-[5px] border border-gray-400 bg-gray-50 p-[4px]',
-          open ? 'flex' : 'hidden group-hover:flex',
+          open ? 'flex' : 'hidden group-focus-within:flex group-hover:flex',
         )}
       >
         {showMarkAsRead ? (
@@ -300,7 +300,7 @@ function NotificationCard({
           aria-expanded={expanded}
           onClick={onToggleExpand}
           className={cn(
-            'flex min-w-0 flex-1 flex-col items-stretch text-left outline-none focus-visible:outline-none',
+            'focus-visible:ring-secondary-600 flex min-w-0 flex-1 flex-col items-stretch text-left outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
             expanded ? 'gap-[4px]' : 'gap-[14px]',
           )}
         >
