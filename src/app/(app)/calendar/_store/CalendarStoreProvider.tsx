@@ -17,9 +17,34 @@ import {
   hasTimedSlotConflict,
 } from '../_lib/event-mapper';
 import { mockEvents } from '../_model/mock-events';
-import type { CalendarEvent, CalendarEventDraft } from '../_model/types';
+import type {
+  CalendarEvent,
+  CalendarEventCategory,
+  CalendarEventDraft,
+  EventColorId,
+  ReminderMinutes,
+} from '../_model/types';
 
 const CALENDAR_STORAGE_KEY = 'cheese:calendar-events:v1';
+const EVENT_COLOR_IDS = [
+  'tag-red',
+  'tag-yellow',
+  'tag-green',
+  'tag-blue',
+  'tag-purple',
+  'tag-gray',
+] as const satisfies readonly EventColorId[];
+const EVENT_CATEGORIES = [
+  'interview',
+  'document',
+  'personal',
+  'assignment',
+  'meeting',
+  'etc',
+] as const satisfies readonly CalendarEventCategory[];
+const REMINDER_MINUTES = [
+  0, 5, 10, 15, 30, 60, 120, 1440,
+] as const satisfies readonly ReminderMinutes[];
 
 type CalendarStoreContextValue = {
   events: CalendarEvent[];
@@ -42,6 +67,39 @@ function getInitialEvents() {
   return mockEvents;
 }
 
+function isIncluded<T extends string | number>(value: unknown, values: readonly T[]): value is T {
+  return values.some((candidate) => candidate === value);
+}
+
+function isOptionalString(value: unknown): value is string | undefined {
+  return value === undefined || typeof value === 'string';
+}
+
+function isCalendarEvent(value: unknown): value is CalendarEvent {
+  if (typeof value !== 'object' || value === null) {
+    return false;
+  }
+
+  const event = value as Record<string, unknown>;
+
+  return (
+    typeof event.id === 'string' &&
+    typeof event.title === 'string' &&
+    typeof event.start === 'string' &&
+    typeof event.end === 'string' &&
+    isOptionalString(event.memo) &&
+    (event.allDay === undefined || typeof event.allDay === 'boolean') &&
+    isOptionalString(event.spaceId) &&
+    (event.colorId === undefined || isIncluded(event.colorId, EVENT_COLOR_IDS)) &&
+    (event.category === undefined || isIncluded(event.category, EVENT_CATEGORIES)) &&
+    (event.reminderMinutes === undefined || isIncluded(event.reminderMinutes, REMINDER_MINUTES)) &&
+    isOptionalString(event.location) &&
+    isOptionalString(event.url) &&
+    isOptionalString(event.createdAt) &&
+    isOptionalString(event.updatedAt)
+  );
+}
+
 function normalizeStoredEvent(event: CalendarEvent): CalendarEvent {
   if (event.category === 'assignment') {
     return { ...event, category: 'document' };
@@ -62,17 +120,15 @@ function readStoredEvents() {
       return null;
     }
 
-    const parsedEvents = JSON.parse(storedEvents);
+    const parsedEvents: unknown = JSON.parse(storedEvents);
 
     if (!Array.isArray(parsedEvents)) {
       return null;
     }
 
-    if (parsedEvents.length === 0) {
-      return null;
-    }
+    const validEvents = parsedEvents.filter(isCalendarEvent).map(normalizeStoredEvent);
 
-    return (parsedEvents as CalendarEvent[]).map(normalizeStoredEvent);
+    return validEvents.length > 0 ? validEvents : null;
   } catch {
     return null;
   }
