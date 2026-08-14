@@ -18,7 +18,13 @@ export type EventColorId =
 
 export type ReminderMinutes = 0 | 5 | 10 | 15 | 30 | 60 | 120 | 1440;
 
-export type CalendarEventCategory = 'interview' | 'assignment' | 'meeting' | 'etc';
+export type CalendarEventCategory =
+  | 'interview'
+  | 'document'
+  | 'personal'
+  | 'assignment'
+  | 'meeting'
+  | 'etc';
 
 export interface CalendarEvent {
   id: string;

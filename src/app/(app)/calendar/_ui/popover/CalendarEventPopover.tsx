@@ -26,7 +26,12 @@ import {
   toDateInputValue,
   toTimeInputValue,
 } from '../../_lib/date';
-import type { CalendarEventDraft, EventColorId, ReminderMinutes } from '../../_model/types';
+import type {
+  CalendarEventCategory,
+  CalendarEventDraft,
+  EventColorId,
+  ReminderMinutes,
+} from '../../_model/types';
 
 type CalendarEventPopoverProps = {
   open: boolean;
@@ -52,11 +57,11 @@ const REMINDER_OPTIONS: Array<DropdownOption<ReminderMinutes | ''>> = [
   { label: '1시간 전', value: 60 },
 ];
 
-const CATEGORY_OPTIONS: Array<DropdownOption<string>> = [
+const CATEGORY_OPTIONS: Array<DropdownOption<CalendarEventCategory | ''>> = [
   { label: '일정구분', value: '' },
-  { label: '면접', value: 'interview' },
-  { label: '과제', value: 'assignment' },
-  { label: '미팅', value: 'meeting' },
+  { label: '면접일정', value: 'interview' },
+  { label: '서류접수', value: 'document' },
+  { label: '개인일정', value: 'personal' },
   { label: '기타', value: 'etc' },
 ];
 
@@ -725,7 +730,7 @@ export function CalendarEventPopover({
               onChange={(nextValue) =>
                 onChangeDraft({
                   ...draft,
-                  category: nextValue ? (nextValue as CalendarEventDraft['category']) : undefined,
+                  category: nextValue || undefined,
                 })
               }
             />

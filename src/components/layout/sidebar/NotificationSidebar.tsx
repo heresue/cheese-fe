@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, type MouseEvent } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -21,6 +21,7 @@ type NotificationItem = {
   content: string;
   date: string;
   unread?: boolean;
+  showContentBullet?: boolean;
   avatarSrc?: string;
   avatarClassName?: string;
   href?: string;
@@ -38,7 +39,7 @@ const initialRecentNotifications: NotificationItem[] = [
     message: ' 님이 지원했습니다',
     category: '그룹모집',
     content:
-      '이곳저곳 널리 퍼져있는 디지털을 한 눈에 편리하게 볼 수 있는 베이커리 플랫폼 프로젝트입니다. 함께하실 기획자 모집합니다!',
+      '- 이곳저곳 널리 퍼져있는 디저트를 한 눈에 편리하게 볼 수 있는 베이커리 플랫폼 프로젝트 입니다.\n- 함께하실 기획자 모집합니다 !☺\n\n🍰 건강 디저트 e-커머스 🍰\n건강 디저트 좋아하시는 분 계신가요~?\n건강 디저트 덕후들의 다양한 불편/불만 사항을 고려하여 기획한 건강 디저트 프로젝트입니다\n핵심 비전을 이끌어 내주실 역량 보유자들을 기다립니다!',
     date: '2월 10일',
     unread: true,
     avatarSrc: '/mock/profile-1.png',
@@ -53,6 +54,7 @@ const initialRecentNotifications: NotificationItem[] = [
     content: '텍스트로 시간 표시...',
     date: '2월 10일',
     unread: true,
+    showContentBullet: true,
     avatarClassName: 'bg-error-subtle',
     href: '/community/jobs/1',
     profileId: 1,
@@ -62,7 +64,7 @@ const initialRecentNotifications: NotificationItem[] = [
     sender: '치즈',
     message: ' 새로운 업데이트가 있습니다',
     category: '업데이트',
-    content: '26.02.10 업데이트 내역입니다. 새로운 업데이트 소식을 확인해보세요.',
+    content: '26.02.10 업데이트 내역입니다. 새로운 업데이트 소식이 있습니다.',
     date: '2월 10일',
     unread: true,
     avatarClassName: 'bg-primary-800',
@@ -76,7 +78,7 @@ const initialReadNotifications: NotificationItem[] = [
     sender: '한창우',
     message: ' 님이 지원했습니다',
     category: '그룹모집',
-    content: '런칭되어 있는 위치 기반 서비스에서 운영과 개선을 함께할 팀원을 모집합니다.',
+    content: '런칭되어 있는 위치 기반 서비스에서 운영과 개선을 함께할 백엔드 개발자분을 모십니다.',
     date: '2월 10일',
     avatarSrc: '/mock/profile-2.png',
     href: '/community/groups/1',
@@ -106,25 +108,19 @@ const initialReadNotifications: NotificationItem[] = [
   },
 ];
 
-function NotificationAvatar({
-  item,
-  onClick,
-}: {
-  item: NotificationItem;
-  onClick?: () => void;
-}) {
+function NotificationAvatar({ item, onClick }: { item: NotificationItem; onClick?: () => void }) {
   const avatar = item.avatarSrc ? (
     <Image
       src={item.avatarSrc}
       alt=""
-      width={24}
-      height={24}
-      className="h-[24px] w-[24px] shrink-0 rounded-full object-cover"
+      width={25}
+      height={25}
+      className="h-[25px] w-[25px] shrink-0 rounded-full object-cover"
     />
   ) : (
     <span
       className={cn(
-        'h-[24px] w-[24px] shrink-0 rounded-full',
+        'h-[25px] w-[25px] shrink-0 rounded-full',
         item.avatarClassName ?? 'bg-gray-300',
       )}
       aria-hidden="true"
@@ -167,88 +163,78 @@ function NotificationActionMenu({
   onNavigate: () => void;
   showMarkAsRead: boolean;
 }) {
-  const handleStopPropagation = (event: MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-  };
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleOutsidePointerDown = (event: PointerEvent) => {
+      if (event.target instanceof Node && !menuRef.current?.contains(event.target)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('pointerdown', handleOutsidePointerDown);
+
+    return () => {
+      document.removeEventListener('pointerdown', handleOutsidePointerDown);
+    };
+  }, [onClose, open]);
 
   return (
-    <div
-      className="absolute top-[10px] right-0 z-20"
-      onClick={handleStopPropagation}
-      onMouseDown={handleStopPropagation}
-    >
+    <div ref={menuRef} className="absolute top-[12px] right-0 z-20">
       <div
         className={cn(
-          'h-[32px] w-[88px] items-center justify-center rounded-[5px] border border-gray-300 bg-gray-50 px-[4px] shadow-[0_2px_8px_rgba(0,0,0,0.08)]',
-          open ? 'flex' : 'hidden group-hover:flex',
+          'items-center gap-[4px] rounded-[5px] border border-gray-400 bg-gray-50 p-[4px]',
+          open ? 'flex' : 'hidden group-focus-within:flex group-hover:flex',
         )}
       >
         {showMarkAsRead ? (
           <button
             type="button"
             onClick={onMarkAsRead}
-            className="flex h-[24px] w-[24px] items-center justify-center rounded-[4px] text-gray-500 transition-colors hover:bg-gray-200"
+            className="flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[4px] text-gray-500 transition-colors hover:bg-gray-200"
             aria-label="읽음 처리"
           >
-            <span className="flex h-[18px] w-[18px] items-center justify-center">
-              <MessageIcon
-                aria-hidden="true"
-                className="block h-[14px] w-[14px] shrink-0 translate-x-[1px]"
-              />
-            </span>
+            <MessageIcon aria-hidden="true" className="block h-[12px] w-[14px] shrink-0" />
           </button>
         ) : (
-          <span className="flex h-[24px] w-[24px] items-center justify-center text-gray-300">
-            <MessageIcon aria-hidden="true" className="block h-[14px] w-[14px] shrink-0" />
+          <span className="flex h-[24px] w-[24px] shrink-0 items-center justify-center text-gray-300">
+            <MessageIcon aria-hidden="true" className="block h-[12px] w-[14px] shrink-0" />
           </span>
         )}
-
-        <span className="h-[16px] w-px bg-gray-300" aria-hidden="true" />
 
         <button
           type="button"
           onClick={onOpen}
-          className="flex h-[24px] w-[24px] items-center justify-center rounded-[4px] text-gray-500 transition-colors hover:bg-gray-200"
+          className="flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[4px] text-gray-500 transition-colors hover:bg-gray-200"
           aria-label="삭제"
         >
-          <span className="flex h-[18px] w-[18px] items-center justify-center">
-            <DeleteIcon
-              aria-hidden="true"
-              className="block h-[14px] w-[14px] shrink-0 translate-x-[2px]"
-            />
-          </span>
+          <DeleteIcon aria-hidden="true" className="block h-[12px] w-[11px] shrink-0" />
         </button>
-
-        <span className="h-[16px] w-px bg-gray-300" aria-hidden="true" />
 
         <button
           type="button"
           onClick={onNavigate}
-          className="flex h-[24px] w-[24px] items-center justify-center rounded-[4px] text-gray-500 transition-colors hover:bg-gray-200"
+          className="flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-[4px] text-gray-500 transition-colors hover:bg-gray-200"
           aria-label="이동"
         >
-          <span className="flex h-[18px] w-[18px] items-center justify-center">
-            <SendIcon
-              aria-hidden="true"
-              className="block h-[14px] w-[14px] shrink-0 translate-x-[1px]"
-            />
-          </span>
+          <SendIcon aria-hidden="true" className="block h-[12px] w-[11px] shrink-0" />
         </button>
       </div>
 
       {open ? (
-        <div className="absolute top-[40px] right-0 z-30 box-border w-[157px] rounded-[5px] border border-gray-300 bg-gray-50 p-[11px] shadow-[0_4px_16px_rgba(0,0,0,0.12)]">
-          <p className="text-[12px] leading-[20px] font-medium text-gray-700">
-            삭제하면 복구할 수 없습니다.
-            <br />
-            정말 삭제하시겠습니까?
+        <div className="absolute top-[40px] right-0 z-30 box-border flex w-[157px] flex-col gap-[8px] overflow-hidden rounded-[5px] border border-gray-400 bg-gray-50 p-[12px]">
+          <p className="text-[12px] leading-[20px] font-medium tracking-[-0.24px] whitespace-nowrap text-gray-700">
+            <span className="block">삭제하면 복구할 수 없습니다.</span>
+            <span className="block">정말 삭제하시겠습니까?</span>
           </p>
 
-          <div className="mt-[8px] flex flex-col gap-[4px]">
+          <div className="flex flex-col gap-[8px]">
             <button
               type="button"
               onClick={onConfirmDelete}
-              className="flex h-[24px] w-full items-center rounded-[5px] bg-transparent px-[12px] text-left text-[12px] leading-[18px] font-medium text-gray-700 transition-colors hover:bg-gray-200"
+              className="flex h-[20px] w-full items-center rounded-[5px] bg-transparent px-[8px] text-left text-[12px] leading-[20px] font-medium tracking-[-0.24px] text-gray-950 transition-colors hover:bg-gray-200"
             >
               네
             </button>
@@ -256,7 +242,7 @@ function NotificationActionMenu({
             <button
               type="button"
               onClick={onClose}
-              className="flex h-[24px] w-full items-center rounded-[5px] bg-transparent px-[12px] text-left text-[12px] leading-[18px] font-medium text-gray-700 transition-colors hover:bg-gray-200"
+              className="flex h-[20px] w-full items-center rounded-[5px] bg-transparent px-[8px] text-left text-[12px] leading-[20px] font-medium tracking-[-0.24px] text-gray-950 transition-colors hover:bg-gray-200"
             >
               아니오
             </button>
@@ -289,7 +275,7 @@ function NotificationCard({
   return (
     <article
       className={cn(
-        'group relative box-border w-full min-w-0 border-b border-gray-200',
+        'group relative box-border w-full min-w-0 border-b border-gray-300',
         expanded ? 'py-[12px]' : 'h-[87px] py-[12px]',
       )}
     >
@@ -306,25 +292,28 @@ function NotificationCard({
         showMarkAsRead={Boolean(item.unread)}
       />
 
-      <div className="flex h-full w-full min-w-0 items-start gap-[10px] text-left">
+      <div className="flex h-full w-full min-w-0 items-start gap-[12px] text-left">
         <NotificationAvatar item={item} onClick={onOpenProfile} />
 
         <button
           type="button"
           aria-expanded={expanded}
           onClick={onToggleExpand}
-          className="min-w-0 flex-1 text-left"
+          className={cn(
+            'focus-visible:ring-secondary-600 flex min-w-0 flex-1 flex-col items-stretch text-left outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+            expanded ? 'gap-[4px]' : 'gap-[14px]',
+          )}
         >
-          <div className="flex h-[20px] items-center justify-between gap-[8px]">
-            <p className="min-w-0 truncate text-[14px] leading-[20px] font-normal text-gray-600">
-              <span className="font-medium text-gray-800">{item.sender}</span>
+          <div className="flex w-full min-w-0 items-center justify-between gap-[8px]">
+            <p className="min-w-0 truncate text-[14px] leading-[24px] font-normal tracking-[-0.28px] text-gray-700">
+              <span className="font-medium text-gray-950">{item.sender}</span>
               {item.message}
             </p>
 
-            <div className="flex shrink-0 items-center gap-[6px]">
+            <div className="flex shrink-0 items-center gap-[8px]">
               <span
                 className={cn(
-                  'text-[12px] leading-[18px] font-normal text-gray-800 transition-opacity',
+                  'text-[12px] leading-[24px] font-normal tracking-[-0.24px] text-black transition-opacity',
                   'group-hover:opacity-0',
                   isDeleteConfirmOpen && 'opacity-0',
                 )}
@@ -334,25 +323,27 @@ function NotificationCard({
 
               <span
                 className={cn(
-                  'h-[5px] w-[5px] rounded-full',
-                  item.unread ? 'bg-secondary-600' : 'bg-gray-400',
+                  'h-[8px] w-[8px] rounded-full',
+                  item.unread ? 'bg-secondary-600' : 'bg-gray-300',
                 )}
                 aria-hidden="true"
               />
             </div>
           </div>
 
-          <p
-            className={cn(
-              'mt-[4px] max-w-full text-[14px] leading-[18px] font-normal text-gray-600',
-              expanded
-                ? 'break-words whitespace-pre-line'
-                : '[display:-webkit-box] overflow-hidden [-webkit-box-orient:vertical] [-webkit-line-clamp:2]',
-            )}
-          >
-            <span className="font-medium text-gray-900">[{item.category}]</span>
-            <span className="ml-[6px]">{item.content}</span>
-          </p>
+          <div className="flex w-full min-w-0 items-start gap-[4px] text-[14px] leading-[24px] tracking-[-0.28px]">
+            <span className="shrink-0 font-medium text-gray-950">[{item.category}]</span>
+
+            <p
+              className={cn(
+                'min-w-0 flex-1 font-normal text-gray-600',
+                expanded ? 'break-words whitespace-pre-line' : 'truncate whitespace-nowrap',
+              )}
+            >
+              {item.showContentBullet ? '· ' : ''}
+              {item.content}
+            </p>
+          </div>
         </button>
       </div>
     </article>
@@ -395,9 +386,9 @@ export function NotificationSidebar({ onClose }: NotificationSidebarProps) {
     onClose();
   };
 
-  const renderSection = (title: string, items: NotificationItem[]) => (
-    <section className="w-full min-w-0">
-      <h3 className="mb-[20px] pl-[20px] text-[14px] leading-[30px] font-medium text-gray-500">
+  const renderSection = (title: string, items: NotificationItem[], hasContentGap = false) => (
+    <section className={cn('flex w-full min-w-0 flex-col', hasContentGap && 'gap-[8px]')}>
+      <h3 className="px-[20px] text-[14px] leading-[30px] font-medium tracking-[-0.28px] text-gray-500">
         {title}
       </h3>
 
@@ -407,9 +398,7 @@ export function NotificationSidebar({ onClose }: NotificationSidebarProps) {
             key={item.id}
             item={item}
             expanded={expandedId === item.id}
-            onToggleExpand={() =>
-              setExpandedId((prev) => (prev === item.id ? null : item.id))
-            }
+            onToggleExpand={() => setExpandedId((prev) => (prev === item.id ? null : item.id))}
             onMarkAsRead={() => handleMarkAsRead(item)}
             onDelete={() => handleDelete(item.id)}
             onNavigate={() => handleNavigate(item)}
@@ -428,25 +417,27 @@ export function NotificationSidebar({ onClose }: NotificationSidebarProps) {
   );
 
   return (
-    <aside className="box-border h-dvh w-[388px] shrink-0 overflow-x-hidden overflow-y-auto border-r border-gray-300 bg-gray-50 px-[20px] py-[40px]">
-      <header className="mb-[40px] flex h-[24px] w-full items-center justify-between">
-        <h2 className="text-[16px] leading-[24px] font-medium text-gray-950">알림</h2>
+    <aside className="box-border flex h-dvh w-[388px] shrink-0 flex-col gap-[20px] overflow-x-hidden overflow-y-auto border-r-2 border-gray-300 bg-gray-50 p-[20px] shadow-[0_4px_25px_rgba(85,85,85,0.1)]">
+      <header className="flex min-h-[30px] w-full shrink-0 items-center justify-between">
+        <h2 className="text-[16px] leading-[30px] font-bold tracking-[-0.32px] text-gray-950">
+          알림
+        </h2>
 
         <button
           type="button"
           onClick={onClose}
           aria-label="알림 사이드바 닫기"
-          className="flex h-[16px] w-[16px] items-center justify-center text-gray-500"
+          className="flex h-[30px] w-[24px] items-center justify-center text-gray-500"
         >
           <DoubleArrowIcon
             aria-hidden="true"
-            className="block h-[16px] w-[16px] shrink-0 rotate-180"
+            className="block h-[20px] w-[16px] shrink-0 rotate-180"
           />
         </button>
       </header>
 
-      <div className="flex w-full min-w-0 flex-col gap-[26px]">
-        {renderSection('최신', recentItems)}
+      <div className="flex w-full min-w-0 flex-col gap-[20px]">
+        {renderSection('최신', recentItems, true)}
         {renderSection('읽음', readItems)}
       </div>
 
