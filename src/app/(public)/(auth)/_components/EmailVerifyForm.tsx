@@ -32,6 +32,7 @@ export default function EmailVerifyForm({
   onNext,
 }: EmailVerifyFormProps) {
   const [email, setEmail] = useState(initialEmail);
+  const [sentEmail, setSentEmail] = useState(initialEmail);
   const [status, setStatus] = useState<EmailVerifyStatus>(initialStatus);
   const [emailError, setEmailError] = useState<string>();
 
@@ -43,7 +44,8 @@ export default function EmailVerifyForm({
   const isVerified = status === 'VERIFIED';
 
   const hasSentEmail = status === 'SENT' || isVerifying || isVerified;
-  const isEmailLocked = isSending || hasSentEmail;
+  const isEmailLocked = isSending || isVerifying || isVerified;
+  const isSentEmail = email === sentEmail;
 
   const handleSend = async () => {
     const validationError = validateEmail(email);
@@ -58,6 +60,7 @@ export default function EmailVerifyForm({
 
     try {
       // TODO: 이메일 인증번호 발송 API 호출
+      setSentEmail(email);
       setVerificationCode('');
       setVerificationError(undefined);
       setStatus('SENT');
@@ -68,6 +71,8 @@ export default function EmailVerifyForm({
   };
 
   const handleVerify = async () => {
+    if (!isSentEmail) return;
+
     if (!verificationCode.trim()) {
       setVerificationError(AUTH_MESSAGE.VERIFICATION.REQUIRED);
       return;
@@ -109,13 +114,13 @@ export default function EmailVerifyForm({
           placeholder="아이디 (이메일) 입력"
           disabled={isEmailLocked}
           errorMessage={emailError}
-          successMessage={hasSentEmail ? AUTH_MESSAGE.EMAIL.SEND_SUCCESS : undefined}
+          successMessage={hasSentEmail && isSentEmail ? AUTH_MESSAGE.EMAIL.SEND_SUCCESS : undefined}
           rightAddon={
             <InputActionButton
               onClick={handleSend}
               disabled={isSending || isVerifying || isVerified}
             >
-              {hasSentEmail ? '재발송' : '메일발송'}
+              {hasSentEmail && isSentEmail ? '재발송' : '메일발송'}
             </InputActionButton>
           }
           className="h-10 px-2 font-medium tracking-normal"
@@ -133,13 +138,13 @@ export default function EmailVerifyForm({
             setVerificationError(undefined);
           }}
           placeholder="인증번호 입력"
-          disabled={!hasSentEmail || isVerifying || isVerified}
+          disabled={!hasSentEmail || !isSentEmail || isVerifying || isVerified}
           errorMessage={verificationError}
           successMessage={isVerified ? AUTH_MESSAGE.VERIFICATION.MATCHED : undefined}
           rightAddon={
             <InputActionButton
               onClick={handleVerify}
-              disabled={!hasSentEmail || isVerifying || isVerified}
+              disabled={!hasSentEmail || !isSentEmail || isVerifying || isVerified}
             >
               인증하기
             </InputActionButton>
