@@ -74,6 +74,9 @@ export default function Select({
           side="bottom"
           align="start"
           sideOffset={8}
+          onEscapeKeyDown={(event) => {
+            event.stopPropagation();
+          }}
           className={cn(
             dropdownContentStyle,
             'z-[60] w-[var(--radix-select-trigger-width)]',

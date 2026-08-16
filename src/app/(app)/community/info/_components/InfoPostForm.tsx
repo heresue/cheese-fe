@@ -3,10 +3,11 @@
 import { useState } from 'react';
 
 import { Input } from '@/components/common/Input';
+import { Select } from '@/components/common/Select';
 import { Button } from '@/components/common/Button';
 
 import { CommunityPostForm } from '../../_components/CommunityPostForm';
-import { FormField, FormDropdown } from '../../_components/CommunityPostForm';
+import { FormField } from '../../_components/CommunityPostForm';
 
 import useFileUpload from '@/hooks/useFileUpload';
 import useTagInput from '@/hooks/useTagInput';
@@ -80,7 +81,7 @@ export default function InfoPostForm({ mode, initialValues }: InfoPostFormProps)
 
         <div className="flex flex-col gap-y-6">
           <FormField label="분류" labelClassName="text-[14px]" className="w-full max-w-[300px]">
-            <FormDropdown value={category} options={INFO_CATEGORY_OPTIONS} onChange={setCategory} />
+            <Select value={category} options={INFO_CATEGORY_OPTIONS} onChange={setCategory} />
           </FormField>
 
           <div className="flex flex-col gap-2">

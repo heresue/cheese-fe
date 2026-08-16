@@ -2,6 +2,16 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 
+import {
+  dropdownContentStyle,
+  dropdownOptionInteractiveStyle,
+  dropdownOptionStyle,
+} from '@/components/common/styles/dropdown';
+
+import { cn } from '@/lib/cn';
+
+import { useSearchHistories } from '@/hooks/useSearchHistories';
+
 import CreateIcon from '@/assets/icons/memo/create.svg';
 import MemoCheckIcon from '@/assets/icons/memo/check.svg';
 import MemoDeleteIcon from '@/assets/icons/memo/delete.svg';
@@ -10,8 +20,6 @@ import MemoFilterIcon from '@/assets/icons/memo/filter.svg';
 import MemoPinFilledIcon from '@/assets/icons/memo/pin-filled.svg';
 import MemoPinIcon from '@/assets/icons/memo/pin.svg';
 import MemoSearchIcon from '@/assets/icons/memo/search.svg';
-import { useSearchHistories } from '@/hooks/useSearchHistories';
-import { cn } from '@/lib/cn';
 
 type MemoFilter = 'all' | 'pinned' | 'deleted';
 type MemoSortOrder = 'latest' | 'oldest';
@@ -137,7 +145,12 @@ function SortDropdown({
       </button>
 
       {open ? (
-        <div className="absolute top-[52px] left-0 z-30 w-[98px] overflow-hidden rounded-[10px] border border-gray-300 bg-white py-[6px] shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
+        <div
+          className={cn(
+            dropdownContentStyle,
+            'absolute top-[52px] left-0 z-30 flex w-[200px] flex-col gap-2 overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.12)]',
+          )}
+        >
           {SORT_OPTIONS.map((option) => {
             const selected = option.value === value;
 
@@ -150,8 +163,9 @@ function SortDropdown({
                   setOpen(false);
                 }}
                 className={cn(
-                  'flex h-[32px] w-full items-center px-[12px] text-left text-[13px] font-medium transition-colors hover:bg-gray-100',
-                  selected ? 'text-secondary-700' : 'text-gray-700',
+                  dropdownOptionStyle,
+                  dropdownOptionInteractiveStyle,
+                  selected && 'bg-gray-200',
                 )}
               >
                 {option.label}
@@ -246,7 +260,12 @@ function MemoSearchBox({
       </div>
 
       {open ? (
-        <div className="absolute top-[52px] left-0 z-40 w-full overflow-hidden rounded-[10px] border border-gray-300 bg-white py-[8px] shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
+        <div
+          className={cn(
+            dropdownContentStyle,
+            'absolute top-[52px] left-0 z-40 w-full overflow-hidden px-0 shadow-[0_8px_24px_rgba(0,0,0,0.12)]',
+          )}
+        >
           <div className="px-[14px] pb-[6px] text-[12px] font-medium text-gray-500">
             최근 검색어
           </div>

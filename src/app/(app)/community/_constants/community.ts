@@ -1,7 +1,4 @@
-type Option<T extends string> = {
-  label: string;
-  value: T;
-};
+import type { Option } from '@/types/option';
 
 /* ================================
      커뮤니티 탭

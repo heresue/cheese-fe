@@ -1,21 +1,13 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
+
+import { Input } from '@/components/common/Input';
+import { Select } from '@/components/common/Select';
+import { CollapsibleColorPicker } from '@/components/common/CollapsibleColorPicker';
 
 import { cn } from '@/lib/cn';
 import { getTagColor } from '@/lib/tagPalette';
-import CheckboxIcon from '@/assets/icons/calendar/checkbox.svg';
-import DateIcon from '@/assets/icons/calendar/calendar.svg';
-import DropdownChevronIcon from '@/assets/icons/calendar/dropdown-chevron.svg';
-import RangeSeparatorIcon from '@/assets/icons/calendar/range-separator.svg';
-import ThinCloseIcon from '@/assets/icons/calendar/thinclose.svg';
-import WatchIcon from '@/assets/icons/calendar/watch.svg';
-import Watch2Icon from '@/assets/icons/calendar/watch2.svg';
-import LinkIcon from '@/assets/icons/common/link.svg';
-import LocationIcon from '@/assets/icons/settings/location.svg';
-import { CollapsibleColorPicker } from '@/components/common/CollapsibleColorPicker';
-import { Input } from '@/components/common/Input';
-
 import {
   addDaysToCalendarDate,
   addHoursToCalendarDateTime,
@@ -26,12 +18,24 @@ import {
   toDateInputValue,
   toTimeInputValue,
 } from '../../_lib/date';
+
+import CheckboxIcon from '@/assets/icons/calendar/checkbox.svg';
+import DateIcon from '@/assets/icons/calendar/calendar.svg';
+import RangeSeparatorIcon from '@/assets/icons/calendar/range-separator.svg';
+import ThinCloseIcon from '@/assets/icons/calendar/thinclose.svg';
+import WatchIcon from '@/assets/icons/calendar/watch.svg';
+import Watch2Icon from '@/assets/icons/calendar/watch2.svg';
+import LinkIcon from '@/assets/icons/common/link.svg';
+import LocationIcon from '@/assets/icons/settings/location.svg';
+
 import type {
   CalendarEventCategory,
   CalendarEventDraft,
   EventColorId,
   ReminderMinutes,
 } from '../../_model/types';
+
+import type { Option } from '@/types/option';
 
 type CalendarEventPopoverProps = {
   open: boolean;
@@ -44,21 +48,18 @@ type CalendarEventPopoverProps = {
   onCommit: () => void;
 };
 
-type DropdownOption<T extends string | number> = {
-  label: string;
-  value: T;
-};
-
-const REMINDER_OPTIONS: Array<DropdownOption<ReminderMinutes | ''>> = [
-  { label: '리마인더', value: '' },
-  { label: '5분 전', value: 5 },
-  { label: '10분 전', value: 10 },
-  { label: '30분 전', value: 30 },
-  { label: '1시간 전', value: 60 },
+const REMINDER_OPTIONS: Option[] = [
+  { label: '5분 전', value: '5' },
+  { label: '10분 전', value: '10' },
+  { label: '30분 전', value: '30' },
+  { label: '1시간 전', value: '60' },
 ];
 
-const CATEGORY_OPTIONS: Array<DropdownOption<CalendarEventCategory | ''>> = [
-  { label: '일정구분', value: '' },
+function isReminderMinutes(value: number): value is ReminderMinutes {
+  return [5, 10, 30, 60].includes(value);
+}
+
+const CATEGORY_OPTIONS: Option[] = [
   { label: '면접일정', value: 'interview' },
   { label: '서류접수', value: 'document' },
   { label: '개인일정', value: 'personal' },
@@ -66,8 +67,16 @@ const CATEGORY_OPTIONS: Array<DropdownOption<CalendarEventCategory | ''>> = [
 ];
 
 const DATE_TIME_TEXT_CLASS_NAME = 'text-[14px] leading-[17px] font-normal tracking-normal';
-const FORM_FIELD_TEXT_CLASS_NAME = 'text-[14px] leading-[17px] font-normal tracking-normal';
 const COMPACT_INPUT_TEXT_CLASS_NAME = 'text-[14px] leading-[17px] font-normal tracking-[-0.02em]';
+const COMPACT_SELECT_TRIGGER_CLASS_NAME = cn(
+  DATE_TIME_TEXT_CLASS_NAME,
+  'h-[29px] rounded-[5px] border-0 bg-white px-2 ring-1 ring-gray-300 ring-inset',
+  'text-gray-700',
+  'data-[placeholder]:text-gray-500',
+  'data-[state=open]:rounded-[5px]',
+  'data-[state=open]:border-0',
+  'data-[state=open]:px-2',
+);
 
 const QUICK_EVENT_COLOR_IDS = [
   'tag-gray',
@@ -102,140 +111,6 @@ function CompactFieldIcon({ children }: { children: React.ReactNode }) {
     <span className="flex h-3 w-3 shrink-0 items-center justify-center text-gray-400">
       {children}
     </span>
-  );
-}
-
-function getLabel<T extends string | number>(options: Array<DropdownOption<T>>, value: T) {
-  return options.find((option) => option.value === value)?.label ?? options[0].label;
-}
-
-type CustomDropdownProps<T extends string | number> = {
-  value: T;
-  options: Array<DropdownOption<T>>;
-  onChange: (value: T) => void;
-  leadingIcon?: React.ReactNode;
-};
-
-type DropdownPlacement = 'top' | 'bottom';
-
-const DROPDOWN_GAP = 6;
-const DROPDOWN_OPTION_HEIGHT = 30;
-const DROPDOWN_VERTICAL_CHROME = 10;
-const DROPDOWN_VIEWPORT_PADDING = 12;
-
-function CustomDropdown<T extends string | number>({
-  value,
-  options,
-  onChange,
-  leadingIcon,
-}: CustomDropdownProps<T>) {
-  const [open, setOpen] = useState(false);
-  const [placement, setPlacement] = useState<DropdownPlacement>('bottom');
-  const rootRef = useRef<HTMLDivElement | null>(null);
-
-  const handleToggle = () => {
-    if (open) {
-      setOpen(false);
-      return;
-    }
-
-    const rootRect = rootRef.current?.getBoundingClientRect();
-    if (rootRect) {
-      const menuHeight = options.length * DROPDOWN_OPTION_HEIGHT + DROPDOWN_VERTICAL_CHROME;
-      const viewportHeight = document.documentElement.clientHeight;
-      const spaceBelow =
-        viewportHeight - rootRect.bottom - DROPDOWN_GAP - DROPDOWN_VIEWPORT_PADDING;
-      const spaceAbove = rootRect.top - DROPDOWN_GAP - DROPDOWN_VIEWPORT_PADDING;
-
-      setPlacement(spaceBelow < menuHeight && spaceAbove > spaceBelow ? 'top' : 'bottom');
-    }
-
-    setOpen(true);
-  };
-
-  useEffect(() => {
-    const handlePointerDown = (event: MouseEvent) => {
-      if (!rootRef.current) return;
-      if (rootRef.current.contains(event.target as Node)) return;
-
-      setOpen(false);
-    };
-
-    document.addEventListener('mousedown', handlePointerDown);
-
-    return () => {
-      document.removeEventListener('mousedown', handlePointerDown);
-    };
-  }, []);
-
-  const isPlaceholder = value === '' || value === undefined;
-
-  return (
-    <div ref={rootRef} className="relative">
-      <button
-        type="button"
-        onClick={handleToggle}
-        className={cn(
-          'flex h-[29px] w-full items-center justify-between rounded-[5px] bg-white px-2 ring-1 ring-gray-300 outline-none ring-inset',
-          FORM_FIELD_TEXT_CLASS_NAME,
-        )}
-      >
-        <span className="flex min-w-0 items-center gap-2">
-          {leadingIcon ? <CompactFieldIcon>{leadingIcon}</CompactFieldIcon> : null}
-          <span
-            className={cn(
-              'truncate',
-              FORM_FIELD_TEXT_CLASS_NAME,
-              isPlaceholder ? 'text-gray-500' : 'text-gray-700',
-            )}
-          >
-            {getLabel(options, value)}
-          </span>
-        </span>
-
-        <span className="flex h-3 w-3 shrink-0 items-center justify-center">
-          <DropdownChevronIcon
-            width={12}
-            height={12}
-            aria-hidden
-            className={cn('transition-transform', {
-              'rotate-180': open && placement === 'top',
-            })}
-          />
-        </span>
-      </button>
-
-      {open ? (
-        <div
-          data-dropdown-placement={placement}
-          className={cn(
-            'absolute left-0 z-20 w-full rounded-[12px] border border-gray-400 bg-white py-1 shadow-[0_8px_24px_rgba(15,23,42,0.12)]',
-            placement === 'top' ? 'bottom-[35px]' : 'top-[35px]',
-          )}
-        >
-          {options.map((option) => {
-            const selected = option.value === value;
-
-            return (
-              <button
-                key={String(option.value)}
-                type="button"
-                onClick={() => {
-                  onChange(option.value);
-                  setOpen(false);
-                }}
-                className={cn(
-                  'flex h-[30px] w-full items-center px-3 text-left text-[12px] leading-[16px] font-medium tracking-normal text-gray-950 hover:bg-gray-200',
-                  selected ? 'bg-gray-200' : '',
-                )}
-              >
-                {option.label}
-              </button>
-            );
-          })}
-        </div>
-      ) : null}
-    </div>
   );
 }
 
@@ -712,27 +587,44 @@ export function CalendarEventPopover({
           </div>
 
           <div className="grid grid-cols-2 gap-2">
-            <CustomDropdown
-              value={draft.reminderMinutes !== undefined ? draft.reminderMinutes : ''}
+            {/* TODO: 리마인더 해제 시 reminderMinutes 전달값(null/0 등) 확인 필요 */}
+            <Select
+              value={draft.reminderMinutes?.toString() ?? ''}
               options={REMINDER_OPTIONS}
-              leadingIcon={<Watch2Icon width={12} height={12} aria-hidden />}
-              onChange={(nextValue) => {
+              placeholder="리마인더"
+              leadingIcon={
+                <CompactFieldIcon>
+                  <Watch2Icon className="h-3 w-3" aria-hidden />
+                </CompactFieldIcon>
+              }
+              onChange={(value) => {
+                const reminderMinutes = Number(value);
+
+                if (!isReminderMinutes(reminderMinutes)) return;
+
                 onChangeDraft({
                   ...draft,
-                  reminderMinutes: nextValue === '' ? undefined : (nextValue as ReminderMinutes),
+                  reminderMinutes,
                 });
               }}
+              triggerClassName={COMPACT_SELECT_TRIGGER_CLASS_NAME}
+              contentClassName="shadow-[0_8px_24px_rgba(15,23,42,0.12)]"
+              arrowIconClassName="text-gray-400"
             />
 
-            <CustomDropdown
+            <Select
               value={draft.category ?? ''}
               options={CATEGORY_OPTIONS}
-              onChange={(nextValue) =>
+              placeholder="일정구분"
+              onChange={(value) =>
                 onChangeDraft({
                   ...draft,
-                  category: nextValue || undefined,
+                  category: value as CalendarEventCategory,
                 })
               }
+              triggerClassName={COMPACT_SELECT_TRIGGER_CLASS_NAME}
+              contentClassName="shadow-[0_8px_24px_rgba(15,23,42,0.12)]"
+              arrowIconClassName="text-gray-400"
             />
           </div>
         </div>
