@@ -3,7 +3,13 @@
 import { useRouter } from 'next/navigation';
 
 import { BackButton } from '@/components/common/BackButton';
+import {
+  dropdownContentStyle,
+  dropdownOptionInteractiveStyle,
+  dropdownOptionStyle,
+} from '@/components/common/styles/dropdown';
 
+import { cn } from '@/lib/cn';
 import { getOptionLabel } from '@/lib/getOptionLabel';
 
 import { INFO_SORT_OPTIONS } from '../../_constants/community';
@@ -37,7 +43,7 @@ export default function PostDetailHeader({
   const router = useRouter();
 
   return (
-    <header className="relative flex flex-col gap-2 border-b border-gray-300 pt-8 pb-5">
+    <header className="flex flex-col gap-2 border-b border-gray-300 pt-8 pb-5">
       <div className="flex gap-2">
         <BackButton onClick={() => router.back()} />
 
@@ -70,26 +76,34 @@ export default function PostDetailHeader({
       </div>
 
       {isMenuOpen && (
-        <div className="bg-bg-white absolute top-25 right-2 z-10 flex w-25 flex-col gap-2 rounded-[10px] border border-gray-400 py-3 text-[12px] leading-5">
+        <div
+          className={cn(
+            dropdownContentStyle,
+            'absolute top-25 right-2 z-10 flex w-25 flex-col gap-2',
+          )}
+        >
           {isMine ? (
             <>
               <button
                 type="button"
-                className="mx-3 rounded-[5px] px-2 text-left hover:bg-gray-200"
+                className={cn(dropdownOptionStyle, dropdownOptionInteractiveStyle)}
                 onClick={onEdit}
               >
                 수정
               </button>
               <button
                 type="button"
-                className="mx-3 rounded-[5px] px-2 text-left hover:bg-gray-200"
+                className={cn(dropdownOptionStyle, dropdownOptionInteractiveStyle)}
                 onClick={onDelete}
               >
                 삭제
               </button>
             </>
           ) : (
-            <button type="button" className="mx-3 rounded-[5px] px-2 text-left hover:bg-gray-200">
+            <button
+              type="button"
+              className={cn(dropdownOptionStyle, dropdownOptionInteractiveStyle)}
+            >
               신고
             </button>
           )}
