@@ -57,58 +57,60 @@ export default function PostDetailHeader({
         </h1>
       </div>
 
-      <div className="flex items-center justify-end gap-5 text-gray-600">
-        <span className="text-[14px] leading-6">{createdAt}</span>
+      <div className="flex items-center justify-end gap-5">
+        <span className="text-[14px] leading-6 text-gray-600">{createdAt}</span>
 
         <div className="flex h-6 items-center gap-1">
           <ViewIcon className="w-4 text-gray-500" />
-          <span className="text-[12px] leading-6 font-medium">{viewCount}</span>
+          <span className="text-[12px] leading-6 font-medium text-gray-600">{viewCount}</span>
         </div>
 
-        <button
-          type="button"
-          aria-label="게시글 메뉴 열기"
-          className="flex h-4 w-5 items-center justify-center"
-          onClick={onToggleMenu}
-        >
-          <MoreIcon className="h-4" />
-        </button>
-      </div>
+        <div className="relative">
+          <button
+            type="button"
+            aria-label="게시글 메뉴 열기"
+            className="flex h-4 w-5 items-center justify-center"
+            onClick={onToggleMenu}
+          >
+            <MoreIcon className="h-4 text-gray-700" />
+          </button>
 
-      {isMenuOpen && (
-        <div
-          className={cn(
-            dropdownContentStyle,
-            'absolute top-25 right-2 z-10 flex w-25 flex-col gap-2',
-          )}
-        >
-          {isMine ? (
-            <>
-              <button
-                type="button"
-                className={cn(dropdownOptionStyle, dropdownOptionInteractiveStyle)}
-                onClick={onEdit}
-              >
-                수정
-              </button>
-              <button
-                type="button"
-                className={cn(dropdownOptionStyle, dropdownOptionInteractiveStyle)}
-                onClick={onDelete}
-              >
-                삭제
-              </button>
-            </>
-          ) : (
-            <button
-              type="button"
-              className={cn(dropdownOptionStyle, dropdownOptionInteractiveStyle)}
+          {isMenuOpen && (
+            <div
+              className={cn(
+                dropdownContentStyle,
+                'absolute top-6 right-3 z-10 flex w-25 flex-col gap-2',
+              )}
             >
-              신고
-            </button>
+              {isMine ? (
+                <>
+                  <button
+                    type="button"
+                    className={cn(dropdownOptionStyle, dropdownOptionInteractiveStyle)}
+                    onClick={onEdit}
+                  >
+                    수정
+                  </button>
+                  <button
+                    type="button"
+                    className={cn(dropdownOptionStyle, dropdownOptionInteractiveStyle)}
+                    onClick={onDelete}
+                  >
+                    삭제
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  className={cn(dropdownOptionStyle, dropdownOptionInteractiveStyle)}
+                >
+                  신고
+                </button>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </div>
     </header>
   );
 }
