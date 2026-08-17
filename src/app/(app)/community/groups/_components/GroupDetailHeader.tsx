@@ -26,6 +26,7 @@ export default function GroupDetailHeader({ groupPost }: GroupDetailHeaderProps)
       isMine={groupPost.author.id === currentUserId}
       isMenuOpen={isMenuOpen}
       onToggleMenu={() => setIsMenuOpen((prev) => !prev)}
+      onCloseMenu={() => setIsMenuOpen(false)}
       onEdit={() => router.push(`/community/groups/${groupPost.id}/edit`)}
       onDelete={() => {
         // TODO: 삭제 API

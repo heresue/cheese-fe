@@ -27,6 +27,7 @@ export default function InfoDetailHeader({ infoPost }: InfoDetailHeaderProps) {
       isMine={infoPost.author.id === currentUserId}
       isMenuOpen={isMenuOpen}
       onToggleMenu={() => setIsMenuOpen((prev) => !prev)}
+      onCloseMenu={() => setIsMenuOpen(false)}
       onEdit={() => router.push(`/community/info/${infoPost.id}/edit`)}
       onDelete={() => {
         // TODO: 삭제 API

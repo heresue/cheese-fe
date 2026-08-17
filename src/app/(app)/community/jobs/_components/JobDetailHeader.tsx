@@ -26,6 +26,7 @@ export default function JobDetailHeader({ jobPost }: JobDetailHeaderProps) {
       isMine={jobPost.author.id === currentUserId}
       isMenuOpen={isMenuOpen}
       onToggleMenu={() => setIsMenuOpen((prev) => !prev)}
+      onCloseMenu={() => setIsMenuOpen(false)}
       onEdit={() => router.push(`/community/jobs/${jobPost.id}/edit`)}
       onDelete={() => {
         // TODO: 삭제 API

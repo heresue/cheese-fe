@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { BackButton } from '@/components/common/BackButton';
@@ -25,6 +26,7 @@ type PostDetailHeaderProps = {
   isMine?: boolean;
   isMenuOpen?: boolean;
   onToggleMenu?: () => void;
+  onCloseMenu?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
 };
@@ -37,10 +39,37 @@ export default function PostDetailHeader({
   isMine = false,
   isMenuOpen = false,
   onToggleMenu,
+  onCloseMenu,
   onEdit,
   onDelete,
 }: PostDetailHeaderProps) {
   const router = useRouter();
+
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isMenuOpen) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!menuRef.current?.contains(event.target as Node)) {
+        onCloseMenu?.();
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onCloseMenu?.();
+      }
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isMenuOpen, onCloseMenu]);
 
   return (
     <header className="flex flex-col gap-2 border-b border-gray-300 pt-8 pb-5">
@@ -65,7 +94,7 @@ export default function PostDetailHeader({
           <span className="text-[12px] leading-6 font-medium text-gray-600">{viewCount}</span>
         </div>
 
-        <div className="relative">
+        <div ref={menuRef} className="relative">
           <button
             type="button"
             aria-label="게시글 메뉴 열기"
