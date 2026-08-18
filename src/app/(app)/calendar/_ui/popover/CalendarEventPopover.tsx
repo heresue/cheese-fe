@@ -61,8 +61,8 @@ function isReminderMinutes(value: number): value is ReminderMinutes {
 
 const CATEGORY_OPTIONS: Option[] = [
   { label: '면접일정', value: 'interview' },
-  { label: '서류접수', value: 'document' },
-  { label: '개인일정', value: 'personal' },
+  { label: '서류접수', value: 'assignment' },
+  { label: '개인일정', value: 'meeting' },
   { label: '기타', value: 'etc' },
 ];
 
