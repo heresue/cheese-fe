@@ -16,7 +16,8 @@ import { CalendarCore } from './views/CalendarCore';
  */
 export default function CalendarScreen() {
   const screenRef = useRef<HTMLDivElement | null>(null);
-  const { events, createEvent, updateEvent, deleteEvent } = useCalendarStore();
+  const { events, isLoading, errorMessage, createEvent, updateEvent, deleteEvent } =
+    useCalendarStore();
 
   // 상단 툴바 상태
   const { view, setView, title, setTitle, moveToToday, moveToPrev, moveToNext } = useCalendarView({
@@ -42,13 +43,18 @@ export default function CalendarScreen() {
    * 새 일정을 저장한다.
    * 제목이 비어 있으면 기존 동작과 동일하게 팝오버만 닫는다.
    */
-  const handleCreateEvent = () => {
+  const handleCreateEvent = async () => {
     if (!createPopover) return;
 
-    const status = createEvent(createPopover.draft);
+    const status = await createEvent(createPopover.draft);
 
     if (status === 'conflict') {
       window.alert('해당 시간 칸에는 이미 일정이 있습니다.');
+      return;
+    }
+
+    if (status === 'error') {
+      window.alert('일정 등록에 실패했습니다. 잠시 후 다시 시도해 주세요.');
       return;
     }
 
@@ -63,14 +69,14 @@ export default function CalendarScreen() {
   /**
    * 기존 일정을 수정한다.
    */
-  const handleUpdateEvent = () => {
+  const handleUpdateEvent = async () => {
     const editingEventId = editPopover?.draft.id;
     if (!editingEventId) {
       closeEditPopover();
       return;
     }
 
-    const status = updateEvent(editPopover.draft);
+    const status = await updateEvent(editPopover.draft);
 
     if (status === 'not-found') {
       const currentEvent = events.find((event) => event.id === editingEventId);
@@ -86,6 +92,11 @@ export default function CalendarScreen() {
       return;
     }
 
+    if (status === 'error') {
+      window.alert('일정 수정에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+      return;
+    }
+
     if (status !== 'success') {
       closeEditPopover();
       return;
@@ -97,8 +108,13 @@ export default function CalendarScreen() {
   /**
    * 일정 삭제 후, 해당 일정이 수정 팝오버에서 열려 있으면 같이 닫아 준다.
    */
-  const handleDeleteEventById = (eventId: string) => {
-    deleteEvent(eventId);
+  const handleDeleteEventById = async (eventId: string) => {
+    const status = await deleteEvent(eventId);
+
+    if (status === 'error') {
+      window.alert('일정 삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+      return;
+    }
 
     if (editPopover?.draft.id === eventId) {
       closeEditPopover();
@@ -119,7 +135,22 @@ export default function CalendarScreen() {
           />
         </div>
 
-        <section className="min-h-0 flex-1 overflow-hidden">
+        <section className="relative min-h-0 flex-1 overflow-hidden">
+          {isLoading && (
+            <div className="pointer-events-none absolute inset-x-0 top-4 z-10 text-center text-sm text-gray-500">
+              일정을 불러오는 중입니다.
+            </div>
+          )}
+
+          {!isLoading && errorMessage && (
+            <div
+              role="alert"
+              className="bg-tag-red-100 text-error absolute top-4 left-1/2 z-10 -translate-x-1/2 rounded-md px-4 py-2 text-sm"
+            >
+              {errorMessage}
+            </div>
+          )}
+
           <CalendarCore
             view={view}
             events={events}
