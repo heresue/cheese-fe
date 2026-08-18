@@ -106,6 +106,8 @@ function createCalendarEventInput(
       colorId: event.colorId,
       reminderMinutes: event.reminderMinutes,
       location: event.location,
+      url: event.url,
+      category: event.category,
       sourceEventId: event.id,
       sourceStart: event.start,
       sourceEnd: event.end,
