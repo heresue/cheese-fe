@@ -1,4 +1,5 @@
 import { DEFAULT_EVENT_COLOR } from '@/app/(app)/calendar/_model/constants';
+import { parseCalendarDate } from '@/app/(app)/calendar/_lib/date';
 
 import type { CalendarEvent, CalendarEventDraft } from '@/app/(app)/calendar/_model/types';
 
@@ -100,11 +101,21 @@ async function requestCalendarApi<T>(
 }
 
 function toCalendarEventRequest(draft: CalendarEventDraft): CalendarEventRequest {
+  const allDay = draft.allDay ?? false;
+
+  const toApiDateValue = (value: string) => {
+    if (allDay) {
+      return value;
+    }
+
+    return parseCalendarDate(value)?.toISOString() ?? value;
+  };
+
   return {
     title: draft.title,
-    start: draft.start,
-    end: draft.end,
-    allDay: draft.allDay ?? false,
+    start: toApiDateValue(draft.start),
+    end: toApiDateValue(draft.end),
+    allDay,
     memo: draft.memo,
     location: draft.location,
     url: draft.url,
