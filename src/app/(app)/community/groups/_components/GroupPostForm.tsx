@@ -3,11 +3,11 @@
 import { useState } from 'react';
 
 import { Input } from '@/components/common/Input';
+import { Select } from '@/components/common/Select';
 import DatePicker from '@/components/common/DatePicker/DatePicker';
 
-import { CommunityPostForm, FormDropdown, FormField } from '../../_components/CommunityPostForm';
+import { CommunityPostForm, FormField } from '../../_components/CommunityPostForm';
 
-import { cn } from '@/lib/cn';
 import { toFieldArray, toFieldSelectValue, type FieldSelectValue } from '@/lib/jobField';
 import { FIELD_OPTIONS, WORK_METHOD_OPTIONS } from '@/constants/profileOptions';
 
@@ -78,7 +78,7 @@ export default function GroupPostForm({ mode, initialValues }: GroupPostFormProp
 
         <div className="grid grid-cols-2 gap-x-15 gap-y-6">
           <FormField label="모집분야" labelClassName="text-[14px]">
-            <FormDropdown
+            <Select
               value={field}
               options={FIELD_OPTIONS}
               onChange={(value) => setField(value as FieldSelectValue)}
@@ -86,11 +86,7 @@ export default function GroupPostForm({ mode, initialValues }: GroupPostFormProp
           </FormField>
 
           <FormField label="진행방식" labelClassName="text-[14px]">
-            <FormDropdown
-              value={progressType}
-              options={WORK_METHOD_OPTIONS}
-              onChange={setProgressType}
-            />
+            <Select value={progressType} options={WORK_METHOD_OPTIONS} onChange={setProgressType} />
           </FormField>
 
           <FormField label="예상 기간" labelClassName="text-[14px]">

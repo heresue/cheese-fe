@@ -3,9 +3,10 @@
 import { useState } from 'react';
 
 import { Input } from '@/components/common/Input';
+import { Select } from '@/components/common/Select';
 import DatePicker from '@/components/common/DatePicker/DatePicker';
 
-import { CommunityPostForm, FormDropdown, FormField } from '../../_components/CommunityPostForm';
+import { CommunityPostForm, FormField } from '../../_components/CommunityPostForm';
 
 import {
   CAREER_OPTIONS,
@@ -13,8 +14,6 @@ import {
   EMPLOYMENT_TYPE_OPTIONS,
   FIELD_OPTIONS,
 } from '@/constants/profileOptions';
-
-import { cn } from '@/lib/cn';
 
 import type { JobPost } from '@/types/community/community';
 import { FieldSelectValue, toFieldArray, toFieldSelectValue } from '@/lib/jobField';
@@ -92,7 +91,7 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
 
         <div className="grid grid-cols-2 gap-x-15 gap-y-6">
           <FormField label="모집분야" labelClassName="text-[14px]">
-            <FormDropdown
+            <Select
               value={field}
               options={FIELD_OPTIONS}
               onChange={(value) => setField(value as FieldSelectValue)}
@@ -100,7 +99,7 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
           </FormField>
 
           <FormField label="고용 형태" labelClassName="text-[14px]">
-            <FormDropdown
+            <Select
               value={employmentType}
               options={EMPLOYMENT_TYPE_OPTIONS}
               onChange={setEmploymentType}
@@ -119,11 +118,11 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
           </FormField>
 
           <FormField label="학력" labelClassName="text-[14px]">
-            <FormDropdown value={education} options={EDUCATION_OPTIONS} onChange={setEducation} />
+            <Select value={education} options={EDUCATION_OPTIONS} onChange={setEducation} />
           </FormField>
 
           <FormField label="경력" labelClassName="text-[14px]">
-            <FormDropdown value={career} options={CAREER_OPTIONS} onChange={setCareer} />
+            <Select value={career} options={CAREER_OPTIONS} onChange={setCareer} />
           </FormField>
 
           <FormField label="필요스킬" labelClassName="text-[14px]">
