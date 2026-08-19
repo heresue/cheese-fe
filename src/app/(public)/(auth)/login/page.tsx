@@ -8,12 +8,15 @@ import Image from 'next/image';
 import { Button } from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
 
+import { useLogin } from '@/queries/auth/useLogin';
 import { AUTH_MESSAGE } from '@/constants/auth';
 
 import SeparatorIcon from '@/assets/icons/common/separator-vertival.svg';
 
 export default function LoginPage() {
   const [loginError, setLoginError] = useState<string>();
+
+  const { mutateAsync: login, isPending } = useLogin();
 
   const router = useRouter();
 
@@ -29,7 +32,7 @@ export default function LoginPage() {
     };
 
     try {
-      // TODO: 로그인 API 호출
+      await login(loginData);
       router.push('/dashboard');
     } catch {
       setLoginError(AUTH_MESSAGE.LOGIN.INVALID);
@@ -63,7 +66,7 @@ export default function LoginPage() {
           />
         </div>
 
-        <Button variant="light" type="submit" className="text-[16px]">
+        <Button variant="light" type="submit" className="text-[16px]" disabled={isPending}>
           로그인
         </Button>
 

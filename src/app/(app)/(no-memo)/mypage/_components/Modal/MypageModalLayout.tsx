@@ -17,6 +17,9 @@ type MypageModalLayoutProps = {
 
   onConfirm?: () => void;
   submitFormId?: string;
+
+  errorMessage?: string;
+  disabled?: boolean;
 };
 
 export default function MypageModalLayout({
@@ -31,6 +34,9 @@ export default function MypageModalLayout({
 
   onConfirm,
   submitFormId,
+
+  errorMessage,
+  disabled,
 }: MypageModalLayoutProps) {
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} hasOverlay>
@@ -55,7 +61,9 @@ export default function MypageModalLayout({
 
         {children}
 
-        <div className="mt-3 flex justify-end">
+        <div className="mt-3 flex items-center justify-end gap-2">
+          {errorMessage && <p className="text-error text-[12px] font-medium">{errorMessage}</p>}
+
           <Button
             type={submitFormId ? 'submit' : 'button'}
             form={submitFormId}
@@ -63,6 +71,7 @@ export default function MypageModalLayout({
             paddingX={12}
             className={cn('tracking-[-0.04em]', buttonClassName)}
             onClick={submitFormId ? undefined : onConfirm}
+            disabled={disabled}
           >
             {buttonText}
           </Button>

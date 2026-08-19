@@ -1,7 +1,11 @@
+import { useRouter } from 'next/navigation';
+
 import TextEditModal from './TextEditModal';
 import DocumentEditModal from './DocumentEditModal';
 import SelectEditModal from './SelectEditModal';
 import ConfirmModal from './ConfirmModal';
+
+import { useLogout } from '@/queries/auth/useLogout';
 
 import type { ContactSettings, ProfileDocument } from '@/types/profile';
 import type { MypageModalItem } from './types';
@@ -21,6 +25,14 @@ export default function MypageModalRenderer({
   onClose,
   onSave,
 }: MypageModalRendererProps) {
+  const router = useRouter();
+  const {
+    mutate: logout,
+    isPending: isLogoutPending,
+    isError: isLogoutError,
+    reset: resetLogout,
+  } = useLogout();
+
   if (!editingItem) return null;
 
   const modalKey = `${editingItem.modalType}-${editingItem.label}`;
@@ -47,6 +59,39 @@ export default function MypageModalRenderer({
   const confirmButtonClassName = isLogout ? 'bg-tag-red-100 text-error' : 'bg-error text-gray-50';
 
   const confirmTitleClassName = isDeleteAccount ? 'text-error' : '';
+
+  const handleConfirm = () => {
+    if (editingItem.field === 'logout') {
+      logout(undefined, {
+        onSuccess: () => {
+          onClose();
+          router.replace('/login');
+        },
+      });
+
+      return;
+    }
+
+    if (editingItem.field === 'deleteAccount') {
+      // TODO: 계정 삭제
+
+      return;
+    }
+
+    onClose();
+  };
+
+  const handleConfirmModalClose = () => {
+    if (isLogout && isLogoutPending) {
+      return;
+    }
+
+    if (isLogout) {
+      resetLogout();
+    }
+
+    onClose();
+  };
 
   if (isTextModal) {
     return (
@@ -114,18 +159,12 @@ export default function MypageModalRenderer({
         description={confirmModalDescription}
         buttonText={editingItem.label}
         buttonClassName={confirmButtonClassName}
-        onClose={onClose}
-        onConfirm={() => {
-          if (editingItem.field === 'logout') {
-            // TODO: 로그아웃
-          }
-
-          if (editingItem.field === 'deleteAccount') {
-            // TODO: 계정 삭제
-          }
-
-          onClose();
-        }}
+        onClose={handleConfirmModalClose}
+        disabled={isLogout && isLogoutPending}
+        errorMessage={
+          isLogout && isLogoutError ? '로그아웃에 실패했습니다. 다시 시도해 주세요.' : undefined
+        }
+        onConfirm={handleConfirm}
       />
     );
   }
