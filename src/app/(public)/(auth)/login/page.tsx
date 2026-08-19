@@ -8,11 +8,13 @@ import Image from 'next/image';
 import { Button } from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
 
+import { login } from '@/api/auth.api';
 import { AUTH_MESSAGE } from '@/constants/auth';
 
 import SeparatorIcon from '@/assets/icons/common/separator-vertival.svg';
 
 export default function LoginPage() {
+  const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState<string>();
 
   const router = useRouter();
@@ -29,10 +31,15 @@ export default function LoginPage() {
     };
 
     try {
-      // TODO: 로그인 API 호출
+      setIsLoading(true);
+
+      await login(loginData);
+
       router.push('/dashboard');
     } catch {
       setLoginError(AUTH_MESSAGE.LOGIN.INVALID);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -63,7 +70,7 @@ export default function LoginPage() {
           />
         </div>
 
-        <Button variant="light" type="submit" className="text-[16px]">
+        <Button variant="light" type="submit" className="text-[16px]" disabled={isLoading}>
           로그인
         </Button>
 
