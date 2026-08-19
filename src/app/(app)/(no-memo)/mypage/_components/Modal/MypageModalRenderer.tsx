@@ -26,7 +26,12 @@ export default function MypageModalRenderer({
   onSave,
 }: MypageModalRendererProps) {
   const router = useRouter();
-  const { mutateAsync: logout, isPending: isLogoutPending } = useLogout();
+  const {
+    mutate: logout,
+    isPending: isLogoutPending,
+    isError: isLogoutError,
+    reset: resetLogout,
+  } = useLogout();
 
   if (!editingItem) return null;
 
@@ -54,6 +59,35 @@ export default function MypageModalRenderer({
   const confirmButtonClassName = isLogout ? 'bg-tag-red-100 text-error' : 'bg-error text-gray-50';
 
   const confirmTitleClassName = isDeleteAccount ? 'text-error' : '';
+
+  const handleConfirm = () => {
+    if (editingItem.field === 'logout') {
+      logout(undefined, {
+        onSuccess: () => {
+          onClose();
+          router.replace('/login');
+        },
+      });
+
+      return;
+    }
+
+    if (editingItem.field === 'deleteAccount') {
+      // TODO: 계정 삭제
+
+      return;
+    }
+
+    onClose();
+  };
+
+  const handleConfirmModalClose = () => {
+    if (isLogout) {
+      resetLogout();
+    }
+
+    onClose();
+  };
 
   if (isTextModal) {
     return (
@@ -121,27 +155,12 @@ export default function MypageModalRenderer({
         description={confirmModalDescription}
         buttonText={editingItem.label}
         buttonClassName={confirmButtonClassName}
-        onClose={onClose}
-        disabled={isLogoutPending}
-        onConfirm={async () => {
-          if (editingItem.field === 'logout') {
-            try {
-              await logout();
-              onClose();
-              router.replace('/login');
-            } catch {
-              // TODO: 로그아웃 실패 처리
-            }
-
-            return;
-          }
-
-          if (editingItem.field === 'deleteAccount') {
-            // TODO: 계정 삭제
-          }
-
-          onClose();
-        }}
+        onClose={handleConfirmModalClose}
+        disabled={isLogout && isLogoutPending}
+        errorMessage={
+          isLogout && isLogoutError ? '로그아웃에 실패했습니다. 다시 시도해 주세요.' : undefined
+        }
+        onConfirm={handleConfirm}
       />
     );
   }
