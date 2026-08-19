@@ -193,8 +193,11 @@
   max-width: 100% !important;
 }
 
+/* 행 높이 반올림으로 생기는 미세한 overflow가 월간 화면을 흔들지 않도록 고정한다. */
 [data-calendar-view='month'] .fc .fc-dayGridMonth-view .fc-scroller {
   margin-right: 0 !important;
+  overflow-y: hidden !important;
+  overscroll-behavior: none;
   padding-right: 0 !important;
 }
 

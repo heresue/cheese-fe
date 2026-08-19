@@ -7,11 +7,9 @@ const CATEGORY_META: Record<
   { label: string; chipVariant: DashboardChipVariant }
 > = {
   interview: { label: '면접일정', chipVariant: 'interview' },
-  document: { label: '서류접수', chipVariant: 'document' },
-  personal: { label: '개인일정', chipVariant: 'personal' },
   assignment: { label: '서류접수', chipVariant: 'document' },
-  meeting: { label: '미팅', chipVariant: 'personal' },
-  etc: { label: '개인일정', chipVariant: 'personal' },
+  meeting: { label: '개인일정', chipVariant: 'personal' },
+  etc: { label: '기타', chipVariant: 'personal' },
 };
 
 const DEFAULT_CATEGORY_META = {

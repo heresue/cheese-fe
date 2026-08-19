@@ -6,193 +6,137 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from 'react';
+
+import {
+  CalendarApiError,
+  createCalendarEvent,
+  deleteCalendarEvent,
+  getCalendarEvents,
+  updateCalendarEvent,
+} from '@/api/calendar.api';
+import { getCurrentUserId } from '@/lib/auth/currentUser';
 
 import {
   applyDraftToEvent,
   createCalendarEventFromDraft,
   hasTimedSlotConflict,
 } from '../_lib/event-mapper';
-import { mockEvents } from '../_model/mock-events';
-import type {
-  CalendarEvent,
-  CalendarEventCategory,
-  CalendarEventDraft,
-  EventColorId,
-  ReminderMinutes,
-} from '../_model/types';
+import type { CalendarEvent, CalendarEventDraft } from '../_model/types';
 
-const CALENDAR_STORAGE_KEY = 'cheese:calendar-events:v1';
-const EVENT_COLOR_IDS = [
-  'tag-red',
-  'tag-yellow',
-  'tag-green',
-  'tag-blue',
-  'tag-purple',
-  'tag-gray',
-] as const satisfies readonly EventColorId[];
-const EVENT_CATEGORIES = [
-  'interview',
-  'document',
-  'personal',
-  'assignment',
-  'meeting',
-  'etc',
-] as const satisfies readonly CalendarEventCategory[];
-const REMINDER_MINUTES = [
-  0, 5, 10, 15, 30, 60, 120, 1440,
-] as const satisfies readonly ReminderMinutes[];
+type CalendarMutationStatus =
+  | 'success'
+  | 'invalid'
+  | 'conflict'
+  | 'not-found'
+  | 'loading'
+  | 'error';
+type CalendarDeleteStatus = 'success' | 'not-found' | 'loading' | 'error';
 
 type CalendarStoreContextValue = {
   events: CalendarEvent[];
-  createEvent: (draft: CalendarEventDraft) => 'success' | 'invalid' | 'conflict';
-  updateEvent: (draft: CalendarEventDraft) => 'success' | 'invalid' | 'conflict' | 'not-found';
-  deleteEvent: (eventId: string) => void;
+  isLoading: boolean;
+  errorMessage: string | null;
+  createEvent: (draft: CalendarEventDraft) => Promise<CalendarMutationStatus>;
+  updateEvent: (draft: CalendarEventDraft) => Promise<CalendarMutationStatus>;
+  deleteEvent: (eventId: string) => Promise<CalendarDeleteStatus>;
 };
 
 const CalendarStoreContext = createContext<CalendarStoreContextValue | null>(null);
 
-function createEventId() {
-  if (typeof globalThis.crypto !== 'undefined' && 'randomUUID' in globalThis.crypto) {
-    return globalThis.crypto.randomUUID();
+function getCalendarErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof CalendarApiError || error instanceof Error) {
+    return error.message;
   }
 
-  return `evt-${Date.now()}`;
-}
-
-function getInitialEvents() {
-  return mockEvents;
-}
-
-function isIncluded<T extends string | number>(value: unknown, values: readonly T[]): value is T {
-  return values.some((candidate) => candidate === value);
-}
-
-function isOptionalString(value: unknown): value is string | undefined {
-  return value === undefined || typeof value === 'string';
-}
-
-function isCalendarEvent(value: unknown): value is CalendarEvent {
-  if (typeof value !== 'object' || value === null) {
-    return false;
-  }
-
-  const event = value as Record<string, unknown>;
-
-  return (
-    typeof event.id === 'string' &&
-    typeof event.title === 'string' &&
-    typeof event.start === 'string' &&
-    typeof event.end === 'string' &&
-    isOptionalString(event.memo) &&
-    (event.allDay === undefined || typeof event.allDay === 'boolean') &&
-    isOptionalString(event.spaceId) &&
-    (event.colorId === undefined || isIncluded(event.colorId, EVENT_COLOR_IDS)) &&
-    (event.category === undefined || isIncluded(event.category, EVENT_CATEGORIES)) &&
-    (event.reminderMinutes === undefined || isIncluded(event.reminderMinutes, REMINDER_MINUTES)) &&
-    isOptionalString(event.location) &&
-    isOptionalString(event.url) &&
-    isOptionalString(event.createdAt) &&
-    isOptionalString(event.updatedAt)
-  );
-}
-
-function normalizeStoredEvent(event: CalendarEvent): CalendarEvent {
-  if (event.category === 'assignment') {
-    return { ...event, category: 'document' };
-  }
-
-  if (event.category === 'meeting') {
-    return { ...event, category: 'personal' };
-  }
-
-  return event;
-}
-
-function readStoredEvents() {
-  try {
-    const storedEvents = window.localStorage.getItem(CALENDAR_STORAGE_KEY);
-
-    if (!storedEvents) {
-      return null;
-    }
-
-    const parsedEvents: unknown = JSON.parse(storedEvents);
-
-    if (!Array.isArray(parsedEvents)) {
-      return null;
-    }
-
-    const validEvents = parsedEvents.filter(isCalendarEvent).map(normalizeStoredEvent);
-
-    return validEvents.length > 0 ? validEvents : null;
-  } catch {
-    return null;
-  }
-}
-
-function writeStoredEvents(events: CalendarEvent[]) {
-  try {
-    window.localStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(events));
-  } catch {
-    // localStorage 저장 실패는 UI 동작을 막지 않음
-  }
+  return fallback;
 }
 
 export function CalendarStoreProvider({ children }: { children: ReactNode }) {
-  const [events, setEvents] = useState<CalendarEvent[]>(getInitialEvents);
-  const storageReadyRef = useRef(false);
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
 
-    const timerId = window.setTimeout(() => {
-      if (cancelled) return;
+    const loadEvents = async () => {
+      try {
+        setIsLoading(true);
+        setErrorMessage(null);
 
-      const storedEvents = readStoredEvents();
+        const nextEvents = await getCalendarEvents({
+          userId: getCurrentUserId(),
+          signal: controller.signal,
+        });
 
-      if (storedEvents) {
-        setEvents(storedEvents);
+        setEvents(nextEvents);
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          return;
+        }
+
+        setErrorMessage(getCalendarErrorMessage(error, '일정을 불러오지 못했습니다.'));
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
       }
+    };
 
-      storageReadyRef.current = true;
-    }, 0);
+    void loadEvents();
 
     return () => {
-      cancelled = true;
-      window.clearTimeout(timerId);
+      controller.abort();
     };
   }, []);
 
-  useEffect(() => {
-    if (!storageReadyRef.current) return;
-
-    writeStoredEvents(events);
-  }, [events]);
-
   const createEvent = useCallback(
-    (draft: CalendarEventDraft) => {
-      const newEvent = createCalendarEventFromDraft(draft, createEventId());
+    async (draft: CalendarEventDraft) => {
+      if (isLoading) {
+        return 'loading';
+      }
 
-      if (!newEvent) {
+      const normalizedEvent = createCalendarEventFromDraft(draft, 'pending');
+
+      if (!normalizedEvent) {
         return 'invalid';
       }
 
-      if (hasTimedSlotConflict(events, newEvent)) {
+      if (hasTimedSlotConflict(events, normalizedEvent)) {
         return 'conflict';
       }
 
-      setEvents((prevEvents) => [...prevEvents, newEvent]);
-      return 'success';
+      try {
+        setErrorMessage(null);
+
+        const createdEvent = await createCalendarEvent({
+          userId: getCurrentUserId(),
+          draft: normalizedEvent,
+        });
+
+        setEvents((prevEvents) => [...prevEvents, createdEvent]);
+        return 'success';
+      } catch (error) {
+        if (error instanceof CalendarApiError && error.status === 409) {
+          return 'conflict';
+        }
+
+        setErrorMessage(getCalendarErrorMessage(error, '일정을 등록하지 못했습니다.'));
+        return 'error';
+      }
     },
-    [events],
+    [events, isLoading],
   );
 
   const updateEvent = useCallback(
-    (draft: CalendarEventDraft) => {
+    async (draft: CalendarEventDraft) => {
+      if (isLoading) {
+        return 'loading';
+      }
+
       const editingEventId = draft.id;
 
       if (!editingEventId) {
@@ -215,26 +159,75 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'conflict';
       }
 
-      setEvents((prevEvents) =>
-        prevEvents.map((event) => (event.id === nextEvent.id ? nextEvent : event)),
-      );
-      return 'success';
+      try {
+        setErrorMessage(null);
+
+        const updatedEvent = await updateCalendarEvent({
+          userId: getCurrentUserId(),
+          eventId: editingEventId,
+          draft: nextEvent,
+        });
+
+        setEvents((prevEvents) =>
+          prevEvents.map((event) => (event.id === updatedEvent.id ? updatedEvent : event)),
+        );
+        return 'success';
+      } catch (error) {
+        if (error instanceof CalendarApiError && error.status === 404) {
+          setEvents((prevEvents) => prevEvents.filter((event) => event.id !== editingEventId));
+          return 'not-found';
+        }
+
+        if (error instanceof CalendarApiError && error.status === 409) {
+          return 'conflict';
+        }
+
+        setErrorMessage(getCalendarErrorMessage(error, '일정을 수정하지 못했습니다.'));
+        return 'error';
+      }
     },
-    [events],
+    [events, isLoading],
   );
 
-  const deleteEvent = useCallback((eventId: string) => {
-    setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
-  }, []);
+  const deleteEvent = useCallback(
+    async (eventId: string) => {
+      if (isLoading) {
+        return 'loading';
+      }
+
+      try {
+        setErrorMessage(null);
+
+        await deleteCalendarEvent({
+          userId: getCurrentUserId(),
+          eventId,
+        });
+
+        setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
+        return 'success';
+      } catch (error) {
+        if (error instanceof CalendarApiError && error.status === 404) {
+          setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
+          return 'not-found';
+        }
+
+        setErrorMessage(getCalendarErrorMessage(error, '일정을 삭제하지 못했습니다.'));
+        return 'error';
+      }
+    },
+    [isLoading],
+  );
 
   const value = useMemo(
     () => ({
       events,
+      isLoading,
+      errorMessage,
       createEvent,
       updateEvent,
       deleteEvent,
     }),
-    [events, createEvent, updateEvent, deleteEvent],
+    [events, isLoading, errorMessage, createEvent, updateEvent, deleteEvent],
   );
 
   return <CalendarStoreContext.Provider value={value}>{children}</CalendarStoreContext.Provider>;

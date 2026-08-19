@@ -233,6 +233,8 @@ export function CalendarCore({
           colorId: ext.colorId,
           reminderMinutes: ext.reminderMinutes,
           location: ext.location,
+          url: ext.url,
+          category: ext.category,
         },
       });
     },
@@ -401,6 +403,8 @@ export function CalendarCore({
         colorId: ext.colorId,
         reminderMinutes: ext.reminderMinutes,
         location: ext.location,
+        url: ext.url,
+        category: ext.category,
       };
 
       return (
