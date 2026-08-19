@@ -3,6 +3,7 @@
 import { useEffect, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 
+import { ApiError } from '@/api/client';
 import { useCurrentUser } from '@/queries/auth/useCurrentUser';
 
 type AuthGuardProps = {
@@ -11,16 +12,22 @@ type AuthGuardProps = {
 
 export default function AuthGuard({ children }: AuthGuardProps) {
   const router = useRouter();
-  const { isPending, isError } = useCurrentUser();
+  const { isPending, error } = useCurrentUser();
+
+  const isUnauthorized = error instanceof ApiError && error.status === 401;
 
   useEffect(() => {
-    if (isError) {
+    if (isUnauthorized) {
       router.replace('/login');
     }
-  }, [isError, router]);
+  }, [isUnauthorized, router]);
 
-  if (isPending || isError) {
+  if (isPending || isUnauthorized) {
     return null;
+  }
+
+  if (error) {
+    throw error;
   }
 
   return children;
