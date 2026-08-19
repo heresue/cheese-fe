@@ -11,6 +11,7 @@ type ConfirmModalProps = {
   buttonClassName?: string;
   onClose: () => void;
   onConfirm: () => void;
+  disabled?: boolean;
 };
 
 export default function ConfirmModal({
@@ -22,6 +23,7 @@ export default function ConfirmModal({
   buttonClassName,
   onClose,
   onConfirm,
+  disabled,
 }: ConfirmModalProps) {
   return (
     <MypageModalLayout
@@ -32,6 +34,7 @@ export default function ConfirmModal({
       buttonText={buttonText}
       buttonClassName={buttonClassName}
       onConfirm={onConfirm}
+      disabled={disabled}
     >
       <p className="text-[12px] font-medium whitespace-pre-line">{description}</p>
     </MypageModalLayout>

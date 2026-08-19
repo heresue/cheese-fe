@@ -1,7 +1,11 @@
+import { useRouter } from 'next/navigation';
+
 import TextEditModal from './TextEditModal';
 import DocumentEditModal from './DocumentEditModal';
 import SelectEditModal from './SelectEditModal';
 import ConfirmModal from './ConfirmModal';
+
+import { useLogout } from '@/queries/auth/useLogout';
 
 import type { ContactSettings, ProfileDocument } from '@/types/profile';
 import type { MypageModalItem } from './types';
@@ -21,6 +25,9 @@ export default function MypageModalRenderer({
   onClose,
   onSave,
 }: MypageModalRendererProps) {
+  const router = useRouter();
+  const { mutateAsync: logout, isPending: isLogoutPending } = useLogout();
+
   if (!editingItem) return null;
 
   const modalKey = `${editingItem.modalType}-${editingItem.label}`;
@@ -115,9 +122,18 @@ export default function MypageModalRenderer({
         buttonText={editingItem.label}
         buttonClassName={confirmButtonClassName}
         onClose={onClose}
-        onConfirm={() => {
+        disabled={isLogoutPending}
+        onConfirm={async () => {
           if (editingItem.field === 'logout') {
-            // TODO: 로그아웃
+            try {
+              await logout();
+              onClose();
+              router.replace('/login');
+            } catch {
+              // TODO: 로그아웃 실패 처리
+            }
+
+            return;
           }
 
           if (editingItem.field === 'deleteAccount') {

@@ -48,3 +48,13 @@ export async function getMeFromServer(cookie: string) {
 
   return (await response.json()) as AuthUser;
 }
+
+export type LogoutResponse = {
+  success: boolean;
+};
+
+export function logout() {
+  return apiClient<LogoutResponse>('/backend-api/auth/logout', {
+    method: 'POST',
+  });
+}

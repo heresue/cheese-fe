@@ -17,6 +17,8 @@ type MypageModalLayoutProps = {
 
   onConfirm?: () => void;
   submitFormId?: string;
+
+  disabled?: boolean;
 };
 
 export default function MypageModalLayout({
@@ -31,6 +33,8 @@ export default function MypageModalLayout({
 
   onConfirm,
   submitFormId,
+
+  disabled,
 }: MypageModalLayoutProps) {
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} hasOverlay>
@@ -63,6 +67,7 @@ export default function MypageModalLayout({
             paddingX={12}
             className={cn('tracking-[-0.04em]', buttonClassName)}
             onClick={submitFormId ? undefined : onConfirm}
+            disabled={disabled}
           >
             {buttonText}
           </Button>
