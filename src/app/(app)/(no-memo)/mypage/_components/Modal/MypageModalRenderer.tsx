@@ -82,6 +82,10 @@ export default function MypageModalRenderer({
   };
 
   const handleConfirmModalClose = () => {
+    if (isLogout && isLogoutPending) {
+      return;
+    }
+
     if (isLogout) {
       resetLogout();
     }
