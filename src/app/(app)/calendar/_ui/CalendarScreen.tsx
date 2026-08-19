@@ -137,23 +137,29 @@ export default function CalendarScreen() {
     <div className="flex h-full min-h-0">
       <div ref={screenRef} className="flex h-full min-h-0 w-full flex-col">
         <div className="shrink-0 pt-[62px]">
-          <CalendarToolbar
-            view={view}
-            title={title}
-            onChangeView={setView}
-            onClickToday={moveToToday}
-            onClickPrev={moveToPrev}
-            onClickNext={moveToNext}
-          />
+          <div className="relative">
+            <CalendarToolbar
+              view={view}
+              title={title}
+              onChangeView={setView}
+              onClickToday={moveToToday}
+              onClickPrev={moveToPrev}
+              onClickNext={moveToNext}
+            />
+
+            {isLoading && (
+              <div
+                role="status"
+                aria-live="polite"
+                className="pointer-events-none absolute inset-0 flex items-center justify-center pt-[10px] text-sm text-gray-500"
+              >
+                일정을 불러오는 중입니다.
+              </div>
+            )}
+          </div>
         </div>
 
         <section className="relative min-h-0 flex-1 overflow-hidden">
-          {isLoading && (
-            <div className="pointer-events-none absolute inset-x-0 top-4 z-10 text-center text-sm text-gray-500">
-              일정을 불러오는 중입니다.
-            </div>
-          )}
-
           {!isLoading && errorMessage && (
             <div
               role="alert"
