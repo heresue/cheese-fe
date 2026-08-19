@@ -174,6 +174,7 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'success';
       } catch (error) {
         if (error instanceof CalendarApiError && error.status === 404) {
+          setEvents((prevEvents) => prevEvents.filter((event) => event.id !== editingEventId));
           return 'not-found';
         }
 
@@ -206,6 +207,7 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'success';
       } catch (error) {
         if (error instanceof CalendarApiError && error.status === 404) {
+          setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
           return 'not-found';
         }
 
