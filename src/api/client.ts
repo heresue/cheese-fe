@@ -51,14 +51,20 @@ function createApiUrl(path: string, query?: Record<string, string | undefined>) 
 export async function apiClient<T>(path: string, options?: ApiRequestOptions): Promise<T> {
   const { query, ...requestInit } = options ?? {};
 
+  const headers = new Headers(requestInit.headers);
+
+  if (!headers.has('Accept')) {
+    headers.set('Accept', 'application/json');
+  }
+
+  if (requestInit.body && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
+
   const response = await fetch(createApiUrl(path, query), {
     ...requestInit,
     credentials: 'include',
-    headers: {
-      Accept: 'application/json',
-      ...(requestInit.body ? { 'Content-Type': 'application/json' } : {}),
-      ...requestInit.headers,
-    },
+    headers,
   });
 
   if (!response.ok) {
