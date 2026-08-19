@@ -1,14 +1,40 @@
 import type { ReactNode } from 'react';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
 
 import AppSidebar from '@/components/layout/sidebar/AppSidebar';
-import AuthGuard from './_components/AuthGuard';
+
+import { getMeFromServer } from '@/api/auth.api';
+import { ApiError } from '@/api/client';
+import { authQueryKeys } from '@/queries/auth/authQueryKeys';
+
 import { CalendarStoreProvider } from './calendar/_store/CalendarStoreProvider';
 import { MemoFloatingWidget } from './memo/_components/MemoFloatingWidget';
 import { MemoStoreProvider } from './memo/_store/MemoStoreProvider';
 
-export default function AppLayout({ children }: { children: ReactNode }) {
+export default async function AppLayout({ children }: { children: ReactNode }) {
+  const cookieStore = await cookies();
+  const cookie = cookieStore.toString();
+
+  let user;
+
+  try {
+    user = await getMeFromServer(cookie);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) {
+      redirect('/login');
+    }
+
+    throw error;
+  }
+
+  const queryClient = new QueryClient();
+
+  queryClient.setQueryData(authQueryKeys.me(), user);
+
   return (
-    <AuthGuard>
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <MemoStoreProvider>
         <CalendarStoreProvider>
           <div className="flex min-h-dvh">
@@ -22,6 +48,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           </div>
         </CalendarStoreProvider>
       </MemoStoreProvider>
-    </AuthGuard>
+    </HydrationBoundary>
   );
 }
