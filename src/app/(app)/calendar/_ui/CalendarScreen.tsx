@@ -48,6 +48,10 @@ export default function CalendarScreen() {
 
     const status = await createEvent(createPopover.draft);
 
+    if (status === 'loading') {
+      return;
+    }
+
     if (status === 'conflict') {
       window.alert('해당 시간 칸에는 이미 일정이 있습니다.');
       return;
@@ -77,6 +81,10 @@ export default function CalendarScreen() {
     }
 
     const status = await updateEvent(editPopover.draft);
+
+    if (status === 'loading') {
+      return;
+    }
 
     if (status === 'not-found') {
       const currentEvent = events.find((event) => event.id === editingEventId);
@@ -110,6 +118,10 @@ export default function CalendarScreen() {
    */
   const handleDeleteEventById = async (eventId: string) => {
     const status = await deleteEvent(eventId);
+
+    if (status === 'loading') {
+      return;
+    }
 
     if (status === 'error') {
       window.alert('일정 삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.');
@@ -156,7 +168,7 @@ export default function CalendarScreen() {
             events={events}
             selectedEventId={editPopover?.draft.id}
             selectedCreateDraft={createPopover?.draft}
-            interactionLocked={hasOpenPopover}
+            interactionLocked={isLoading || hasOpenPopover}
             onTitleChange={setTitle}
             onClickDateCell={({ draft, rect, placement }) => {
               openCreatePopover({ draft, rect, placement });
@@ -168,7 +180,7 @@ export default function CalendarScreen() {
                 placement: view === 'day' ? 'cell-center' : 'auto',
               });
             }}
-            onDeleteEvent={handleDeleteEventById}
+            onDeleteEvent={isLoading ? undefined : handleDeleteEventById}
           />
         </section>
 

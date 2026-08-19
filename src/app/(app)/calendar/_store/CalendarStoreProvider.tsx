@@ -26,7 +26,14 @@ import {
 } from '../_lib/event-mapper';
 import type { CalendarEvent, CalendarEventDraft } from '../_model/types';
 
-type CalendarMutationStatus = 'success' | 'invalid' | 'conflict' | 'not-found' | 'error';
+type CalendarMutationStatus =
+  | 'success'
+  | 'invalid'
+  | 'conflict'
+  | 'not-found'
+  | 'loading'
+  | 'error';
+type CalendarDeleteStatus = 'success' | 'not-found' | 'loading' | 'error';
 
 type CalendarStoreContextValue = {
   events: CalendarEvent[];
@@ -34,7 +41,7 @@ type CalendarStoreContextValue = {
   errorMessage: string | null;
   createEvent: (draft: CalendarEventDraft) => Promise<CalendarMutationStatus>;
   updateEvent: (draft: CalendarEventDraft) => Promise<CalendarMutationStatus>;
-  deleteEvent: (eventId: string) => Promise<'success' | 'not-found' | 'error'>;
+  deleteEvent: (eventId: string) => Promise<CalendarDeleteStatus>;
 };
 
 const CalendarStoreContext = createContext<CalendarStoreContextValue | null>(null);
@@ -88,6 +95,10 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
 
   const createEvent = useCallback(
     async (draft: CalendarEventDraft) => {
+      if (isLoading) {
+        return 'loading';
+      }
+
       const normalizedEvent = createCalendarEventFromDraft(draft, 'pending');
 
       if (!normalizedEvent) {
@@ -117,11 +128,15 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'error';
       }
     },
-    [events],
+    [events, isLoading],
   );
 
   const updateEvent = useCallback(
     async (draft: CalendarEventDraft) => {
+      if (isLoading) {
+        return 'loading';
+      }
+
       const editingEventId = draft.id;
 
       if (!editingEventId) {
@@ -170,29 +185,36 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'error';
       }
     },
-    [events],
+    [events, isLoading],
   );
 
-  const deleteEvent = useCallback(async (eventId: string) => {
-    try {
-      setErrorMessage(null);
-
-      await deleteCalendarEvent({
-        userId: getCurrentUserId(),
-        eventId,
-      });
-
-      setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
-      return 'success';
-    } catch (error) {
-      if (error instanceof CalendarApiError && error.status === 404) {
-        return 'not-found';
+  const deleteEvent = useCallback(
+    async (eventId: string) => {
+      if (isLoading) {
+        return 'loading';
       }
 
-      setErrorMessage(getCalendarErrorMessage(error, '일정을 삭제하지 못했습니다.'));
-      return 'error';
-    }
-  }, []);
+      try {
+        setErrorMessage(null);
+
+        await deleteCalendarEvent({
+          userId: getCurrentUserId(),
+          eventId,
+        });
+
+        setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
+        return 'success';
+      } catch (error) {
+        if (error instanceof CalendarApiError && error.status === 404) {
+          return 'not-found';
+        }
+
+        setErrorMessage(getCalendarErrorMessage(error, '일정을 삭제하지 못했습니다.'));
+        return 'error';
+      }
+    },
+    [isLoading],
+  );
 
   const value = useMemo(
     () => ({
