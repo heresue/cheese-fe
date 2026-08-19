@@ -15,12 +15,19 @@ async function readErrorMessage(response: Response) {
     if (typeof body === 'object' && body !== null && 'message' in body) {
       const message = (body as { message?: unknown }).message;
 
-      if (typeof message === 'string') {
-        return message;
+      if (typeof message === 'string' && message.trim()) {
+        return message.trim();
       }
 
       if (Array.isArray(message)) {
-        return message.filter((item): item is string => typeof item === 'string').join(', ');
+        const messages = message
+          .filter((item): item is string => typeof item === 'string')
+          .map((item) => item.trim())
+          .filter(Boolean);
+
+        if (messages.length > 0) {
+          return messages.join(', ');
+        }
       }
     }
   } catch {
