@@ -11,12 +11,12 @@ import {
 } from 'react';
 
 import {
-  CalendarApiError,
   createCalendarEvent,
   deleteCalendarEvent,
   getCalendarEvents,
   updateCalendarEvent,
 } from '@/api/calendar.api';
+import { ApiError } from '@/api/client';
 import { getCurrentUserId } from '@/lib/auth/currentUser';
 
 import {
@@ -47,7 +47,7 @@ type CalendarStoreContextValue = {
 const CalendarStoreContext = createContext<CalendarStoreContextValue | null>(null);
 
 function getCalendarErrorMessage(error: unknown, fallback: string) {
-  if (error instanceof CalendarApiError || error instanceof Error) {
+  if (error instanceof Error) {
     return error.message;
   }
 
@@ -120,7 +120,7 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         setEvents((prevEvents) => [...prevEvents, createdEvent]);
         return 'success';
       } catch (error) {
-        if (error instanceof CalendarApiError && error.status === 409) {
+        if (error instanceof ApiError && error.status === 409) {
           return 'conflict';
         }
 
@@ -173,12 +173,12 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         );
         return 'success';
       } catch (error) {
-        if (error instanceof CalendarApiError && error.status === 404) {
+        if (error instanceof ApiError && error.status === 404) {
           setEvents((prevEvents) => prevEvents.filter((event) => event.id !== editingEventId));
           return 'not-found';
         }
 
-        if (error instanceof CalendarApiError && error.status === 409) {
+        if (error instanceof ApiError && error.status === 409) {
           return 'conflict';
         }
 
@@ -206,7 +206,7 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
         return 'success';
       } catch (error) {
-        if (error instanceof CalendarApiError && error.status === 404) {
+        if (error instanceof ApiError && error.status === 404) {
           setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
           return 'not-found';
         }
