@@ -17,7 +17,7 @@ import {
   updateCalendarEvent,
 } from '@/api/calendar.api';
 import { ApiError } from '@/api/client';
-import { getCurrentUserId } from '@/lib/auth/currentUser';
+import { useCurrentUser } from '@/queries/auth/useCurrentUser';
 
 import {
   applyDraftToEvent,
@@ -55,11 +55,31 @@ function getCalendarErrorMessage(error: unknown, fallback: string) {
 }
 
 export function CalendarStoreProvider({ children }: { children: ReactNode }) {
+  const {
+    data: currentUser,
+    error: currentUserError,
+    isPending: isCurrentUserPending,
+  } = useCurrentUser();
+  const userId = currentUser?.id;
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    if (isCurrentUserPending) {
+      setIsLoading(true);
+      return;
+    }
+
+    if (!userId) {
+      setEvents([]);
+      setIsLoading(false);
+      setErrorMessage(
+        getCalendarErrorMessage(currentUserError, '로그인 정보를 확인할 수 없습니다.'),
+      );
+      return;
+    }
+
     const controller = new AbortController();
 
     const loadEvents = async () => {
@@ -68,7 +88,7 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         setErrorMessage(null);
 
         const nextEvents = await getCalendarEvents({
-          userId: getCurrentUserId(),
+          userId,
           signal: controller.signal,
         });
 
@@ -91,12 +111,17 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
     return () => {
       controller.abort();
     };
-  }, []);
+  }, [currentUserError, isCurrentUserPending, userId]);
 
   const createEvent = useCallback(
     async (draft: CalendarEventDraft) => {
       if (isLoading) {
         return 'loading';
+      }
+
+      if (!userId) {
+        setErrorMessage('로그인 정보를 확인할 수 없습니다.');
+        return 'error';
       }
 
       const normalizedEvent = createCalendarEventFromDraft(draft, 'pending');
@@ -113,7 +138,7 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         setErrorMessage(null);
 
         const createdEvent = await createCalendarEvent({
-          userId: getCurrentUserId(),
+          userId,
           draft: normalizedEvent,
         });
 
@@ -128,13 +153,18 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'error';
       }
     },
-    [events, isLoading],
+    [events, isLoading, userId],
   );
 
   const updateEvent = useCallback(
     async (draft: CalendarEventDraft) => {
       if (isLoading) {
         return 'loading';
+      }
+
+      if (!userId) {
+        setErrorMessage('로그인 정보를 확인할 수 없습니다.');
+        return 'error';
       }
 
       const editingEventId = draft.id;
@@ -163,7 +193,7 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         setErrorMessage(null);
 
         const updatedEvent = await updateCalendarEvent({
-          userId: getCurrentUserId(),
+          userId,
           eventId: editingEventId,
           draft: nextEvent,
         });
@@ -186,7 +216,7 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'error';
       }
     },
-    [events, isLoading],
+    [events, isLoading, userId],
   );
 
   const deleteEvent = useCallback(
@@ -195,11 +225,16 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'loading';
       }
 
+      if (!userId) {
+        setErrorMessage('로그인 정보를 확인할 수 없습니다.');
+        return 'error';
+      }
+
       try {
         setErrorMessage(null);
 
         await deleteCalendarEvent({
-          userId: getCurrentUserId(),
+          userId,
           eventId,
         });
 
@@ -215,7 +250,7 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'error';
       }
     },
-    [isLoading],
+    [isLoading, userId],
   );
 
   const value = useMemo(
