@@ -81,6 +81,9 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
     }
 
     const controller = new AbortController();
+    let isCancelled = false;
+
+    setEvents([]);
 
     const loadEvents = async () => {
       try {
@@ -92,15 +95,23 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
           signal: controller.signal,
         });
 
+        if (isCancelled) {
+          return;
+        }
+
         setEvents(nextEvents);
       } catch (error) {
+        if (isCancelled) {
+          return;
+        }
+
         if (error instanceof DOMException && error.name === 'AbortError') {
           return;
         }
 
         setErrorMessage(getCalendarErrorMessage(error, '일정을 불러오지 못했습니다.'));
       } finally {
-        if (!controller.signal.aborted) {
+        if (!isCancelled) {
           setIsLoading(false);
         }
       }
@@ -109,6 +120,7 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
     void loadEvents();
 
     return () => {
+      isCancelled = true;
       controller.abort();
     };
   }, [currentUserError, isCurrentUserPending, userId]);
