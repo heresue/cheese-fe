@@ -48,6 +48,11 @@ export default function CalendarScreen() {
 
     const status = await createEvent(createPopover.draft);
 
+    if (status === 'cancelled') {
+      closeCreatePopover();
+      return;
+    }
+
     if (status === 'loading') {
       return;
     }
@@ -81,6 +86,11 @@ export default function CalendarScreen() {
     }
 
     const status = await updateEvent(editPopover.draft);
+
+    if (status === 'cancelled') {
+      closeEditPopover();
+      return;
+    }
 
     if (status === 'loading') {
       return;
@@ -118,6 +128,11 @@ export default function CalendarScreen() {
    */
   const handleDeleteEventById = async (eventId: string) => {
     const status = await deleteEvent(eventId);
+
+    if (status === 'cancelled') {
+      closeEditPopover();
+      return;
+    }
 
     if (status === 'loading') {
       return;

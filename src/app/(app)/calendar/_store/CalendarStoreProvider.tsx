@@ -9,7 +9,9 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
+import type { AuthUser } from '@/api/auth.api';
 import {
   createCalendarEvent,
   deleteCalendarEvent,
@@ -17,6 +19,7 @@ import {
   updateCalendarEvent,
 } from '@/api/calendar.api';
 import { ApiError } from '@/api/client';
+import { authQueryKeys } from '@/queries/auth/authQueryKeys';
 import { useCurrentUser } from '@/queries/auth/useCurrentUser';
 
 import {
@@ -32,8 +35,9 @@ type CalendarMutationStatus =
   | 'conflict'
   | 'not-found'
   | 'loading'
+  | 'cancelled'
   | 'error';
-type CalendarDeleteStatus = 'success' | 'not-found' | 'loading' | 'error';
+type CalendarDeleteStatus = 'success' | 'not-found' | 'loading' | 'cancelled' | 'error';
 
 type CalendarStoreContextValue = {
   events: CalendarEvent[];
@@ -55,6 +59,7 @@ function getCalendarErrorMessage(error: unknown, fallback: string) {
 }
 
 export function CalendarStoreProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
   const {
     data: currentUser,
     error: currentUserError,
@@ -64,6 +69,11 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const isCurrentAuthUser = useCallback(
+    (requestUserId: string) =>
+      queryClient.getQueryData<AuthUser>(authQueryKeys.me())?.id === requestUserId,
+    [queryClient],
+  );
 
   useEffect(() => {
     if (isCurrentUserPending) {
@@ -95,13 +105,13 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
           signal: controller.signal,
         });
 
-        if (isCancelled) {
+        if (isCancelled || !isCurrentAuthUser(userId)) {
           return;
         }
 
         setEvents(nextEvents);
       } catch (error) {
-        if (isCancelled) {
+        if (isCancelled || !isCurrentAuthUser(userId)) {
           return;
         }
 
@@ -111,7 +121,7 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
 
         setErrorMessage(getCalendarErrorMessage(error, '일정을 불러오지 못했습니다.'));
       } finally {
-        if (!isCancelled) {
+        if (!isCancelled && isCurrentAuthUser(userId)) {
           setIsLoading(false);
         }
       }
@@ -123,7 +133,7 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
       isCancelled = true;
       controller.abort();
     };
-  }, [currentUserError, isCurrentUserPending, userId]);
+  }, [currentUserError, isCurrentAuthUser, isCurrentUserPending, userId]);
 
   const createEvent = useCallback(
     async (draft: CalendarEventDraft) => {
@@ -146,17 +156,27 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'conflict';
       }
 
+      const requestUserId = userId;
+
       try {
         setErrorMessage(null);
 
         const createdEvent = await createCalendarEvent({
-          userId,
+          userId: requestUserId,
           draft: normalizedEvent,
         });
+
+        if (!isCurrentAuthUser(requestUserId)) {
+          return 'cancelled';
+        }
 
         setEvents((prevEvents) => [...prevEvents, createdEvent]);
         return 'success';
       } catch (error) {
+        if (!isCurrentAuthUser(requestUserId)) {
+          return 'cancelled';
+        }
+
         if (error instanceof ApiError && error.status === 409) {
           return 'conflict';
         }
@@ -165,7 +185,7 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'error';
       }
     },
-    [events, isLoading, userId],
+    [events, isCurrentAuthUser, isLoading, userId],
   );
 
   const updateEvent = useCallback(
@@ -201,20 +221,30 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'conflict';
       }
 
+      const requestUserId = userId;
+
       try {
         setErrorMessage(null);
 
         const updatedEvent = await updateCalendarEvent({
-          userId,
+          userId: requestUserId,
           eventId: editingEventId,
           draft: nextEvent,
         });
+
+        if (!isCurrentAuthUser(requestUserId)) {
+          return 'cancelled';
+        }
 
         setEvents((prevEvents) =>
           prevEvents.map((event) => (event.id === updatedEvent.id ? updatedEvent : event)),
         );
         return 'success';
       } catch (error) {
+        if (!isCurrentAuthUser(requestUserId)) {
+          return 'cancelled';
+        }
+
         if (error instanceof ApiError && error.status === 404) {
           setEvents((prevEvents) => prevEvents.filter((event) => event.id !== editingEventId));
           return 'not-found';
@@ -228,7 +258,7 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'error';
       }
     },
-    [events, isLoading, userId],
+    [events, isCurrentAuthUser, isLoading, userId],
   );
 
   const deleteEvent = useCallback(
@@ -242,17 +272,27 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'error';
       }
 
+      const requestUserId = userId;
+
       try {
         setErrorMessage(null);
 
         await deleteCalendarEvent({
-          userId,
+          userId: requestUserId,
           eventId,
         });
+
+        if (!isCurrentAuthUser(requestUserId)) {
+          return 'cancelled';
+        }
 
         setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
         return 'success';
       } catch (error) {
+        if (!isCurrentAuthUser(requestUserId)) {
+          return 'cancelled';
+        }
+
         if (error instanceof ApiError && error.status === 404) {
           setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
           return 'not-found';
@@ -262,7 +302,7 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'error';
       }
     },
-    [isLoading, userId],
+    [isCurrentAuthUser, isLoading, userId],
   );
 
   const value = useMemo(
