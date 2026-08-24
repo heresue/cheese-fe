@@ -39,6 +39,11 @@ type CalendarMutationStatus =
   | 'error';
 type CalendarDeleteStatus = 'success' | 'not-found' | 'loading' | 'cancelled' | 'error';
 
+type CalendarEventsState = {
+  ownerUserId: string | null;
+  events: CalendarEvent[];
+};
+
 type CalendarStoreContextValue = {
   events: CalendarEvent[];
   isLoading: boolean;
@@ -49,6 +54,22 @@ type CalendarStoreContextValue = {
 };
 
 const CalendarStoreContext = createContext<CalendarStoreContextValue | null>(null);
+const EMPTY_CALENDAR_EVENTS: CalendarEvent[] = [];
+
+function updateOwnedEvents(
+  state: CalendarEventsState,
+  ownerUserId: string,
+  updateEvents: (events: CalendarEvent[]) => CalendarEvent[],
+) {
+  if (state.ownerUserId !== ownerUserId) {
+    return state;
+  }
+
+  return {
+    ownerUserId,
+    events: updateEvents(state.events),
+  };
+}
 
 function getCalendarErrorMessage(error: unknown, fallback: string) {
   if (error instanceof Error) {
@@ -64,14 +85,35 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
     data: currentUser,
     error: currentUserError,
     isPending: isCurrentUserPending,
+    isRefetchError: isCurrentUserRefetchError,
   } = useCurrentUser();
   const userId = currentUser?.id;
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [eventsState, setEventsState] = useState<CalendarEventsState>({
+    ownerUserId: null,
+    events: [],
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const hasCurrentUserError = Boolean(currentUserError) || isCurrentUserRefetchError;
+  const hasCurrentUserEvents =
+    !isCurrentUserPending &&
+    !hasCurrentUserError &&
+    Boolean(userId) &&
+    eventsState.ownerUserId === userId;
+  const events = hasCurrentUserEvents ? eventsState.events : EMPTY_CALENDAR_EVENTS;
+  const isEventsOwnerChanging =
+    Boolean(userId) && !hasCurrentUserError && eventsState.ownerUserId !== userId;
+  const isCalendarLoading = isLoading || isCurrentUserPending || isEventsOwnerChanging;
   const isCurrentAuthUser = useCallback(
-    (requestUserId: string) =>
-      queryClient.getQueryData<AuthUser>(authQueryKeys.me())?.id === requestUserId,
+    (requestUserId: string) => {
+      const authQueryState = queryClient.getQueryState<AuthUser>(authQueryKeys.me());
+
+      return (
+        authQueryState?.status === 'success' &&
+        authQueryState.error === null &&
+        authQueryState.data?.id === requestUserId
+      );
+    },
     [queryClient],
   );
 
@@ -81,8 +123,17 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
       return;
     }
 
+    if (hasCurrentUserError) {
+      setEventsState({ ownerUserId: null, events: [] });
+      setIsLoading(false);
+      setErrorMessage(
+        getCalendarErrorMessage(currentUserError, '로그인 정보를 확인할 수 없습니다.'),
+      );
+      return;
+    }
+
     if (!userId) {
-      setEvents([]);
+      setEventsState({ ownerUserId: null, events: [] });
       setIsLoading(false);
       setErrorMessage(
         getCalendarErrorMessage(currentUserError, '로그인 정보를 확인할 수 없습니다.'),
@@ -93,7 +144,7 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
     const controller = new AbortController();
     let isCancelled = false;
 
-    setEvents([]);
+    setEventsState({ ownerUserId: userId, events: [] });
 
     const loadEvents = async () => {
       try {
@@ -109,7 +160,7 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
           return;
         }
 
-        setEvents(nextEvents);
+        setEventsState({ ownerUserId: userId, events: nextEvents });
       } catch (error) {
         if (isCancelled || !isCurrentAuthUser(userId)) {
           return;
@@ -133,15 +184,15 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
       isCancelled = true;
       controller.abort();
     };
-  }, [currentUserError, isCurrentAuthUser, isCurrentUserPending, userId]);
+  }, [currentUserError, hasCurrentUserError, isCurrentAuthUser, isCurrentUserPending, userId]);
 
   const createEvent = useCallback(
     async (draft: CalendarEventDraft) => {
-      if (isLoading) {
+      if (isCalendarLoading) {
         return 'loading';
       }
 
-      if (!userId) {
+      if (!userId || !isCurrentAuthUser(userId)) {
         setErrorMessage('로그인 정보를 확인할 수 없습니다.');
         return 'error';
       }
@@ -170,7 +221,12 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
           return 'cancelled';
         }
 
-        setEvents((prevEvents) => [...prevEvents, createdEvent]);
+        setEventsState((prevState) =>
+          updateOwnedEvents(prevState, requestUserId, (prevEvents) => [
+            ...prevEvents,
+            createdEvent,
+          ]),
+        );
         return 'success';
       } catch (error) {
         if (!isCurrentAuthUser(requestUserId)) {
@@ -185,16 +241,16 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'error';
       }
     },
-    [events, isCurrentAuthUser, isLoading, userId],
+    [events, isCalendarLoading, isCurrentAuthUser, userId],
   );
 
   const updateEvent = useCallback(
     async (draft: CalendarEventDraft) => {
-      if (isLoading) {
+      if (isCalendarLoading) {
         return 'loading';
       }
 
-      if (!userId) {
+      if (!userId || !isCurrentAuthUser(userId)) {
         setErrorMessage('로그인 정보를 확인할 수 없습니다.');
         return 'error';
       }
@@ -236,8 +292,10 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
           return 'cancelled';
         }
 
-        setEvents((prevEvents) =>
-          prevEvents.map((event) => (event.id === updatedEvent.id ? updatedEvent : event)),
+        setEventsState((prevState) =>
+          updateOwnedEvents(prevState, requestUserId, (prevEvents) =>
+            prevEvents.map((event) => (event.id === updatedEvent.id ? updatedEvent : event)),
+          ),
         );
         return 'success';
       } catch (error) {
@@ -246,7 +304,11 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         }
 
         if (error instanceof ApiError && error.status === 404) {
-          setEvents((prevEvents) => prevEvents.filter((event) => event.id !== editingEventId));
+          setEventsState((prevState) =>
+            updateOwnedEvents(prevState, requestUserId, (prevEvents) =>
+              prevEvents.filter((event) => event.id !== editingEventId),
+            ),
+          );
           return 'not-found';
         }
 
@@ -258,16 +320,16 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'error';
       }
     },
-    [events, isCurrentAuthUser, isLoading, userId],
+    [events, isCalendarLoading, isCurrentAuthUser, userId],
   );
 
   const deleteEvent = useCallback(
     async (eventId: string) => {
-      if (isLoading) {
+      if (isCalendarLoading) {
         return 'loading';
       }
 
-      if (!userId) {
+      if (!userId || !isCurrentAuthUser(userId)) {
         setErrorMessage('로그인 정보를 확인할 수 없습니다.');
         return 'error';
       }
@@ -286,7 +348,11 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
           return 'cancelled';
         }
 
-        setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
+        setEventsState((prevState) =>
+          updateOwnedEvents(prevState, requestUserId, (prevEvents) =>
+            prevEvents.filter((event) => event.id !== eventId),
+          ),
+        );
         return 'success';
       } catch (error) {
         if (!isCurrentAuthUser(requestUserId)) {
@@ -294,7 +360,11 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         }
 
         if (error instanceof ApiError && error.status === 404) {
-          setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
+          setEventsState((prevState) =>
+            updateOwnedEvents(prevState, requestUserId, (prevEvents) =>
+              prevEvents.filter((event) => event.id !== eventId),
+            ),
+          );
           return 'not-found';
         }
 
@@ -302,19 +372,19 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'error';
       }
     },
-    [isCurrentAuthUser, isLoading, userId],
+    [isCalendarLoading, isCurrentAuthUser, userId],
   );
 
   const value = useMemo(
     () => ({
       events,
-      isLoading,
+      isLoading: isCalendarLoading,
       errorMessage,
       createEvent,
       updateEvent,
       deleteEvent,
     }),
-    [events, isLoading, errorMessage, createEvent, updateEvent, deleteEvent],
+    [events, isCalendarLoading, errorMessage, createEvent, updateEvent, deleteEvent],
   );
 
   return <CalendarStoreContext.Provider value={value}>{children}</CalendarStoreContext.Provider>;
