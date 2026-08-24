@@ -9,15 +9,18 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
+import type { AuthUser } from '@/api/auth.api';
 import {
-  CalendarApiError,
   createCalendarEvent,
   deleteCalendarEvent,
   getCalendarEvents,
   updateCalendarEvent,
 } from '@/api/calendar.api';
-import { getCurrentUserId } from '@/lib/auth/currentUser';
+import { ApiError } from '@/api/client';
+import { authQueryKeys } from '@/queries/auth/authQueryKeys';
+import { useCurrentUser } from '@/queries/auth/useCurrentUser';
 
 import {
   applyDraftToEvent,
@@ -32,8 +35,14 @@ type CalendarMutationStatus =
   | 'conflict'
   | 'not-found'
   | 'loading'
+  | 'cancelled'
   | 'error';
-type CalendarDeleteStatus = 'success' | 'not-found' | 'loading' | 'error';
+type CalendarDeleteStatus = 'success' | 'not-found' | 'loading' | 'cancelled' | 'error';
+
+type CalendarEventsState = {
+  ownerUserId: string | null;
+  events: CalendarEvent[];
+};
 
 type CalendarStoreContextValue = {
   events: CalendarEvent[];
@@ -45,9 +54,25 @@ type CalendarStoreContextValue = {
 };
 
 const CalendarStoreContext = createContext<CalendarStoreContextValue | null>(null);
+const EMPTY_CALENDAR_EVENTS: CalendarEvent[] = [];
+
+function updateOwnedEvents(
+  state: CalendarEventsState,
+  ownerUserId: string,
+  updateEvents: (events: CalendarEvent[]) => CalendarEvent[],
+) {
+  if (state.ownerUserId !== ownerUserId) {
+    return state;
+  }
+
+  return {
+    ownerUserId,
+    events: updateEvents(state.events),
+  };
+}
 
 function getCalendarErrorMessage(error: unknown, fallback: string) {
-  if (error instanceof CalendarApiError || error instanceof Error) {
+  if (error instanceof Error) {
     return error.message;
   }
 
@@ -55,12 +80,71 @@ function getCalendarErrorMessage(error: unknown, fallback: string) {
 }
 
 export function CalendarStoreProvider({ children }: { children: ReactNode }) {
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const queryClient = useQueryClient();
+  const {
+    data: currentUser,
+    error: currentUserError,
+    isPending: isCurrentUserPending,
+    isRefetchError: isCurrentUserRefetchError,
+  } = useCurrentUser();
+  const userId = currentUser?.id;
+  const [eventsState, setEventsState] = useState<CalendarEventsState>({
+    ownerUserId: null,
+    events: [],
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const hasCurrentUserError = Boolean(currentUserError) || isCurrentUserRefetchError;
+  const hasCurrentUserEvents =
+    !isCurrentUserPending &&
+    !hasCurrentUserError &&
+    Boolean(userId) &&
+    eventsState.ownerUserId === userId;
+  const events = hasCurrentUserEvents ? eventsState.events : EMPTY_CALENDAR_EVENTS;
+  const isEventsOwnerChanging =
+    Boolean(userId) && !hasCurrentUserError && eventsState.ownerUserId !== userId;
+  const isCalendarLoading = isLoading || isCurrentUserPending || isEventsOwnerChanging;
+  const isCurrentAuthUser = useCallback(
+    (requestUserId: string) => {
+      const authQueryState = queryClient.getQueryState<AuthUser>(authQueryKeys.me());
+
+      return (
+        authQueryState?.status === 'success' &&
+        authQueryState.error === null &&
+        authQueryState.data?.id === requestUserId
+      );
+    },
+    [queryClient],
+  );
 
   useEffect(() => {
+    if (isCurrentUserPending) {
+      setIsLoading(true);
+      return;
+    }
+
+    if (hasCurrentUserError) {
+      setEventsState({ ownerUserId: null, events: [] });
+      setIsLoading(false);
+      setErrorMessage(
+        getCalendarErrorMessage(currentUserError, '로그인 정보를 확인할 수 없습니다.'),
+      );
+      return;
+    }
+
+    if (!userId) {
+      setEventsState({ ownerUserId: null, events: [] });
+      setIsLoading(false);
+      setErrorMessage(
+        getCalendarErrorMessage(currentUserError, '로그인 정보를 확인할 수 없습니다.'),
+      );
+      return;
+    }
+
     const controller = new AbortController();
+    let isCancelled = false;
+
+    setEventsState({ ownerUserId: userId, events: [] });
 
     const loadEvents = async () => {
       try {
@@ -68,19 +152,27 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         setErrorMessage(null);
 
         const nextEvents = await getCalendarEvents({
-          userId: getCurrentUserId(),
+          userId,
           signal: controller.signal,
         });
 
-        setEvents(nextEvents);
+        if (isCancelled || !isCurrentAuthUser(userId)) {
+          return;
+        }
+
+        setEventsState({ ownerUserId: userId, events: nextEvents });
       } catch (error) {
+        if (isCancelled || !isCurrentAuthUser(userId)) {
+          return;
+        }
+
         if (error instanceof DOMException && error.name === 'AbortError') {
           return;
         }
 
         setErrorMessage(getCalendarErrorMessage(error, '일정을 불러오지 못했습니다.'));
       } finally {
-        if (!controller.signal.aborted) {
+        if (!isCancelled && isCurrentAuthUser(userId)) {
           setIsLoading(false);
         }
       }
@@ -89,14 +181,20 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
     void loadEvents();
 
     return () => {
+      isCancelled = true;
       controller.abort();
     };
-  }, []);
+  }, [currentUserError, hasCurrentUserError, isCurrentAuthUser, isCurrentUserPending, userId]);
 
   const createEvent = useCallback(
     async (draft: CalendarEventDraft) => {
-      if (isLoading) {
+      if (isCalendarLoading) {
         return 'loading';
+      }
+
+      if (!userId || !isCurrentAuthUser(userId)) {
+        setErrorMessage('로그인 정보를 확인할 수 없습니다.');
+        return 'error';
       }
 
       const normalizedEvent = createCalendarEventFromDraft(draft, 'pending');
@@ -109,18 +207,33 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'conflict';
       }
 
+      const requestUserId = userId;
+
       try {
         setErrorMessage(null);
 
         const createdEvent = await createCalendarEvent({
-          userId: getCurrentUserId(),
+          userId: requestUserId,
           draft: normalizedEvent,
         });
 
-        setEvents((prevEvents) => [...prevEvents, createdEvent]);
+        if (!isCurrentAuthUser(requestUserId)) {
+          return 'cancelled';
+        }
+
+        setEventsState((prevState) =>
+          updateOwnedEvents(prevState, requestUserId, (prevEvents) => [
+            ...prevEvents,
+            createdEvent,
+          ]),
+        );
         return 'success';
       } catch (error) {
-        if (error instanceof CalendarApiError && error.status === 409) {
+        if (!isCurrentAuthUser(requestUserId)) {
+          return 'cancelled';
+        }
+
+        if (error instanceof ApiError && error.status === 409) {
           return 'conflict';
         }
 
@@ -128,13 +241,18 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'error';
       }
     },
-    [events, isLoading],
+    [events, isCalendarLoading, isCurrentAuthUser, userId],
   );
 
   const updateEvent = useCallback(
     async (draft: CalendarEventDraft) => {
-      if (isLoading) {
+      if (isCalendarLoading) {
         return 'loading';
+      }
+
+      if (!userId || !isCurrentAuthUser(userId)) {
+        setErrorMessage('로그인 정보를 확인할 수 없습니다.');
+        return 'error';
       }
 
       const editingEventId = draft.id;
@@ -159,26 +277,42 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'conflict';
       }
 
+      const requestUserId = userId;
+
       try {
         setErrorMessage(null);
 
         const updatedEvent = await updateCalendarEvent({
-          userId: getCurrentUserId(),
+          userId: requestUserId,
           eventId: editingEventId,
           draft: nextEvent,
         });
 
-        setEvents((prevEvents) =>
-          prevEvents.map((event) => (event.id === updatedEvent.id ? updatedEvent : event)),
+        if (!isCurrentAuthUser(requestUserId)) {
+          return 'cancelled';
+        }
+
+        setEventsState((prevState) =>
+          updateOwnedEvents(prevState, requestUserId, (prevEvents) =>
+            prevEvents.map((event) => (event.id === updatedEvent.id ? updatedEvent : event)),
+          ),
         );
         return 'success';
       } catch (error) {
-        if (error instanceof CalendarApiError && error.status === 404) {
-          setEvents((prevEvents) => prevEvents.filter((event) => event.id !== editingEventId));
+        if (!isCurrentAuthUser(requestUserId)) {
+          return 'cancelled';
+        }
+
+        if (error instanceof ApiError && error.status === 404) {
+          setEventsState((prevState) =>
+            updateOwnedEvents(prevState, requestUserId, (prevEvents) =>
+              prevEvents.filter((event) => event.id !== editingEventId),
+            ),
+          );
           return 'not-found';
         }
 
-        if (error instanceof CalendarApiError && error.status === 409) {
+        if (error instanceof ApiError && error.status === 409) {
           return 'conflict';
         }
 
@@ -186,28 +320,51 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'error';
       }
     },
-    [events, isLoading],
+    [events, isCalendarLoading, isCurrentAuthUser, userId],
   );
 
   const deleteEvent = useCallback(
     async (eventId: string) => {
-      if (isLoading) {
+      if (isCalendarLoading) {
         return 'loading';
       }
+
+      if (!userId || !isCurrentAuthUser(userId)) {
+        setErrorMessage('로그인 정보를 확인할 수 없습니다.');
+        return 'error';
+      }
+
+      const requestUserId = userId;
 
       try {
         setErrorMessage(null);
 
         await deleteCalendarEvent({
-          userId: getCurrentUserId(),
+          userId: requestUserId,
           eventId,
         });
 
-        setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
+        if (!isCurrentAuthUser(requestUserId)) {
+          return 'cancelled';
+        }
+
+        setEventsState((prevState) =>
+          updateOwnedEvents(prevState, requestUserId, (prevEvents) =>
+            prevEvents.filter((event) => event.id !== eventId),
+          ),
+        );
         return 'success';
       } catch (error) {
-        if (error instanceof CalendarApiError && error.status === 404) {
-          setEvents((prevEvents) => prevEvents.filter((event) => event.id !== eventId));
+        if (!isCurrentAuthUser(requestUserId)) {
+          return 'cancelled';
+        }
+
+        if (error instanceof ApiError && error.status === 404) {
+          setEventsState((prevState) =>
+            updateOwnedEvents(prevState, requestUserId, (prevEvents) =>
+              prevEvents.filter((event) => event.id !== eventId),
+            ),
+          );
           return 'not-found';
         }
 
@@ -215,19 +372,19 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'error';
       }
     },
-    [isLoading],
+    [isCalendarLoading, isCurrentAuthUser, userId],
   );
 
   const value = useMemo(
     () => ({
       events,
-      isLoading,
+      isLoading: isCalendarLoading,
       errorMessage,
       createEvent,
       updateEvent,
       deleteEvent,
     }),
-    [events, isLoading, errorMessage, createEvent, updateEvent, deleteEvent],
+    [events, isCalendarLoading, errorMessage, createEvent, updateEvent, deleteEvent],
   );
 
   return <CalendarStoreContext.Provider value={value}>{children}</CalendarStoreContext.Provider>;
