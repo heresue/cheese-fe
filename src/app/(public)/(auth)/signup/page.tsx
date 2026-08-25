@@ -12,6 +12,7 @@ import AuthConfirmModal from '../_components/AuthConfirmModal';
 
 import { useSignup } from '@/queries/auth/useSignup';
 import { useCheckNickname } from '@/queries/auth/useCheckNickname';
+import { ApiError } from '@/api/client';
 
 import { validateNickname, validatePassword, validatePasswordConfirmation } from '@/lib/validation';
 import { AUTH_MESSAGE } from '@/constants/auth';
@@ -162,7 +163,7 @@ export default function SignupPage() {
 
     const nextErrors: SignupErrors = {
       nickname: getNicknameError(),
-      email: verifiedEmail ? undefined : '이메일 인증을 완료해 주세요',
+      email: verifiedEmail ? undefined : AUTH_MESSAGE.VERIFICATION.EMAIL_REQUIRED,
       password: validatePassword(password),
       passwordConfirmation: validatePasswordConfirmation(password, passwordConfirmation),
     };
@@ -197,7 +198,20 @@ export default function SignupPage() {
       await signup(signupData);
       setIsDoneOpen(true);
     } catch (error) {
-      // 회원가입 실패 처리
+      if (error instanceof ApiError && error.status === 400) {
+        setSignupErrors((prev) => ({
+          ...prev,
+          email: AUTH_MESSAGE.EMAIL.ALREADY_REGISTERED,
+        }));
+
+        emailRef.current?.focus();
+        return;
+      }
+
+      setSignupErrors((prev) => ({
+        ...prev,
+        email: AUTH_MESSAGE.SIGNUP.FAILED,
+      }));
     }
   };
 
