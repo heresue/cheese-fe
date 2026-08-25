@@ -86,13 +86,47 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
   const userId = currentUser?.id;
   const hasCurrentUserError = Boolean(currentUserError) || isCurrentUserRefetchError;
   const canLoadMemoData = Boolean(userId) && !hasCurrentUserError;
-  const memoQuery = useMemos({ userId, enabled: canLoadMemoData });
-  const saveMemoMutation = useSaveMemoMutation();
-  const toggleMemoPinMutation = useToggleMemoPinMutation();
-  const deleteMemoMutation = useDeleteMemoMutation();
-  const deleteSelectedMemosMutation = useDeleteSelectedMemosMutation();
-  const restoreMemoMutation = useRestoreMemoMutation();
-  const permanentDeleteMemoMutation = usePermanentDeleteMemoMutation();
+  const {
+    data: memoQueryData,
+    error: memoQueryError,
+    isPending: isMemoQueryPending,
+  } = useMemos({ userId, enabled: canLoadMemoData });
+  const {
+    mutateAsync: saveMemoAsync,
+    reset: resetSaveMemo,
+    error: saveMemoError,
+    variables: saveMemoVariables,
+  } = useSaveMemoMutation();
+  const {
+    mutateAsync: toggleMemoPinAsync,
+    reset: resetToggleMemoPin,
+    error: toggleMemoPinError,
+    variables: toggleMemoPinVariables,
+  } = useToggleMemoPinMutation();
+  const {
+    mutateAsync: deleteMemoAsync,
+    reset: resetDeleteMemo,
+    error: deleteMemoError,
+    variables: deleteMemoVariables,
+  } = useDeleteMemoMutation();
+  const {
+    mutateAsync: deleteSelectedMemosAsync,
+    reset: resetDeleteSelectedMemos,
+    error: deleteSelectedMemosError,
+    variables: deleteSelectedMemosVariables,
+  } = useDeleteSelectedMemosMutation();
+  const {
+    mutateAsync: restoreMemoAsync,
+    reset: resetRestoreMemo,
+    error: restoreMemoError,
+    variables: restoreMemoVariables,
+  } = useRestoreMemoMutation();
+  const {
+    mutateAsync: permanentDeleteMemoAsync,
+    reset: resetPermanentDeleteMemo,
+    error: permanentDeleteMemoError,
+    variables: permanentDeleteMemoVariables,
+  } = usePermanentDeleteMemoMutation();
   const [selectionState, setSelectionState] = useState<MemoSelectionState>({
     ownerUserId: null,
     selectedIds: new Set(),
@@ -100,7 +134,7 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
 
   const selectedIds =
     selectionState.ownerUserId === userId ? selectionState.selectedIds : EMPTY_SELECTED_IDS;
-  const sourceMemos = canLoadMemoData ? (memoQuery.data?.memos ?? EMPTY_MEMOS) : EMPTY_MEMOS;
+  const sourceMemos = canLoadMemoData ? (memoQueryData?.memos ?? EMPTY_MEMOS) : EMPTY_MEMOS;
   const memos = useMemo(
     () =>
       sourceMemos.map((memo) => ({
@@ -109,24 +143,24 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
       })),
     [selectedIds, sourceMemos],
   );
-  const widgetMemos = canLoadMemoData ? (memoQuery.data?.widgetMemos ?? EMPTY_MEMOS) : EMPTY_MEMOS;
+  const widgetMemos = canLoadMemoData ? (memoQueryData?.widgetMemos ?? EMPTY_MEMOS) : EMPTY_MEMOS;
   const isMemoLoading =
-    isCurrentUserPending || (canLoadMemoData && memoQuery.isPending && !memoQuery.data);
+    isCurrentUserPending || (canLoadMemoData && isMemoQueryPending && !memoQueryData);
 
   const resetMutationErrors = useCallback(() => {
-    saveMemoMutation.reset();
-    toggleMemoPinMutation.reset();
-    deleteMemoMutation.reset();
-    deleteSelectedMemosMutation.reset();
-    restoreMemoMutation.reset();
-    permanentDeleteMemoMutation.reset();
+    resetSaveMemo();
+    resetToggleMemoPin();
+    resetDeleteMemo();
+    resetDeleteSelectedMemos();
+    resetRestoreMemo();
+    resetPermanentDeleteMemo();
   }, [
-    deleteMemoMutation,
-    deleteSelectedMemosMutation,
-    permanentDeleteMemoMutation,
-    restoreMemoMutation,
-    saveMemoMutation,
-    toggleMemoPinMutation,
+    resetDeleteMemo,
+    resetDeleteSelectedMemos,
+    resetPermanentDeleteMemo,
+    resetRestoreMemo,
+    resetSaveMemo,
+    resetToggleMemoPin,
   ]);
 
   const clearSelectedMemoIds = useCallback(
@@ -161,7 +195,7 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
       resetMutationErrors();
 
       try {
-        await saveMemoMutation.mutateAsync({
+        await saveMemoAsync({
           userId,
           memo: nextMemo,
           currentMemo,
@@ -169,14 +203,22 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
         return 'success';
       } catch (error) {
         if (error instanceof ApiError && error.status === 404 && nextMemo.id) {
-          saveMemoMutation.reset();
+          resetSaveMemo();
           return 'not-found';
         }
 
         return 'error';
       }
     },
-    [hasCurrentUserError, isMemoLoading, memos, resetMutationErrors, saveMemoMutation, userId],
+    [
+      hasCurrentUserError,
+      isMemoLoading,
+      memos,
+      resetMutationErrors,
+      resetSaveMemo,
+      saveMemoAsync,
+      userId,
+    ],
   );
 
   const toggleSelectMemo = useCallback(
@@ -234,7 +276,7 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
       resetMutationErrors();
 
       try {
-        await toggleMemoPinMutation.mutateAsync({
+        await toggleMemoPinAsync({
           userId,
           memoId: id,
           pinned: !currentMemo.pinned,
@@ -242,14 +284,22 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
         return 'success';
       } catch (error) {
         if (error instanceof ApiError && error.status === 404) {
-          toggleMemoPinMutation.reset();
+          resetToggleMemoPin();
           return 'not-found';
         }
 
         return 'error';
       }
     },
-    [hasCurrentUserError, isMemoLoading, memos, resetMutationErrors, toggleMemoPinMutation, userId],
+    [
+      hasCurrentUserError,
+      isMemoLoading,
+      memos,
+      resetMutationErrors,
+      resetToggleMemoPin,
+      toggleMemoPinAsync,
+      userId,
+    ],
   );
 
   const deleteMemo = useCallback(
@@ -265,12 +315,12 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
       resetMutationErrors();
 
       try {
-        await deleteMemoMutation.mutateAsync({ userId, memoId: id });
+        await deleteMemoAsync({ userId, memoId: id });
         clearSelectedMemoIds([id]);
         return 'success';
       } catch (error) {
         if (error instanceof ApiError && error.status === 404) {
-          deleteMemoMutation.reset();
+          resetDeleteMemo();
           clearSelectedMemoIds([id]);
           return 'not-found';
         }
@@ -280,9 +330,10 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
     },
     [
       clearSelectedMemoIds,
-      deleteMemoMutation,
+      deleteMemoAsync,
       hasCurrentUserError,
       isMemoLoading,
+      resetDeleteMemo,
       resetMutationErrors,
       userId,
     ],
@@ -308,7 +359,7 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
     resetMutationErrors();
 
     try {
-      await deleteSelectedMemosMutation.mutateAsync({
+      await deleteSelectedMemosAsync({
         userId,
         memoIds: selectedMemoIds,
       });
@@ -320,7 +371,7 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
     }
   }, [
     clearSelectedMemoIds,
-    deleteSelectedMemosMutation,
+    deleteSelectedMemosAsync,
     hasCurrentUserError,
     isMemoLoading,
     memos,
@@ -341,12 +392,12 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
       resetMutationErrors();
 
       try {
-        await restoreMemoMutation.mutateAsync({ userId, memoId: id });
+        await restoreMemoAsync({ userId, memoId: id });
         clearSelectedMemoIds([id]);
         return 'success';
       } catch (error) {
         if (error instanceof ApiError && error.status === 404) {
-          restoreMemoMutation.reset();
+          resetRestoreMemo();
           clearSelectedMemoIds([id]);
           return 'not-found';
         }
@@ -359,7 +410,8 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
       hasCurrentUserError,
       isMemoLoading,
       resetMutationErrors,
-      restoreMemoMutation,
+      resetRestoreMemo,
+      restoreMemoAsync,
       userId,
     ],
   );
@@ -377,12 +429,12 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
       resetMutationErrors();
 
       try {
-        await permanentDeleteMemoMutation.mutateAsync({ userId, memoId: id });
+        await permanentDeleteMemoAsync({ userId, memoId: id });
         clearSelectedMemoIds([id]);
         return 'success';
       } catch (error) {
         if (error instanceof ApiError && error.status === 404) {
-          permanentDeleteMemoMutation.reset();
+          resetPermanentDeleteMemo();
           clearSelectedMemoIds([id]);
           return 'not-found';
         }
@@ -394,7 +446,8 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
       clearSelectedMemoIds,
       hasCurrentUserError,
       isMemoLoading,
-      permanentDeleteMemoMutation,
+      permanentDeleteMemoAsync,
+      resetPermanentDeleteMemo,
       resetMutationErrors,
       userId,
     ],
@@ -404,45 +457,45 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
     !isCurrentUserPending && (hasCurrentUserError || !userId)
       ? getMemoErrorMessage(currentUserError, '로그인 정보를 확인할 수 없습니다.')
       : null;
-  const queryErrorMessage = memoQuery.error
-    ? getMemoErrorMessage(memoQuery.error, '메모를 불러오지 못했습니다.')
+  const queryErrorMessage = memoQueryError
+    ? getMemoErrorMessage(memoQueryError, '메모를 불러오지 못했습니다.')
     : null;
   const errorMessage =
     authErrorMessage ??
     queryErrorMessage ??
     getMutationErrorMessage(
-      saveMemoMutation.error,
-      saveMemoMutation.variables?.userId,
+      saveMemoError,
+      saveMemoVariables?.userId,
       userId,
       '메모를 저장하지 못했습니다.',
     ) ??
     getMutationErrorMessage(
-      toggleMemoPinMutation.error,
-      toggleMemoPinMutation.variables?.userId,
+      toggleMemoPinError,
+      toggleMemoPinVariables?.userId,
       userId,
       '메모 고정 상태를 변경하지 못했습니다.',
     ) ??
     getMutationErrorMessage(
-      deleteMemoMutation.error,
-      deleteMemoMutation.variables?.userId,
+      deleteMemoError,
+      deleteMemoVariables?.userId,
       userId,
       '메모를 삭제하지 못했습니다.',
     ) ??
     getMutationErrorMessage(
-      deleteSelectedMemosMutation.error,
-      deleteSelectedMemosMutation.variables?.userId,
+      deleteSelectedMemosError,
+      deleteSelectedMemosVariables?.userId,
       userId,
       '일부 메모를 삭제하지 못했습니다.',
     ) ??
     getMutationErrorMessage(
-      restoreMemoMutation.error,
-      restoreMemoMutation.variables?.userId,
+      restoreMemoError,
+      restoreMemoVariables?.userId,
       userId,
       '메모를 복구하지 못했습니다.',
     ) ??
     getMutationErrorMessage(
-      permanentDeleteMemoMutation.error,
-      permanentDeleteMemoMutation.variables?.userId,
+      permanentDeleteMemoError,
+      permanentDeleteMemoVariables?.userId,
       userId,
       '메모를 영구 삭제하지 못했습니다.',
     );
