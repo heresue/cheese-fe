@@ -4,6 +4,15 @@ const apiBaseUrl = process.env.API_BASE_URL?.replace(/\/$/, '');
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'api.cheese-on.o-r.kr',
+        pathname: '/api/files/**',
+      },
+    ],
+  },
   async rewrites() {
     if (!apiBaseUrl) {
       return [];
