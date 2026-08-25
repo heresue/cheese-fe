@@ -13,7 +13,7 @@ import MemoPinFilledIcon from '@/assets/icons/memo/pin-filled.svg';
 import MemoReturnIcon from '@/assets/icons/memo/return.svg';
 
 import { getMemoTagColor } from '../_constants/memoColors';
-import { stripHtml } from '../_lib/memoText';
+import { formatMemoDate, stripHtml } from '../_lib/memoText';
 import type { Memo } from '../_types/memo';
 import { cn } from '@/lib/cn';
 
@@ -184,7 +184,7 @@ export function MemoCard({
           )}
         >
           <span className="text-[12px] leading-6 tracking-[-0.02em] text-gray-500">
-            {memo.createdAt}
+            {formatMemoDate(memo.createdAt)}
             {memo.deleted ? ' 삭제됨' : ''}
           </span>
 

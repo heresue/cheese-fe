@@ -15,6 +15,12 @@ type MemoSortOrder = 'latest' | 'oldest';
 const PAGE_SIZE = 15;
 
 function parseMemoDateValue(dateText: string) {
+  const timestamp = Date.parse(dateText);
+
+  if (!Number.isNaN(timestamp)) {
+    return timestamp;
+  }
+
   const [year, month, date] = dateText.match(/\d+/g)?.map(Number) ?? [];
 
   if (!year || !month || !date) {
@@ -27,6 +33,8 @@ function parseMemoDateValue(dateText: string) {
 export function MemoPageView() {
   const {
     memos,
+    isLoading,
+    errorMessage,
     saveMemo,
     toggleSelectMemo,
     selectMemos,
@@ -137,34 +145,49 @@ export function MemoPageView() {
   };
 
   const handleTogglePin = (id: string) => {
-    togglePinMemo(id);
+    void togglePinMemo(id);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     setIsDeleteSelectedWarningVisible(false);
-    deleteMemo(id);
-    resetVisibleMemos();
+    const status = await deleteMemo(id);
+
+    if (status === 'success' || status === 'not-found') {
+      resetVisibleMemos();
+      return true;
+    }
+
+    return false;
   };
 
-  const handleDeleteSelected = () => {
+  const handleDeleteSelected = async () => {
     if (!isDeleteSelectedWarningVisible) {
       setIsDeleteSelectedWarningVisible(true);
       return;
     }
 
     setIsDeleteSelectedWarningVisible(false);
-    deleteSelectedMemos();
-    resetVisibleMemos();
+    const status = await deleteSelectedMemos();
+
+    if (status === 'success') {
+      resetVisibleMemos();
+    }
   };
 
   const handleRestore = (id: string) => {
-    restoreMemo(id);
-    resetVisibleMemos();
+    void restoreMemo(id).then((status) => {
+      if (status === 'success' || status === 'not-found') {
+        resetVisibleMemos();
+      }
+    });
   };
 
   const handlePermanentDelete = (id: string) => {
-    permanentDeleteMemo(id);
-    resetVisibleMemos();
+    void permanentDeleteMemo(id).then((status) => {
+      if (status === 'success' || status === 'not-found') {
+        resetVisibleMemos();
+      }
+    });
   };
 
   const handleOpenCreateEditor = () => {
@@ -179,9 +202,15 @@ export function MemoPageView() {
     setIsEditorOpen(true);
   };
 
-  const handleSubmitMemo = (nextMemo: MemoSavePayload) => {
-    saveMemo(nextMemo);
-    resetVisibleMemos();
+  const handleSubmitMemo = async (nextMemo: MemoSavePayload) => {
+    const status = await saveMemo(nextMemo);
+
+    if (status === 'success') {
+      resetVisibleMemos();
+      return true;
+    }
+
+    return false;
   };
 
   useEffect(() => {
@@ -214,7 +243,15 @@ export function MemoPageView() {
 
   return (
     <main className="relative flex h-dvh min-h-0 min-w-0 flex-col overflow-hidden bg-white">
-      {isDeleteSelectedWarningVisible ? (
+      {errorMessage ? (
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="bg-tag-red-100 text-error absolute top-[20px] left-1/2 z-[60] flex min-h-[44px] -translate-x-1/2 items-center rounded-[8px] px-[18px] py-[10px] text-[14px] leading-[20px] font-medium whitespace-nowrap shadow-[0_6px_20px_rgba(15,23,42,0.14)]"
+        >
+          {errorMessage}
+        </div>
+      ) : isDeleteSelectedWarningVisible ? (
         <div
           role="alert"
           aria-live="assertive"
@@ -244,7 +281,11 @@ export function MemoPageView() {
         ref={scrollAreaRef}
         className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-[56px] pb-[80px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {filteredMemos.length === 0 ? (
+        {isLoading ? (
+          <section className="mx-auto flex h-[320px] max-w-[1320px] items-center justify-center rounded-[10px] border border-gray-300 bg-white">
+            <p className="text-[15px] font-medium text-gray-500">메모를 불러오는 중...</p>
+          </section>
+        ) : filteredMemos.length === 0 ? (
           <section className="mx-auto flex h-[320px] max-w-[1320px] items-center justify-center rounded-[10px] border border-gray-300 bg-white">
             <p className="text-[15px] font-medium text-gray-500">조건에 맞는 메모가 없습니다.</p>
           </section>
