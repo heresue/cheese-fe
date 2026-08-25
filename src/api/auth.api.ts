@@ -104,3 +104,16 @@ export function verifyEmailCode(data: VerifyEmailCodeRequest) {
     body: JSON.stringify(data),
   });
 }
+
+export type CheckNicknameResponse = {
+  available: boolean;
+};
+
+export function checkNickname(nickname: string) {
+  return apiClient<CheckNicknameResponse>('/backend-api/auth/check-nickname', {
+    method: 'GET',
+    query: {
+      nickname,
+    },
+  });
+}

@@ -11,6 +11,7 @@ import EmailVerifyModal from '../_components/EmailVerifyModal';
 import AuthConfirmModal from '../_components/AuthConfirmModal';
 
 import { useSignup } from '@/queries/auth/useSignup';
+import { useCheckNickname } from '@/queries/auth/useCheckNickname';
 
 import { validateNickname, validatePassword, validatePasswordConfirmation } from '@/lib/validation';
 import { AUTH_MESSAGE } from '@/constants/auth';
@@ -49,6 +50,7 @@ export default function SignupPage() {
   const passwordConfirmationRef = useRef<HTMLInputElement>(null);
 
   const { mutateAsync: signup, isPending: isSignupPending } = useSignup();
+  const { mutateAsync: checkNickname } = useCheckNickname();
 
   const isPasswordMatched =
     Boolean(passwordConfirmation) &&
@@ -100,7 +102,8 @@ export default function SignupPage() {
   };
 
   const handleCheckNickname = async () => {
-    const nicknameError = validateNickname(nickname);
+    const normalizedNickname = nickname.trim();
+    const nicknameError = validateNickname(normalizedNickname);
 
     if (nicknameError) {
       setSignupErrors((prev) => ({
@@ -113,14 +116,13 @@ export default function SignupPage() {
     setNicknameStatus('checking');
 
     try {
-      // TODO: 닉네임 중복 확인 API 호출
-      const isDuplicated = false; // 임시 확인코드
+      const checkNicknameResult = await checkNickname(normalizedNickname);
 
-      setNicknameStatus(isDuplicated ? 'duplicated' : 'available');
+      setNicknameStatus(checkNicknameResult.available ? 'available' : 'duplicated');
 
       setSignupErrors((prev) => ({
         ...prev,
-        nickname: isDuplicated ? AUTH_MESSAGE.NICKNAME.DUPLICATED : undefined,
+        nickname: checkNicknameResult.available ? undefined : AUTH_MESSAGE.NICKNAME.DUPLICATED,
       }));
     } catch {
       setNicknameStatus('idle');
