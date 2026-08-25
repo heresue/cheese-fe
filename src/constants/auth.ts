@@ -5,7 +5,7 @@ export const AUTH_MESSAGE = {
 
   EMAIL: {
     UNREGISTERED: '이메일이 올바르지 않습니다',
-    ALREADY_REGISTERED: '이미 가입된 이메일입니다.',
+    ALREADY_REGISTERED: '이미 가입된 이메일입니다',
     AVAILABLE: '사용 가능',
     SEND_SUCCESS: '인증 메일이 발송되었습니다',
     SEND_FAILED: '인증 메일 발송에 실패했습니다',
@@ -13,7 +13,7 @@ export const AUTH_MESSAGE = {
 
   PASSWORD: {
     MATCHED: '비밀번호가 일치합니다',
-    RESET_FAILED: '비밀번호 변경에 실패했습니다. 다시 시도해 주세요.',
+    RESET_FAILED: '비밀번호 변경에 실패했습니다. 다시 시도해 주세요',
   },
 
   VERIFICATION: {
@@ -31,6 +31,6 @@ export const AUTH_MESSAGE = {
   },
 
   SIGNUP: {
-    FAILED: '회원가입에 실패했습니다. 다시 시도해 주세요.',
+    FAILED: '회원가입에 실패했습니다. 다시 시도해 주세요',
   },
 } as const;

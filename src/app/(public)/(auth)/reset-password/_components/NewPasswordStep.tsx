@@ -53,6 +53,7 @@ export default function NewPasswordStep({ email, onComplete }: NewPasswordStepPr
       });
 
       if (!resetPasswordResult.success) {
+        setPasswordError(AUTH_MESSAGE.PASSWORD.RESET_FAILED);
         return;
       }
 

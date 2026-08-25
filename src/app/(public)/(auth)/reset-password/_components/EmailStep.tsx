@@ -19,7 +19,7 @@ export default function EmailStep({ email, onEmailChange, onNext }: EmailStepPro
 
   const handleSendEmail = async () => {
     const normalizedEmail = email.trim();
-    const error = validateEmail(email);
+    const error = validateEmail(normalizedEmail);
 
     if (error) {
       setEmailError(error);
@@ -41,7 +41,7 @@ export default function EmailStep({ email, onEmailChange, onNext }: EmailStepPro
       onEmailChange(normalizedEmail);
       onNext();
     } catch {
-      setEmailError(AUTH_MESSAGE.EMAIL.UNREGISTERED);
+      setEmailError(AUTH_MESSAGE.EMAIL.SEND_FAILED);
     }
   };
 
