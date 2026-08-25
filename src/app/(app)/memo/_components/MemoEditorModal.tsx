@@ -161,7 +161,7 @@ function MemoEditorModalContent({
   };
 
   const handleConfirmDelete = async () => {
-    if (!memo?.id) return;
+    if (!memo?.id || isSubmitting) return;
 
     setIsSubmitting(true);
     setRequestErrorMessage(null);
@@ -276,7 +276,8 @@ function MemoEditorModalContent({
                 type="button"
                 aria-label="메모 삭제"
                 onClick={handleDeleteClick}
-                className="flex h-[24px] w-[24px] items-center justify-center text-gray-600"
+                disabled={isSubmitting}
+                className="flex h-[24px] w-[24px] items-center justify-center text-gray-600 disabled:cursor-wait disabled:opacity-60"
               >
                 <MemoDeleteIcon className="block h-[18px] w-[16px] shrink-0" aria-hidden="true" />
               </button>
