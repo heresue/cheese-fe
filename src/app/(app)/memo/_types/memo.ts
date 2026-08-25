@@ -15,3 +15,12 @@ export type Memo = {
   deleted?: boolean;
   deletedAt?: string;
 };
+
+export type MemoSavePayload = Omit<
+  Memo,
+  'id' | 'createdAt' | 'updatedAt' | 'contentText' | 'imageFileId' | 'deletedAt'
+> &
+  Partial<Pick<Memo, 'id' | 'createdAt'>> & {
+    imageFile?: File;
+    imageFileId?: string | null;
+  };
