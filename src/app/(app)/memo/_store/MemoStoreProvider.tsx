@@ -366,7 +366,6 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
       clearSelectedMemoIds(selectedMemoIds);
       return 'success';
     } catch {
-      clearSelectedMemoIds(selectedMemoIds);
       return 'error';
     }
   }, [
