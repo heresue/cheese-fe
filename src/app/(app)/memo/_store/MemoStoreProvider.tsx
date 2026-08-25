@@ -1,53 +1,28 @@
 'use client';
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 
-import type { AuthUser } from '@/api/auth.api';
 import { ApiError } from '@/api/client';
-import { uploadFile } from '@/api/files.api';
-import {
-  createMemo as createMemoRequest,
-  deleteMemo as deleteMemoRequest,
-  getMemos,
-  getWidgetMemos,
-  permanentDeleteMemo as permanentDeleteMemoRequest,
-  restoreMemo as restoreMemoRequest,
-  updateMemo as updateMemoRequest,
-  updateMemoPin,
-  type MemoDraft,
-} from '@/api/memo.api';
-import { authQueryKeys } from '@/queries/auth/authQueryKeys';
 import { useCurrentUser } from '@/queries/auth/useCurrentUser';
+import {
+  useDeleteMemoMutation,
+  useDeleteSelectedMemosMutation,
+  usePermanentDeleteMemoMutation,
+  useRestoreMemoMutation,
+  useSaveMemoMutation,
+  useToggleMemoPinMutation,
+} from '@/queries/memo/useMemoMutations';
+import { useMemos } from '@/queries/memo/useMemos';
 
-import { stripHtml } from '../_lib/memoText';
-import type { Memo } from '../_types/memo';
+import type { Memo, MemoSavePayload } from '../_types/memo';
 
-const WIDGET_MEMO_LIMIT = 5;
-
-export type MemoSavePayload = Omit<
-  Memo,
-  'id' | 'createdAt' | 'updatedAt' | 'contentText' | 'imageFileId' | 'deletedAt'
-> &
-  Partial<Pick<Memo, 'id' | 'createdAt'>> & {
-    imageFile?: File;
-    imageFileId?: string | null;
-  };
+export type { MemoSavePayload } from '../_types/memo';
 
 type MemoMutationStatus = 'success' | 'not-found' | 'loading' | 'cancelled' | 'error';
 
-type MemoState = {
+type MemoSelectionState = {
   ownerUserId: string | null;
-  memos: Memo[];
-  widgetMemos: Memo[];
+  selectedIds: Set<string>;
 };
 
 type MemoStoreContextValue = {
@@ -67,6 +42,7 @@ type MemoStoreContextValue = {
 
 const MemoStoreContext = createContext<MemoStoreContextValue | null>(null);
 const EMPTY_MEMOS: Memo[] = [];
+const EMPTY_SELECTED_IDS = new Set<string>();
 
 function getMemoErrorMessage(error: unknown, fallback: string) {
   if (error instanceof Error) {
@@ -76,68 +52,31 @@ function getMemoErrorMessage(error: unknown, fallback: string) {
   return fallback;
 }
 
-function sortWidgetMemos(memos: Memo[]) {
-  return memos
-    .filter((memo) => !memo.deleted)
-    .sort((left, right) => {
-      if (Boolean(left.pinned) !== Boolean(right.pinned)) {
-        return Number(Boolean(right.pinned)) - Number(Boolean(left.pinned));
-      }
-
-      return (right.updatedAt ?? right.createdAt).localeCompare(left.updatedAt ?? left.createdAt);
-    })
-    .slice(0, WIDGET_MEMO_LIMIT);
-}
-
-function replaceMemo(memos: Memo[], nextMemo: Memo) {
-  const currentMemo = memos.find((memo) => memo.id === nextMemo.id);
-
-  if (!currentMemo) {
-    return [nextMemo, ...memos];
-  }
-
-  return memos.map((memo) =>
-    memo.id === nextMemo.id
-      ? {
-          ...nextMemo,
-          selected: currentMemo.selected,
-        }
-      : memo,
-  );
-}
-
-function updateOwnedMemoState(
-  state: MemoState,
-  ownerUserId: string,
-  updateState: (state: MemoState) => MemoState,
+function getMutationErrorMessage(
+  error: unknown,
+  requestUserId: string | undefined,
+  currentUserId: string | undefined,
+  fallback: string,
 ) {
-  if (state.ownerUserId !== ownerUserId) {
-    return state;
+  if (!error || !requestUserId || requestUserId !== currentUserId) {
+    return null;
   }
 
-  return updateState(state);
+  return getMemoErrorMessage(error, fallback);
 }
 
-function syncMemo(state: MemoState, nextMemo: Memo): MemoState {
-  const memos = replaceMemo(state.memos, nextMemo);
+function updateSelection(
+  state: MemoSelectionState,
+  userId: string,
+  updateSelectedIds: (selectedIds: Set<string>) => void,
+): MemoSelectionState {
+  const selectedIds = new Set(state.ownerUserId === userId ? state.selectedIds : []);
+  updateSelectedIds(selectedIds);
 
-  return {
-    ...state,
-    memos,
-    widgetMemos: sortWidgetMemos(replaceMemo(state.widgetMemos, nextMemo)),
-  };
-}
-
-function removeMemo(state: MemoState, memoId: string): MemoState {
-  return {
-    ...state,
-    memos: state.memos.filter((memo) => memo.id !== memoId),
-    widgetMemos: state.widgetMemos.filter((memo) => memo.id !== memoId),
-  };
+  return { ownerUserId: userId, selectedIds };
 }
 
 export function MemoStoreProvider({ children }: { children: ReactNode }) {
-  const queryClient = useQueryClient();
   const {
     data: currentUser,
     error: currentUserError,
@@ -145,99 +84,63 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
     isRefetchError: isCurrentUserRefetchError,
   } = useCurrentUser();
   const userId = currentUser?.id;
-  const [memoState, setMemoState] = useState<MemoState>({
-    ownerUserId: null,
-    memos: [],
-    widgetMemos: [],
-  });
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const hasCurrentUserError = Boolean(currentUserError) || isCurrentUserRefetchError;
-  const hasCurrentUserMemos =
-    !isCurrentUserPending &&
-    !hasCurrentUserError &&
-    Boolean(userId) &&
-    memoState.ownerUserId === userId;
-  const memos = hasCurrentUserMemos ? memoState.memos : EMPTY_MEMOS;
-  const widgetMemos = hasCurrentUserMemos ? memoState.widgetMemos : EMPTY_MEMOS;
-  const isMemoOwnerChanging =
-    Boolean(userId) && !hasCurrentUserError && memoState.ownerUserId !== userId;
-  const isMemoLoading = isLoading || isCurrentUserPending || isMemoOwnerChanging;
-  const isCurrentAuthUser = useCallback(
-    (requestUserId: string) => {
-      const authQueryState = queryClient.getQueryState<AuthUser>(authQueryKeys.me());
+  const canLoadMemoData = Boolean(userId) && !hasCurrentUserError;
+  const memoQuery = useMemos({ userId, enabled: canLoadMemoData });
+  const saveMemoMutation = useSaveMemoMutation();
+  const toggleMemoPinMutation = useToggleMemoPinMutation();
+  const deleteMemoMutation = useDeleteMemoMutation();
+  const deleteSelectedMemosMutation = useDeleteSelectedMemosMutation();
+  const restoreMemoMutation = useRestoreMemoMutation();
+  const permanentDeleteMemoMutation = usePermanentDeleteMemoMutation();
+  const [selectionState, setSelectionState] = useState<MemoSelectionState>({
+    ownerUserId: null,
+    selectedIds: new Set(),
+  });
 
-      return (
-        authQueryState?.status === 'success' &&
-        authQueryState.error === null &&
-        authQueryState.data?.id === requestUserId
+  const selectedIds =
+    selectionState.ownerUserId === userId ? selectionState.selectedIds : EMPTY_SELECTED_IDS;
+  const sourceMemos = canLoadMemoData ? (memoQuery.data?.memos ?? EMPTY_MEMOS) : EMPTY_MEMOS;
+  const memos = useMemo(
+    () =>
+      sourceMemos.map((memo) => ({
+        ...memo,
+        selected: selectedIds.has(memo.id),
+      })),
+    [selectedIds, sourceMemos],
+  );
+  const widgetMemos = canLoadMemoData ? (memoQuery.data?.widgetMemos ?? EMPTY_MEMOS) : EMPTY_MEMOS;
+  const isMemoLoading =
+    isCurrentUserPending || (canLoadMemoData && memoQuery.isPending && !memoQuery.data);
+
+  const resetMutationErrors = useCallback(() => {
+    saveMemoMutation.reset();
+    toggleMemoPinMutation.reset();
+    deleteMemoMutation.reset();
+    deleteSelectedMemosMutation.reset();
+    restoreMemoMutation.reset();
+    permanentDeleteMemoMutation.reset();
+  }, [
+    deleteMemoMutation,
+    deleteSelectedMemosMutation,
+    permanentDeleteMemoMutation,
+    restoreMemoMutation,
+    saveMemoMutation,
+    toggleMemoPinMutation,
+  ]);
+
+  const clearSelectedMemoIds = useCallback(
+    (memoIds: string[]) => {
+      if (!userId) return;
+
+      setSelectionState((state) =>
+        updateSelection(state, userId, (nextSelectedIds) => {
+          memoIds.forEach((memoId) => nextSelectedIds.delete(memoId));
+        }),
       );
     },
-    [queryClient],
+    [userId],
   );
-
-  useEffect(() => {
-    if (isCurrentUserPending) {
-      setIsLoading(true);
-      return;
-    }
-
-    if (hasCurrentUserError || !userId) {
-      setMemoState({ ownerUserId: null, memos: [], widgetMemos: [] });
-      setIsLoading(false);
-      setErrorMessage(getMemoErrorMessage(currentUserError, '로그인 정보를 확인할 수 없습니다.'));
-      return;
-    }
-
-    const controller = new AbortController();
-    let isCancelled = false;
-
-    setMemoState({ ownerUserId: userId, memos: [], widgetMemos: [] });
-
-    const loadMemos = async () => {
-      try {
-        setIsLoading(true);
-        setErrorMessage(null);
-
-        const [activeMemos, deletedMemos, nextWidgetMemos] = await Promise.all([
-          getMemos({ userId, signal: controller.signal }),
-          getMemos({ userId, deleted: true, signal: controller.signal }),
-          getWidgetMemos({ userId, limit: WIDGET_MEMO_LIMIT, signal: controller.signal }),
-        ]);
-
-        if (isCancelled || !isCurrentAuthUser(userId)) {
-          return;
-        }
-
-        setMemoState({
-          ownerUserId: userId,
-          memos: [...activeMemos, ...deletedMemos],
-          widgetMemos: nextWidgetMemos,
-        });
-      } catch (error) {
-        if (isCancelled || !isCurrentAuthUser(userId)) {
-          return;
-        }
-
-        if (error instanceof DOMException && error.name === 'AbortError') {
-          return;
-        }
-
-        setErrorMessage(getMemoErrorMessage(error, '메모를 불러오지 못했습니다.'));
-      } finally {
-        if (!isCancelled && isCurrentAuthUser(userId)) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    void loadMemos();
-
-    return () => {
-      isCancelled = true;
-      controller.abort();
-    };
-  }, [currentUserError, hasCurrentUserError, isCurrentAuthUser, isCurrentUserPending, userId]);
 
   const saveMemo = useCallback(
     async (nextMemo: MemoSavePayload): Promise<MemoMutationStatus> => {
@@ -245,118 +148,49 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
         return 'loading';
       }
 
-      if (!userId || !isCurrentAuthUser(userId)) {
-        setErrorMessage('로그인 정보를 확인할 수 없습니다.');
+      if (!userId || hasCurrentUserError) {
         return 'error';
       }
 
-      const requestUserId = userId;
       const currentMemo = nextMemo.id ? memos.find((memo) => memo.id === nextMemo.id) : undefined;
 
       if (nextMemo.id && !currentMemo) {
         return 'not-found';
       }
 
+      resetMutationErrors();
+
       try {
-        setErrorMessage(null);
-
-        const uploadedFile = nextMemo.imageFile
-          ? await uploadFile({ userId: requestUserId, file: nextMemo.imageFile })
-          : null;
-
-        if (!isCurrentAuthUser(requestUserId)) {
-          return 'cancelled';
-        }
-
-        const draft: MemoDraft = {
-          title: nextMemo.title.trim() || '제목',
-          contentHtml: nextMemo.content,
-          contentText: stripHtml(nextMemo.content),
-          color: nextMemo.color ?? 'gray',
-          pinned: Boolean(nextMemo.pinned),
-          imageFileId:
-            uploadedFile?.id ??
-            (nextMemo.imageFileId !== undefined ? nextMemo.imageFileId : currentMemo?.imageFileId),
-        };
-
-        let savedMemo: Memo;
-
-        if (currentMemo) {
-          savedMemo = await updateMemoRequest({
-            userId: requestUserId,
-            memoId: currentMemo.id,
-            draft: {
-              title: draft.title,
-              contentHtml: draft.contentHtml,
-              contentText: draft.contentText,
-              color: draft.color,
-              imageFileId: draft.imageFileId,
-            },
-          });
-
-          if (Boolean(currentMemo.pinned) !== Boolean(draft.pinned)) {
-            if (!isCurrentAuthUser(requestUserId)) {
-              return 'cancelled';
-            }
-
-            setMemoState((state) =>
-              updateOwnedMemoState(state, requestUserId, (ownedState) =>
-                syncMemo(ownedState, savedMemo),
-              ),
-            );
-
-            savedMemo = await updateMemoPin({
-              userId: requestUserId,
-              memoId: currentMemo.id,
-              pinned: Boolean(draft.pinned),
-            });
-          }
-        } else {
-          savedMemo = await createMemoRequest({ userId: requestUserId, draft });
-        }
-
-        if (!isCurrentAuthUser(requestUserId)) {
-          return 'cancelled';
-        }
-
-        setMemoState((state) =>
-          updateOwnedMemoState(state, requestUserId, (ownedState) =>
-            syncMemo(ownedState, savedMemo),
-          ),
-        );
+        await saveMemoMutation.mutateAsync({
+          userId,
+          memo: nextMemo,
+          currentMemo,
+        });
         return 'success';
       } catch (error) {
-        if (!isCurrentAuthUser(requestUserId)) {
-          return 'cancelled';
-        }
-
         if (error instanceof ApiError && error.status === 404 && nextMemo.id) {
-          setMemoState((state) =>
-            updateOwnedMemoState(state, requestUserId, (ownedState) =>
-              removeMemo(ownedState, nextMemo.id as string),
-            ),
-          );
+          saveMemoMutation.reset();
           return 'not-found';
         }
 
-        setErrorMessage(getMemoErrorMessage(error, '메모를 저장하지 못했습니다.'));
         return 'error';
       }
     },
-    [isCurrentAuthUser, isMemoLoading, memos, userId],
+    [hasCurrentUserError, isMemoLoading, memos, resetMutationErrors, saveMemoMutation, userId],
   );
 
   const toggleSelectMemo = useCallback(
     (id: string) => {
       if (!userId) return;
 
-      setMemoState((state) =>
-        updateOwnedMemoState(state, userId, (ownedState) => ({
-          ...ownedState,
-          memos: ownedState.memos.map((memo) =>
-            memo.id === id ? { ...memo, selected: !memo.selected } : memo,
-          ),
-        })),
+      setSelectionState((state) =>
+        updateSelection(state, userId, (nextSelectedIds) => {
+          if (nextSelectedIds.has(id)) {
+            nextSelectedIds.delete(id);
+          } else {
+            nextSelectedIds.add(id);
+          }
+        }),
       );
     },
     [userId],
@@ -366,15 +200,16 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
     (ids: string[], selected: boolean) => {
       if (!userId) return;
 
-      const targetIds = new Set(ids);
-
-      setMemoState((state) =>
-        updateOwnedMemoState(state, userId, (ownedState) => ({
-          ...ownedState,
-          memos: ownedState.memos.map((memo) =>
-            targetIds.has(memo.id) ? { ...memo, selected } : memo,
-          ),
-        })),
+      setSelectionState((state) =>
+        updateSelection(state, userId, (nextSelectedIds) => {
+          ids.forEach((id) => {
+            if (selected) {
+              nextSelectedIds.add(id);
+            } else {
+              nextSelectedIds.delete(id);
+            }
+          });
+        }),
       );
     },
     [userId],
@@ -386,8 +221,7 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
         return 'loading';
       }
 
-      if (!userId || !isCurrentAuthUser(userId)) {
-        setErrorMessage('로그인 정보를 확인할 수 없습니다.');
+      if (!userId || hasCurrentUserError) {
         return 'error';
       }
 
@@ -397,44 +231,25 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
         return 'not-found';
       }
 
-      const requestUserId = userId;
+      resetMutationErrors();
 
       try {
-        setErrorMessage(null);
-
-        const updatedMemo = await updateMemoPin({
-          userId: requestUserId,
+        await toggleMemoPinMutation.mutateAsync({
+          userId,
           memoId: id,
           pinned: !currentMemo.pinned,
         });
-
-        if (!isCurrentAuthUser(requestUserId)) {
-          return 'cancelled';
-        }
-
-        setMemoState((state) =>
-          updateOwnedMemoState(state, requestUserId, (ownedState) =>
-            syncMemo(ownedState, updatedMemo),
-          ),
-        );
         return 'success';
       } catch (error) {
-        if (!isCurrentAuthUser(requestUserId)) {
-          return 'cancelled';
-        }
-
         if (error instanceof ApiError && error.status === 404) {
-          setMemoState((state) =>
-            updateOwnedMemoState(state, requestUserId, (ownedState) => removeMemo(ownedState, id)),
-          );
+          toggleMemoPinMutation.reset();
           return 'not-found';
         }
 
-        setErrorMessage(getMemoErrorMessage(error, '메모 고정 상태를 변경하지 못했습니다.'));
         return 'error';
       }
     },
-    [isCurrentAuthUser, isMemoLoading, memos, userId],
+    [hasCurrentUserError, isMemoLoading, memos, resetMutationErrors, toggleMemoPinMutation, userId],
   );
 
   const deleteMemo = useCallback(
@@ -443,45 +258,34 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
         return 'loading';
       }
 
-      if (!userId || !isCurrentAuthUser(userId)) {
-        setErrorMessage('로그인 정보를 확인할 수 없습니다.');
+      if (!userId || hasCurrentUserError) {
         return 'error';
       }
 
-      const requestUserId = userId;
+      resetMutationErrors();
 
       try {
-        setErrorMessage(null);
-
-        const deletedMemo = await deleteMemoRequest({ userId: requestUserId, memoId: id });
-
-        if (!isCurrentAuthUser(requestUserId)) {
-          return 'cancelled';
-        }
-
-        setMemoState((state) =>
-          updateOwnedMemoState(state, requestUserId, (ownedState) =>
-            syncMemo(ownedState, { ...deletedMemo, selected: false }),
-          ),
-        );
+        await deleteMemoMutation.mutateAsync({ userId, memoId: id });
+        clearSelectedMemoIds([id]);
         return 'success';
       } catch (error) {
-        if (!isCurrentAuthUser(requestUserId)) {
-          return 'cancelled';
-        }
-
         if (error instanceof ApiError && error.status === 404) {
-          setMemoState((state) =>
-            updateOwnedMemoState(state, requestUserId, (ownedState) => removeMemo(ownedState, id)),
-          );
+          deleteMemoMutation.reset();
+          clearSelectedMemoIds([id]);
           return 'not-found';
         }
 
-        setErrorMessage(getMemoErrorMessage(error, '메모를 삭제하지 못했습니다.'));
         return 'error';
       }
     },
-    [isCurrentAuthUser, isMemoLoading, userId],
+    [
+      clearSelectedMemoIds,
+      deleteMemoMutation,
+      hasCurrentUserError,
+      isMemoLoading,
+      resetMutationErrors,
+      userId,
+    ],
   );
 
   const deleteSelectedMemos = useCallback(async (): Promise<MemoMutationStatus> => {
@@ -489,50 +293,40 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
       return 'loading';
     }
 
-    if (!userId || !isCurrentAuthUser(userId)) {
-      setErrorMessage('로그인 정보를 확인할 수 없습니다.');
+    if (!userId || hasCurrentUserError) {
       return 'error';
     }
 
-    const selectedIds = memos
+    const selectedMemoIds = memos
       .filter((memo) => memo.selected && !memo.deleted)
       .map((memo) => memo.id);
 
-    if (selectedIds.length === 0) {
+    if (selectedMemoIds.length === 0) {
       return 'success';
     }
 
-    const requestUserId = userId;
-    const results = await Promise.allSettled(
-      selectedIds.map((memoId) => deleteMemoRequest({ userId: requestUserId, memoId })),
-    );
+    resetMutationErrors();
 
-    if (!isCurrentAuthUser(requestUserId)) {
-      return 'cancelled';
-    }
-
-    const deletedMemos = results.flatMap((result) =>
-      result.status === 'fulfilled' ? [{ ...result.value, selected: false }] : [],
-    );
-
-    setMemoState((state) =>
-      updateOwnedMemoState(state, requestUserId, (ownedState) =>
-        deletedMemos.reduce(syncMemo, ownedState),
-      ),
-    );
-
-    const rejectedResult = results.find((result) => result.status === 'rejected');
-
-    if (rejectedResult?.status === 'rejected') {
-      setErrorMessage(
-        getMemoErrorMessage(rejectedResult.reason, '일부 메모를 삭제하지 못했습니다.'),
-      );
+    try {
+      await deleteSelectedMemosMutation.mutateAsync({
+        userId,
+        memoIds: selectedMemoIds,
+      });
+      clearSelectedMemoIds(selectedMemoIds);
+      return 'success';
+    } catch {
+      clearSelectedMemoIds(selectedMemoIds);
       return 'error';
     }
-
-    setErrorMessage(null);
-    return 'success';
-  }, [isCurrentAuthUser, isMemoLoading, memos, userId]);
+  }, [
+    clearSelectedMemoIds,
+    deleteSelectedMemosMutation,
+    hasCurrentUserError,
+    isMemoLoading,
+    memos,
+    resetMutationErrors,
+    userId,
+  ]);
 
   const restoreMemo = useCallback(
     async (id: string): Promise<MemoMutationStatus> => {
@@ -540,45 +334,34 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
         return 'loading';
       }
 
-      if (!userId || !isCurrentAuthUser(userId)) {
-        setErrorMessage('로그인 정보를 확인할 수 없습니다.');
+      if (!userId || hasCurrentUserError) {
         return 'error';
       }
 
-      const requestUserId = userId;
+      resetMutationErrors();
 
       try {
-        setErrorMessage(null);
-
-        const restoredMemo = await restoreMemoRequest({ userId: requestUserId, memoId: id });
-
-        if (!isCurrentAuthUser(requestUserId)) {
-          return 'cancelled';
-        }
-
-        setMemoState((state) =>
-          updateOwnedMemoState(state, requestUserId, (ownedState) =>
-            syncMemo(ownedState, restoredMemo),
-          ),
-        );
+        await restoreMemoMutation.mutateAsync({ userId, memoId: id });
+        clearSelectedMemoIds([id]);
         return 'success';
       } catch (error) {
-        if (!isCurrentAuthUser(requestUserId)) {
-          return 'cancelled';
-        }
-
         if (error instanceof ApiError && error.status === 404) {
-          setMemoState((state) =>
-            updateOwnedMemoState(state, requestUserId, (ownedState) => removeMemo(ownedState, id)),
-          );
+          restoreMemoMutation.reset();
+          clearSelectedMemoIds([id]);
           return 'not-found';
         }
 
-        setErrorMessage(getMemoErrorMessage(error, '메모를 복구하지 못했습니다.'));
         return 'error';
       }
     },
-    [isCurrentAuthUser, isMemoLoading, userId],
+    [
+      clearSelectedMemoIds,
+      hasCurrentUserError,
+      isMemoLoading,
+      resetMutationErrors,
+      restoreMemoMutation,
+      userId,
+    ],
   );
 
   const permanentDeleteMemo = useCallback(
@@ -587,43 +370,82 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
         return 'loading';
       }
 
-      if (!userId || !isCurrentAuthUser(userId)) {
-        setErrorMessage('로그인 정보를 확인할 수 없습니다.');
+      if (!userId || hasCurrentUserError) {
         return 'error';
       }
 
-      const requestUserId = userId;
+      resetMutationErrors();
 
       try {
-        setErrorMessage(null);
-        await permanentDeleteMemoRequest({ userId: requestUserId, memoId: id });
-
-        if (!isCurrentAuthUser(requestUserId)) {
-          return 'cancelled';
-        }
-
-        setMemoState((state) =>
-          updateOwnedMemoState(state, requestUserId, (ownedState) => removeMemo(ownedState, id)),
-        );
+        await permanentDeleteMemoMutation.mutateAsync({ userId, memoId: id });
+        clearSelectedMemoIds([id]);
         return 'success';
       } catch (error) {
-        if (!isCurrentAuthUser(requestUserId)) {
-          return 'cancelled';
-        }
-
         if (error instanceof ApiError && error.status === 404) {
-          setMemoState((state) =>
-            updateOwnedMemoState(state, requestUserId, (ownedState) => removeMemo(ownedState, id)),
-          );
+          permanentDeleteMemoMutation.reset();
+          clearSelectedMemoIds([id]);
           return 'not-found';
         }
 
-        setErrorMessage(getMemoErrorMessage(error, '메모를 영구 삭제하지 못했습니다.'));
         return 'error';
       }
     },
-    [isCurrentAuthUser, isMemoLoading, userId],
+    [
+      clearSelectedMemoIds,
+      hasCurrentUserError,
+      isMemoLoading,
+      permanentDeleteMemoMutation,
+      resetMutationErrors,
+      userId,
+    ],
   );
+
+  const authErrorMessage =
+    !isCurrentUserPending && (hasCurrentUserError || !userId)
+      ? getMemoErrorMessage(currentUserError, '로그인 정보를 확인할 수 없습니다.')
+      : null;
+  const queryErrorMessage = memoQuery.error
+    ? getMemoErrorMessage(memoQuery.error, '메모를 불러오지 못했습니다.')
+    : null;
+  const errorMessage =
+    authErrorMessage ??
+    queryErrorMessage ??
+    getMutationErrorMessage(
+      saveMemoMutation.error,
+      saveMemoMutation.variables?.userId,
+      userId,
+      '메모를 저장하지 못했습니다.',
+    ) ??
+    getMutationErrorMessage(
+      toggleMemoPinMutation.error,
+      toggleMemoPinMutation.variables?.userId,
+      userId,
+      '메모 고정 상태를 변경하지 못했습니다.',
+    ) ??
+    getMutationErrorMessage(
+      deleteMemoMutation.error,
+      deleteMemoMutation.variables?.userId,
+      userId,
+      '메모를 삭제하지 못했습니다.',
+    ) ??
+    getMutationErrorMessage(
+      deleteSelectedMemosMutation.error,
+      deleteSelectedMemosMutation.variables?.userId,
+      userId,
+      '일부 메모를 삭제하지 못했습니다.',
+    ) ??
+    getMutationErrorMessage(
+      restoreMemoMutation.error,
+      restoreMemoMutation.variables?.userId,
+      userId,
+      '메모를 복구하지 못했습니다.',
+    ) ??
+    getMutationErrorMessage(
+      permanentDeleteMemoMutation.error,
+      permanentDeleteMemoMutation.variables?.userId,
+      userId,
+      '메모를 영구 삭제하지 못했습니다.',
+    );
 
   const value = useMemo(
     () => ({
