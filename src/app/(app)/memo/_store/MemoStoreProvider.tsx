@@ -35,7 +35,7 @@ const WIDGET_MEMO_LIMIT = 5;
 
 export type MemoSavePayload = Omit<
   Memo,
-  'id' | 'createdAt' | 'updatedAt' | 'contentText' | 'deletedAt'
+  'id' | 'createdAt' | 'updatedAt' | 'contentText' | 'imageFileId' | 'deletedAt'
 > &
   Partial<Pick<Memo, 'id' | 'createdAt'>> & {
     imageFile?: File;
@@ -293,6 +293,16 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
           });
 
           if (Boolean(currentMemo.pinned) !== Boolean(draft.pinned)) {
+            if (!isCurrentAuthUser(requestUserId)) {
+              return 'cancelled';
+            }
+
+            setMemoState((state) =>
+              updateOwnedMemoState(state, requestUserId, (ownedState) =>
+                syncMemo(ownedState, savedMemo),
+              ),
+            );
+
             savedMemo = await updateMemoPin({
               userId: requestUserId,
               memoId: currentMemo.id,
