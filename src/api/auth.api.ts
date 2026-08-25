@@ -58,3 +58,49 @@ export function logout() {
     method: 'POST',
   });
 }
+
+export type SignupRequest = {
+  nickname: string;
+  email: string;
+  password: string;
+  passwordConfirmation: string;
+  termsAgreed: boolean;
+};
+
+export function signup(data: SignupRequest) {
+  return apiClient<AuthUser>('/backend-api/auth/signup', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export type SendEmailCodeRequest = {
+  email: string;
+};
+
+export type SendEmailCodeResponse = {
+  success: boolean;
+};
+
+export function sendEmailCode(data: SendEmailCodeRequest) {
+  return apiClient<SendEmailCodeResponse>('/backend-api/auth/email/send-code', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export type VerifyEmailCodeRequest = {
+  email: string;
+  code: string;
+};
+
+export type VerifyEmailCodeResponse = {
+  verified: boolean;
+};
+
+export function verifyEmailCode(data: VerifyEmailCodeRequest) {
+  return apiClient<VerifyEmailCodeResponse>('/backend-api/auth/email/verify-code', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}

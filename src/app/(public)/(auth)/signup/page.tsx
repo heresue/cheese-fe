@@ -10,6 +10,8 @@ import TermsModal from './_components/TermsModal';
 import EmailVerifyModal from '../_components/EmailVerifyModal';
 import AuthConfirmModal from '../_components/AuthConfirmModal';
 
+import { useSignup } from '@/queries/auth/useSignup';
+
 import { validateNickname, validatePassword, validatePasswordConfirmation } from '@/lib/validation';
 import { AUTH_MESSAGE } from '@/constants/auth';
 
@@ -45,6 +47,8 @@ export default function SignupPage() {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const passwordConfirmationRef = useRef<HTMLInputElement>(null);
+
+  const { mutateAsync: signup, isPending: isSignupPending } = useSignup();
 
   const isPasswordMatched =
     Boolean(passwordConfirmation) &&
@@ -151,7 +155,7 @@ export default function SignupPage() {
     router.push('/login');
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const nextErrors: SignupErrors = {
@@ -188,8 +192,7 @@ export default function SignupPage() {
     };
 
     try {
-      // TODO: 회원가입 API 호출
-
+      await signup(signupData);
       setIsDoneOpen(true);
     } catch (error) {
       // 회원가입 실패 처리
@@ -300,7 +303,12 @@ export default function SignupPage() {
             </div>
           </div>
 
-          <Button variant="light" type="submit" disabled={!termsAgreed} className="text-[16px]">
+          <Button
+            variant="light"
+            type="submit"
+            disabled={!termsAgreed || isSignupPending}
+            className="text-[16px]"
+          >
             회원가입
           </Button>
         </form>
