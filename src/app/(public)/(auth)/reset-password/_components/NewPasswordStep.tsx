@@ -79,6 +79,7 @@ export default function NewPasswordStep({ email, onComplete }: NewPasswordStepPr
             setPasswordConfirmationError(undefined);
           }}
           placeholder="새로운 비밀번호 (영문,숫자,특수문자 포함 8자)"
+          disabled={isResetPasswordPending}
           errorMessage={passwordError}
           className="h-10 px-2 font-medium tracking-normal"
         />
@@ -92,6 +93,7 @@ export default function NewPasswordStep({ email, onComplete }: NewPasswordStepPr
             setPasswordConfirmationError(undefined);
           }}
           placeholder="비밀번호 재입력"
+          disabled={isResetPasswordPending}
           errorMessage={passwordConfirmationError}
           successMessage={isPasswordMatched ? AUTH_MESSAGE.PASSWORD.MATCHED : undefined}
           className="h-10 px-2 font-medium tracking-normal"

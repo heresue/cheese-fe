@@ -59,6 +59,7 @@ export default function EmailStep({ email, onEmailChange, onNext }: EmailStepPro
           onEmailChange(e.target.value);
         }}
         placeholder="이메일 입력"
+        disabled={isSending}
         errorMessage={emailError}
         rightAddon={
           <InputActionButton type="button" onClick={handleSendEmail} disabled={isSending}>
