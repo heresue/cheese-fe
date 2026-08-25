@@ -13,6 +13,7 @@ export const AUTH_MESSAGE = {
 
   PASSWORD: {
     MATCHED: '비밀번호가 일치합니다',
+    RESET_FAILED: '비밀번호 변경에 실패했습니다. 다시 시도해 주세요.',
   },
 
   VERIFICATION: {

@@ -4,6 +4,7 @@ import { Input, InputActionButton } from '@/components/common/Input';
 
 import { validateEmail } from '@/lib/validation';
 import { AUTH_MESSAGE } from '@/constants/auth';
+import { useSendEmailCode } from '@/queries/auth/useSendEmailCode';
 
 type EmailStepProps = {
   email: string;
@@ -14,7 +15,10 @@ type EmailStepProps = {
 export default function EmailStep({ email, onEmailChange, onNext }: EmailStepProps) {
   const [emailError, setEmailError] = useState<string>();
 
+  const { mutateAsync: sendEmailCode, isPending: isSending } = useSendEmailCode();
+
   const handleSendEmail = async () => {
+    const normalizedEmail = email.trim();
     const error = validateEmail(email);
 
     if (error) {
@@ -25,8 +29,16 @@ export default function EmailStep({ email, onEmailChange, onNext }: EmailStepPro
     setEmailError(undefined);
 
     try {
-      // TODO: 비밀번호 재설정 메일 발송 API
-      // TODO: API 에러 코드에 따라 미가입 이메일과 발송 실패 구분
+      const sendEmailCodeResult = await sendEmailCode({
+        email: normalizedEmail,
+      });
+
+      if (!sendEmailCodeResult.success) {
+        setEmailError(AUTH_MESSAGE.EMAIL.SEND_FAILED);
+        return;
+      }
+
+      onEmailChange(normalizedEmail);
       onNext();
     } catch {
       setEmailError(AUTH_MESSAGE.EMAIL.UNREGISTERED);
@@ -49,7 +61,7 @@ export default function EmailStep({ email, onEmailChange, onNext }: EmailStepPro
         placeholder="이메일 입력"
         errorMessage={emailError}
         rightAddon={
-          <InputActionButton type="button" onClick={handleSendEmail}>
+          <InputActionButton type="button" onClick={handleSendEmail} disabled={isSending}>
             메일발송
           </InputActionButton>
         }

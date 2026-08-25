@@ -3,8 +3,10 @@ import { useState } from 'react';
 import { Input } from '@/components/common/Input';
 import { Button } from '@/components/common/Button';
 
-import { validatePassword, validatePasswordConfirmation } from '@/lib/validation';
 import { AUTH_MESSAGE } from '@/constants/auth';
+import { useResetPassword } from '@/queries/auth/useResetPassword';
+
+import { validatePassword, validatePasswordConfirmation } from '@/lib/validation';
 
 type NewPasswordStepProps = {
   email: string;
@@ -12,19 +14,24 @@ type NewPasswordStepProps = {
 };
 
 export default function NewPasswordStep({ email, onComplete }: NewPasswordStepProps) {
-  const [password, setPassword] = useState('');
-  const [passwordConfirmation, setPasswordConfirmation] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [newPasswordConfirmation, setNewPasswordConfirmation] = useState('');
 
   const [passwordError, setPasswordError] = useState<string>();
   const [passwordConfirmationError, setPasswordConfirmationError] = useState<string>();
 
-  const passwordValidationError = validatePassword(password);
-  const confirmationValidationError = validatePasswordConfirmation(password, passwordConfirmation);
+  const { mutateAsync: resetPassword, isPending: isResetPasswordPending } = useResetPassword();
+
+  const passwordValidationError = validatePassword(newPassword);
+  const confirmationValidationError = validatePasswordConfirmation(
+    newPassword,
+    newPasswordConfirmation,
+  );
 
   const isPasswordMatched =
-    !passwordValidationError && !confirmationValidationError && passwordConfirmation.length > 0;
+    !passwordValidationError && !confirmationValidationError && newPasswordConfirmation.length > 0;
 
-  const handleSetPasswordComplete = () => {
+  const handleSetPasswordComplete = async () => {
     setPasswordError(undefined);
     setPasswordConfirmationError(undefined);
 
@@ -38,9 +45,21 @@ export default function NewPasswordStep({ email, onComplete }: NewPasswordStepPr
       return;
     }
 
-    // TODO: 비밀번호 변경 API 호출
-    // email, password, passwordConfirmation 전달
-    onComplete();
+    try {
+      const resetPasswordResult = await resetPassword({
+        email,
+        newPassword,
+        newPasswordConfirmation,
+      });
+
+      if (!resetPasswordResult.success) {
+        return;
+      }
+
+      onComplete();
+    } catch {
+      setPasswordError(AUTH_MESSAGE.PASSWORD.RESET_FAILED);
+    }
   };
 
   return (
@@ -52,9 +71,9 @@ export default function NewPasswordStep({ email, onComplete }: NewPasswordStepPr
           label="새로운 비밀번호"
           name="newPassword"
           type="password"
-          value={password}
+          value={newPassword}
           onChange={(event) => {
-            setPassword(event.target.value);
+            setNewPassword(event.target.value);
             setPasswordError(undefined);
             setPasswordConfirmationError(undefined);
           }}
@@ -66,9 +85,9 @@ export default function NewPasswordStep({ email, onComplete }: NewPasswordStepPr
           label="새로운 비밀번호 확인"
           name="newPasswordConfirm"
           type="password"
-          value={passwordConfirmation}
+          value={newPasswordConfirmation}
           onChange={(event) => {
-            setPasswordConfirmation(event.target.value);
+            setNewPasswordConfirmation(event.target.value);
             setPasswordConfirmationError(undefined);
           }}
           placeholder="비밀번호 재입력"
@@ -82,6 +101,7 @@ export default function NewPasswordStep({ email, onComplete }: NewPasswordStepPr
         variant="light"
         type="button"
         onClick={handleSetPasswordComplete}
+        disabled={isResetPasswordPending}
         className="text-[16px]"
       >
         비밀번호 변경

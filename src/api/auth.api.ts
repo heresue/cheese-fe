@@ -118,3 +118,20 @@ export function checkNickname(nickname: string) {
     },
   });
 }
+
+export type ResetPasswordRequest = {
+  email: string;
+  newPassword: string;
+  newPasswordConfirmation: string;
+};
+
+export type ResetPasswordResponse = {
+  success: boolean;
+};
+
+export function resetPassword(data: ResetPasswordRequest) {
+  return apiClient<ResetPasswordResponse>('/backend-api/auth/password-reset', {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  });
+}
