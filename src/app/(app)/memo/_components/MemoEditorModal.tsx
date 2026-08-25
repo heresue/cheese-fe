@@ -277,7 +277,7 @@ function MemoEditorModalContent({
                 aria-label="메모 삭제"
                 onClick={handleDeleteClick}
                 disabled={isSubmitting}
-                className="flex h-[24px] w-[24px] items-center justify-center text-gray-600 disabled:cursor-wait disabled:opacity-60"
+                className="flex h-[24px] w-[24px] items-center justify-center text-gray-600"
               >
                 <MemoDeleteIcon className="block h-[18px] w-[16px] shrink-0" aria-hidden="true" />
               </button>
