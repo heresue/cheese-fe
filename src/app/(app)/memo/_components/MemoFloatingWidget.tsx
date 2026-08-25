@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-  type RefObject,
-} from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -122,17 +114,20 @@ function WidgetCircleButton({
   label,
   children,
   onClick,
+  disabled = false,
 }: {
   label: string;
   children: ReactNode;
   onClick: () => void;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="hover:border-secondary-700 hover:text-secondary-700 flex h-[70px] w-[70px] items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 transition-colors"
+      disabled={disabled}
+      className="hover:border-secondary-700 hover:text-secondary-700 flex h-[70px] w-[70px] items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
     >
       <span className="flex h-[16px] w-[16px] items-center justify-center [&>svg]:block [&>svg]:h-[16px] [&>svg]:w-[16px] [&>svg]:shrink-0">
         {children}
@@ -264,7 +259,8 @@ function WidgetMemoCard({
 
 export function MemoFloatingWidget() {
   const pathname = usePathname();
-  const { memos, saveMemo, togglePinMemo, deleteMemo } = useMemoStore();
+  const { widgetMemos, isLoading, errorMessage, saveMemo, togglePinMemo, deleteMemo } =
+    useMemoStore();
 
   const [open, setOpen] = useState(false);
   const [activeDraft, setActiveDraft] = useState<ActiveMemoDraft | null>(null);
@@ -278,23 +274,6 @@ export function MemoFloatingWidget() {
   useEffect(() => {
     activeDraftRef.current = activeDraft;
   }, [activeDraft]);
-
-  const widgetMemos = useMemo(() => {
-    return memos
-      .filter((memo) => !memo.deleted)
-      .map((memo, index) => ({
-        memo,
-        index,
-      }))
-      .sort((a, b) => {
-        if (a.memo.pinned !== b.memo.pinned) {
-          return Number(b.memo.pinned) - Number(a.memo.pinned);
-        }
-
-        return a.index - b.index;
-      })
-      .map(({ memo }) => memo);
-  }, [memos]);
 
   const commitActiveDraft = useCallback(() => {
     const currentDraft = activeDraftRef.current;
@@ -321,7 +300,12 @@ export function MemoFloatingWidget() {
       deleted: currentDraft.deleted,
     };
 
-    saveMemo(payload);
+    void saveMemo(payload).then((status) => {
+      if ((status === 'error' || status === 'loading') && activeDraftRef.current === null) {
+        activeDraftRef.current = currentDraft;
+        setActiveDraft(currentDraft);
+      }
+    });
   }, [saveMemo]);
 
   useEffect(() => {
@@ -346,6 +330,8 @@ export function MemoFloatingWidget() {
   };
 
   const handleOpenCreateDraft = () => {
+    if (isLoading) return;
+
     commitActiveDraft();
 
     const nextDraft: ActiveMemoDraft = {
@@ -390,7 +376,7 @@ export function MemoFloatingWidget() {
     const currentDraft = activeDraftRef.current;
 
     if (currentDraft?.id) {
-      deleteMemo(currentDraft.id);
+      void deleteMemo(currentDraft.id);
     }
 
     activeDraftRef.current = null;
@@ -426,6 +412,15 @@ export function MemoFloatingWidget() {
 
           <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <div className="flex w-full flex-col gap-[12px]">
+              {errorMessage ? (
+                <div
+                  role="alert"
+                  className="bg-tag-red-100 text-error rounded-[8px] px-[14px] py-[10px] text-[13px] leading-[19px] font-medium"
+                >
+                  {errorMessage}
+                </div>
+              ) : null}
+
               {activeDraft?.mode === 'create' ? (
                 <WidgetMemoEditorCard
                   draft={activeDraft}
@@ -436,7 +431,13 @@ export function MemoFloatingWidget() {
                 />
               ) : null}
 
-              {widgetMemos.length > 0 ? (
+              {isLoading ? (
+                <div className="flex h-[160px] items-center justify-center rounded-[10px] border border-gray-300 bg-gray-50">
+                  <p className="text-[14px] leading-[20px] font-medium text-gray-500">
+                    메모를 불러오는 중...
+                  </p>
+                </div>
+              ) : widgetMemos.length > 0 ? (
                 widgetMemos.map((memo) => {
                   if (activeDraft?.mode === 'edit' && activeDraft.id === memo.id) {
                     return (
@@ -460,8 +461,8 @@ export function MemoFloatingWidget() {
                         setExpandedMemoId((prev) => (prev === memo.id ? null : memo.id))
                       }
                       onEdit={handleOpenEditDraft}
-                      onTogglePin={togglePinMemo}
-                      onDelete={deleteMemo}
+                      onTogglePin={(id) => void togglePinMemo(id)}
+                      onDelete={(id) => void deleteMemo(id)}
                     />
                   );
                 })
@@ -476,7 +477,11 @@ export function MemoFloatingWidget() {
           </div>
 
           <footer className="mt-[20px] flex shrink-0 justify-end gap-[12px]">
-            <WidgetCircleButton label="메모 작성" onClick={handleOpenCreateDraft}>
+            <WidgetCircleButton
+              label="메모 작성"
+              onClick={handleOpenCreateDraft}
+              disabled={isLoading}
+            >
               <MemoWidgetPlusIcon aria-hidden="true" />
             </WidgetCircleButton>
 

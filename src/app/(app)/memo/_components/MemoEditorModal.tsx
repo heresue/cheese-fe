@@ -13,16 +13,15 @@ import { CollapsibleColorPicker } from '@/components/common/CollapsibleColorPick
 
 import { MemoRichEditor } from './MemoRichEditor';
 import { getMemoTagColor, MEMO_COLOR_OPTIONS } from '../_constants/memoColors';
+import type { MemoSavePayload } from '../_store/MemoStoreProvider';
 import type { Memo, MemoColor } from '../_types/memo';
 
 type MemoEditorModalProps = {
   open: boolean;
   memo?: Memo | null;
   onClose: () => void;
-  onSubmit: (
-    memo: Omit<Memo, 'id' | 'createdAt'> & Partial<Pick<Memo, 'id' | 'createdAt'>>,
-  ) => void;
-  onDelete: (id: string) => void;
+  onSubmit: (memo: MemoSavePayload) => Promise<boolean>;
+  onDelete: (id: string) => Promise<boolean>;
 };
 
 type MemoEditorModalContentProps = {
@@ -33,6 +32,8 @@ type MemoEditorModalContentProps = {
 };
 
 const NO_PICTURE_IMAGE_SRC = '/images/nopicture.png';
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const ACCEPTED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
 
 const MEMO_COLOR_PICKER_OPTIONS = MEMO_COLOR_OPTIONS.map((option) => ({
   value: option.color,
@@ -84,10 +85,14 @@ function MemoEditorModalContent({
   const [color, setColor] = useState<MemoColor | undefined>(memo?.color);
   const [pinned, setPinned] = useState(Boolean(memo?.pinned));
   const [imageSrc, setImageSrc] = useState(memo?.imageSrc ?? '');
+  const [imageFile, setImageFile] = useState<File | undefined>();
+  const [requestErrorMessage, setRequestErrorMessage] = useState<string | null>(null);
+  const [imageErrorMessage, setImageErrorMessage] = useState<string | null>(null);
   const [isDeleteWarningVisible, setIsDeleteWarningVisible] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleBackdropMouseDown = (event: ReactMouseEvent<HTMLDivElement>) => {
-    if (event.target !== event.currentTarget) return;
+    if (event.target !== event.currentTarget || isSubmitting) return;
 
     onClose();
   };
@@ -99,6 +104,19 @@ function MemoEditorModalContent({
   const handleUploadImage = (file?: File) => {
     if (!file) return;
 
+    if (!ACCEPTED_IMAGE_TYPES.has(file.type)) {
+      setImageErrorMessage('jpeg, png, gif, webp 이미지만 업로드할 수 있습니다.');
+      return;
+    }
+
+    if (file.size > MAX_IMAGE_SIZE) {
+      setImageErrorMessage('이미지는 최대 5MB까지 업로드할 수 있습니다.');
+      return;
+    }
+
+    setImageErrorMessage(null);
+    setImageFile(file);
+
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -108,34 +126,67 @@ function MemoEditorModalContent({
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = () => {
-    onSubmit({
-      id: memo?.id,
-      createdAt: memo?.createdAt,
-      title: title.trim() || '제목',
-      content: removeContentImages(content),
-      color,
-      pinned,
-      imageSrc: imageSrc || undefined,
-      selected: memo?.selected,
-      deleted: memo?.deleted,
-    });
+  const handleSubmit = async () => {
+    if (isSubmitting || imageErrorMessage) return;
 
-    onClose();
+    setIsSubmitting(true);
+    setRequestErrorMessage(null);
+
+    try {
+      const saved = await onSubmit({
+        id: memo?.id,
+        createdAt: memo?.createdAt,
+        title: title.trim() || '제목',
+        content: removeContentImages(content),
+        color,
+        pinned,
+        imageSrc: imageSrc || undefined,
+        imageFile,
+        imageFileId: memo?.imageFileId,
+        selected: memo?.selected,
+        deleted: memo?.deleted,
+      });
+
+      if (saved) {
+        onClose();
+        return;
+      }
+
+      setRequestErrorMessage('메모를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+    } catch {
+      setRequestErrorMessage('메모를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleConfirmDelete = () => {
-    if (!memo?.id) return;
+  const handleConfirmDelete = async () => {
+    if (!memo?.id || isSubmitting) return;
 
-    onDelete(memo.id);
-    onClose();
+    setIsSubmitting(true);
+    setRequestErrorMessage(null);
+
+    try {
+      const deleted = await onDelete(memo.id);
+
+      if (deleted) {
+        onClose();
+        return;
+      }
+
+      setRequestErrorMessage('메모를 삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+    } catch {
+      setRequestErrorMessage('메모를 삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleDeleteClick = () => {
     if (!memo?.id) return;
 
     if (isDeleteWarningVisible) {
-      handleConfirmDelete();
+      void handleConfirmDelete();
       return;
     }
 
@@ -153,6 +204,7 @@ function MemoEditorModalContent({
             <button
               type="button"
               onClick={onClose}
+              disabled={isSubmitting}
               aria-label="닫기"
               className="flex h-[30px] w-[30px] items-center justify-center text-gray-700"
             >
@@ -164,11 +216,12 @@ function MemoEditorModalContent({
 
           <button
             type="button"
-            onClick={handleSubmit}
-            className="bg-secondary-700 flex h-[44px] w-[104px] items-center justify-center gap-[8px] rounded-[10px] text-[14px] font-medium text-white"
+            onClick={() => void handleSubmit()}
+            disabled={isSubmitting}
+            className="bg-secondary-700 flex h-[44px] w-[104px] items-center justify-center gap-[8px] rounded-[10px] text-[14px] font-medium text-white disabled:cursor-wait disabled:opacity-60"
           >
             <CreateIcon className="h-[16px] w-[16px]" aria-hidden="true" />
-            {memo ? '수정하기' : '생성하기'}
+            {isSubmitting ? '저장 중...' : memo ? '수정하기' : '생성하기'}
           </button>
         </header>
 
@@ -209,6 +262,7 @@ function MemoEditorModalContent({
               type="button"
               aria-label="대표 이미지 추가"
               onClick={openImagePicker}
+              disabled={isSubmitting}
               className="flex h-[24px] w-[24px] items-center justify-center text-gray-600"
             >
               <MemoPictureIcon
@@ -222,6 +276,7 @@ function MemoEditorModalContent({
                 type="button"
                 aria-label="메모 삭제"
                 onClick={handleDeleteClick}
+                disabled={isSubmitting}
                 className="flex h-[24px] w-[24px] items-center justify-center text-gray-600"
               >
                 <MemoDeleteIcon className="block h-[18px] w-[16px] shrink-0" aria-hidden="true" />
@@ -253,13 +308,15 @@ function MemoEditorModalContent({
         </MemoRichEditor>
       </section>
 
-      {isDeleteWarningVisible ? (
+      {requestErrorMessage || imageErrorMessage || isDeleteWarningVisible ? (
         <div
           role="alert"
           aria-live="assertive"
           className="bg-tag-red-100 text-error pointer-events-none absolute top-[20px] left-1/2 z-[60] flex min-h-[44px] -translate-x-1/2 items-center rounded-[8px] px-[18px] py-[10px] text-[14px] leading-[20px] font-medium whitespace-nowrap shadow-[0_6px_20px_rgba(15,23,42,0.14)]"
         >
-          메모를 삭제하시겠습니까? 삭제 버튼을 한 번 더 눌러주세요.
+          {requestErrorMessage ??
+            imageErrorMessage ??
+            '메모를 삭제하시겠습니까? 삭제 버튼을 한 번 더 눌러주세요.'}
         </div>
       ) : null}
     </div>

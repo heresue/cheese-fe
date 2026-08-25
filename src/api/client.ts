@@ -64,7 +64,7 @@ export async function apiClient<T>(path: string, options?: ApiRequestOptions): P
     headers.set('Accept', 'application/json');
   }
 
-  if (requestInit.body && !headers.has('Content-Type')) {
+  if (requestInit.body && !(requestInit.body instanceof FormData) && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json');
   }
 
