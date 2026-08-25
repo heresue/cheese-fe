@@ -112,6 +112,7 @@ export type CheckNicknameResponse = {
 export function checkNickname(nickname: string) {
   return apiClient<CheckNicknameResponse>('/backend-api/auth/check-nickname', {
     method: 'GET',
+    cache: 'no-store',
     query: {
       nickname,
     },
