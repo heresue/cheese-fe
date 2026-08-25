@@ -274,7 +274,9 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
           contentText: stripHtml(nextMemo.content),
           color: nextMemo.color ?? 'gray',
           pinned: Boolean(nextMemo.pinned),
-          imageFileId: uploadedFile?.id ?? nextMemo.imageFileId ?? currentMemo?.imageFileId,
+          imageFileId:
+            uploadedFile?.id ??
+            (nextMemo.imageFileId !== undefined ? nextMemo.imageFileId : currentMemo?.imageFileId),
         };
 
         let savedMemo: Memo;
