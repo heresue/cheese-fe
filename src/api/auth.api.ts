@@ -58,3 +58,80 @@ export function logout() {
     method: 'POST',
   });
 }
+
+export type SignupRequest = {
+  nickname: string;
+  email: string;
+  password: string;
+  passwordConfirmation: string;
+  termsAgreed: boolean;
+};
+
+export function signup(data: SignupRequest) {
+  return apiClient<AuthUser>('/backend-api/auth/signup', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export type SendEmailCodeRequest = {
+  email: string;
+};
+
+export type SendEmailCodeResponse = {
+  success: boolean;
+};
+
+export function sendEmailCode(data: SendEmailCodeRequest) {
+  return apiClient<SendEmailCodeResponse>('/backend-api/auth/email/send-code', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export type VerifyEmailCodeRequest = {
+  email: string;
+  code: string;
+};
+
+export type VerifyEmailCodeResponse = {
+  verified: boolean;
+};
+
+export function verifyEmailCode(data: VerifyEmailCodeRequest) {
+  return apiClient<VerifyEmailCodeResponse>('/backend-api/auth/email/verify-code', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export type CheckNicknameResponse = {
+  available: boolean;
+};
+
+export function checkNickname(nickname: string) {
+  return apiClient<CheckNicknameResponse>('/backend-api/auth/check-nickname', {
+    method: 'GET',
+    cache: 'no-store',
+    query: {
+      nickname,
+    },
+  });
+}
+
+export type ResetPasswordRequest = {
+  email: string;
+  newPassword: string;
+  newPasswordConfirmation: string;
+};
+
+export type ResetPasswordResponse = {
+  success: boolean;
+};
+
+export function resetPassword(data: ResetPasswordRequest) {
+  return apiClient<ResetPasswordResponse>('/backend-api/auth/password-reset', {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  });
+}

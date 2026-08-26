@@ -10,6 +10,10 @@ import TermsModal from './_components/TermsModal';
 import EmailVerifyModal from '../_components/EmailVerifyModal';
 import AuthConfirmModal from '../_components/AuthConfirmModal';
 
+import { useSignup } from '@/queries/auth/useSignup';
+import { useCheckNickname } from '@/queries/auth/useCheckNickname';
+import { ApiError } from '@/api/client';
+
 import { validateNickname, validatePassword, validatePasswordConfirmation } from '@/lib/validation';
 import { AUTH_MESSAGE } from '@/constants/auth';
 
@@ -45,6 +49,9 @@ export default function SignupPage() {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const passwordConfirmationRef = useRef<HTMLInputElement>(null);
+
+  const { mutateAsync: signup, isPending: isSignupPending } = useSignup();
+  const { mutateAsync: checkNickname } = useCheckNickname();
 
   const isPasswordMatched =
     Boolean(passwordConfirmation) &&
@@ -96,7 +103,8 @@ export default function SignupPage() {
   };
 
   const handleCheckNickname = async () => {
-    const nicknameError = validateNickname(nickname);
+    const normalizedNickname = nickname.trim();
+    const nicknameError = validateNickname(normalizedNickname);
 
     if (nicknameError) {
       setSignupErrors((prev) => ({
@@ -109,14 +117,13 @@ export default function SignupPage() {
     setNicknameStatus('checking');
 
     try {
-      // TODO: 닉네임 중복 확인 API 호출
-      const isDuplicated = false; // 임시 확인코드
+      const checkNicknameResult = await checkNickname(normalizedNickname);
 
-      setNicknameStatus(isDuplicated ? 'duplicated' : 'available');
+      setNicknameStatus(checkNicknameResult.available ? 'available' : 'duplicated');
 
       setSignupErrors((prev) => ({
         ...prev,
-        nickname: isDuplicated ? AUTH_MESSAGE.NICKNAME.DUPLICATED : undefined,
+        nickname: checkNicknameResult.available ? undefined : AUTH_MESSAGE.NICKNAME.DUPLICATED,
       }));
     } catch {
       setNicknameStatus('idle');
@@ -151,12 +158,12 @@ export default function SignupPage() {
     router.push('/login');
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const nextErrors: SignupErrors = {
       nickname: getNicknameError(),
-      email: verifiedEmail ? undefined : '이메일 인증을 완료해 주세요',
+      email: verifiedEmail ? undefined : AUTH_MESSAGE.VERIFICATION.EMAIL_REQUIRED,
       password: validatePassword(password),
       passwordConfirmation: validatePasswordConfirmation(password, passwordConfirmation),
     };
@@ -188,11 +195,23 @@ export default function SignupPage() {
     };
 
     try {
-      // TODO: 회원가입 API 호출
-
+      await signup(signupData);
       setIsDoneOpen(true);
     } catch (error) {
-      // 회원가입 실패 처리
+      if (error instanceof ApiError && error.status === 400) {
+        setSignupErrors((prev) => ({
+          ...prev,
+          email: AUTH_MESSAGE.EMAIL.ALREADY_REGISTERED,
+        }));
+
+        emailRef.current?.focus();
+        return;
+      }
+
+      setSignupErrors((prev) => ({
+        ...prev,
+        email: AUTH_MESSAGE.SIGNUP.FAILED,
+      }));
     }
   };
 
@@ -300,7 +319,12 @@ export default function SignupPage() {
             </div>
           </div>
 
-          <Button variant="light" type="submit" disabled={!termsAgreed} className="text-[16px]">
+          <Button
+            variant="light"
+            type="submit"
+            disabled={!termsAgreed || isSignupPending}
+            className="text-[16px]"
+          >
             회원가입
           </Button>
         </form>

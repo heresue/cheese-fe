@@ -3,6 +3,9 @@ import { useState } from 'react';
 import { Input, InputActionButton } from '@/components/common/Input';
 import { Button } from '@/components/common/Button';
 
+import { useSendEmailCode } from '@/queries/auth/useSendEmailCode';
+import { useVerifyEmailCode } from '@/queries/auth/useVerifyEmailCode';
+
 import { validateEmail } from '@/lib/validation';
 import { AUTH_MESSAGE } from '@/constants/auth';
 
@@ -39,6 +42,9 @@ export default function EmailVerifyForm({
   const [verificationCode, setVerificationCode] = useState('');
   const [verificationError, setVerificationError] = useState<string>();
 
+  const { mutateAsync: sendEmailCode } = useSendEmailCode();
+  const { mutateAsync: verifyEmailCode } = useVerifyEmailCode();
+
   const isSending = status === 'SENDING';
   const isVerifying = status === 'VERIFYING';
   const isVerified = status === 'VERIFIED';
@@ -60,7 +66,16 @@ export default function EmailVerifyForm({
     setStatus('SENDING');
 
     try {
-      // TODO: 이메일 인증번호 발송 API 호출
+      const sendEmailCodeResult = await sendEmailCode({
+        email: normalizedEmail,
+      });
+
+      if (!sendEmailCodeResult.success) {
+        setStatus('SEND_ERROR');
+        setEmailError(AUTH_MESSAGE.EMAIL.SEND_FAILED);
+        return;
+      }
+
       setEmail(normalizedEmail);
       setSentEmail(normalizedEmail);
       setVerificationCode('');
@@ -75,7 +90,9 @@ export default function EmailVerifyForm({
   const handleVerify = async () => {
     if (!isSentEmail) return;
 
-    if (!verificationCode.trim()) {
+    const code = verificationCode.trim();
+
+    if (!code) {
       setVerificationError(AUTH_MESSAGE.VERIFICATION.REQUIRED);
       return;
     }
@@ -84,7 +101,17 @@ export default function EmailVerifyForm({
     setStatus('VERIFYING');
 
     try {
-      // TODO: 이메일 인증번호 확인 API 호출
+      const verifyEmailCodeResult = await verifyEmailCode({
+        email: sentEmail,
+        code,
+      });
+
+      if (!verifyEmailCodeResult.verified) {
+        setStatus('SENT');
+        setVerificationError(AUTH_MESSAGE.VERIFICATION.INVALID);
+        return;
+      }
+
       setStatus('VERIFIED');
     } catch {
       setStatus('SENT');
@@ -95,7 +122,7 @@ export default function EmailVerifyForm({
   const handleNext = () => {
     if (!isVerified) return;
 
-    onNext(email.trim());
+    onNext(sentEmail);
   };
 
   return (
