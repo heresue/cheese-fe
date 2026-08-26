@@ -18,3 +18,17 @@ export function stripHtml(html: string) {
     .replace(/\s+/g, ' ')
     .trim();
 }
+
+export function formatMemoDate(value: string) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, '0');
+  const day = `${date.getDate()}`.padStart(2, '0');
+
+  return `${year}. ${month}. ${day}`;
+}

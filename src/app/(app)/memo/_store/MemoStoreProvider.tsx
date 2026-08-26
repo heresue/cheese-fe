@@ -1,262 +1,510 @@
 'use client';
 
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
+
+import { ApiError } from '@/api/client';
+import { useCurrentUser } from '@/queries/auth/useCurrentUser';
 import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
+  useDeleteMemoMutation,
+  useDeleteSelectedMemosMutation,
+  usePermanentDeleteMemoMutation,
+  useRestoreMemoMutation,
+  useSaveMemoMutation,
+  useToggleMemoPinMutation,
+} from '@/queries/memo/useMemoMutations';
+import { useMemos } from '@/queries/memo/useMemos';
 
-import { mockMemos } from '../_data/mockMemos';
-import type { Memo } from '../_types/memo';
+import type { Memo, MemoSavePayload } from '../_types/memo';
 
-const MEMO_STORAGE_KEY = 'cheese:memos:v1';
+export type { MemoSavePayload } from '../_types/memo';
 
-export type MemoSavePayload = Omit<Memo, 'id' | 'createdAt'> &
-  Partial<Pick<Memo, 'id' | 'createdAt'>>;
+type MemoMutationStatus = 'success' | 'not-found' | 'loading' | 'cancelled' | 'error';
+
+type MemoSelectionState = {
+  ownerUserId: string | null;
+  selectedIds: Set<string>;
+};
 
 type MemoStoreContextValue = {
   memos: Memo[];
-  saveMemo: (memo: MemoSavePayload) => void;
+  widgetMemos: Memo[];
+  isLoading: boolean;
+  errorMessage: string | null;
+  saveMemo: (memo: MemoSavePayload) => Promise<MemoMutationStatus>;
   toggleSelectMemo: (id: string) => void;
   selectMemos: (ids: string[], selected: boolean) => void;
-  togglePinMemo: (id: string) => void;
-  deleteMemo: (id: string) => void;
-  deleteSelectedMemos: () => void;
-  restoreMemo: (id: string) => void;
-  permanentDeleteMemo: (id: string) => void;
+  togglePinMemo: (id: string) => Promise<MemoMutationStatus>;
+  deleteMemo: (id: string) => Promise<MemoMutationStatus>;
+  deleteSelectedMemos: () => Promise<MemoMutationStatus>;
+  restoreMemo: (id: string) => Promise<MemoMutationStatus>;
+  permanentDeleteMemo: (id: string) => Promise<MemoMutationStatus>;
 };
 
 const MemoStoreContext = createContext<MemoStoreContextValue | null>(null);
+const EMPTY_MEMOS: Memo[] = [];
+const EMPTY_SELECTED_IDS = new Set<string>();
 
-function getTodayText() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = `${now.getMonth() + 1}`.padStart(2, '0');
-  const date = `${now.getDate()}`.padStart(2, '0');
-
-  return `${year}. ${month}. ${date}`;
-}
-
-function createMemoId() {
-  if (typeof globalThis.crypto !== 'undefined' && 'randomUUID' in globalThis.crypto) {
-    return globalThis.crypto.randomUUID();
+function getMemoErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error) {
+    return error.message;
   }
 
-  return `memo-${Date.now()}`;
+  return fallback;
 }
 
-function normalizeMemos(memos: Memo[]) {
-  return memos.map((memo) => ({
-    ...memo,
-    selected: false,
-  }));
-}
-
-function getMockMemos() {
-  return normalizeMemos(mockMemos);
-}
-
-function readStoredMemos() {
-  try {
-    const storedMemos = window.localStorage.getItem(MEMO_STORAGE_KEY);
-
-    if (!storedMemos) {
-      return null;
-    }
-
-    const parsedMemos = JSON.parse(storedMemos);
-
-    if (!Array.isArray(parsedMemos)) {
-      return null;
-    }
-
-    /**
-     * mock 개발 단계에서는 localStorage에 빈 배열이 남아 있으면
-     * 더미데이터가 계속 사라져 보이므로 mockMemos를 다시 사용한다.
-     *
-     * 실제 API 연동 후에는 이 조건을 제거하는 것이 맞다.
-     */
-    if (parsedMemos.length === 0) {
-      return null;
-    }
-
-    return normalizeMemos(parsedMemos as Memo[]);
-  } catch {
+function getMutationErrorMessage(
+  error: unknown,
+  requestUserId: string | undefined,
+  currentUserId: string | undefined,
+  fallback: string,
+) {
+  if (!error || !requestUserId || requestUserId !== currentUserId) {
     return null;
   }
+
+  return getMemoErrorMessage(error, fallback);
 }
 
-function writeStoredMemos(memos: Memo[]) {
-  try {
-    window.localStorage.setItem(MEMO_STORAGE_KEY, JSON.stringify(memos));
-  } catch {
-    // localStorage 저장 실패는 mock UI 동작을 막지 않음
-  }
+function updateSelection(
+  state: MemoSelectionState,
+  userId: string,
+  updateSelectedIds: (selectedIds: Set<string>) => void,
+): MemoSelectionState {
+  const selectedIds = new Set(state.ownerUserId === userId ? state.selectedIds : []);
+  updateSelectedIds(selectedIds);
+
+  return { ownerUserId: userId, selectedIds };
 }
 
 export function MemoStoreProvider({ children }: { children: ReactNode }) {
-  const [memos, setMemos] = useState<Memo[]>(getMockMemos);
-  const storageReadyRef = useRef(false);
+  const {
+    data: currentUser,
+    error: currentUserError,
+    isPending: isCurrentUserPending,
+    isRefetchError: isCurrentUserRefetchError,
+  } = useCurrentUser();
+  const userId = currentUser?.id;
+  const hasCurrentUserError = Boolean(currentUserError) || isCurrentUserRefetchError;
+  const canLoadMemoData = Boolean(userId) && !hasCurrentUserError;
+  const {
+    data: memoQueryData,
+    error: memoQueryError,
+    isPending: isMemoQueryPending,
+  } = useMemos({ userId, enabled: canLoadMemoData });
+  const {
+    mutateAsync: saveMemoAsync,
+    reset: resetSaveMemo,
+    error: saveMemoError,
+    variables: saveMemoVariables,
+  } = useSaveMemoMutation();
+  const {
+    mutateAsync: toggleMemoPinAsync,
+    reset: resetToggleMemoPin,
+    error: toggleMemoPinError,
+    variables: toggleMemoPinVariables,
+  } = useToggleMemoPinMutation();
+  const {
+    mutateAsync: deleteMemoAsync,
+    reset: resetDeleteMemo,
+    error: deleteMemoError,
+    variables: deleteMemoVariables,
+  } = useDeleteMemoMutation();
+  const {
+    mutateAsync: deleteSelectedMemosAsync,
+    reset: resetDeleteSelectedMemos,
+    error: deleteSelectedMemosError,
+    variables: deleteSelectedMemosVariables,
+  } = useDeleteSelectedMemosMutation();
+  const {
+    mutateAsync: restoreMemoAsync,
+    reset: resetRestoreMemo,
+    error: restoreMemoError,
+    variables: restoreMemoVariables,
+  } = useRestoreMemoMutation();
+  const {
+    mutateAsync: permanentDeleteMemoAsync,
+    reset: resetPermanentDeleteMemo,
+    error: permanentDeleteMemoError,
+    variables: permanentDeleteMemoVariables,
+  } = usePermanentDeleteMemoMutation();
+  const [selectionState, setSelectionState] = useState<MemoSelectionState>({
+    ownerUserId: null,
+    selectedIds: new Set(),
+  });
 
-  useEffect(() => {
-    let cancelled = false;
+  const selectedIds =
+    selectionState.ownerUserId === userId ? selectionState.selectedIds : EMPTY_SELECTED_IDS;
+  const sourceMemos = canLoadMemoData ? (memoQueryData?.memos ?? EMPTY_MEMOS) : EMPTY_MEMOS;
+  const memos = useMemo(
+    () =>
+      sourceMemos.map((memo) => ({
+        ...memo,
+        selected: selectedIds.has(memo.id),
+      })),
+    [selectedIds, sourceMemos],
+  );
+  const widgetMemos = canLoadMemoData ? (memoQueryData?.widgetMemos ?? EMPTY_MEMOS) : EMPTY_MEMOS;
+  const isMemoLoading =
+    isCurrentUserPending || (canLoadMemoData && isMemoQueryPending && !memoQueryData);
 
-    const timerId = window.setTimeout(() => {
-      if (cancelled) return;
+  const resetMutationErrors = useCallback(() => {
+    resetSaveMemo();
+    resetToggleMemoPin();
+    resetDeleteMemo();
+    resetDeleteSelectedMemos();
+    resetRestoreMemo();
+    resetPermanentDeleteMemo();
+  }, [
+    resetDeleteMemo,
+    resetDeleteSelectedMemos,
+    resetPermanentDeleteMemo,
+    resetRestoreMemo,
+    resetSaveMemo,
+    resetToggleMemoPin,
+  ]);
 
-      const storedMemos = readStoredMemos();
+  const clearSelectedMemoIds = useCallback(
+    (memoIds: string[]) => {
+      if (!userId) return;
 
-      if (storedMemos) {
-        setMemos(storedMemos);
+      setSelectionState((state) =>
+        updateSelection(state, userId, (nextSelectedIds) => {
+          memoIds.forEach((memoId) => nextSelectedIds.delete(memoId));
+        }),
+      );
+    },
+    [userId],
+  );
+
+  const saveMemo = useCallback(
+    async (nextMemo: MemoSavePayload): Promise<MemoMutationStatus> => {
+      if (isMemoLoading) {
+        return 'loading';
       }
 
-      storageReadyRef.current = true;
-    }, 0);
-
-    return () => {
-      cancelled = true;
-      window.clearTimeout(timerId);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!storageReadyRef.current) return;
-
-    writeStoredMemos(memos);
-  }, [memos]);
-
-  const saveMemo = useCallback((nextMemo: MemoSavePayload) => {
-    setMemos((prevMemos) => {
-      if (nextMemo.id) {
-        return prevMemos.map((memo) =>
-          memo.id === nextMemo.id
-            ? {
-                ...memo,
-                title: nextMemo.title ?? memo.title,
-                content: nextMemo.content ?? memo.content,
-                createdAt: nextMemo.createdAt ?? memo.createdAt,
-                color: nextMemo.color ?? memo.color,
-                pinned: nextMemo.pinned ?? memo.pinned,
-                imageSrc: nextMemo.imageSrc,
-                selected: nextMemo.selected ?? memo.selected ?? false,
-                deleted: nextMemo.deleted ?? memo.deleted ?? false,
-              }
-            : memo,
-        );
+      if (!userId || hasCurrentUserError) {
+        return 'error';
       }
 
-      return [
-        {
-          id: createMemoId(),
-          title: nextMemo.title || '제목',
-          content: nextMemo.content || '',
-          createdAt: getTodayText(),
-          color: nextMemo.color ?? 'gray',
-          pinned: Boolean(nextMemo.pinned),
-          imageSrc: nextMemo.imageSrc,
-          selected: false,
-          deleted: false,
-        },
-        ...prevMemos,
-      ];
-    });
-  }, []);
+      const currentMemo = nextMemo.id ? memos.find((memo) => memo.id === nextMemo.id) : undefined;
 
-  const toggleSelectMemo = useCallback((id: string) => {
-    setMemos((prevMemos) =>
-      prevMemos.map((memo) =>
-        memo.id === id
-          ? {
-              ...memo,
-              selected: !memo.selected,
+      if (nextMemo.id && !currentMemo) {
+        return 'not-found';
+      }
+
+      resetMutationErrors();
+
+      try {
+        await saveMemoAsync({
+          userId,
+          memo: nextMemo,
+          currentMemo,
+        });
+        return 'success';
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 404 && nextMemo.id) {
+          resetSaveMemo();
+          return 'not-found';
+        }
+
+        return 'error';
+      }
+    },
+    [
+      hasCurrentUserError,
+      isMemoLoading,
+      memos,
+      resetMutationErrors,
+      resetSaveMemo,
+      saveMemoAsync,
+      userId,
+    ],
+  );
+
+  const toggleSelectMemo = useCallback(
+    (id: string) => {
+      if (!userId) return;
+
+      setSelectionState((state) =>
+        updateSelection(state, userId, (nextSelectedIds) => {
+          if (nextSelectedIds.has(id)) {
+            nextSelectedIds.delete(id);
+          } else {
+            nextSelectedIds.add(id);
+          }
+        }),
+      );
+    },
+    [userId],
+  );
+
+  const selectMemos = useCallback(
+    (ids: string[], selected: boolean) => {
+      if (!userId) return;
+
+      setSelectionState((state) =>
+        updateSelection(state, userId, (nextSelectedIds) => {
+          ids.forEach((id) => {
+            if (selected) {
+              nextSelectedIds.add(id);
+            } else {
+              nextSelectedIds.delete(id);
             }
-          : memo,
-      ),
+          });
+        }),
+      );
+    },
+    [userId],
+  );
+
+  const togglePinMemo = useCallback(
+    async (id: string): Promise<MemoMutationStatus> => {
+      if (isMemoLoading) {
+        return 'loading';
+      }
+
+      if (!userId || hasCurrentUserError) {
+        return 'error';
+      }
+
+      const currentMemo = memos.find((memo) => memo.id === id);
+
+      if (!currentMemo) {
+        return 'not-found';
+      }
+
+      resetMutationErrors();
+
+      try {
+        await toggleMemoPinAsync({
+          userId,
+          memoId: id,
+          pinned: !currentMemo.pinned,
+        });
+        return 'success';
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 404) {
+          resetToggleMemoPin();
+          return 'not-found';
+        }
+
+        return 'error';
+      }
+    },
+    [
+      hasCurrentUserError,
+      isMemoLoading,
+      memos,
+      resetMutationErrors,
+      resetToggleMemoPin,
+      toggleMemoPinAsync,
+      userId,
+    ],
+  );
+
+  const deleteMemo = useCallback(
+    async (id: string): Promise<MemoMutationStatus> => {
+      if (isMemoLoading) {
+        return 'loading';
+      }
+
+      if (!userId || hasCurrentUserError) {
+        return 'error';
+      }
+
+      resetMutationErrors();
+
+      try {
+        await deleteMemoAsync({ userId, memoId: id });
+        clearSelectedMemoIds([id]);
+        return 'success';
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 404) {
+          resetDeleteMemo();
+          clearSelectedMemoIds([id]);
+          return 'not-found';
+        }
+
+        return 'error';
+      }
+    },
+    [
+      clearSelectedMemoIds,
+      deleteMemoAsync,
+      hasCurrentUserError,
+      isMemoLoading,
+      resetDeleteMemo,
+      resetMutationErrors,
+      userId,
+    ],
+  );
+
+  const deleteSelectedMemos = useCallback(async (): Promise<MemoMutationStatus> => {
+    if (isMemoLoading) {
+      return 'loading';
+    }
+
+    if (!userId || hasCurrentUserError) {
+      return 'error';
+    }
+
+    const selectedMemoIds = memos
+      .filter((memo) => memo.selected && !memo.deleted)
+      .map((memo) => memo.id);
+
+    if (selectedMemoIds.length === 0) {
+      return 'success';
+    }
+
+    resetMutationErrors();
+
+    try {
+      await deleteSelectedMemosAsync({
+        userId,
+        memoIds: selectedMemoIds,
+      });
+      clearSelectedMemoIds(selectedMemoIds);
+      return 'success';
+    } catch {
+      return 'error';
+    }
+  }, [
+    clearSelectedMemoIds,
+    deleteSelectedMemosAsync,
+    hasCurrentUserError,
+    isMemoLoading,
+    memos,
+    resetMutationErrors,
+    userId,
+  ]);
+
+  const restoreMemo = useCallback(
+    async (id: string): Promise<MemoMutationStatus> => {
+      if (isMemoLoading) {
+        return 'loading';
+      }
+
+      if (!userId || hasCurrentUserError) {
+        return 'error';
+      }
+
+      resetMutationErrors();
+
+      try {
+        await restoreMemoAsync({ userId, memoId: id });
+        clearSelectedMemoIds([id]);
+        return 'success';
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 404) {
+          resetRestoreMemo();
+          clearSelectedMemoIds([id]);
+          return 'not-found';
+        }
+
+        return 'error';
+      }
+    },
+    [
+      clearSelectedMemoIds,
+      hasCurrentUserError,
+      isMemoLoading,
+      resetMutationErrors,
+      resetRestoreMemo,
+      restoreMemoAsync,
+      userId,
+    ],
+  );
+
+  const permanentDeleteMemo = useCallback(
+    async (id: string): Promise<MemoMutationStatus> => {
+      if (isMemoLoading) {
+        return 'loading';
+      }
+
+      if (!userId || hasCurrentUserError) {
+        return 'error';
+      }
+
+      resetMutationErrors();
+
+      try {
+        await permanentDeleteMemoAsync({ userId, memoId: id });
+        clearSelectedMemoIds([id]);
+        return 'success';
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 404) {
+          resetPermanentDeleteMemo();
+          clearSelectedMemoIds([id]);
+          return 'not-found';
+        }
+
+        return 'error';
+      }
+    },
+    [
+      clearSelectedMemoIds,
+      hasCurrentUserError,
+      isMemoLoading,
+      permanentDeleteMemoAsync,
+      resetPermanentDeleteMemo,
+      resetMutationErrors,
+      userId,
+    ],
+  );
+
+  const authErrorMessage =
+    !isCurrentUserPending && (hasCurrentUserError || !userId)
+      ? getMemoErrorMessage(currentUserError, '로그인 정보를 확인할 수 없습니다.')
+      : null;
+  const queryErrorMessage = memoQueryError
+    ? getMemoErrorMessage(memoQueryError, '메모를 불러오지 못했습니다.')
+    : null;
+  const errorMessage =
+    authErrorMessage ??
+    queryErrorMessage ??
+    getMutationErrorMessage(
+      saveMemoError,
+      saveMemoVariables?.userId,
+      userId,
+      '메모를 저장하지 못했습니다.',
+    ) ??
+    getMutationErrorMessage(
+      toggleMemoPinError,
+      toggleMemoPinVariables?.userId,
+      userId,
+      '메모 고정 상태를 변경하지 못했습니다.',
+    ) ??
+    getMutationErrorMessage(
+      deleteMemoError,
+      deleteMemoVariables?.userId,
+      userId,
+      '메모를 삭제하지 못했습니다.',
+    ) ??
+    getMutationErrorMessage(
+      deleteSelectedMemosError,
+      deleteSelectedMemosVariables?.userId,
+      userId,
+      '일부 메모를 삭제하지 못했습니다.',
+    ) ??
+    getMutationErrorMessage(
+      restoreMemoError,
+      restoreMemoVariables?.userId,
+      userId,
+      '메모를 복구하지 못했습니다.',
+    ) ??
+    getMutationErrorMessage(
+      permanentDeleteMemoError,
+      permanentDeleteMemoVariables?.userId,
+      userId,
+      '메모를 영구 삭제하지 못했습니다.',
     );
-  }, []);
-
-  const selectMemos = useCallback((ids: string[], selected: boolean) => {
-    const targetIds = new Set(ids);
-
-    setMemos((prevMemos) =>
-      prevMemos.map((memo) =>
-        targetIds.has(memo.id)
-          ? {
-              ...memo,
-              selected,
-            }
-          : memo,
-      ),
-    );
-  }, []);
-
-  const togglePinMemo = useCallback((id: string) => {
-    setMemos((prevMemos) =>
-      prevMemos.map((memo) =>
-        memo.id === id
-          ? {
-              ...memo,
-              pinned: !memo.pinned,
-            }
-          : memo,
-      ),
-    );
-  }, []);
-
-  const deleteMemo = useCallback((id: string) => {
-    setMemos((prevMemos) =>
-      prevMemos.map((memo) =>
-        memo.id === id
-          ? {
-              ...memo,
-              selected: false,
-              deleted: true,
-            }
-          : memo,
-      ),
-    );
-  }, []);
-
-  const deleteSelectedMemos = useCallback(() => {
-    setMemos((prevMemos) =>
-      prevMemos.map((memo) =>
-        memo.selected && !memo.deleted
-          ? {
-              ...memo,
-              selected: false,
-              deleted: true,
-            }
-          : memo,
-      ),
-    );
-  }, []);
-
-  const restoreMemo = useCallback((id: string) => {
-    setMemos((prevMemos) =>
-      prevMemos.map((memo) =>
-        memo.id === id
-          ? {
-              ...memo,
-              deleted: false,
-              selected: false,
-            }
-          : memo,
-      ),
-    );
-  }, []);
-
-  const permanentDeleteMemo = useCallback((id: string) => {
-    setMemos((prevMemos) => prevMemos.filter((memo) => memo.id !== id));
-  }, []);
 
   const value = useMemo(
     () => ({
       memos,
+      widgetMemos,
+      isLoading: isMemoLoading,
+      errorMessage,
       saveMemo,
       toggleSelectMemo,
       selectMemos,
@@ -268,6 +516,9 @@ export function MemoStoreProvider({ children }: { children: ReactNode }) {
     }),
     [
       memos,
+      widgetMemos,
+      isMemoLoading,
+      errorMessage,
       saveMemo,
       toggleSelectMemo,
       selectMemos,
