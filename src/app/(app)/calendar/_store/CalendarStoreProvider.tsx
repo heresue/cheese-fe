@@ -24,9 +24,8 @@ type CalendarMutationStatus =
   | 'conflict'
   | 'not-found'
   | 'loading'
-  | 'cancelled'
   | 'error';
-type CalendarDeleteStatus = 'success' | 'not-found' | 'loading' | 'cancelled' | 'error';
+type CalendarDeleteStatus = 'success' | 'not-found' | 'loading' | 'error';
 
 type CalendarStoreContextValue = {
   events: CalendarEvent[];
