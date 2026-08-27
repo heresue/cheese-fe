@@ -1,26 +1,15 @@
 'use client';
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { createContext, useCallback, useContext, useMemo, type ReactNode } from 'react';
 
-import type { AuthUser } from '@/api/auth.api';
-import {
-  createCalendarEvent,
-  deleteCalendarEvent,
-  getCalendarEvents,
-  updateCalendarEvent,
-} from '@/api/calendar.api';
 import { ApiError } from '@/api/client';
-import { authQueryKeys } from '@/queries/auth/authQueryKeys';
 import { useCurrentUser } from '@/queries/auth/useCurrentUser';
+import {
+  useCreateCalendarEventMutation,
+  useDeleteCalendarEventMutation,
+  useUpdateCalendarEventMutation,
+} from '@/queries/calendar/useCalendarMutations';
+import { useCalendarEvents } from '@/queries/calendar/useCalendarEvents';
 
 import {
   applyDraftToEvent,
@@ -35,14 +24,8 @@ type CalendarMutationStatus =
   | 'conflict'
   | 'not-found'
   | 'loading'
-  | 'cancelled'
   | 'error';
-type CalendarDeleteStatus = 'success' | 'not-found' | 'loading' | 'cancelled' | 'error';
-
-type CalendarEventsState = {
-  ownerUserId: string | null;
-  events: CalendarEvent[];
-};
+type CalendarDeleteStatus = 'success' | 'not-found' | 'loading' | 'error';
 
 type CalendarStoreContextValue = {
   events: CalendarEvent[];
@@ -56,21 +39,6 @@ type CalendarStoreContextValue = {
 const CalendarStoreContext = createContext<CalendarStoreContextValue | null>(null);
 const EMPTY_CALENDAR_EVENTS: CalendarEvent[] = [];
 
-function updateOwnedEvents(
-  state: CalendarEventsState,
-  ownerUserId: string,
-  updateEvents: (events: CalendarEvent[]) => CalendarEvent[],
-) {
-  if (state.ownerUserId !== ownerUserId) {
-    return state;
-  }
-
-  return {
-    ownerUserId,
-    events: updateEvents(state.events),
-  };
-}
-
 function getCalendarErrorMessage(error: unknown, fallback: string) {
   if (error instanceof Error) {
     return error.message;
@@ -79,8 +47,20 @@ function getCalendarErrorMessage(error: unknown, fallback: string) {
   return fallback;
 }
 
+function getMutationErrorMessage(
+  error: unknown,
+  requestUserId: string | undefined,
+  currentUserId: string | undefined,
+  fallback: string,
+) {
+  if (!error || !requestUserId || requestUserId !== currentUserId) {
+    return null;
+  }
+
+  return getCalendarErrorMessage(error, fallback);
+}
+
 export function CalendarStoreProvider({ children }: { children: ReactNode }) {
-  const queryClient = useQueryClient();
   const {
     data: currentUser,
     error: currentUserError,
@@ -88,114 +68,55 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
     isRefetchError: isCurrentUserRefetchError,
   } = useCurrentUser();
   const userId = currentUser?.id;
-  const [eventsState, setEventsState] = useState<CalendarEventsState>({
-    ownerUserId: null,
-    events: [],
-  });
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const hasCurrentUserError = Boolean(currentUserError) || isCurrentUserRefetchError;
-  const hasCurrentUserEvents =
-    !isCurrentUserPending &&
-    !hasCurrentUserError &&
-    Boolean(userId) &&
-    eventsState.ownerUserId === userId;
-  const events = hasCurrentUserEvents ? eventsState.events : EMPTY_CALENDAR_EVENTS;
-  const isEventsOwnerChanging =
-    Boolean(userId) && !hasCurrentUserError && eventsState.ownerUserId !== userId;
-  const isCalendarLoading = isLoading || isCurrentUserPending || isEventsOwnerChanging;
-  const isCurrentAuthUser = useCallback(
-    (requestUserId: string) => {
-      const authQueryState = queryClient.getQueryState<AuthUser>(authQueryKeys.me());
+  const canLoadCalendarEvents = Boolean(userId) && !hasCurrentUserError;
+  const {
+    data: calendarEvents,
+    error: calendarEventsError,
+    isPending: isCalendarEventsPending,
+  } = useCalendarEvents({ userId, enabled: canLoadCalendarEvents });
+  const {
+    mutateAsync: createCalendarEventAsync,
+    reset: resetCreateCalendarEvent,
+    error: createCalendarEventError,
+    variables: createCalendarEventVariables,
+  } = useCreateCalendarEventMutation();
+  const {
+    mutateAsync: updateCalendarEventAsync,
+    reset: resetUpdateCalendarEvent,
+    error: updateCalendarEventError,
+    variables: updateCalendarEventVariables,
+  } = useUpdateCalendarEventMutation();
+  const {
+    mutateAsync: deleteCalendarEventAsync,
+    reset: resetDeleteCalendarEvent,
+    error: deleteCalendarEventError,
+    variables: deleteCalendarEventVariables,
+  } = useDeleteCalendarEventMutation();
 
-      return (
-        authQueryState?.status === 'success' &&
-        authQueryState.error === null &&
-        authQueryState.data?.id === requestUserId
-      );
-    },
-    [queryClient],
-  );
+  const events = canLoadCalendarEvents
+    ? (calendarEvents ?? EMPTY_CALENDAR_EVENTS)
+    : EMPTY_CALENDAR_EVENTS;
+  const isCalendarLoading =
+    isCurrentUserPending || (canLoadCalendarEvents && isCalendarEventsPending && !calendarEvents);
 
-  useEffect(() => {
-    if (isCurrentUserPending) {
-      setIsLoading(true);
-      return;
-    }
-
-    if (hasCurrentUserError) {
-      setEventsState({ ownerUserId: null, events: [] });
-      setIsLoading(false);
-      setErrorMessage(
-        getCalendarErrorMessage(currentUserError, '로그인 정보를 확인할 수 없습니다.'),
-      );
-      return;
-    }
-
-    if (!userId) {
-      setEventsState({ ownerUserId: null, events: [] });
-      setIsLoading(false);
-      setErrorMessage(
-        getCalendarErrorMessage(currentUserError, '로그인 정보를 확인할 수 없습니다.'),
-      );
-      return;
-    }
-
-    const controller = new AbortController();
-    let isCancelled = false;
-
-    setEventsState({ ownerUserId: userId, events: [] });
-
-    const loadEvents = async () => {
-      try {
-        setIsLoading(true);
-        setErrorMessage(null);
-
-        const nextEvents = await getCalendarEvents({
-          userId,
-          signal: controller.signal,
-        });
-
-        if (isCancelled || !isCurrentAuthUser(userId)) {
-          return;
-        }
-
-        setEventsState({ ownerUserId: userId, events: nextEvents });
-      } catch (error) {
-        if (isCancelled || !isCurrentAuthUser(userId)) {
-          return;
-        }
-
-        if (error instanceof DOMException && error.name === 'AbortError') {
-          return;
-        }
-
-        setErrorMessage(getCalendarErrorMessage(error, '일정을 불러오지 못했습니다.'));
-      } finally {
-        if (!isCancelled && isCurrentAuthUser(userId)) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    void loadEvents();
-
-    return () => {
-      isCancelled = true;
-      controller.abort();
-    };
-  }, [currentUserError, hasCurrentUserError, isCurrentAuthUser, isCurrentUserPending, userId]);
+  const resetMutationErrors = useCallback(() => {
+    resetCreateCalendarEvent();
+    resetUpdateCalendarEvent();
+    resetDeleteCalendarEvent();
+  }, [resetCreateCalendarEvent, resetDeleteCalendarEvent, resetUpdateCalendarEvent]);
 
   const createEvent = useCallback(
-    async (draft: CalendarEventDraft) => {
+    async (draft: CalendarEventDraft): Promise<CalendarMutationStatus> => {
       if (isCalendarLoading) {
         return 'loading';
       }
 
-      if (!userId || !isCurrentAuthUser(userId)) {
-        setErrorMessage('로그인 정보를 확인할 수 없습니다.');
+      if (!userId || hasCurrentUserError) {
         return 'error';
       }
+
+      resetMutationErrors();
 
       const normalizedEvent = createCalendarEventFromDraft(draft, 'pending');
 
@@ -207,53 +128,43 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'conflict';
       }
 
-      const requestUserId = userId;
-
       try {
-        setErrorMessage(null);
-
-        const createdEvent = await createCalendarEvent({
-          userId: requestUserId,
+        await createCalendarEventAsync({
+          userId,
           draft: normalizedEvent,
         });
-
-        if (!isCurrentAuthUser(requestUserId)) {
-          return 'cancelled';
-        }
-
-        setEventsState((prevState) =>
-          updateOwnedEvents(prevState, requestUserId, (prevEvents) => [
-            ...prevEvents,
-            createdEvent,
-          ]),
-        );
         return 'success';
       } catch (error) {
-        if (!isCurrentAuthUser(requestUserId)) {
-          return 'cancelled';
-        }
-
         if (error instanceof ApiError && error.status === 409) {
+          resetCreateCalendarEvent();
           return 'conflict';
         }
 
-        setErrorMessage(getCalendarErrorMessage(error, '일정을 등록하지 못했습니다.'));
         return 'error';
       }
     },
-    [events, isCalendarLoading, isCurrentAuthUser, userId],
+    [
+      createCalendarEventAsync,
+      events,
+      hasCurrentUserError,
+      isCalendarLoading,
+      resetCreateCalendarEvent,
+      resetMutationErrors,
+      userId,
+    ],
   );
 
   const updateEvent = useCallback(
-    async (draft: CalendarEventDraft) => {
+    async (draft: CalendarEventDraft): Promise<CalendarMutationStatus> => {
       if (isCalendarLoading) {
         return 'loading';
       }
 
-      if (!userId || !isCurrentAuthUser(userId)) {
-        setErrorMessage('로그인 정보를 확인할 수 없습니다.');
+      if (!userId || hasCurrentUserError) {
         return 'error';
       }
+
+      resetMutationErrors();
 
       const editingEventId = draft.id;
 
@@ -277,103 +188,100 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
         return 'conflict';
       }
 
-      const requestUserId = userId;
-
       try {
-        setErrorMessage(null);
-
-        const updatedEvent = await updateCalendarEvent({
-          userId: requestUserId,
+        await updateCalendarEventAsync({
+          userId,
           eventId: editingEventId,
           draft: nextEvent,
         });
-
-        if (!isCurrentAuthUser(requestUserId)) {
-          return 'cancelled';
-        }
-
-        setEventsState((prevState) =>
-          updateOwnedEvents(prevState, requestUserId, (prevEvents) =>
-            prevEvents.map((event) => (event.id === updatedEvent.id ? updatedEvent : event)),
-          ),
-        );
         return 'success';
       } catch (error) {
-        if (!isCurrentAuthUser(requestUserId)) {
-          return 'cancelled';
-        }
-
         if (error instanceof ApiError && error.status === 404) {
-          setEventsState((prevState) =>
-            updateOwnedEvents(prevState, requestUserId, (prevEvents) =>
-              prevEvents.filter((event) => event.id !== editingEventId),
-            ),
-          );
+          resetUpdateCalendarEvent();
           return 'not-found';
         }
 
         if (error instanceof ApiError && error.status === 409) {
+          resetUpdateCalendarEvent();
           return 'conflict';
         }
 
-        setErrorMessage(getCalendarErrorMessage(error, '일정을 수정하지 못했습니다.'));
         return 'error';
       }
     },
-    [events, isCalendarLoading, isCurrentAuthUser, userId],
+    [
+      events,
+      hasCurrentUserError,
+      isCalendarLoading,
+      resetMutationErrors,
+      resetUpdateCalendarEvent,
+      updateCalendarEventAsync,
+      userId,
+    ],
   );
 
   const deleteEvent = useCallback(
-    async (eventId: string) => {
+    async (eventId: string): Promise<CalendarDeleteStatus> => {
       if (isCalendarLoading) {
         return 'loading';
       }
 
-      if (!userId || !isCurrentAuthUser(userId)) {
-        setErrorMessage('로그인 정보를 확인할 수 없습니다.');
+      if (!userId || hasCurrentUserError) {
         return 'error';
       }
 
-      const requestUserId = userId;
+      resetMutationErrors();
 
       try {
-        setErrorMessage(null);
-
-        await deleteCalendarEvent({
-          userId: requestUserId,
-          eventId,
-        });
-
-        if (!isCurrentAuthUser(requestUserId)) {
-          return 'cancelled';
-        }
-
-        setEventsState((prevState) =>
-          updateOwnedEvents(prevState, requestUserId, (prevEvents) =>
-            prevEvents.filter((event) => event.id !== eventId),
-          ),
-        );
+        await deleteCalendarEventAsync({ userId, eventId });
         return 'success';
       } catch (error) {
-        if (!isCurrentAuthUser(requestUserId)) {
-          return 'cancelled';
-        }
-
         if (error instanceof ApiError && error.status === 404) {
-          setEventsState((prevState) =>
-            updateOwnedEvents(prevState, requestUserId, (prevEvents) =>
-              prevEvents.filter((event) => event.id !== eventId),
-            ),
-          );
+          resetDeleteCalendarEvent();
           return 'not-found';
         }
 
-        setErrorMessage(getCalendarErrorMessage(error, '일정을 삭제하지 못했습니다.'));
         return 'error';
       }
     },
-    [isCalendarLoading, isCurrentAuthUser, userId],
+    [
+      deleteCalendarEventAsync,
+      hasCurrentUserError,
+      isCalendarLoading,
+      resetDeleteCalendarEvent,
+      resetMutationErrors,
+      userId,
+    ],
   );
+
+  const authErrorMessage =
+    !isCurrentUserPending && (hasCurrentUserError || !userId)
+      ? getCalendarErrorMessage(currentUserError, '로그인 정보를 확인할 수 없습니다.')
+      : null;
+  const queryErrorMessage = calendarEventsError
+    ? getCalendarErrorMessage(calendarEventsError, '일정을 불러오지 못했습니다.')
+    : null;
+  const errorMessage =
+    authErrorMessage ??
+    queryErrorMessage ??
+    getMutationErrorMessage(
+      createCalendarEventError,
+      createCalendarEventVariables?.userId,
+      userId,
+      '일정을 등록하지 못했습니다.',
+    ) ??
+    getMutationErrorMessage(
+      updateCalendarEventError,
+      updateCalendarEventVariables?.userId,
+      userId,
+      '일정을 수정하지 못했습니다.',
+    ) ??
+    getMutationErrorMessage(
+      deleteCalendarEventError,
+      deleteCalendarEventVariables?.userId,
+      userId,
+      '일정을 삭제하지 못했습니다.',
+    );
 
   const value = useMemo(
     () => ({
