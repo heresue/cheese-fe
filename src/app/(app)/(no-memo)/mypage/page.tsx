@@ -13,12 +13,13 @@ import MypageModalRenderer from './_components/Modal/MypageModalRenderer';
 import { useMypageModal } from './_components/Modal/useMypageModal';
 import ConfirmModal from './_components/Modal/ConfirmModal';
 
+import { useCurrentUser } from '@/queries/auth/useCurrentUser';
+import { useMypage } from '@/queries/mypage/useMypage';
+
 import { CompanyIcon, PersonalIcon } from '@/assets/icons/settings';
 
 import type { ContactSettings, ProfileDocument, ProfileType } from '@/types/profile';
 import type { MypageItemField, MypageItemSection } from './_components/Modal/types';
-
-import { mockMypage } from '@/mocks/profile/userProfiles';
 
 const PROFILE_SWITCH_OPTIONS: CategoryTabItem<ProfileType>[] = [
   {
@@ -34,10 +35,9 @@ const PROFILE_SWITCH_OPTIONS: CategoryTabItem<ProfileType>[] = [
 ];
 
 export default function MyPage() {
-  const [mypage, setMypage] = useState(mockMypage);
-  const [activeProfileType, setActiveProfileType] = useState<ProfileType>(
-    mockMypage.activeProfileType,
-  );
+  const { data: user } = useCurrentUser();
+  const { data: mypage, isPending, isError } = useMypage(user?.id);
+
   const [pendingProfileType, setPendingProfileType] = useState<ProfileType | null>(null);
 
   const previewImageUrlsRef = useRef<Record<ProfileType, string | null>>({
@@ -62,6 +62,15 @@ export default function MyPage() {
     };
   }, []);
 
+  if (isPending) {
+    return <div>로딩 중...</div>;
+  }
+
+  if (isError || !mypage) {
+    return <div>마이페이지 정보를 불러오지 못했습니다.</div>;
+  }
+
+  const activeProfileType = mypage.activeProfileType;
   const isPersonalProfile = activeProfileType === 'personal';
   const nextProfileLabel = PROFILE_SWITCH_OPTIONS.find(
     (option) => option.value === pendingProfileType,
@@ -92,7 +101,7 @@ export default function MyPage() {
     // - 프로필 전환 API 호출
     // - activeProfileType 전역 상태 업데이트
     // - 사이드바 및 전체 서비스 프로필 동기화
-    setActiveProfileType(pendingProfileType);
+
     setPendingProfileType(null);
   };
 
@@ -114,25 +123,25 @@ export default function MyPage() {
     const imageUrl = URL.createObjectURL(file);
     previewImageUrlsRef.current[activeProfileType] = imageUrl;
 
-    setMypage((prev) => {
-      if (activeProfileType === 'personal') {
-        return {
-          ...prev,
-          personalProfile: {
-            ...prev.personalProfile,
-            profileImageUrl: imageUrl,
-          },
-        };
-      }
+    // setMypage((prev) => {
+    //   if (activeProfileType === 'personal') {
+    //     return {
+    //       ...prev,
+    //       personalProfile: {
+    //         ...prev.personalProfile,
+    //         profileImageUrl: imageUrl,
+    //       },
+    //     };
+    //   }
 
-      return {
-        ...prev,
-        companyProfile: {
-          ...prev.companyProfile,
-          profileImageUrl: imageUrl,
-        },
-      };
-    });
+    //   return {
+    //     ...prev,
+    //     companyProfile: {
+    //       ...prev.companyProfile,
+    //       profileImageUrl: imageUrl,
+    //     },
+    //   };
+    // });
   };
 
   // TODO 1:
@@ -148,78 +157,78 @@ export default function MyPage() {
   ) => {
     if (section === 'accountAction') return;
 
-    setMypage((prev) => {
-      if (section === 'personalProfile') {
-        let nextValue: unknown = value;
+    // setMypage((prev) => {
+    //   if (section === 'personalProfile') {
+    //     let nextValue: unknown = value;
 
-        if ((field === 'skills' || field === 'interests') && typeof value === 'string') {
-          nextValue = value
-            .split(',')
-            .map((item) => item.trim())
-            .filter(Boolean);
-        }
+    //     if ((field === 'skills' || field === 'interests') && typeof value === 'string') {
+    //       nextValue = value
+    //         .split(',')
+    //         .map((item) => item.trim())
+    //         .filter(Boolean);
+    //     }
 
-        const personalField = field as keyof typeof prev.personalProfile;
+    //     const personalField = field as keyof typeof prev.personalProfile;
 
-        return {
-          ...prev,
-          personalProfile: {
-            ...prev.personalProfile,
-            [personalField]: nextValue,
-          },
-        };
-      }
+    //     return {
+    //       ...prev,
+    //       personalProfile: {
+    //         ...prev.personalProfile,
+    //         [personalField]: nextValue,
+    //       },
+    //     };
+    //   }
 
-      if (section === 'companyProfile') {
-        let nextValue: unknown = value;
+    //   if (section === 'companyProfile') {
+    //     let nextValue: unknown = value;
 
-        if (field === 'industryType' && typeof value === 'string') {
-          nextValue = value
-            .split(',')
-            .map((item) => item.trim())
-            .filter(Boolean);
-        }
+    //     if (field === 'industryType' && typeof value === 'string') {
+    //       nextValue = value
+    //         .split(',')
+    //         .map((item) => item.trim())
+    //         .filter(Boolean);
+    //     }
 
-        if (field === 'employeeCount' && typeof value === 'string') {
-          nextValue = Number(value.replace(/[^0-9]/g, ''));
-        }
+    //     if (field === 'employeeCount' && typeof value === 'string') {
+    //       nextValue = Number(value.replace(/[^0-9]/g, ''));
+    //     }
 
-        const companyField = field as keyof typeof prev.companyProfile;
+    //     const companyField = field as keyof typeof prev.companyProfile;
 
-        return {
-          ...prev,
-          companyProfile: {
-            ...prev.companyProfile,
-            [companyField]: nextValue,
-          },
-        };
-      }
+    //     return {
+    //       ...prev,
+    //       companyProfile: {
+    //         ...prev.companyProfile,
+    //         [companyField]: nextValue,
+    //       },
+    //     };
+    //   }
 
-      if (section === 'accountSettings') {
-        if (field === 'contactMethod' && typeof value === 'object' && 'contactMethod' in value) {
-          return {
-            ...prev,
-            accountSettings: {
-              ...prev.accountSettings,
-              contactMethod: value.contactMethod,
-              contactUrl: value.contactUrl,
-            },
-          };
-        }
+    //   if (section === 'accountSettings') {
+    //     if (field === 'contactMethod' && typeof value === 'object' && 'contactMethod' in value) {
+    //       return {
+    //         ...prev,
+    //         accountSettings: {
+    //           ...prev.accountSettings,
+    //           contactMethod: value.contactMethod,
+    //           contactUrl: value.contactUrl,
+    //         },
+    //       };
+    //     }
 
-        const accountField = field as keyof typeof prev.accountSettings;
+    //     const accountField = field as keyof typeof prev.accountSettings;
 
-        return {
-          ...prev,
-          accountSettings: {
-            ...prev.accountSettings,
-            [accountField]: value,
-          },
-        };
-      }
+    //     return {
+    //       ...prev,
+    //       accountSettings: {
+    //         ...prev.accountSettings,
+    //         [accountField]: value,
+    //       },
+    //     };
+    //   }
 
-      return prev;
-    });
+    //   return prev;
+    // });
 
     closeModal();
   };
