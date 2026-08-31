@@ -2,13 +2,17 @@
 
 import { useState } from 'react';
 
+import CorrectCircleIcon from '@/assets/icons/common/cancel-circle.svg';
 import DocumentsIcon from '@/assets/icons/settings/documents.svg';
 import SkillsIcon from '@/assets/icons/settings/skills.svg';
 import DoubleArrowIcon from '@/assets/icons/problem/double-arrow.svg';
+import IncorrectCircleIcon from '@/assets/icons/problem/check-circle.svg';
 import { Button } from '@/components/common/Button';
 
 import type { ProblemAttempt, ProblemQuestion, ProblemSolveStatus } from '../_types/problemSolving';
 import ProblemStatusIcon from './ProblemStatusIcon';
+
+type GradedStatus = Exclude<ProblemSolveStatus, 'pending'>;
 
 type ProblemQuestionCardProps = {
   question: ProblemQuestion;
@@ -19,7 +23,8 @@ type ProblemQuestionCardProps = {
   onSubmitAnswer: (submission: {
     answer: string;
     selectedChoiceId: string;
-  }) => Promise<Exclude<ProblemSolveStatus, 'pending'>>;
+  }) => Promise<GradedStatus>;
+  onSelfCheck: (status: GradedStatus) => void;
   onNext: () => void;
 };
 
@@ -33,19 +38,12 @@ function normalizeAnswer(value: string) {
   return value.replace(/\s+/g, '').toLowerCase();
 }
 
-function AnswerResultMessage({
-  status,
-  className,
-}: {
-  status: Exclude<ProblemSolveStatus, 'pending'>;
-  className?: string;
-}) {
+function AnswerResultMessage({ status, className }: { status: GradedStatus; className?: string }) {
   const isCorrect = status === 'correct';
 
   return (
     <div className={cn('flex items-center gap-[12px]', className)}>
       <ProblemStatusIcon type={isCorrect ? 'correct' : 'incorrect'} />
-
       <p
         className={cn(
           'text-[18px] leading-[24px] font-bold tracking-normal',
@@ -65,28 +63,32 @@ export default function ProblemQuestionCard({
   isReviewMode = false,
   onDraftChange,
   onSubmitAnswer,
+  onSelfCheck,
   onNext,
 }: ProblemQuestionCardProps) {
   const wasSubmitted = Boolean(initialAttempt?.submitted);
-  const initialStatus =
+  const initialGradedStatus =
     wasSubmitted && initialAttempt && initialAttempt.status !== 'pending'
       ? initialAttempt.status
       : null;
+  const initialSelfCheck =
+    question.type === 'shortAnswer' && initialAttempt?.selfChecked ? initialGradedStatus : null;
 
   const [textAnswer, setTextAnswer] = useState(initialAttempt?.answer ?? '');
   const [selectedChoiceId, setSelectedChoiceId] = useState(initialAttempt?.selectedChoiceId ?? '');
   const [isHintVisible, setIsHintVisible] = useState(isReviewMode);
   const [isSubmitted, setIsSubmitted] = useState(wasSubmitted);
-  const [submissionStatus, setSubmissionStatus] = useState<Exclude<
-    ProblemSolveStatus,
-    'pending'
-  > | null>(initialStatus);
+  const [submissionStatus, setSubmissionStatus] = useState<GradedStatus | null>(
+    question.type === 'multipleChoice' ? initialGradedStatus : initialSelfCheck,
+  );
+  const [selfCheck, setSelfCheck] = useState<GradedStatus | null>(initialSelfCheck);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState('');
+  const [actionError, setActionError] = useState('');
 
   const canSubmit =
     !isSubmitting &&
     (question.type === 'shortAnswer' ? textAnswer.trim().length > 0 : selectedChoiceId.length > 0);
+  const canMoveNext = question.type === 'shortAnswer' ? Boolean(selfCheck) : isSubmitted;
   const correctChoiceIndex = question.correctAnswer
     ? question.choices?.findIndex(
         (choice) => normalizeAnswer(choice.label) === normalizeAnswer(question.correctAnswer ?? ''),
@@ -106,14 +108,14 @@ export default function ProblemQuestionCard({
     }
 
     setIsSubmitting(true);
-    setSubmitError('');
+    setActionError('');
 
     try {
       const status = await onSubmitAnswer({ answer: textAnswer, selectedChoiceId });
-      setSubmissionStatus(status);
+      setSubmissionStatus(question.type === 'multipleChoice' ? status : null);
       setIsSubmitted(true);
     } catch (error) {
-      setSubmitError(
+      setActionError(
         error instanceof Error
           ? error.message
           : '답안 제출에 실패했습니다. 잠시 후 다시 시도해 주세요.',
@@ -121,6 +123,16 @@ export default function ProblemQuestionCard({
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleSelfCheck = (status: GradedStatus) => {
+    if (selfCheck) {
+      return;
+    }
+
+    setSelfCheck(status);
+    setSubmissionStatus(status);
+    onSelfCheck(status);
   };
 
   const hintButton = (
@@ -161,7 +173,7 @@ export default function ProblemQuestionCard({
           <input
             value={textAnswer}
             disabled={isSubmitted || isSubmitting}
-            aria-label="주관식 답안"
+            aria-label="서술형 답안"
             className="h-[38px] w-full bg-transparent px-[12px] text-[18px] leading-[24px] font-medium tracking-normal text-gray-900 outline-none disabled:text-gray-900"
             onChange={(event) => {
               const nextAnswer = event.target.value;
@@ -217,10 +229,9 @@ export default function ProblemQuestionCard({
         </ol>
       )}
 
-      {isSubmitted && submissionStatus && (
+      {isSubmitted && question.type === 'multipleChoice' && submissionStatus && (
         <>
           <AnswerResultMessage status={submissionStatus} className="mt-[28px]" />
-
           {correctAnswerLabel && (
             <p className="mt-[18px] flex items-center gap-[10px] font-medium tracking-normal text-gray-900">
               <span className="text-[20px] leading-[24px]">정답 :</span>
@@ -229,13 +240,68 @@ export default function ProblemQuestionCard({
               </span>
             </p>
           )}
-
           {question.explanation && (
             <p className="mt-[12px] text-[18px] leading-[24px] font-medium tracking-normal text-gray-900">
               {question.explanation}
             </p>
           )}
         </>
+      )}
+
+      {isSubmitted && question.type === 'shortAnswer' && (
+        <div className="mt-[40px]">
+          {!selfCheck ? (
+            <>
+              <p className="text-[18px] leading-[24px] font-bold text-gray-600">
+                작성한 답안을 직접 채점해 주세요.
+              </p>
+              {question.explanation && (
+                <p className="mt-[12px] text-[16px] leading-[24px] font-medium text-gray-700">
+                  해설 : {question.explanation}
+                </p>
+              )}
+              <div className="mt-[16px] w-[330px] overflow-hidden rounded-[10px] border border-gray-300">
+                <button
+                  type="button"
+                  className="bg-bg-white flex h-[72px] w-full items-center gap-[16px] px-[20px] text-[16px] leading-[20px] font-medium text-gray-700"
+                  onClick={() => {
+                    handleSelfCheck('correct');
+                  }}
+                >
+                  <CorrectCircleIcon
+                    className="h-[36px] w-[36px] shrink-0 text-gray-300 [&_path]:!fill-white [&_rect]:!fill-current"
+                    aria-hidden="true"
+                    focusable="false"
+                  />
+                  <span>정답</span>
+                </button>
+                <button
+                  type="button"
+                  className="bg-bg-white flex h-[72px] w-full items-center gap-[16px] border-t border-gray-300 px-[20px] text-[16px] leading-[20px] font-medium text-gray-700"
+                  onClick={() => {
+                    handleSelfCheck('incorrect');
+                  }}
+                >
+                  <IncorrectCircleIcon
+                    className="h-[36px] w-[36px] shrink-0 text-gray-300 [&_path]:!fill-white [&_rect]:!fill-current"
+                    aria-hidden="true"
+                    focusable="false"
+                  />
+                  <span>오답</span>
+                </button>
+              </div>
+            </>
+          ) : (
+            <AnswerResultMessage status={selfCheck} />
+          )}
+
+          {correctAnswerLabel && (
+            <p className="mt-[18px] flex items-center gap-[10px] font-medium tracking-normal text-gray-900">
+              <span className="text-[20px] leading-[24px]">정답 :</span>
+              <span className="text-[18px] leading-[24px]">{correctAnswerLabel}</span>
+            </p>
+          )}
+        </div>
       )}
 
       {isHintVisible && question.hint && (
@@ -249,9 +315,9 @@ export default function ProblemQuestionCard({
         </div>
       )}
 
-      {submitError && (
+      {actionError && (
         <p role="alert" className="text-error mt-[20px] text-right text-[14px] font-medium">
-          {submitError}
+          {actionError}
         </p>
       )}
 
@@ -262,6 +328,7 @@ export default function ProblemQuestionCard({
             <Button
               size={54}
               width={isReviewMode && isLastQuestion ? 150 : 110}
+              disabled={!canMoveNext}
               className="gap-[12px] leading-[24px]"
               onClick={onNext}
             >

@@ -28,7 +28,7 @@ type ProblemQuestionViewProps = {
   isReviewMode?: boolean;
 };
 
-function createApiAttempt(question: ProblemQuestion): ProblemAttempt {
+function createApiAttempt(question: ProblemQuestion, isReviewMode: boolean): ProblemAttempt {
   const status =
     question.status === 'correct'
       ? 'correct'
@@ -43,7 +43,7 @@ function createApiAttempt(question: ProblemQuestion): ProblemAttempt {
     status,
     elapsedSeconds: question.elapsedSeconds ?? 0,
     submitted,
-    selfChecked: submitted,
+    selfChecked: submitted && (question.type === 'multipleChoice' || isReviewMode),
   };
 }
 
@@ -75,6 +75,7 @@ export default function ProblemQuestionView({
     startQuestion,
     saveDraft,
     submitQuestion,
+    gradeQuestion,
     pauseSession,
     finishSession,
     resetSession,
@@ -105,8 +106,8 @@ export default function ProblemQuestionView({
   const submitAnswerMutation = useSubmitProblemAnswerMutation();
 
   const apiAttempt = useMemo(
-    () => (questionQuery.data ? createApiAttempt(questionQuery.data) : undefined),
-    [questionQuery.data],
+    () => (questionQuery.data ? createApiAttempt(questionQuery.data, isReviewMode) : undefined),
+    [isReviewMode, questionQuery.data],
   );
   const resultQuestion = resultQuery.data?.questions.find((item) => item.id === questionId);
   const question = useMemo(() => {
@@ -186,7 +187,13 @@ export default function ProblemQuestionView({
       : undefined);
   const isLastQuestion = !nextQuestion;
   const reviewQuery = isReviewMode ? '?from=result' : '';
-  const initialAttempt = apiAttempt.submitted ? apiAttempt : (attempts[question.id] ?? apiAttempt);
+  const sessionAttempt = attempts[question.id];
+  const initialAttempt =
+    !isReviewMode && question.type === 'shortAnswer' && sessionAttempt?.submitted
+      ? sessionAttempt
+      : apiAttempt.submitted
+        ? apiAttempt
+        : (sessionAttempt ?? apiAttempt);
   const completedCount = new Set([
     ...detail.questions.filter((item) => item.status !== 'notStarted').map((item) => item.id),
     ...Object.entries(attempts)
@@ -320,10 +327,13 @@ export default function ProblemQuestionView({
                 answer: submittedQuestion.myAnswer?.answer ?? submission.answer,
                 selectedChoiceId:
                   submittedQuestion.myAnswer?.selectedChoiceId ?? submission.selectedChoiceId,
-                status,
+                status: question.type === 'shortAnswer' ? 'pending' : status,
               });
 
               return status;
+            }}
+            onSelfCheck={(status) => {
+              gradeQuestion(question.id, status);
             }}
             onNext={handleNext}
           />
