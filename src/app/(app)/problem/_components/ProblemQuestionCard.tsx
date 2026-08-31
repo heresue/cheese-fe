@@ -123,6 +123,26 @@ export default function ProblemQuestionCard({
     }
   };
 
+  const hintButton = (
+    <Button
+      variant="outline"
+      size={54}
+      width={110}
+      disabled={!question.hint || isSubmitting}
+      className="gap-[12px] leading-[24px]"
+      onClick={() => {
+        setIsHintVisible(true);
+      }}
+    >
+      <SkillsIcon
+        className="text-secondary-600 h-[18px] w-[18px] shrink-0 [&_*]:!fill-current [&_*]:!stroke-current"
+        aria-hidden="true"
+        focusable="false"
+      />
+      <span>힌트보기</span>
+    </Button>
+  );
+
   return (
     <section className="bg-bg-white w-[960px] rounded-[15px] px-[40px] py-[40px]">
       <div className="flex items-center gap-[12px] text-[16px] leading-[30px] font-medium">
@@ -237,45 +257,31 @@ export default function ProblemQuestionCard({
 
       <div className="mt-[32px] flex justify-end gap-[10px]">
         {isSubmitted ? (
-          <Button
-            size={54}
-            width={isReviewMode && isLastQuestion ? 150 : 110}
-            className="gap-[12px] leading-[24px]"
-            onClick={onNext}
-          >
-            <DoubleArrowIcon
-              className="h-[24px] w-[20px] shrink-0 [&_path]:!fill-current"
-              aria-hidden="true"
-              focusable="false"
-            />
-            <span>
-              {isReviewMode && isLastQuestion
-                ? '결과로 돌아가기'
-                : isLastQuestion
-                  ? '결과보기'
-                  : '다음문제'}
-            </span>
-          </Button>
-        ) : (
           <>
+            {hintButton}
             <Button
-              variant="outline"
               size={54}
-              width={110}
-              disabled={!question.hint || isSubmitting}
+              width={isReviewMode && isLastQuestion ? 150 : 110}
               className="gap-[12px] leading-[24px]"
-              onClick={() => {
-                setIsHintVisible(true);
-              }}
+              onClick={onNext}
             >
-              <SkillsIcon
-                className="text-secondary-600 h-[18px] w-[18px] shrink-0 [&_*]:!fill-current [&_*]:!stroke-current"
+              <DoubleArrowIcon
+                className="h-[24px] w-[20px] shrink-0 [&_path]:!fill-current"
                 aria-hidden="true"
                 focusable="false"
               />
-              <span>힌트보기</span>
+              <span>
+                {isReviewMode && isLastQuestion
+                  ? '결과로 돌아가기'
+                  : isLastQuestion
+                    ? '결과보기'
+                    : '다음문제'}
+              </span>
             </Button>
-
+          </>
+        ) : (
+          <>
+            {hintButton}
             <Button
               size={54}
               width={110}
