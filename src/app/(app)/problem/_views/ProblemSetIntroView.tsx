@@ -3,13 +3,15 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import { useCurrentUser } from '@/queries/auth/useCurrentUser';
+import { useProblemSetDetail } from '@/queries/problem/useProblemQueries';
+
 import ProblemExitConfirmModal from '../_components/ProblemExitConfirmModal';
 import ProblemSetSummaryCard from '../_components/ProblemSetSummaryCard';
 import ProblemSideToc from '../_components/ProblemSideToc';
 import ProblemSolvingHeader from '../_components/ProblemSolvingHeader';
 import ProblemTocCard from '../_components/ProblemTocCard';
 import { useProblemSolvingSession } from '../_contexts/ProblemSolvingSessionContext';
-import { mockProblemQuestions, mockProblemSetSummary } from '../_data/mockProblemSolving';
 import { formatElapsedTime } from '../_utils/formatElapsedTime';
 
 type ProblemSetIntroViewProps = {
@@ -18,22 +20,53 @@ type ProblemSetIntroViewProps = {
 
 export default function ProblemSetIntroView({ problemSetId }: ProblemSetIntroViewProps) {
   const router = useRouter();
-  const { totalElapsedSeconds, attempts, pauseSession, resetSession } = useProblemSolvingSession();
-
+  const { totalElapsedSeconds, pauseSession, resetSession } = useProblemSolvingSession();
   const [isTocOpen, setIsTocOpen] = useState(false);
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
-  const firstQuestion = mockProblemQuestions[0];
+  const currentUserQuery = useCurrentUser();
+  const detailQuery = useProblemSetDetail({
+    userId: currentUserQuery.data?.id,
+    problemSetId,
+    enabled: currentUserQuery.isSuccess,
+  });
 
+  const detail = detailQuery.data;
+  const isLoading = currentUserQuery.isPending || detailQuery.isPending;
+  const error = currentUserQuery.error ?? detailQuery.error;
+
+  if (isLoading) {
+    return (
+      <main className="bg-bg-1 flex min-h-dvh items-center justify-center text-[16px] font-medium text-gray-600">
+        문제집을 불러오는 중입니다.
+      </main>
+    );
+  }
+
+  if (!detail || error) {
+    return (
+      <main className="bg-bg-1 flex min-h-dvh flex-col items-center justify-center gap-4 text-[16px] font-medium text-gray-600">
+        <p role="alert">{error instanceof Error ? error.message : '문제집을 찾을 수 없습니다.'}</p>
+        <button
+          type="button"
+          className="text-secondary-700 underline"
+          onClick={() => {
+            void detailQuery.refetch();
+          }}
+        >
+          다시 시도
+        </button>
+      </main>
+    );
+  }
+
+  const firstUnsolvedQuestion = detail.questions.find(
+    (question) => question.status === 'notStarted',
+  );
+  const firstQuestion = firstUnsolvedQuestion ?? detail.questions[0];
   const firstQuestionHref = firstQuestion
     ? `/problem/${problemSetId}/questions/${firstQuestion.id}`
     : `/problem/${problemSetId}`;
-  const solvedCount = Object.values(attempts).filter((attempt) => attempt.submitted).length;
-  const problemSetSummary = {
-    ...mockProblemSetSummary,
-    solvedCount,
-    totalCount: mockProblemQuestions.length,
-  };
 
   const handleOpenExitModal = () => {
     setIsTocOpen(false);
@@ -56,8 +89,8 @@ export default function ProblemSetIntroView({ problemSetId }: ProblemSetIntroVie
         title="문제풀이 홈으로 나가기"
         backHref="/problem"
         elapsedTime={formatElapsedTime(totalElapsedSeconds)}
-        current={solvedCount}
-        total={mockProblemQuestions.length}
+        current={detail.summary.solvedCount}
+        total={detail.summary.totalCount}
         onMenuClick={() => {
           setIsTocOpen(true);
         }}
@@ -67,18 +100,18 @@ export default function ProblemSetIntroView({ problemSetId }: ProblemSetIntroVie
         <div className="mx-auto w-[1060px] pt-[28px] pb-[68px]">
           <ProblemSetSummaryCard
             problemSetId={problemSetId}
-            summary={problemSetSummary}
-            actionLabel="이어서 시작"
+            summary={detail.summary}
+            actionLabel={detail.summary.solvedCount > 0 ? '이어서 시작' : '시작하기'}
             actionHref={firstQuestionHref}
           />
 
-          <ProblemTocCard problemSetId={problemSetId} questions={mockProblemQuestions} />
+          <ProblemTocCard problemSetId={problemSetId} questions={detail.questions} />
         </div>
       </div>
 
       <ProblemSideToc
         problemSetId={problemSetId}
-        questions={mockProblemQuestions}
+        questions={detail.questions}
         isOpen={isTocOpen}
         onClose={() => {
           setIsTocOpen(false);
