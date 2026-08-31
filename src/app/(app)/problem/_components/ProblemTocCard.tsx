@@ -3,11 +3,11 @@ import Link from 'next/link';
 import { Button } from '@/components/common/Button';
 
 import ProblemActionIcon from './ProblemActionIcon';
-import type { ProblemQuestion } from '../_types/problemSolving';
+import type { ProblemQuestionListItem } from '../_types/problemSolving';
 
 type ProblemTocCardProps = {
   problemSetId: string;
-  questions: ProblemQuestion[];
+  questions: ProblemQuestionListItem[];
 };
 
 function TocDotLine() {
