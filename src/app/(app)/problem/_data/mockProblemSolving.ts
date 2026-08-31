@@ -7,6 +7,7 @@ export const mockProblemSetSummary: ProblemSetSummary = {
   title: 'CSS : 실무 신입 개발자가 알아야할 C언어',
   lastProgressDate: '2026.02.27',
   thumbnailSrc: cssThumbnail,
+  badge: 'FE',
   solvedCount: 0,
   totalCount: 8,
 };
