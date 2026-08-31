@@ -44,6 +44,7 @@ type ProblemSolvingSessionContextValue = {
   ) => void;
   saveDraft: (questionId: string, draft: AnswerDraft) => void;
   submitQuestion: (questionId: string, submission: AnswerSubmission) => void;
+  gradeQuestion: (questionId: string, status: Exclude<ProblemSolveStatus, 'pending'>) => void;
   pauseSession: () => void;
   finishSession: () => void;
   resetSession: () => void;
@@ -244,6 +245,25 @@ export function ProblemSolvingSessionProvider({
     }));
   }, []);
 
+  const gradeQuestion = useCallback(
+    (questionId: string, status: Exclude<ProblemSolveStatus, 'pending'>) => {
+      setState((currentState) => ({
+        ...currentState,
+        attempts: {
+          ...currentState.attempts,
+          [questionId]: {
+            ...(currentState.attempts[questionId] ?? createEmptyAttempt()),
+            status,
+            submitted: true,
+            selfChecked: true,
+          },
+        },
+        lastProgressDate: formatProgressDate(),
+      }));
+    },
+    [],
+  );
+
   const pauseSession = useCallback(() => {
     setState((currentState) => ({ ...currentState, activeQuestionId: null, isRunning: false }));
   }, []);
@@ -268,12 +288,14 @@ export function ProblemSolvingSessionProvider({
       startQuestion,
       saveDraft,
       submitQuestion,
+      gradeQuestion,
       pauseSession,
       finishSession,
       resetSession,
     }),
     [
       finishSession,
+      gradeQuestion,
       isHydrated,
       pauseSession,
       resetSession,
