@@ -7,6 +7,7 @@ import DocumentsIcon from '@/assets/icons/settings/documents.svg';
 import SkillsIcon from '@/assets/icons/settings/skills.svg';
 import DoubleArrowIcon from '@/assets/icons/problem/double-arrow.svg';
 import IncorrectCircleIcon from '@/assets/icons/problem/check-circle.svg';
+import ReturnIcon from '@/assets/icons/problem/return.svg';
 import { Button } from '@/components/common/Button';
 
 import type { ProblemAttempt, ProblemQuestion, ProblemSolveStatus } from '../_types/problemSolving';
@@ -25,6 +26,7 @@ type ProblemQuestionCardProps = {
     selectedChoiceId: string;
   }) => Promise<GradedStatus>;
   onSelfCheck: (status: GradedStatus) => void;
+  onRetry: () => Promise<boolean>;
   onNext: () => void;
 };
 
@@ -64,6 +66,7 @@ export default function ProblemQuestionCard({
   onDraftChange,
   onSubmitAnswer,
   onSelfCheck,
+  onRetry,
   onNext,
 }: ProblemQuestionCardProps) {
   const wasSubmitted = Boolean(initialAttempt?.submitted);
@@ -83,10 +86,12 @@ export default function ProblemQuestionCard({
   );
   const [selfCheck, setSelfCheck] = useState<GradedStatus | null>(initialSelfCheck);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRetrying, setIsRetrying] = useState(false);
   const [actionError, setActionError] = useState('');
 
   const canSubmit =
     !isSubmitting &&
+    !isRetrying &&
     (question.type === 'shortAnswer' ? textAnswer.trim().length > 0 : selectedChoiceId.length > 0);
   const canMoveNext = question.type === 'shortAnswer' ? Boolean(selfCheck) : isSubmitted;
   const correctChoiceIndex = question.correctAnswer
@@ -135,12 +140,39 @@ export default function ProblemQuestionCard({
     onSelfCheck(status);
   };
 
+  const handleRetry = async () => {
+    setIsRetrying(true);
+    setActionError('');
+
+    try {
+      const didRetry = await onRetry();
+      if (!didRetry) {
+        return;
+      }
+
+      setTextAnswer('');
+      setSelectedChoiceId('');
+      setIsHintVisible(false);
+      setIsSubmitted(false);
+      setSubmissionStatus(null);
+      setSelfCheck(null);
+    } catch (error) {
+      setActionError(
+        error instanceof Error
+          ? error.message
+          : '다시 풀기를 시작하지 못했습니다. 잠시 후 다시 시도해 주세요.',
+      );
+    } finally {
+      setIsRetrying(false);
+    }
+  };
+
   const hintButton = (
     <Button
       variant="outline"
       size={54}
       width={110}
-      disabled={!question.hint || isSubmitting}
+      disabled={!question.hint || isSubmitting || isRetrying}
       className="gap-[12px] leading-[24px]"
       onClick={() => {
         setIsHintVisible(true);
@@ -172,7 +204,7 @@ export default function ProblemQuestionCard({
         <div className="mt-[60px] border-b border-gray-400">
           <input
             value={textAnswer}
-            disabled={isSubmitted || isSubmitting}
+            disabled={isSubmitted || isSubmitting || isRetrying}
             aria-label="서술형 답안"
             className="h-[38px] w-full bg-transparent px-[12px] text-[18px] leading-[24px] font-medium tracking-normal text-gray-900 outline-none disabled:text-gray-900"
             onChange={(event) => {
@@ -203,7 +235,7 @@ export default function ProblemQuestionCard({
               <li key={choice.id}>
                 <button
                   type="button"
-                  disabled={isSubmitted || isSubmitting}
+                  disabled={isSubmitted || isSubmitting || isRetrying}
                   className={cn(
                     'flex items-center gap-[12px] text-[20px] leading-[24px] font-medium tracking-normal',
                     isSelected ? selectedTextClassName : 'text-gray-900',
@@ -326,9 +358,26 @@ export default function ProblemQuestionCard({
           <>
             {hintButton}
             <Button
+              variant="outline"
+              size={54}
+              width={110}
+              disabled={isRetrying}
+              className="gap-[12px] leading-[24px]"
+              onClick={() => {
+                void handleRetry();
+              }}
+            >
+              <ReturnIcon
+                className="h-[24px] w-[20px] shrink-0 text-gray-600 [&_path]:!fill-current"
+                aria-hidden="true"
+                focusable="false"
+              />
+              <span>{isRetrying ? '초기화 중' : '다시풀기'}</span>
+            </Button>
+            <Button
               size={54}
               width={isReviewMode && isLastQuestion ? 150 : 110}
-              disabled={!canMoveNext}
+              disabled={!canMoveNext || isRetrying}
               className="gap-[12px] leading-[24px]"
               onClick={onNext}
             >

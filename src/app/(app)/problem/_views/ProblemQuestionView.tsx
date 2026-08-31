@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { useCurrentUser } from '@/queries/auth/useCurrentUser';
 import {
+  useRetryProblemSetMutation,
   useSaveProblemAnswerMutation,
   useSubmitProblemAnswerMutation,
 } from '@/queries/problem/useProblemMutations';
@@ -104,6 +105,7 @@ export default function ProblemQuestionView({
   });
   const saveAnswerMutation = useSaveProblemAnswerMutation();
   const submitAnswerMutation = useSubmitProblemAnswerMutation();
+  const retryProblemSetMutation = useRetryProblemSetMutation();
 
   const apiAttempt = useMemo(
     () => (questionQuery.data ? createApiAttempt(questionQuery.data, isReviewMode) : undefined),
@@ -334,6 +336,26 @@ export default function ProblemQuestionView({
             }}
             onSelfCheck={(status) => {
               gradeQuestion(question.id, status);
+            }}
+            onRetry={async () => {
+              const confirmed = window.confirm(
+                '이 문제를 다시 풀면 현재 문제집의 전체 풀이 기록이 초기화됩니다. 계속할까요?',
+              );
+
+              if (!confirmed) {
+                return false;
+              }
+
+              await retryProblemSetMutation.mutateAsync({ userId, problemSetId });
+              resetSession();
+
+              if (isReviewMode) {
+                router.replace(`/problem/${problemSetId}/questions/${question.id}`);
+              } else {
+                await Promise.all([detailQuery.refetch(), questionQuery.refetch()]);
+              }
+
+              return true;
             }}
             onNext={handleNext}
           />
