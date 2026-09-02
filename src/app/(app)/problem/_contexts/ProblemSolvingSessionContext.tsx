@@ -207,7 +207,7 @@ export function ProblemSolvingSessionProvider({
           ...currentState,
           attempts: { ...currentState.attempts, [questionId]: attempt },
           activeQuestionId: shouldTrackQuestion ? questionId : null,
-          isRunning: currentState.totalElapsedSeconds < MAX_SESSION_SECONDS,
+          isRunning: shouldTrackQuestion && currentState.totalElapsedSeconds < MAX_SESSION_SECONDS,
         };
       });
     },
