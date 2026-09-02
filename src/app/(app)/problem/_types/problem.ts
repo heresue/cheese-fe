@@ -28,6 +28,7 @@ export type ProblemSet = {
   subCategory?: Exclude<ProblemSubCategory, 'all'>;
   badge: ProblemBadge;
   thumbnailType: ProblemThumbnailType;
+  thumbnailUrl?: string;
   lastProgressDate: string | null;
   createdAt: string;
   solvedCount: number;

@@ -4,7 +4,7 @@ import ArrowIcon from '@/assets/icons/common/arrow.svg';
 import DoubleArrowIcon from '@/assets/icons/problem/double-arrow.svg';
 import { Button } from '@/components/common/Button';
 
-import type { ProblemQuestion } from '../_types/problemSolving';
+import type { ProblemQuestionListItem } from '../_types/problemSolving';
 
 type ProblemSideTocNavigation = {
   previousHref?: string;
@@ -16,7 +16,7 @@ type ProblemSideTocNavigation = {
 
 type ProblemSideTocProps = {
   problemSetId: string;
-  questions: ProblemQuestion[];
+  questions: ProblemQuestionListItem[];
   isOpen: boolean;
   onClose: () => void;
   navigation?: ProblemSideTocNavigation;

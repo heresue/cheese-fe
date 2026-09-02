@@ -29,7 +29,7 @@ export default function ProblemCard({ problemSet }: ProblemCardProps) {
     >
       <div className="relative h-[140px] w-full overflow-hidden">
         <Image
-          src={thumbnailSrcMap[problemSet.thumbnailType]}
+          src={problemSet.thumbnailUrl ?? thumbnailSrcMap[problemSet.thumbnailType]}
           alt={`${problemSet.title} 썸네일`}
           fill
           sizes="231px"

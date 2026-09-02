@@ -38,11 +38,13 @@ type ProblemSolvingSessionContextValue = {
   totalElapsedSeconds: number;
   attempts: Record<string, ProblemAttempt>;
   isHydrated: boolean;
-  startQuestion: (questionId: string, options?: { review?: boolean }) => void;
+  startQuestion: (
+    questionId: string,
+    options?: { review?: boolean; initialAttempt?: ProblemAttempt },
+  ) => void;
   saveDraft: (questionId: string, draft: AnswerDraft) => void;
   submitQuestion: (questionId: string, submission: AnswerSubmission) => void;
   gradeQuestion: (questionId: string, status: Exclude<ProblemSolveStatus, 'pending'>) => void;
-  retryQuestion: (questionId: string) => void;
   pauseSession: () => void;
   finishSession: () => void;
   resetSession: () => void;
@@ -194,19 +196,23 @@ export function ProblemSolvingSessionProvider({
     };
   }, [state.isRunning]);
 
-  const startQuestion = useCallback((questionId: string, options?: { review?: boolean }) => {
-    setState((currentState) => {
-      const attempt = currentState.attempts[questionId] ?? createEmptyAttempt();
-      const shouldTrackQuestion = options?.review || !attempt.submitted;
+  const startQuestion = useCallback(
+    (questionId: string, options?: { review?: boolean; initialAttempt?: ProblemAttempt }) => {
+      setState((currentState) => {
+        const attempt =
+          currentState.attempts[questionId] ?? options?.initialAttempt ?? createEmptyAttempt();
+        const shouldTrackQuestion = options?.review || !attempt.submitted;
 
-      return {
-        ...currentState,
-        attempts: { ...currentState.attempts, [questionId]: attempt },
-        activeQuestionId: shouldTrackQuestion ? questionId : null,
-        isRunning: currentState.totalElapsedSeconds < MAX_SESSION_SECONDS,
-      };
-    });
-  }, []);
+        return {
+          ...currentState,
+          attempts: { ...currentState.attempts, [questionId]: attempt },
+          activeQuestionId: shouldTrackQuestion ? questionId : null,
+          isRunning: shouldTrackQuestion && currentState.totalElapsedSeconds < MAX_SESSION_SECONDS,
+        };
+      });
+    },
+    [],
+  );
 
   const saveDraft = useCallback((questionId: string, draft: AnswerDraft) => {
     setState((currentState) => ({
@@ -258,15 +264,6 @@ export function ProblemSolvingSessionProvider({
     [],
   );
 
-  const retryQuestion = useCallback((questionId: string) => {
-    setState((currentState) => ({
-      ...currentState,
-      attempts: { ...currentState.attempts, [questionId]: createEmptyAttempt() },
-      activeQuestionId: questionId,
-      isRunning: currentState.totalElapsedSeconds < MAX_SESSION_SECONDS,
-    }));
-  }, []);
-
   const pauseSession = useCallback(() => {
     setState((currentState) => ({ ...currentState, activeQuestionId: null, isRunning: false }));
   }, []);
@@ -292,7 +289,6 @@ export function ProblemSolvingSessionProvider({
       saveDraft,
       submitQuestion,
       gradeQuestion,
-      retryQuestion,
       pauseSession,
       finishSession,
       resetSession,
@@ -303,7 +299,6 @@ export function ProblemSolvingSessionProvider({
       isHydrated,
       pauseSession,
       resetSession,
-      retryQuestion,
       saveDraft,
       startQuestion,
       state.attempts,

@@ -1,32 +1,73 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+
+import { useCurrentUser } from '@/queries/auth/useCurrentUser';
+import {
+  useSaveProblemAnswerMutation,
+  useSubmitProblemAnswerMutation,
+} from '@/queries/problem/useProblemMutations';
+import {
+  useProblemQuestion,
+  useProblemSetDetail,
+  useProblemSetResult,
+} from '@/queries/problem/useProblemQueries';
 
 import ProblemExitConfirmModal from '../_components/ProblemExitConfirmModal';
 import ProblemQuestionCard from '../_components/ProblemQuestionCard';
 import ProblemSideToc from '../_components/ProblemSideToc';
 import ProblemSolvingHeader from '../_components/ProblemSolvingHeader';
 import { useProblemSolvingSession } from '../_contexts/ProblemSolvingSessionContext';
-import { mockProblemQuestions } from '../_data/mockProblemSolving';
-import type { ProblemQuestion } from '../_types/problemSolving';
+import type { ProblemAttempt, ProblemQuestion } from '../_types/problemSolving';
 import { formatElapsedTime } from '../_utils/formatElapsedTime';
 
 type ProblemQuestionViewProps = {
   problemSetId: string;
-  question: ProblemQuestion;
-  questionIndex: number;
+  questionId: string;
   isReviewMode?: boolean;
 };
 
+function createApiAttempt(question: ProblemQuestion, isReviewMode: boolean): ProblemAttempt {
+  const status =
+    question.status === 'correct'
+      ? 'correct'
+      : question.status === 'incorrect'
+        ? 'incorrect'
+        : 'pending';
+  const submitted = status !== 'pending';
+
+  return {
+    answer: question.myAnswer?.answer ?? '',
+    selectedChoiceId: question.myAnswer?.selectedChoiceId ?? '',
+    status,
+    elapsedSeconds: question.elapsedSeconds ?? 0,
+    submitted,
+    selfChecked: submitted && (question.type === 'multipleChoice' || isReviewMode),
+  };
+}
+
+function getAnswerLabel(
+  answer: { selectedChoiceId?: string; answer?: string } | undefined,
+  question: ProblemQuestion | undefined,
+) {
+  if (answer?.answer) {
+    return answer.answer;
+  }
+
+  if (answer?.selectedChoiceId) {
+    return question?.choices?.find((choice) => choice.id === answer.selectedChoiceId)?.label;
+  }
+
+  return undefined;
+}
+
 export default function ProblemQuestionView({
   problemSetId,
-  question,
-  questionIndex,
+  questionId,
   isReviewMode = false,
 }: ProblemQuestionViewProps) {
   const router = useRouter();
-
   const {
     totalElapsedSeconds,
     attempts,
@@ -35,7 +76,6 @@ export default function ProblemQuestionView({
     saveDraft,
     submitQuestion,
     gradeQuestion,
-    retryQuestion,
     pauseSession,
     finishSession,
     resetSession,
@@ -44,29 +84,142 @@ export default function ProblemQuestionView({
   const [isTocOpen, setIsTocOpen] = useState(false);
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
-  const isLastQuestion = questionIndex === mockProblemQuestions.length - 1;
-  const previousQuestion = mockProblemQuestions[questionIndex - 1];
-  const nextQuestion = mockProblemQuestions[questionIndex + 1];
-  const reviewQuery = isReviewMode ? '?from=result' : '';
+  const currentUserQuery = useCurrentUser();
+  const userId = currentUserQuery.data?.id;
+  const detailQuery = useProblemSetDetail({
+    userId,
+    problemSetId,
+    enabled: currentUserQuery.isSuccess,
+  });
+  const questionQuery = useProblemQuestion({
+    userId,
+    problemSetId,
+    questionId,
+    enabled: currentUserQuery.isSuccess,
+  });
+  const resultQuery = useProblemSetResult({
+    userId,
+    problemSetId,
+    enabled: currentUserQuery.isSuccess && isReviewMode,
+  });
+  const saveAnswerMutation = useSaveProblemAnswerMutation();
+  const submitAnswerMutation = useSubmitProblemAnswerMutation();
+
+  const apiAttempt = useMemo(
+    () => (questionQuery.data ? createApiAttempt(questionQuery.data, isReviewMode) : undefined),
+    [isReviewMode, questionQuery.data],
+  );
+  const resultQuestion = resultQuery.data?.questions.find((item) => item.id === questionId);
+  const question = useMemo(() => {
+    if (!questionQuery.data) {
+      return undefined;
+    }
+
+    return {
+      ...questionQuery.data,
+      correctAnswer: getAnswerLabel(resultQuestion?.correctAnswer, questionQuery.data),
+    };
+  }, [questionQuery.data, resultQuestion?.correctAnswer]);
 
   useEffect(() => {
-    if (isHydrated) {
-      startQuestion(question.id, { review: isReviewMode });
+    if (isHydrated && question && apiAttempt) {
+      startQuestion(question.id, { review: isReviewMode, initialAttempt: apiAttempt });
     }
-  }, [isHydrated, isReviewMode, question.id, startQuestion]);
+  }, [apiAttempt, isHydrated, isReviewMode, question, startQuestion]);
+
+  const error =
+    currentUserQuery.error ??
+    detailQuery.error ??
+    questionQuery.error ??
+    (isReviewMode ? resultQuery.error : null);
+  const isLoading =
+    !error &&
+    (currentUserQuery.isPending ||
+      (Boolean(userId) &&
+        (detailQuery.isPending ||
+          questionQuery.isPending ||
+          (isReviewMode && resultQuery.isPending))));
+
+  if (isLoading) {
+    return (
+      <main className="bg-bg-1 flex min-h-dvh items-center justify-center text-[16px] font-medium text-gray-600">
+        문제를 불러오는 중입니다.
+      </main>
+    );
+  }
+
+  const detail = detailQuery.data;
+  if (!userId || !detail || !question || !apiAttempt || error) {
+    return (
+      <main className="bg-bg-1 flex min-h-dvh flex-col items-center justify-center gap-4 text-[16px] font-medium text-gray-600">
+        <p role="alert">{error instanceof Error ? error.message : '문제를 찾을 수 없습니다.'}</p>
+        <button
+          type="button"
+          className="text-secondary-700 underline"
+          onClick={() => {
+            if (currentUserQuery.error) {
+              void currentUserQuery.refetch();
+              return;
+            }
+
+            void Promise.all([
+              detailQuery.refetch(),
+              questionQuery.refetch(),
+              ...(isReviewMode ? [resultQuery.refetch()] : []),
+            ]);
+          }}
+        >
+          다시 시도
+        </button>
+      </main>
+    );
+  }
+
+  const questionIndex = detail.questions.findIndex((item) => item.id === question.id);
+  if (questionIndex < 0) {
+    return (
+      <main className="bg-bg-1 flex min-h-dvh items-center justify-center text-[16px] font-medium text-gray-600">
+        문제집에 포함되지 않은 문제입니다.
+      </main>
+    );
+  }
+
+  const previousQuestion = detail.questions[questionIndex - 1];
+  const sequentialNextQuestion = detail.questions[questionIndex + 1];
+  const nextQuestion =
+    sequentialNextQuestion ??
+    (!isReviewMode
+      ? detail.questions.find(
+          (item) =>
+            item.id !== question.id &&
+            item.status === 'notStarted' &&
+            !attempts[item.id]?.submitted,
+        )
+      : undefined);
+  const isLastQuestion = !nextQuestion;
+  const reviewQuery = isReviewMode ? '?from=result' : '';
+  const sessionAttempt = attempts[question.id];
+  const initialAttempt =
+    !isReviewMode && question.type === 'shortAnswer' && sessionAttempt?.submitted
+      ? sessionAttempt
+      : apiAttempt.submitted
+        ? apiAttempt
+        : (sessionAttempt ?? apiAttempt);
+  const completedCount = new Set([
+    ...detail.questions.filter((item) => item.status !== 'notStarted').map((item) => item.id),
+    ...Object.entries(attempts)
+      .filter(([, attempt]) => attempt.submitted)
+      .map(([id]) => id),
+  ]).size;
 
   const handleNext = () => {
-    if (isLastQuestion) {
+    if (!nextQuestion) {
       finishSession();
       router.push(`/problem/${problemSetId}/result`);
       return;
     }
 
     router.push(`/problem/${problemSetId}/questions/${nextQuestion.id}${reviewQuery}`);
-  };
-
-  const handleRetry = () => {
-    retryQuestion(question.id);
   };
 
   const handleOpenExitModal = () => {
@@ -79,7 +232,7 @@ export default function ProblemQuestionView({
     setIsExitModalOpen(false);
 
     if (isReviewMode || !attempts[question.id]?.submitted) {
-      startQuestion(question.id, { review: isReviewMode });
+      startQuestion(question.id, { review: isReviewMode, initialAttempt: apiAttempt });
     }
   };
 
@@ -93,14 +246,37 @@ export default function ProblemQuestionView({
     handleOpenExitModal();
   };
 
-  const handleSaveAndExit = () => {
-    pauseSession();
-    router.push(`/problem/${problemSetId}`);
-  };
+  const handleSaveAndExit = async () => {
+    const attempt = attempts[question.id] ?? apiAttempt;
+    const hasDraft =
+      question.type === 'shortAnswer'
+        ? Boolean(attempt.answer.trim())
+        : Boolean(attempt.selectedChoiceId);
 
-  const handleExitWithoutSave = () => {
-    resetSession();
-    router.push(`/problem/${problemSetId}`);
+    try {
+      if (!attempt.submitted && hasDraft) {
+        await saveAnswerMutation.mutateAsync({
+          userId,
+          problemSetId,
+          questionId: question.id,
+          answer: {
+            answer: question.type === 'shortAnswer' ? attempt.answer : undefined,
+            selectedChoiceId:
+              question.type === 'multipleChoice' ? attempt.selectedChoiceId : undefined,
+            elapsedSeconds: attempt.elapsedSeconds,
+          },
+        });
+      }
+
+      pauseSession();
+      router.push(`/problem/${problemSetId}`);
+    } catch (saveError) {
+      window.alert(
+        saveError instanceof Error
+          ? saveError.message
+          : '진행도를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.',
+      );
+    }
   };
 
   return (
@@ -114,8 +290,8 @@ export default function ProblemQuestionView({
         backHref={isReviewMode ? `/problem/${problemSetId}/result` : `/problem/${problemSetId}`}
         onBack={handleHeaderBack}
         elapsedTime={formatElapsedTime(totalElapsedSeconds)}
-        current={question.no}
-        total={mockProblemQuestions.length}
+        current={completedCount}
+        total={detail.questions.length}
         onMenuClick={() => {
           setIsTocOpen(true);
         }}
@@ -126,27 +302,67 @@ export default function ProblemQuestionView({
           <ProblemQuestionCard
             key={`${question.id}:${isReviewMode ? 'review' : 'solve'}`}
             question={question}
-            initialAttempt={attempts[question.id]}
+            initialAttempt={initialAttempt}
             isLastQuestion={isLastQuestion}
             isReviewMode={isReviewMode}
             onDraftChange={(draft) => {
               saveDraft(question.id, draft);
             }}
-            onSubmitAnswer={(submission) => {
-              submitQuestion(question.id, submission);
+            onSubmitAnswer={async (submission) => {
+              const elapsedSeconds =
+                attempts[question.id]?.elapsedSeconds ?? apiAttempt.elapsedSeconds;
+              const submittedQuestion = await submitAnswerMutation.mutateAsync({
+                userId,
+                problemSetId,
+                questionId: question.id,
+                answer: {
+                  answer: question.type === 'shortAnswer' ? submission.answer : undefined,
+                  selectedChoiceId:
+                    question.type === 'multipleChoice' ? submission.selectedChoiceId : undefined,
+                  elapsedSeconds,
+                },
+              });
+
+              const status =
+                submittedQuestion.status === 'correct'
+                  ? 'correct'
+                  : submittedQuestion.status === 'incorrect'
+                    ? 'incorrect'
+                    : null;
+              const submittedAnswer = {
+                answer: submittedQuestion.myAnswer?.answer ?? submission.answer,
+                selectedChoiceId:
+                  submittedQuestion.myAnswer?.selectedChoiceId ?? submission.selectedChoiceId,
+              };
+
+              if (question.type === 'shortAnswer') {
+                submitQuestion(question.id, { ...submittedAnswer, status: 'pending' });
+                return null;
+              }
+
+              if (!status) {
+                throw new Error('채점 결과를 확인할 수 없습니다.');
+              }
+
+              submitQuestion(question.id, { ...submittedAnswer, status });
+
+              return status;
             }}
             onSelfCheck={(status) => {
               gradeQuestion(question.id, status);
             }}
+            onRetry={() => {
+              window.alert('문제별 다시풀기는 서버 API가 지원된 이후 연결될 예정입니다.');
+              return Promise.resolve(false);
+            }}
             onNext={handleNext}
-            onRetry={handleRetry}
           />
         )}
       </div>
 
       <ProblemSideToc
         problemSetId={problemSetId}
-        questions={mockProblemQuestions}
+        questions={detail.questions}
         isOpen={isTocOpen}
         onClose={() => {
           setIsTocOpen(false);
@@ -168,8 +384,13 @@ export default function ProblemQuestionView({
       <ProblemExitConfirmModal
         isOpen={isExitModalOpen}
         onClose={handleCloseExitModal}
-        onSaveAndExit={handleSaveAndExit}
-        onExitWithoutSave={handleExitWithoutSave}
+        onSaveAndExit={() => {
+          void handleSaveAndExit();
+        }}
+        onExitWithoutSave={() => {
+          resetSession();
+          router.push(`/problem/${problemSetId}`);
+        }}
       />
     </main>
   );

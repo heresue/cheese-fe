@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+import type { MouseEventHandler } from 'react';
+
 import { Button } from '@/components/common/Button';
 
 import ProblemActionIcon from './ProblemActionIcon';
@@ -11,7 +13,7 @@ type ProblemSetSummaryCardProps = {
   summary: ProblemSetSummary;
   actionLabel: string;
   actionHref: string;
-  onActionClick?: () => void;
+  onActionClick?: MouseEventHandler<HTMLAnchorElement>;
   showProgress?: boolean;
 };
 
@@ -40,7 +42,7 @@ export default function ProblemSetSummaryCard({
         />
 
         <span className="bg-bg-white absolute top-[12px] left-[12px] flex h-[24px] w-[38px] items-center justify-center rounded-full text-[12px] leading-[24px] font-bold">
-          FE
+          {summary.badge}
         </span>
       </div>
 
