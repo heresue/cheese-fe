@@ -32,8 +32,9 @@ function ProblemListView() {
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const currentUserQuery = useCurrentUser();
+  const userId = currentUserQuery.data?.id;
   const problemSetsQuery = useProblemSets({
-    userId: currentUserQuery.data?.id,
+    userId,
     enabled: currentUserQuery.isSuccess,
   });
 
@@ -54,8 +55,9 @@ function ProblemListView() {
 
   const visibleProblemSets = filteredProblemSets.slice(0, visibleCount);
   const hasMoreProblemSets = visibleCount < filteredProblemSets.length;
-  const isLoading = currentUserQuery.isPending || problemSetsQuery.isPending;
   const error = currentUserQuery.error ?? problemSetsQuery.error;
+  const isLoading =
+    !error && (currentUserQuery.isPending || (Boolean(userId) && problemSetsQuery.isPending));
 
   const resetVisibleProblemSets = () => {
     setVisibleCount(PAGE_SIZE);
@@ -169,6 +171,11 @@ function ProblemListView() {
                 type="button"
                 className="text-secondary-700 underline"
                 onClick={() => {
+                  if (currentUserQuery.error) {
+                    void currentUserQuery.refetch();
+                    return;
+                  }
+
                   void problemSetsQuery.refetch();
                 }}
               >

@@ -26,8 +26,9 @@ export default function DashboardProblemSets() {
   const [startIndex, setStartIndex] = useState(0);
 
   const currentUserQuery = useCurrentUser();
+  const userId = currentUserQuery.data?.id;
   const problemSetsQuery = useProblemSets({
-    userId: currentUserQuery.data?.id,
+    userId,
     enabled: currentUserQuery.isSuccess,
   });
 
@@ -35,7 +36,9 @@ export default function DashboardProblemSets() {
     () => getInProgressProblemSets(problemSetsQuery.data ?? []),
     [problemSetsQuery.data],
   );
-  const isLoading = currentUserQuery.isPending || problemSetsQuery.isPending;
+  const error = currentUserQuery.error ?? problemSetsQuery.error;
+  const isLoading =
+    !error && (currentUserQuery.isPending || (Boolean(userId) && problemSetsQuery.isPending));
 
   const maxStartIndex = getProblemCarouselMaxStartIndex(practiceSets.length);
   const visibleStartIndex = Math.min(startIndex, maxStartIndex);
@@ -61,6 +64,27 @@ export default function DashboardProblemSets() {
           className="flex min-h-[188px] items-center justify-center rounded-[10px] border border-gray-300 bg-white p-8 text-[15px] font-medium text-gray-600"
         >
           진행 중인 문제풀이를 불러오는 중입니다.
+        </div>
+      ) : error ? (
+        <div
+          role="alert"
+          className="flex min-h-[188px] flex-col items-center justify-center gap-4 rounded-[10px] border border-gray-300 bg-white p-8 text-center text-[15px] font-medium text-gray-600"
+        >
+          <p>{error instanceof Error ? error.message : '문제풀이를 불러오지 못했습니다.'}</p>
+          <button
+            type="button"
+            className="text-secondary-700 underline"
+            onClick={() => {
+              if (currentUserQuery.error) {
+                void currentUserQuery.refetch();
+                return;
+              }
+
+              void problemSetsQuery.refetch();
+            }}
+          >
+            다시 시도
+          </button>
         </div>
       ) : practiceSets.length > 0 ? (
         <div className="group relative h-[250px] w-full overflow-visible">

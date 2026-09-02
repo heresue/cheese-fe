@@ -127,16 +127,18 @@ export default function ProblemQuestionView({
     }
   }, [apiAttempt, isHydrated, isReviewMode, question, startQuestion]);
 
-  const isLoading =
-    currentUserQuery.isPending ||
-    detailQuery.isPending ||
-    questionQuery.isPending ||
-    (isReviewMode && resultQuery.isPending);
   const error =
     currentUserQuery.error ??
     detailQuery.error ??
     questionQuery.error ??
     (isReviewMode ? resultQuery.error : null);
+  const isLoading =
+    !error &&
+    (currentUserQuery.isPending ||
+      (Boolean(userId) &&
+        (detailQuery.isPending ||
+          questionQuery.isPending ||
+          (isReviewMode && resultQuery.isPending))));
 
   if (isLoading) {
     return (
@@ -155,6 +157,11 @@ export default function ProblemQuestionView({
           type="button"
           className="text-secondary-700 underline"
           onClick={() => {
+            if (currentUserQuery.error) {
+              void currentUserQuery.refetch();
+              return;
+            }
+
             void Promise.all([detailQuery.refetch(), questionQuery.refetch()]);
           }}
         >

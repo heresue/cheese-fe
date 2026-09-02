@@ -46,8 +46,11 @@ export default function ProblemResultView({ problemSetId }: ProblemResultViewPro
     }
   }, [finishSession, isHydrated]);
 
-  const isLoading = currentUserQuery.isPending || detailQuery.isPending || resultQuery.isPending;
   const error = currentUserQuery.error ?? detailQuery.error ?? resultQuery.error;
+  const isLoading =
+    !error &&
+    (currentUserQuery.isPending ||
+      (Boolean(userId) && (detailQuery.isPending || resultQuery.isPending)));
 
   if (isLoading) {
     return (

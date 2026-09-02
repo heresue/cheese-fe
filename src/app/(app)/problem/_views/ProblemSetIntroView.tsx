@@ -25,15 +25,17 @@ export default function ProblemSetIntroView({ problemSetId }: ProblemSetIntroVie
   const [isExitModalOpen, setIsExitModalOpen] = useState(false);
 
   const currentUserQuery = useCurrentUser();
+  const userId = currentUserQuery.data?.id;
   const detailQuery = useProblemSetDetail({
-    userId: currentUserQuery.data?.id,
+    userId,
     problemSetId,
     enabled: currentUserQuery.isSuccess,
   });
 
   const detail = detailQuery.data;
-  const isLoading = currentUserQuery.isPending || detailQuery.isPending;
   const error = currentUserQuery.error ?? detailQuery.error;
+  const isLoading =
+    !error && (currentUserQuery.isPending || (Boolean(userId) && detailQuery.isPending));
 
   if (isLoading) {
     return (
@@ -51,6 +53,11 @@ export default function ProblemSetIntroView({ problemSetId }: ProblemSetIntroVie
           type="button"
           className="text-secondary-700 underline"
           onClick={() => {
+            if (currentUserQuery.error) {
+              void currentUserQuery.refetch();
+              return;
+            }
+
             void detailQuery.refetch();
           }}
         >
