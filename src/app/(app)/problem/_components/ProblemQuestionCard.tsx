@@ -24,7 +24,7 @@ type ProblemQuestionCardProps = {
   onSubmitAnswer: (submission: {
     answer: string;
     selectedChoiceId: string;
-  }) => Promise<GradedStatus>;
+  }) => Promise<GradedStatus | null>;
   onSelfCheck: (status: GradedStatus) => void;
   onRetry: () => Promise<boolean>;
   onNext: () => void;

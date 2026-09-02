@@ -329,17 +329,22 @@ export default function ProblemQuestionView({
                   : submittedQuestion.status === 'incorrect'
                     ? 'incorrect'
                     : null;
+              const submittedAnswer = {
+                answer: submittedQuestion.myAnswer?.answer ?? submission.answer,
+                selectedChoiceId:
+                  submittedQuestion.myAnswer?.selectedChoiceId ?? submission.selectedChoiceId,
+              };
+
+              if (question.type === 'shortAnswer') {
+                submitQuestion(question.id, { ...submittedAnswer, status: 'pending' });
+                return null;
+              }
 
               if (!status) {
                 throw new Error('채점 결과를 확인할 수 없습니다.');
               }
 
-              submitQuestion(question.id, {
-                answer: submittedQuestion.myAnswer?.answer ?? submission.answer,
-                selectedChoiceId:
-                  submittedQuestion.myAnswer?.selectedChoiceId ?? submission.selectedChoiceId,
-                status: question.type === 'shortAnswer' ? 'pending' : status,
-              });
+              submitQuestion(question.id, { ...submittedAnswer, status });
 
               return status;
             }}
