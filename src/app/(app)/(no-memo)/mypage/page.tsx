@@ -15,6 +15,7 @@ import ConfirmModal from './_components/Modal/ConfirmModal';
 
 import { useCurrentUser } from '@/queries/auth/useCurrentUser';
 import { useMypage } from '@/queries/mypage/useMypage';
+import { useUpdatePersonalProfile } from '@/queries/mypage/useUpdatePersonalProfile';
 
 import { CompanyIcon, PersonalIcon } from '@/assets/icons/settings';
 
@@ -37,6 +38,7 @@ const PROFILE_SWITCH_OPTIONS: CategoryTabItem<ProfileType>[] = [
 export default function MyPage() {
   const { data: user } = useCurrentUser();
   const { data: mypage, isPending, isError } = useMypage(user?.id);
+  const { mutateAsync: updatePersonalProfile } = useUpdatePersonalProfile();
 
   const [pendingProfileType, setPendingProfileType] = useState<ProfileType | null>(null);
 
@@ -150,87 +152,49 @@ export default function MyPage() {
   // TODO 2:
   // - employeeCount는 number input으로 분리하여 빈 값 처리 및 숫자 입력 보장
   // - foundedAt은 date input으로 분리하여 날짜 형식 보장
-  const handleSaveMypageItem = (
+  const handleSaveMypageItem = async (
     section: MypageItemSection,
     field: MypageItemField,
     value: string | ProfileDocument | ContactSettings,
   ) => {
     if (section === 'accountAction') return;
 
-    // setMypage((prev) => {
-    //   if (section === 'personalProfile') {
-    //     let nextValue: unknown = value;
+    try {
+      if (section === 'personalProfile') {
+        if (!user?.id) return;
 
-    //     if ((field === 'skills' || field === 'interests') && typeof value === 'string') {
-    //       nextValue = value
-    //         .split(',')
-    //         .map((item) => item.trim())
-    //         .filter(Boolean);
-    //     }
+        let nextValue: unknown = value;
 
-    //     const personalField = field as keyof typeof prev.personalProfile;
+        if ((field === 'skills' || field === 'interests') && typeof value === 'string') {
+          nextValue = value
+            .split(',')
+            .map((item) => item.trim())
+            .filter(Boolean);
+        }
 
-    //     return {
-    //       ...prev,
-    //       personalProfile: {
-    //         ...prev.personalProfile,
-    //         [personalField]: nextValue,
-    //       },
-    //     };
-    //   }
+        const personalProfileData = {
+          nickname: mypage.personalProfile.nickname,
+          email: mypage.personalProfile.email,
+          profileImageUrl: mypage.personalProfile.profileImageUrl,
+          interestedJob: mypage.personalProfile.interestedJob,
+          coverLetter: mypage.personalProfile.coverLetter,
+          additionalDocument: mypage.personalProfile.additionalDocument,
+          skills: mypage.personalProfile.skills,
+          interests: mypage.personalProfile.interests,
+          contactMethod: mypage.personalProfile.contactMethod,
+          contactUrl: mypage.personalProfile.contactUrl,
+        };
 
-    //   if (section === 'companyProfile') {
-    //     let nextValue: unknown = value;
+        await updatePersonalProfile({
+          userId: user.id,
+          data: { ...personalProfileData, [field]: nextValue },
+        });
 
-    //     if (field === 'industryType' && typeof value === 'string') {
-    //       nextValue = value
-    //         .split(',')
-    //         .map((item) => item.trim())
-    //         .filter(Boolean);
-    //     }
-
-    //     if (field === 'employeeCount' && typeof value === 'string') {
-    //       nextValue = Number(value.replace(/[^0-9]/g, ''));
-    //     }
-
-    //     const companyField = field as keyof typeof prev.companyProfile;
-
-    //     return {
-    //       ...prev,
-    //       companyProfile: {
-    //         ...prev.companyProfile,
-    //         [companyField]: nextValue,
-    //       },
-    //     };
-    //   }
-
-    //   if (section === 'accountSettings') {
-    //     if (field === 'contactMethod' && typeof value === 'object' && 'contactMethod' in value) {
-    //       return {
-    //         ...prev,
-    //         accountSettings: {
-    //           ...prev.accountSettings,
-    //           contactMethod: value.contactMethod,
-    //           contactUrl: value.contactUrl,
-    //         },
-    //       };
-    //     }
-
-    //     const accountField = field as keyof typeof prev.accountSettings;
-
-    //     return {
-    //       ...prev,
-    //       accountSettings: {
-    //         ...prev.accountSettings,
-    //         [accountField]: value,
-    //       },
-    //     };
-    //   }
-
-    //   return prev;
-    // });
-
-    closeModal();
+        closeModal();
+      }
+    } catch (error) {
+      console.error('Failed to update personal profile:', error);
+    }
   };
 
   return (
