@@ -162,7 +162,11 @@ export default function ProblemQuestionView({
               return;
             }
 
-            void Promise.all([detailQuery.refetch(), questionQuery.refetch()]);
+            void Promise.all([
+              detailQuery.refetch(),
+              questionQuery.refetch(),
+              ...(isReviewMode ? [resultQuery.refetch()] : []),
+            ]);
           }}
         >
           다시 시도
