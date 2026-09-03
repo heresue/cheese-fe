@@ -83,11 +83,15 @@ export default function MyPage() {
         subText: mypage.companyProfile.companyType,
       };
 
-  const isMypageItemSaving =
-    isPersonalProfilePending || isCompanyProfilePending || isAccountSettingsPending;
+  const isMypageMutating =
+    isActiveProfilePending ||
+    isPersonalProfilePending ||
+    isCompanyProfilePending ||
+    isAccountSettingsPending ||
+    isUploadFilePending;
 
   const handleChangeProfileType = (value: ProfileType) => {
-    if (value === activeProfileType) return;
+    if (isMypageMutating || value === activeProfileType) return;
 
     setPendingProfileType(value);
   };
@@ -109,6 +113,8 @@ export default function MyPage() {
   };
 
   const handleCancelProfileChange = () => {
+    if (isMypageMutating) return;
+
     setPendingProfileType(null);
   };
 
@@ -299,7 +305,7 @@ export default function MyPage() {
             <input
               type="file"
               accept="image/*"
-              disabled={isUploadFilePending}
+              disabled={isMypageMutating}
               className="sr-only"
               onChange={handleProfileImageChange}
             />
@@ -328,7 +334,7 @@ export default function MyPage() {
             editingItem={editingItem}
             onClose={closeModal}
             onSave={handleSaveMypageItem}
-            isPending={isMypageItemSaving}
+            isPending={isMypageMutating}
           />
         </div>
       </div>
@@ -340,7 +346,7 @@ export default function MyPage() {
         title="프로필을 전환하시겠습니까?"
         description={`전환 후 ${nextProfileLabel}로 서비스가 이용됩니다.`}
         buttonText="전환하기"
-        disabled={isActiveProfilePending}
+        disabled={isMypageMutating}
       />
     </>
   );

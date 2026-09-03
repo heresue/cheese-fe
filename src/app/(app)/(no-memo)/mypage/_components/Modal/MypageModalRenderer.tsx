@@ -117,7 +117,7 @@ export default function MypageModalRenderer({
             : undefined
         }
         disabled={isPending}
-        onClose={onClose}
+        onClose={handleEditModalClose}
         onSave={(value) => {
           onSave(editingItem.section, editingItem.field, value);
         }}
@@ -134,7 +134,7 @@ export default function MypageModalRenderer({
         inputLabel={editingItem.label}
         document={editingItem.document}
         disabled={isPending}
-        onClose={onClose}
+        onClose={handleEditModalClose}
         onSave={(document) => {
           onSave(editingItem.section, editingItem.field, document);
         }}
