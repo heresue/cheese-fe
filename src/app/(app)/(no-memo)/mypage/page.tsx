@@ -104,6 +104,7 @@ export default function MyPage() {
       setPendingProfileType(null);
     } catch (error) {
       console.error('Failed to update active profile type:', error);
+      alert('프로필 타입 변경에 실패했습니다. 다시 시도해 주세요.');
     }
   };
 
@@ -162,6 +163,7 @@ export default function MyPage() {
       }
     } catch (error) {
       console.error('Failed to upload profile image:', error);
+      alert('프로필 이미지 변경에 실패했습니다. 다시 시도해 주세요.');
     }
   };
 
@@ -272,6 +274,7 @@ export default function MyPage() {
       }
     } catch (error) {
       console.error('Failed to update profile:', error);
+      alert('프로필 변경에 실패했습니다. 다시 시도해 주세요.');
     }
   };
 
@@ -296,6 +299,7 @@ export default function MyPage() {
             <input
               type="file"
               accept="image/*"
+              disabled={isUploadFilePending}
               className="sr-only"
               onChange={handleProfileImageChange}
             />
@@ -336,6 +340,7 @@ export default function MyPage() {
         title="프로필을 전환하시겠습니까?"
         description={`전환 후 ${nextProfileLabel}로 서비스가 이용됩니다.`}
         buttonText="전환하기"
+        disabled={isActiveProfilePending}
       />
     </>
   );
