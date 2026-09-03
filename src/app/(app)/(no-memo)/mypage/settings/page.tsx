@@ -5,6 +5,7 @@ import ChevronIcon from '@/assets/icons/common/chevron.svg';
 import SettingItem from '../_components/Layout/SettingItem';
 import { SETTINGS_ITEMS } from './_constants/settingsItems';
 
+// TODO: 사용자 설정 옵션 확정 및 UI 구현 후 settings API 연동
 export default function SettingsPage() {
   return (
     <div>

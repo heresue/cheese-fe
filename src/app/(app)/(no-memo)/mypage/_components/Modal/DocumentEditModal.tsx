@@ -43,6 +43,8 @@ export default function DocumentEditModal({
     e.preventDefault();
 
     // TODO: 실제 파일 업로드 후 서버에서 받은 URL로 교체
+    // - 현재 파일 업로드 API가 이미지 형식만 지원하여 문서 파일은 실제 업로드되지 않음
+    // - 문서 업로드 API 지원 후 file 선택 시 업로드하고 응답 fileUrl을 저장하도록 수정 필요
     const nextDocument: ProfileDocument = {
       ...document,
       fileName,
