@@ -15,9 +15,10 @@ import ConfirmModal from './_components/Modal/ConfirmModal';
 
 import { useCurrentUser } from '@/queries/auth/useCurrentUser';
 import { useMypage } from '@/queries/mypage/useMypage';
+import { useUpdateActiveProfileType } from '@/queries/mypage/useUpdateActiveProfileType';
 import { useUpdatePersonalProfile } from '@/queries/mypage/useUpdatePersonalProfile';
 import { useUpdateCompanyProfile } from '@/queries/mypage/useUpdateCompanyProfile';
-import { useUpdateActiveProfileType } from '@/queries/mypage/useUpdateActiveProfileType';
+import { useUpdateAccountSettings } from '@/queries/mypage/useUpdateAccountSettings';
 import { useUploadFile } from '@/queries/files/useUploadFile';
 
 import { CompanyIcon, PersonalIcon } from '@/assets/icons/settings';
@@ -44,6 +45,7 @@ export default function MyPage() {
   const { mutateAsync: updateActiveProfileType } = useUpdateActiveProfileType();
   const { mutateAsync: updatePersonalProfile } = useUpdatePersonalProfile();
   const { mutateAsync: updateCompanyProfile } = useUpdateCompanyProfile();
+  const { mutateAsync: updateAccountSettings } = useUpdateAccountSettings();
   const { mutateAsync: uploadFile } = useUploadFile();
 
   const [pendingProfileType, setPendingProfileType] = useState<ProfileType | null>(null);
@@ -164,9 +166,9 @@ export default function MyPage() {
     if (section === 'accountAction') return;
 
     try {
-      if (section === 'personalProfile') {
-        if (!user?.id) return;
+      if (!user?.id) return;
 
+      if (section === 'personalProfile') {
         let nextValue: unknown = value;
 
         if ((field === 'skills' || field === 'interests') && typeof value === 'string') {
@@ -198,8 +200,6 @@ export default function MyPage() {
       }
 
       if (section === 'companyProfile') {
-        if (!user?.id) return;
-
         let nextValue: unknown = value;
 
         if (field === 'industryType' && typeof value === 'string') {
@@ -230,6 +230,35 @@ export default function MyPage() {
         await updateCompanyProfile({
           userId: user.id,
           data: { ...companyProfileData, [field]: nextValue },
+        });
+
+        closeModal();
+      }
+
+      if (section === 'accountSettings') {
+        const accountSettingsData = {
+          contactMethod: mypage.accountSettings.contactMethod,
+          contactUrl: mypage.accountSettings.contactUrl,
+          email: mypage.accountSettings.email,
+          passwordUpdatedAt: mypage.accountSettings.passwordUpdatedAt,
+          address: mypage.accountSettings.address,
+        };
+
+        const nextAccountSettingsData =
+          field === 'contactMethod' && typeof value === 'object' && 'contactMethod' in value
+            ? {
+                ...accountSettingsData,
+                contactMethod: value.contactMethod,
+                contactUrl: value.contactUrl,
+              }
+            : {
+                ...accountSettingsData,
+                [field]: value,
+              };
+
+        await updateAccountSettings({
+          userId: user.id,
+          data: nextAccountSettingsData,
         });
 
         closeModal();

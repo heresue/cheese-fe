@@ -218,6 +218,7 @@ export function getCompanyProfileItems(profile: CompanyProfile): SettingItemData
 
 export function getAccountItems(profile: AccountSettings): SettingItemData[] {
   return [
+    // TODO: 이메일을 연락용으로 사용할지 여부 확인 후 수정 플로우 반영
     {
       section: 'accountSettings',
       field: 'contactMethod',
@@ -240,6 +241,7 @@ export function getAccountItems(profile: AccountSettings): SettingItemData[] {
       buttonText: '변경',
       modalType: 'text',
     },
+    // TODO: 비밀번호 마지막 변경일 노출 필요 여부 기획 확인
     {
       section: 'accountAction',
       field: 'updatePassword',
@@ -269,6 +271,7 @@ export function getAccountItems(profile: AccountSettings): SettingItemData[] {
       buttonText: '로그아웃',
       modalType: 'confirm',
     },
+    // TODO: 계정 삭제 API 추가 후 회원탈퇴 기능 연동
     {
       section: 'accountAction',
       field: 'deleteAccount',

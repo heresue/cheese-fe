@@ -1,6 +1,12 @@
 import { apiClient } from '@/api/client';
 
-import type { PersonalProfile, Mypage, CompanyProfile, ProfileType } from '@/types/profile';
+import type {
+  PersonalProfile,
+  Mypage,
+  CompanyProfile,
+  ProfileType,
+  AccountSettings,
+} from '@/types/profile';
 
 export async function getMypage(userId: string) {
   return apiClient<Mypage>('/backend-api/mypage', {
@@ -46,5 +52,20 @@ export async function updateCompanyProfile({ userId, data }: UpdateCompanyProfil
   return apiClient<Mypage>('/backend-api/mypage/profile/company', {
     method: 'PATCH',
     body: JSON.stringify({ userId, ...data }),
+  });
+}
+
+export type UpdateAccountSettingsRequest = {
+  userId: string;
+  data: AccountSettings;
+};
+
+export async function updateAccountSettings({ userId, data }: UpdateAccountSettingsRequest) {
+  return apiClient<Mypage>('/backend-api/mypage/account-settings', {
+    method: 'PATCH',
+    body: JSON.stringify({
+      userId,
+      ...data,
+    }),
   });
 }
