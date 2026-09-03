@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 import ProfileImage from '@/components/common/ProfileImage';
 import { Button } from '@/components/common/Button';
@@ -18,6 +18,7 @@ import { useMypage } from '@/queries/mypage/useMypage';
 import { useUpdatePersonalProfile } from '@/queries/mypage/useUpdatePersonalProfile';
 import { useUpdateCompanyProfile } from '@/queries/mypage/useUpdateCompanyProfile';
 import { useUpdateActiveProfileType } from '@/queries/mypage/useUpdateActiveProfileType';
+import { useUploadFile } from '@/queries/files/useUploadFile';
 
 import { CompanyIcon, PersonalIcon } from '@/assets/icons/settings';
 
@@ -43,30 +44,11 @@ export default function MyPage() {
   const { mutateAsync: updateActiveProfileType } = useUpdateActiveProfileType();
   const { mutateAsync: updatePersonalProfile } = useUpdatePersonalProfile();
   const { mutateAsync: updateCompanyProfile } = useUpdateCompanyProfile();
+  const { mutateAsync: uploadFile } = useUploadFile();
 
   const [pendingProfileType, setPendingProfileType] = useState<ProfileType | null>(null);
 
-  const previewImageUrlsRef = useRef<Record<ProfileType, string | null>>({
-    personal: null,
-    company: null,
-  });
-
   const { editingItem, openModal, closeModal } = useMypageModal();
-
-  useEffect(() => {
-    return () => {
-      Object.values(previewImageUrlsRef.current).forEach((url) => {
-        if (url) {
-          URL.revokeObjectURL(url);
-        }
-      });
-
-      previewImageUrlsRef.current = {
-        personal: null,
-        company: null,
-      };
-    };
-  }, []);
 
   if (isPending) {
     return <div>로딩 중...</div>;
@@ -76,6 +58,7 @@ export default function MyPage() {
     return <div>마이페이지 정보를 불러오지 못했습니다.</div>;
   }
 
+  // TODO: 사이드바 프로필 정보를 activeProfileType 변경과 동기화
   const activeProfileType = mypage.activeProfileType;
   const isPersonalProfile = activeProfileType === 'personal';
   const nextProfileLabel = PROFILE_SWITCH_OPTIONS.find(
@@ -103,8 +86,6 @@ export default function MyPage() {
   const handleConfirmProfileChange = async () => {
     if (!pendingProfileType || !user?.id) return;
 
-    // TODO: 사이드바 프로필 정보를 activeProfileType 변경과 동기화
-
     try {
       await updateActiveProfileType({
         userId: user.id,
@@ -121,44 +102,59 @@ export default function MyPage() {
     setPendingProfileType(null);
   };
 
-  const handleProfileImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfileImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
 
-    if (!file) return;
+    if (!file || !user?.id) return;
 
-    const previousUrl = previewImageUrlsRef.current[activeProfileType];
+    try {
+      const uploadedFile = await uploadFile({
+        userId: user.id,
+        file,
+      });
 
-    if (previousUrl) {
-      URL.revokeObjectURL(previousUrl);
+      if (isPersonalProfile) {
+        const personalProfileData = {
+          nickname: mypage.personalProfile.nickname,
+          email: mypage.personalProfile.email,
+          profileImageUrl: uploadedFile.url,
+          interestedJob: mypage.personalProfile.interestedJob,
+          coverLetter: mypage.personalProfile.coverLetter,
+          additionalDocument: mypage.personalProfile.additionalDocument,
+          skills: mypage.personalProfile.skills,
+          interests: mypage.personalProfile.interests,
+          contactMethod: mypage.personalProfile.contactMethod,
+          contactUrl: mypage.personalProfile.contactUrl,
+        };
+
+        await updatePersonalProfile({
+          userId: user.id,
+          data: personalProfileData,
+        });
+      } else {
+        const companyProfileData = {
+          companyName: mypage.companyProfile.companyName,
+          email: mypage.companyProfile.email,
+          profileImageUrl: uploadedFile.url,
+          representativeName: mypage.companyProfile.representativeName,
+          companyType: mypage.companyProfile.companyType,
+          resumeTemplate: mypage.companyProfile.resumeTemplate,
+          industryType: mypage.companyProfile.industryType,
+          employeeCount: mypage.companyProfile.employeeCount,
+          foundedAt: mypage.companyProfile.foundedAt,
+          contactMethod: mypage.companyProfile.contactMethod,
+          contactUrl: mypage.companyProfile.contactUrl,
+        };
+
+        await updateCompanyProfile({
+          userId: user.id,
+          data: companyProfileData,
+        });
+      }
+    } catch (error) {
+      console.error('Failed to upload profile image:', error);
     }
-
-    const imageUrl = URL.createObjectURL(file);
-    previewImageUrlsRef.current[activeProfileType] = imageUrl;
-
-    // setMypage((prev) => {
-    //   if (activeProfileType === 'personal') {
-    //     return {
-    //       ...prev,
-    //       personalProfile: {
-    //         ...prev.personalProfile,
-    //         profileImageUrl: imageUrl,
-    //       },
-    //     };
-    //   }
-
-    //   return {
-    //     ...prev,
-    //     companyProfile: {
-    //       ...prev.companyProfile,
-    //       profileImageUrl: imageUrl,
-    //     },
-    //   };
-    // });
   };
-
-  // TODO:
-  // - 이미지 업로드 API 연동
-  // - React Query(또는 전역 상태)와 연동하여 사이드바 프로필 이미지까지 함께 갱신
 
   const handleSaveMypageItem = async (
     section: MypageItemSection,
