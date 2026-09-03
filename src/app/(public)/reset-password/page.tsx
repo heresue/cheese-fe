@@ -38,7 +38,8 @@ export default function ResetPasswordPage() {
           email={displayedEmail}
           onEmailChange={setEmail}
           onNext={() => setStep('VERIFY')}
-          disabled={isPending || !!user}
+          emailDisabled={isPending || !!user}
+          actionDisabled={isPending}
         />
       )}
 
