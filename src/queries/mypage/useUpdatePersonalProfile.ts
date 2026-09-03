@@ -11,7 +11,7 @@ export function useUpdatePersonalProfile() {
     },
 
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
+      return queryClient.invalidateQueries({
         queryKey: mypageQueryKeys.user(variables.userId),
       });
     },
