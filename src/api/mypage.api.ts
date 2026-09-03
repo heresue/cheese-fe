@@ -8,11 +8,12 @@ import type {
   AccountSettings,
 } from '@/types/profile';
 
-export async function getMypage(userId: string) {
+export async function getMypage(userId: string, signal?: AbortSignal) {
   return apiClient<Mypage>('/backend-api/mypage', {
     method: 'GET',
     cache: 'no-store',
     query: { userId },
+    signal,
   });
 }
 

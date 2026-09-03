@@ -6,12 +6,12 @@ import { mypageQueryKeys } from '@/queries/mypage/mypageQueryKeys';
 export function useMypage(userId: string | undefined) {
   return useQuery({
     queryKey: mypageQueryKeys.user(userId),
-    queryFn: () => {
+    queryFn: ({ signal }) => {
       if (!userId) {
         throw new Error('userId가 필요합니다');
       }
 
-      return getMypage(userId);
+      return getMypage(userId, signal);
     },
     enabled: !!userId,
   });
