@@ -16,6 +16,8 @@ import ConfirmModal from './_components/Modal/ConfirmModal';
 import { useCurrentUser } from '@/queries/auth/useCurrentUser';
 import { useMypage } from '@/queries/mypage/useMypage';
 import { useUpdatePersonalProfile } from '@/queries/mypage/useUpdatePersonalProfile';
+import { useUpdateCompanyProfile } from '@/queries/mypage/useUpdateCompanyProfile';
+import { useUpdateActiveProfileType } from '@/queries/mypage/useUpdateActiveProfileType';
 
 import { CompanyIcon, PersonalIcon } from '@/assets/icons/settings';
 
@@ -38,7 +40,9 @@ const PROFILE_SWITCH_OPTIONS: CategoryTabItem<ProfileType>[] = [
 export default function MyPage() {
   const { data: user } = useCurrentUser();
   const { data: mypage, isPending, isError } = useMypage(user?.id);
+  const { mutateAsync: updateActiveProfileType } = useUpdateActiveProfileType();
   const { mutateAsync: updatePersonalProfile } = useUpdatePersonalProfile();
+  const { mutateAsync: updateCompanyProfile } = useUpdateCompanyProfile();
 
   const [pendingProfileType, setPendingProfileType] = useState<ProfileType | null>(null);
 
@@ -96,15 +100,21 @@ export default function MyPage() {
     setPendingProfileType(value);
   };
 
-  const handleConfirmProfileChange = () => {
-    if (!pendingProfileType) return;
+  const handleConfirmProfileChange = async () => {
+    if (!pendingProfileType || !user?.id) return;
 
-    // TODO:
-    // - 프로필 전환 API 호출
-    // - activeProfileType 전역 상태 업데이트
-    // - 사이드바 및 전체 서비스 프로필 동기화
+    // TODO: 사이드바 프로필 정보를 activeProfileType 변경과 동기화
 
-    setPendingProfileType(null);
+    try {
+      await updateActiveProfileType({
+        userId: user.id,
+        activeProfileType: pendingProfileType,
+      });
+
+      setPendingProfileType(null);
+    } catch (error) {
+      console.error('Failed to update active profile type:', error);
+    }
   };
 
   const handleCancelProfileChange = () => {
@@ -146,12 +156,10 @@ export default function MyPage() {
     // });
   };
 
-  // TODO 1:
+  // TODO:
   // - 이미지 업로드 API 연동
   // - React Query(또는 전역 상태)와 연동하여 사이드바 프로필 이미지까지 함께 갱신
-  // TODO 2:
-  // - employeeCount는 number input으로 분리하여 빈 값 처리 및 숫자 입력 보장
-  // - foundedAt은 date input으로 분리하여 날짜 형식 보장
+
   const handleSaveMypageItem = async (
     section: MypageItemSection,
     field: MypageItemField,
@@ -192,8 +200,46 @@ export default function MyPage() {
 
         closeModal();
       }
+
+      if (section === 'companyProfile') {
+        if (!user?.id) return;
+
+        let nextValue: unknown = value;
+
+        if (field === 'industryType' && typeof value === 'string') {
+          nextValue = value
+            .split(',')
+            .map((item) => item.trim())
+            .filter(Boolean);
+        }
+
+        if (field === 'employeeCount' && typeof value === 'string') {
+          nextValue = Number(value);
+        }
+
+        const companyProfileData = {
+          companyName: mypage.companyProfile.companyName,
+          email: mypage.companyProfile.email,
+          profileImageUrl: mypage.companyProfile.profileImageUrl,
+          representativeName: mypage.companyProfile.representativeName,
+          companyType: mypage.companyProfile.companyType,
+          resumeTemplate: mypage.companyProfile.resumeTemplate,
+          industryType: mypage.companyProfile.industryType,
+          employeeCount: mypage.companyProfile.employeeCount,
+          foundedAt: mypage.companyProfile.foundedAt,
+          contactMethod: mypage.companyProfile.contactMethod,
+          contactUrl: mypage.companyProfile.contactUrl,
+        };
+
+        await updateCompanyProfile({
+          userId: user.id,
+          data: { ...companyProfileData, [field]: nextValue },
+        });
+
+        closeModal();
+      }
     } catch (error) {
-      console.error('Failed to update personal profile:', error);
+      console.error('Failed to update profile:', error);
     }
   };
 

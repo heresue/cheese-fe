@@ -27,11 +27,13 @@ export default function CompanyProfiles({ profile, onOpenModal }: CompanyProfile
                   section: item.section,
                   field: item.field,
                   label: item.label,
-                  value: item.value,
+                  value: item.editValue ?? item.value,
                   document: item.document,
                   buttonText: item.buttonText,
                   options: item.options,
                   modalType: item.modalType,
+                  inputType: item.inputType,
+                  min: item.min,
                 });
               }}
             />

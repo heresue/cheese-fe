@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { HTMLInputTypeAttribute, ReactNode } from 'react';
 
 import {
   CompanyIcon,
@@ -36,21 +36,35 @@ type SettingItemData = {
   section: MypageItemSection;
   field: MypageItemField;
   label: string;
+
   value?: string;
+  editValue?: string;
+
   contactUrl?: string;
   document?: ProfileDocument;
   urlLabel?: string;
+
   icon: ReactNode;
   buttonIcon: ReactNode;
   buttonText: string;
+
   modalType?: MypageModalType;
   options?: string[];
+  inputType?: HTMLInputTypeAttribute;
+  min?: number;
   danger?: boolean;
 };
 
-function formatDate(dateString: string) {
+function formatDate(dateString?: string) {
+  if (!dateString) return '';
+
   const date = new Date(dateString);
-  return `${date.getFullYear()}. ${String(date.getMonth() + 1).padStart(2, '0')}. ${String(date.getDate()).padStart(2, '0')}`;
+
+  if (Number.isNaN(date.getTime())) return '';
+
+  return `${date.getFullYear()}. ${String(date.getMonth() + 1).padStart(2, '0')}. ${String(
+    date.getDate(),
+  ).padStart(2, '0')}`;
 }
 
 export function getPersonalProfileItems(profile: PersonalProfile): SettingItemData[] {
@@ -179,20 +193,25 @@ export function getCompanyProfileItems(profile: CompanyProfile): SettingItemData
       field: 'employeeCount',
       label: '사원수',
       value: `${profile.employeeCount}명`,
+      editValue: String(profile.employeeCount ?? ''),
       icon: <EmployeeIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
       modalType: 'text',
+      inputType: 'number',
+      min: 0,
     },
     {
       section: 'companyProfile',
       field: 'foundedAt',
       label: '설립일',
       value: formatDate(profile.foundedAt),
+      editValue: profile.foundedAt ?? '',
       icon: <CalendarIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
       modalType: 'text',
+      inputType: 'date',
     },
   ];
 }

@@ -101,6 +101,8 @@ export default function MypageModalRenderer({
         title={`${editingItem.label} ${editingItem.buttonText}`}
         inputLabel={editingItem.label}
         value={editingItem.value}
+        inputType={editingItem.inputType}
+        min={editingItem.min}
         description={
           editingItem.label === '내 스킬' || editingItem.label === '내 관심분야'
             ? 'ex) HTML, CSS3, Java ...'
