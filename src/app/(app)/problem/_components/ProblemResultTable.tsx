@@ -69,7 +69,7 @@ export default function ProblemResultTable({ problemSetId, rows }: ProblemResult
               >
                 <Link href={reviewHref}>
                   <ProblemActionIcon className="h-[16px] w-[16px] shrink-0" />
-                  <span>다시 풀기</span>
+                  <span>복습하기</span>
                 </Link>
               </Button>
             </div>

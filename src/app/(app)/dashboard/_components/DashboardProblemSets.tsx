@@ -4,14 +4,14 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 
 import ProblemCard from '@/app/(app)/problem/_components/ProblemCard';
+import { useCurrentUser } from '@/queries/auth/useCurrentUser';
+import { useProblemSets } from '@/queries/problem/useProblemQueries';
 import DashboardCarouselNavButton from './DashboardCarouselNavButton';
 import DashboardSectionHeader from './DashboardSectionHeader';
 
 import { getInProgressProblemSets } from '../_lib/problem-sets';
 
 import { ProblemSolvingIcon } from '@/assets/icons/sidebar';
-
-import { mockProblemSets } from '@/app/(app)/problem/_data/mockProblemSets';
 
 const PROBLEM_CARD_WIDTH = 231;
 const PROBLEM_CARD_GAP = 12;
@@ -25,7 +25,20 @@ function getProblemCarouselMaxStartIndex(totalCount: number) {
 export default function DashboardProblemSets() {
   const [startIndex, setStartIndex] = useState(0);
 
-  const practiceSets = useMemo(() => getInProgressProblemSets(mockProblemSets), []);
+  const currentUserQuery = useCurrentUser();
+  const userId = currentUserQuery.data?.id;
+  const problemSetsQuery = useProblemSets({
+    userId,
+    enabled: currentUserQuery.isSuccess,
+  });
+
+  const practiceSets = useMemo(
+    () => getInProgressProblemSets(problemSetsQuery.data ?? []),
+    [problemSetsQuery.data],
+  );
+  const error = currentUserQuery.error ?? problemSetsQuery.error;
+  const isLoading =
+    !error && (currentUserQuery.isPending || (Boolean(userId) && problemSetsQuery.isPending));
 
   const maxStartIndex = getProblemCarouselMaxStartIndex(practiceSets.length);
   const visibleStartIndex = Math.min(startIndex, maxStartIndex);
@@ -45,7 +58,35 @@ export default function DashboardProblemSets() {
     <section>
       <DashboardSectionHeader icon={<ProblemSolvingIcon />} title="문제풀이" />
 
-      {practiceSets.length > 0 ? (
+      {isLoading ? (
+        <div
+          role="status"
+          className="flex min-h-[188px] items-center justify-center rounded-[10px] border border-gray-300 bg-white p-8 text-[15px] font-medium text-gray-600"
+        >
+          진행 중인 문제풀이를 불러오는 중입니다.
+        </div>
+      ) : error ? (
+        <div
+          role="alert"
+          className="flex min-h-[188px] flex-col items-center justify-center gap-4 rounded-[10px] border border-gray-300 bg-white p-8 text-center text-[15px] font-medium text-gray-600"
+        >
+          <p>{error instanceof Error ? error.message : '문제풀이를 불러오지 못했습니다.'}</p>
+          <button
+            type="button"
+            className="text-secondary-700 underline"
+            onClick={() => {
+              if (currentUserQuery.error) {
+                void currentUserQuery.refetch();
+                return;
+              }
+
+              void problemSetsQuery.refetch();
+            }}
+          >
+            다시 시도
+          </button>
+        </div>
+      ) : practiceSets.length > 0 ? (
         <div className="group relative h-[250px] w-full overflow-visible">
           <div className="-mx-2 overflow-hidden px-2 pb-3">
             <div

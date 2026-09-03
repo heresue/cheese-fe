@@ -6,9 +6,26 @@ export type ProblemGradingMode = 'auto' | 'self';
 
 export type ProblemSolveStatus = 'correct' | 'incorrect' | 'pending';
 
+export type ProblemQuestionStatus = 'notStarted' | 'correct' | 'incorrect' | 'skipped';
+
+export type ProblemResultStatus = Exclude<ProblemQuestionStatus, 'notStarted'>;
+
 export type ProblemChoice = {
   id: string;
   label: string;
+};
+
+export type ProblemAnswer = {
+  selectedChoiceId?: string;
+  answer?: string;
+};
+
+export type ProblemQuestionListItem = {
+  id: string;
+  no: number;
+  title: string;
+  type: ProblemQuestionType;
+  status: ProblemQuestionStatus;
 };
 
 export type ProblemQuestion = {
@@ -18,10 +35,13 @@ export type ProblemQuestion = {
   question: string;
   type: ProblemQuestionType;
   gradingMode: ProblemGradingMode;
-  correctAnswer: string;
+  correctAnswer?: string;
   explanation?: string;
   hint: string;
   choices?: ProblemChoice[];
+  myAnswer?: ProblemAnswer;
+  status?: ProblemQuestionStatus;
+  elapsedSeconds?: number;
 };
 
 export type ProblemAttempt = {
@@ -38,14 +58,42 @@ export type ProblemSetSummary = {
   title: string;
   lastProgressDate: string;
   thumbnailSrc: string | StaticImageData;
+  badge: 'FE' | 'BE' | 'CS';
   solvedCount: number;
   totalCount: number;
+};
+
+export type ProblemSetDetail = {
+  summary: ProblemSetSummary;
+  description?: string;
+  questions: ProblemQuestionListItem[];
+  correctCount: number;
 };
 
 export type ProblemResultRow = {
   questionId: string;
   no: number;
   title: string;
-  status: ProblemSolveStatus;
+  status: ProblemResultStatus;
   elapsedTime: string;
+};
+
+export type ProblemResultQuestion = ProblemQuestionListItem & {
+  elapsedSeconds: number;
+  myAnswer?: ProblemAnswer;
+  correctAnswer?: ProblemAnswer;
+};
+
+export type ProblemSetResult = {
+  problemSetId: string;
+  title: string;
+  totalCount: number;
+  solvedCount: number;
+  correctCount: number;
+  wrongCount: number;
+  skippedCount: number;
+  accuracy: number;
+  totalElapsedSeconds: number;
+  completedAt?: string;
+  questions: ProblemResultQuestion[];
 };
