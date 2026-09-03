@@ -15,6 +15,7 @@ type DocumentEditModalProps = {
   inputLabel: string;
   document?: ProfileDocument;
   isOpen: boolean;
+  disabled?: boolean;
   onClose: () => void;
   onSave: (document: ProfileDocument) => void;
 };
@@ -24,6 +25,7 @@ export default function DocumentEditModal({
   inputLabel,
   document,
   isOpen,
+  disabled,
   onClose,
   onSave,
 }: DocumentEditModalProps) {
@@ -57,7 +59,13 @@ export default function DocumentEditModal({
   };
 
   return (
-    <MypageModalLayout isOpen={isOpen} onClose={onClose} title={title} submitFormId={formId}>
+    <MypageModalLayout
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title}
+      submitFormId={formId}
+      disabled={disabled}
+    >
       <form id={formId} onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div>
           <input

@@ -18,6 +18,7 @@ type SelectEditModalProps = {
   contactUrl?: string;
   options: string[];
   isOpen: boolean;
+  disabled: boolean;
   onClose: () => void;
   hasOpenKakaoInput?: boolean;
   onSave: (value: SelectEditValue) => void;
@@ -30,6 +31,7 @@ export default function SelectEditModal({
   contactUrl,
   options,
   isOpen,
+  disabled,
   onClose,
   hasOpenKakaoInput,
   onSave,
@@ -66,7 +68,13 @@ export default function SelectEditModal({
   };
 
   return (
-    <MypageModalLayout isOpen={isOpen} onClose={onClose} title={title} submitFormId={formId}>
+    <MypageModalLayout
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title}
+      submitFormId={formId}
+      disabled={disabled}
+    >
       <form id={formId} onSubmit={handleSubmit} className="flex flex-col gap-3">
         <label htmlFor={`${formId}-select`} className="sr-only">
           {inputLabel}

@@ -42,11 +42,15 @@ const PROFILE_SWITCH_OPTIONS: CategoryTabItem<ProfileType>[] = [
 export default function MyPage() {
   const { data: user } = useCurrentUser();
   const { data: mypage, isPending, isError } = useMypage(user?.id);
-  const { mutateAsync: updateActiveProfileType } = useUpdateActiveProfileType();
-  const { mutateAsync: updatePersonalProfile } = useUpdatePersonalProfile();
-  const { mutateAsync: updateCompanyProfile } = useUpdateCompanyProfile();
-  const { mutateAsync: updateAccountSettings } = useUpdateAccountSettings();
-  const { mutateAsync: uploadFile } = useUploadFile();
+  const { mutateAsync: updateActiveProfileType, isPending: isActiveProfilePending } =
+    useUpdateActiveProfileType();
+  const { mutateAsync: updatePersonalProfile, isPending: isPersonalProfilePending } =
+    useUpdatePersonalProfile();
+  const { mutateAsync: updateCompanyProfile, isPending: isCompanyProfilePending } =
+    useUpdateCompanyProfile();
+  const { mutateAsync: updateAccountSettings, isPending: isAccountSettingsPending } =
+    useUpdateAccountSettings();
+  const { mutateAsync: uploadFile, isPending: isUploadFilePending } = useUploadFile();
 
   const [pendingProfileType, setPendingProfileType] = useState<ProfileType | null>(null);
 
@@ -78,6 +82,9 @@ export default function MyPage() {
         name: mypage.companyProfile.companyName,
         subText: mypage.companyProfile.companyType,
       };
+
+  const isMypageItemSaving =
+    isPersonalProfilePending || isCompanyProfilePending || isAccountSettingsPending;
 
   const handleChangeProfileType = (value: ProfileType) => {
     if (value === activeProfileType) return;
@@ -317,6 +324,7 @@ export default function MyPage() {
             editingItem={editingItem}
             onClose={closeModal}
             onSave={handleSaveMypageItem}
+            isPending={isMypageItemSaving}
           />
         </div>
       </div>

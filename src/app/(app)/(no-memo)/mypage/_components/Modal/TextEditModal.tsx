@@ -13,6 +13,7 @@ type TextEditModalProps = {
   inputType?: React.HTMLInputTypeAttribute;
   min?: number;
   isOpen: boolean;
+  disabled?: boolean;
   onClose: () => void;
   onSave: (value: string) => void;
 };
@@ -25,6 +26,7 @@ export default function TextEditModal({
   inputType = 'text',
   min,
   isOpen,
+  disabled,
   onClose,
   onSave,
 }: TextEditModalProps) {
@@ -40,7 +42,13 @@ export default function TextEditModal({
   };
 
   return (
-    <MypageModalLayout isOpen={isOpen} onClose={onClose} title={title} submitFormId={formId}>
+    <MypageModalLayout
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title}
+      submitFormId={formId}
+      disabled={disabled}
+    >
       <form id={formId} onSubmit={handleSubmit}>
         <Input
           type={inputType}
