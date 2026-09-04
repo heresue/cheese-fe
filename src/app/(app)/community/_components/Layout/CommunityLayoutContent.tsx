@@ -49,9 +49,9 @@ export default function CommunityLayoutContent({ children }: { children: React.R
   };
 
   return (
-    <div className="h-dvh overflow-y-auto px-10 pt-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      <div className="mx-auto mb-8 flex w-full max-w-[1100px] flex-col gap-8">
-        <div className="flex flex-col gap-5">
+    <div className="flex h-dvh flex-col overflow-y-auto px-10 pt-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="mx-auto mb-8 flex w-full max-w-[1100px] flex-1 flex-col gap-8">
+        <div className="flex shrink-0 flex-col gap-5">
           {isCommunityListPage && (
             <ListFilterBar
               sortOptions={sortOptions}
@@ -86,7 +86,7 @@ export default function CommunityLayoutContent({ children }: { children: React.R
           />
         </div>
 
-        {children}
+        <div className="flex flex-1 flex-col pb-8">{children}</div>
       </div>
     </div>
   );
