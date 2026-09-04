@@ -10,9 +10,17 @@ type EmailStepProps = {
   email: string;
   onEmailChange: (email: string) => void;
   onNext: () => void;
+  emailDisabled?: boolean;
+  actionDisabled?: boolean;
 };
 
-export default function EmailStep({ email, onEmailChange, onNext }: EmailStepProps) {
+export default function EmailStep({
+  email,
+  onEmailChange,
+  onNext,
+  emailDisabled,
+  actionDisabled,
+}: EmailStepProps) {
   const [emailError, setEmailError] = useState<string>();
 
   const { mutateAsync: sendEmailCode, isPending: isSending } = useSendEmailCode();
@@ -59,10 +67,14 @@ export default function EmailStep({ email, onEmailChange, onNext }: EmailStepPro
           onEmailChange(e.target.value);
         }}
         placeholder="이메일 입력"
-        disabled={isSending}
+        disabled={emailDisabled || isSending}
         errorMessage={emailError}
         rightAddon={
-          <InputActionButton type="button" onClick={handleSendEmail} disabled={isSending}>
+          <InputActionButton
+            type="button"
+            onClick={handleSendEmail}
+            disabled={actionDisabled || isSending}
+          >
             메일발송
           </InputActionButton>
         }

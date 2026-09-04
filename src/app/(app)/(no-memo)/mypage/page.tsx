@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 import ProfileImage from '@/components/common/ProfileImage';
 import { Button } from '@/components/common/Button';
@@ -13,12 +13,18 @@ import MypageModalRenderer from './_components/Modal/MypageModalRenderer';
 import { useMypageModal } from './_components/Modal/useMypageModal';
 import ConfirmModal from './_components/Modal/ConfirmModal';
 
+import { useCurrentUser } from '@/queries/auth/useCurrentUser';
+import { useMypage } from '@/queries/mypage/useMypage';
+import { useUpdateActiveProfileType } from '@/queries/mypage/useUpdateActiveProfileType';
+import { useUpdatePersonalProfile } from '@/queries/mypage/useUpdatePersonalProfile';
+import { useUpdateCompanyProfile } from '@/queries/mypage/useUpdateCompanyProfile';
+import { useUpdateAccountSettings } from '@/queries/mypage/useUpdateAccountSettings';
+import { useUploadFile } from '@/queries/files/useUploadFile';
+
 import { CompanyIcon, PersonalIcon } from '@/assets/icons/settings';
 
 import type { ContactSettings, ProfileDocument, ProfileType } from '@/types/profile';
 import type { MypageItemField, MypageItemSection } from './_components/Modal/types';
-
-import { mockMypage } from '@/mocks/profile/userProfiles';
 
 const PROFILE_SWITCH_OPTIONS: CategoryTabItem<ProfileType>[] = [
   {
@@ -34,34 +40,40 @@ const PROFILE_SWITCH_OPTIONS: CategoryTabItem<ProfileType>[] = [
 ];
 
 export default function MyPage() {
-  const [mypage, setMypage] = useState(mockMypage);
-  const [activeProfileType, setActiveProfileType] = useState<ProfileType>(
-    mockMypage.activeProfileType,
-  );
-  const [pendingProfileType, setPendingProfileType] = useState<ProfileType | null>(null);
+  const { data: user, isPending: isUserPending, isError: isUserError } = useCurrentUser();
+  const { data: mypage, isPending: isMypagePending, isError: isMypageError } = useMypage(user?.id);
 
-  const previewImageUrlsRef = useRef<Record<ProfileType, string | null>>({
-    personal: null,
-    company: null,
-  });
+  const { mutateAsync: updateActiveProfileType, isPending: isActiveProfilePending } =
+    useUpdateActiveProfileType();
+  const { mutateAsync: updatePersonalProfile, isPending: isPersonalProfilePending } =
+    useUpdatePersonalProfile();
+  const { mutateAsync: updateCompanyProfile, isPending: isCompanyProfilePending } =
+    useUpdateCompanyProfile();
+  const { mutateAsync: updateAccountSettings, isPending: isAccountSettingsPending } =
+    useUpdateAccountSettings();
+  const { mutateAsync: uploadFile, isPending: isUploadFilePending } = useUploadFile();
+
+  const [pendingProfileType, setPendingProfileType] = useState<ProfileType | null>(null);
 
   const { editingItem, openModal, closeModal } = useMypageModal();
 
-  useEffect(() => {
-    return () => {
-      Object.values(previewImageUrlsRef.current).forEach((url) => {
-        if (url) {
-          URL.revokeObjectURL(url);
-        }
-      });
+  if (isUserPending) {
+    return <div>로딩 중...</div>;
+  }
 
-      previewImageUrlsRef.current = {
-        personal: null,
-        company: null,
-      };
-    };
-  }, []);
+  if (isUserError || !user) {
+    return <div>사용자 정보를 불러오지 못했습니다.</div>;
+  }
 
+  if (isMypagePending) {
+    return <div>로딩 중...</div>;
+  }
+
+  if (isMypageError || !mypage) {
+    return <div>마이페이지 정보를 불러오지 못했습니다.</div>;
+  }
+
+  const activeProfileType = mypage.activeProfileType;
   const isPersonalProfile = activeProfileType === 'personal';
   const nextProfileLabel = PROFILE_SWITCH_OPTIONS.find(
     (option) => option.value === pendingProfileType,
@@ -79,76 +91,109 @@ export default function MyPage() {
         subText: mypage.companyProfile.companyType,
       };
 
+  const isMypageMutating =
+    isActiveProfilePending ||
+    isPersonalProfilePending ||
+    isCompanyProfilePending ||
+    isAccountSettingsPending ||
+    isUploadFilePending;
+
   const handleChangeProfileType = (value: ProfileType) => {
-    if (value === activeProfileType) return;
+    if (isMypageMutating || value === activeProfileType) return;
 
     setPendingProfileType(value);
   };
 
-  const handleConfirmProfileChange = () => {
-    if (!pendingProfileType) return;
+  const handleConfirmProfileChange = async () => {
+    if (!pendingProfileType || !user?.id) return;
 
-    // TODO:
-    // - 프로필 전환 API 호출
-    // - activeProfileType 전역 상태 업데이트
-    // - 사이드바 및 전체 서비스 프로필 동기화
-    setActiveProfileType(pendingProfileType);
-    setPendingProfileType(null);
+    try {
+      await updateActiveProfileType({
+        userId: user.id,
+        activeProfileType: pendingProfileType,
+      });
+
+      setPendingProfileType(null);
+    } catch (error) {
+      console.error('Failed to update active profile type:', error);
+      alert('프로필 타입 변경에 실패했습니다. 다시 시도해 주세요.');
+    }
   };
 
   const handleCancelProfileChange = () => {
+    if (isMypageMutating) return;
+
     setPendingProfileType(null);
   };
 
-  const handleProfileImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfileImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const input = event.target;
     const file = event.target.files?.[0];
 
-    if (!file) return;
+    if (!file || !user?.id) return;
 
-    const previousUrl = previewImageUrlsRef.current[activeProfileType];
+    try {
+      const uploadedFile = await uploadFile({
+        userId: user.id,
+        file,
+      });
 
-    if (previousUrl) {
-      URL.revokeObjectURL(previousUrl);
-    }
-
-    const imageUrl = URL.createObjectURL(file);
-    previewImageUrlsRef.current[activeProfileType] = imageUrl;
-
-    setMypage((prev) => {
-      if (activeProfileType === 'personal') {
-        return {
-          ...prev,
-          personalProfile: {
-            ...prev.personalProfile,
-            profileImageUrl: imageUrl,
-          },
+      if (isPersonalProfile) {
+        const personalProfileData = {
+          nickname: mypage.personalProfile.nickname,
+          email: mypage.personalProfile.email,
+          profileImageUrl: uploadedFile.url,
+          interestedJob: mypage.personalProfile.interestedJob,
+          coverLetter: mypage.personalProfile.coverLetter,
+          additionalDocument: mypage.personalProfile.additionalDocument,
+          skills: mypage.personalProfile.skills,
+          interests: mypage.personalProfile.interests,
+          contactMethod: mypage.personalProfile.contactMethod,
+          contactUrl: mypage.personalProfile.contactUrl,
         };
-      }
 
-      return {
-        ...prev,
-        companyProfile: {
-          ...prev.companyProfile,
-          profileImageUrl: imageUrl,
-        },
-      };
-    });
+        await updatePersonalProfile({
+          userId: user.id,
+          data: personalProfileData,
+        });
+      } else {
+        const companyProfileData = {
+          companyName: mypage.companyProfile.companyName,
+          email: mypage.companyProfile.email,
+          profileImageUrl: uploadedFile.url,
+          representativeName: mypage.companyProfile.representativeName,
+          companyType: mypage.companyProfile.companyType,
+          resumeTemplate: mypage.companyProfile.resumeTemplate,
+          industryType: mypage.companyProfile.industryType,
+          employeeCount: mypage.companyProfile.employeeCount,
+          foundedAt: mypage.companyProfile.foundedAt,
+          contactMethod: mypage.companyProfile.contactMethod,
+          contactUrl: mypage.companyProfile.contactUrl,
+        };
+
+        await updateCompanyProfile({
+          userId: user.id,
+          data: companyProfileData,
+        });
+      }
+    } catch (error) {
+      console.error('Failed to upload profile image:', error);
+      alert('프로필 이미지 변경에 실패했습니다. 다시 시도해 주세요.');
+    } finally {
+      input.value = '';
+    }
   };
 
-  // TODO 1:
-  // - 이미지 업로드 API 연동
-  // - React Query(또는 전역 상태)와 연동하여 사이드바 프로필 이미지까지 함께 갱신
-  // TODO 2:
-  // - employeeCount는 number input으로 분리하여 빈 값 처리 및 숫자 입력 보장
-  // - foundedAt은 date input으로 분리하여 날짜 형식 보장
-  const handleSaveMypageItem = (
+  const handleSaveMypageItem = async (
     section: MypageItemSection,
     field: MypageItemField,
     value: string | ProfileDocument | ContactSettings,
   ) => {
     if (section === 'accountAction') return;
 
-    setMypage((prev) => {
+    try {
+      if (!user?.id) return;
+
       if (section === 'personalProfile') {
         let nextValue: unknown = value;
 
@@ -159,15 +204,25 @@ export default function MyPage() {
             .filter(Boolean);
         }
 
-        const personalField = field as keyof typeof prev.personalProfile;
-
-        return {
-          ...prev,
-          personalProfile: {
-            ...prev.personalProfile,
-            [personalField]: nextValue,
-          },
+        const personalProfileData = {
+          nickname: mypage.personalProfile.nickname,
+          email: mypage.personalProfile.email,
+          profileImageUrl: mypage.personalProfile.profileImageUrl,
+          interestedJob: mypage.personalProfile.interestedJob,
+          coverLetter: mypage.personalProfile.coverLetter,
+          additionalDocument: mypage.personalProfile.additionalDocument,
+          skills: mypage.personalProfile.skills,
+          interests: mypage.personalProfile.interests,
+          contactMethod: mypage.personalProfile.contactMethod,
+          contactUrl: mypage.personalProfile.contactUrl,
         };
+
+        await updatePersonalProfile({
+          userId: user.id,
+          data: { ...personalProfileData, [field]: nextValue },
+        });
+
+        closeModal();
       }
 
       if (section === 'companyProfile') {
@@ -181,47 +236,69 @@ export default function MyPage() {
         }
 
         if (field === 'employeeCount' && typeof value === 'string') {
-          nextValue = Number(value.replace(/[^0-9]/g, ''));
+          if (value.trim() === '') return;
+
+          const employeeCount = Number(value);
+
+          if (!Number.isFinite(employeeCount) || employeeCount < 0) return;
+
+          nextValue = employeeCount;
         }
 
-        const companyField = field as keyof typeof prev.companyProfile;
-
-        return {
-          ...prev,
-          companyProfile: {
-            ...prev.companyProfile,
-            [companyField]: nextValue,
-          },
+        const companyProfileData = {
+          companyName: mypage.companyProfile.companyName,
+          email: mypage.companyProfile.email,
+          profileImageUrl: mypage.companyProfile.profileImageUrl,
+          representativeName: mypage.companyProfile.representativeName,
+          companyType: mypage.companyProfile.companyType,
+          resumeTemplate: mypage.companyProfile.resumeTemplate,
+          industryType: mypage.companyProfile.industryType,
+          employeeCount: mypage.companyProfile.employeeCount,
+          foundedAt: mypage.companyProfile.foundedAt,
+          contactMethod: mypage.companyProfile.contactMethod,
+          contactUrl: mypage.companyProfile.contactUrl,
         };
+
+        await updateCompanyProfile({
+          userId: user.id,
+          data: { ...companyProfileData, [field]: nextValue },
+        });
+
+        closeModal();
       }
 
       if (section === 'accountSettings') {
-        if (field === 'contactMethod' && typeof value === 'object' && 'contactMethod' in value) {
-          return {
-            ...prev,
-            accountSettings: {
-              ...prev.accountSettings,
-              contactMethod: value.contactMethod,
-              contactUrl: value.contactUrl,
-            },
-          };
-        }
-
-        const accountField = field as keyof typeof prev.accountSettings;
-
-        return {
-          ...prev,
-          accountSettings: {
-            ...prev.accountSettings,
-            [accountField]: value,
-          },
+        const accountSettingsData = {
+          contactMethod: mypage.accountSettings.contactMethod,
+          contactUrl: mypage.accountSettings.contactUrl,
+          email: mypage.accountSettings.email,
+          passwordUpdatedAt: mypage.accountSettings.passwordUpdatedAt,
+          address: mypage.accountSettings.address,
         };
+
+        const nextAccountSettingsData =
+          field === 'contactMethod' && typeof value === 'object' && 'contactMethod' in value
+            ? {
+                ...accountSettingsData,
+                contactMethod: value.contactMethod,
+                contactUrl: value.contactUrl,
+              }
+            : {
+                ...accountSettingsData,
+                [field]: value,
+              };
+
+        await updateAccountSettings({
+          userId: user.id,
+          data: nextAccountSettingsData,
+        });
+
+        closeModal();
       }
-
-      return prev;
-    });
-
-    closeModal();
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      alert('프로필 변경에 실패했습니다. 다시 시도해 주세요.');
+    }
   };
 
   return (
@@ -245,6 +322,7 @@ export default function MyPage() {
             <input
               type="file"
               accept="image/*"
+              disabled={isMypageMutating}
               className="sr-only"
               onChange={handleProfileImageChange}
             />
@@ -273,6 +351,7 @@ export default function MyPage() {
             editingItem={editingItem}
             onClose={closeModal}
             onSave={handleSaveMypageItem}
+            isPending={isMypageMutating}
           />
         </div>
       </div>
@@ -284,6 +363,7 @@ export default function MyPage() {
         title="프로필을 전환하시겠습니까?"
         description={`전환 후 ${nextProfileLabel}로 서비스가 이용됩니다.`}
         buttonText="전환하기"
+        disabled={isMypageMutating}
       />
     </>
   );

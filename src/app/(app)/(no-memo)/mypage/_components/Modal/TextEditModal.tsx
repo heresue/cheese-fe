@@ -10,7 +10,10 @@ type TextEditModalProps = {
   inputLabel: string;
   description?: string;
   value?: string;
+  inputType?: React.HTMLInputTypeAttribute;
+  min?: number;
   isOpen: boolean;
+  disabled: boolean;
   onClose: () => void;
   onSave: (value: string) => void;
 };
@@ -20,7 +23,10 @@ export default function TextEditModal({
   inputLabel,
   description,
   value,
+  inputType = 'text',
+  min,
   isOpen,
+  disabled,
   onClose,
   onSave,
 }: TextEditModalProps) {
@@ -31,18 +37,28 @@ export default function TextEditModal({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // TODO: API 요청
+    if (disabled) return;
+
     onSave(inputValue);
   };
 
   return (
-    <MypageModalLayout isOpen={isOpen} onClose={onClose} title={title} submitFormId={formId}>
+    <MypageModalLayout
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title}
+      submitFormId={formId}
+      disabled={disabled}
+    >
       <form id={formId} onSubmit={handleSubmit}>
         <Input
+          type={inputType}
+          min={min}
           label={inputLabel}
           value={inputValue}
           placeholder={`${inputLabel} 입력`}
           className="h-10 px-2"
+          disabled={disabled}
           onChange={(e) => setInputValue(e.target.value)}
         />
 

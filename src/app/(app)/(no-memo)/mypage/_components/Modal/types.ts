@@ -32,6 +32,8 @@ export type MypageModalItem = {
   buttonText: string;
   options?: string[];
   modalType: MypageModalType;
+  inputType?: React.HTMLInputTypeAttribute;
+  min?: number;
   onConfirm?: () => void;
 };
 

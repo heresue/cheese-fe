@@ -18,12 +18,14 @@ type MypageModalRendererProps = {
     field: MypageModalItem['field'],
     value: string | ProfileDocument | ContactSettings,
   ) => void;
+  isPending: boolean;
 };
 
 export default function MypageModalRenderer({
   editingItem,
   onClose,
   onSave,
+  isPending,
 }: MypageModalRendererProps) {
   const router = useRouter();
   const {
@@ -93,6 +95,12 @@ export default function MypageModalRenderer({
     onClose();
   };
 
+  const handleEditModalClose = () => {
+    if (isPending) return;
+
+    onClose();
+  };
+
   if (isTextModal) {
     return (
       <TextEditModal
@@ -101,12 +109,15 @@ export default function MypageModalRenderer({
         title={`${editingItem.label} ${editingItem.buttonText}`}
         inputLabel={editingItem.label}
         value={editingItem.value}
+        inputType={editingItem.inputType}
+        min={editingItem.min}
         description={
           editingItem.label === '내 스킬' || editingItem.label === '내 관심분야'
             ? 'ex) HTML, CSS3, Java ...'
             : undefined
         }
-        onClose={onClose}
+        disabled={isPending}
+        onClose={handleEditModalClose}
         onSave={(value) => {
           onSave(editingItem.section, editingItem.field, value);
         }}
@@ -122,7 +133,8 @@ export default function MypageModalRenderer({
         title={`${editingItem.label} 추가`}
         inputLabel={editingItem.label}
         document={editingItem.document}
-        onClose={onClose}
+        disabled={isPending}
+        onClose={handleEditModalClose}
         onSave={(document) => {
           onSave(editingItem.section, editingItem.field, document);
         }}
@@ -141,7 +153,8 @@ export default function MypageModalRenderer({
         contactUrl={editingItem.contactUrl}
         options={editingItem.options ?? []}
         hasOpenKakaoInput={hasOpenKakaoInput}
-        onClose={onClose}
+        disabled={isPending}
+        onClose={handleEditModalClose}
         onSave={(value) => {
           onSave(editingItem.section, editingItem.field, value);
         }}

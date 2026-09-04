@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { HTMLInputTypeAttribute, ReactNode } from 'react';
 
 import {
   CompanyIcon,
@@ -36,21 +36,55 @@ type SettingItemData = {
   section: MypageItemSection;
   field: MypageItemField;
   label: string;
+
   value?: string;
+  editValue?: string;
+
   contactUrl?: string;
   document?: ProfileDocument;
   urlLabel?: string;
+
   icon: ReactNode;
   buttonIcon: ReactNode;
   buttonText: string;
+
   modalType?: MypageModalType;
   options?: string[];
+  inputType?: HTMLInputTypeAttribute;
+  min?: number;
   danger?: boolean;
 };
 
-function formatDate(dateString: string) {
+function normalizeDateOnly(dateString?: string) {
+  if (!dateString) return '';
+
+  const datePart = dateString.split('T')[0];
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(datePart)) return '';
+
+  return datePart;
+}
+
+function formatDateOnly(dateString?: string) {
+  const normalizedDate = normalizeDateOnly(dateString);
+
+  if (!normalizedDate) return '';
+
+  const [year, month, day] = normalizedDate.split('-');
+
+  return `${year}. ${month}. ${day}`;
+}
+
+function formatTimestampDate(dateString?: string) {
+  if (!dateString) return '';
+
   const date = new Date(dateString);
-  return `${date.getFullYear()}. ${String(date.getMonth() + 1).padStart(2, '0')}. ${String(date.getDate()).padStart(2, '0')}`;
+
+  if (Number.isNaN(date.getTime())) return '';
+
+  return `${date.getFullYear()}. ${String(date.getMonth() + 1).padStart(2, '0')}. ${String(
+    date.getDate(),
+  ).padStart(2, '0')}`;
 }
 
 export function getPersonalProfileItems(profile: PersonalProfile): SettingItemData[] {
@@ -179,26 +213,32 @@ export function getCompanyProfileItems(profile: CompanyProfile): SettingItemData
       field: 'employeeCount',
       label: '사원수',
       value: `${profile.employeeCount}명`,
+      editValue: String(profile.employeeCount ?? ''),
       icon: <EmployeeIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
       modalType: 'text',
+      inputType: 'number',
+      min: 0,
     },
     {
       section: 'companyProfile',
       field: 'foundedAt',
       label: '설립일',
-      value: formatDate(profile.foundedAt),
+      value: formatDateOnly(profile.foundedAt),
+      editValue: normalizeDateOnly(profile.foundedAt),
       icon: <CalendarIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
       modalType: 'text',
+      inputType: 'date',
     },
   ];
 }
 
 export function getAccountItems(profile: AccountSettings): SettingItemData[] {
   return [
+    // TODO: 이메일을 연락용으로 사용할지 여부 확인 후 수정 플로우 반영
     {
       section: 'accountSettings',
       field: 'contactMethod',
@@ -221,11 +261,12 @@ export function getAccountItems(profile: AccountSettings): SettingItemData[] {
       buttonText: '변경',
       modalType: 'text',
     },
+    // TODO: 비밀번호 마지막 변경일 노출 필요 여부 기획 확인
     {
       section: 'accountAction',
       field: 'updatePassword',
       label: '비밀번호',
-      value: `마지막 변경일: ${formatDate(profile.passwordUpdatedAt)}`,
+      value: `마지막 변경일: ${formatTimestampDate(profile.passwordUpdatedAt)}`,
       icon: <PasswordIcon className="h-6" />,
       buttonIcon: <EditIcon className="h-[14px]" />,
       buttonText: '변경',
@@ -250,6 +291,7 @@ export function getAccountItems(profile: AccountSettings): SettingItemData[] {
       buttonText: '로그아웃',
       modalType: 'confirm',
     },
+    // TODO: 계정 삭제 API 추가 후 회원탈퇴 기능 연동
     {
       section: 'accountAction',
       field: 'deleteAccount',

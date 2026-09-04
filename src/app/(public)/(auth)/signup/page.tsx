@@ -8,7 +8,7 @@ import { Button } from '@/components/common/Button';
 
 import TermsModal from './_components/TermsModal';
 import EmailVerifyModal from '../_components/EmailVerifyModal';
-import AuthConfirmModal from '../_components/AuthConfirmModal';
+import AuthConfirmModal from '../../_components/AuthConfirmModal';
 
 import { useSignup } from '@/queries/auth/useSignup';
 import { useCheckNickname } from '@/queries/auth/useCheckNickname';

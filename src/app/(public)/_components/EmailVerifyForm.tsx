@@ -15,6 +15,7 @@ export type EmailVerifyBaseProps = {
   initialEmail?: string;
   initialStatus?: EmailVerifyStatus;
   onNext: (email: string) => void;
+  emailDisabled?: boolean;
 };
 
 export type EmailVerifyStatus =
@@ -33,6 +34,7 @@ export default function EmailVerifyForm({
   initialEmail = '',
   initialStatus = 'IDLE',
   onNext,
+  emailDisabled,
 }: EmailVerifyFormProps) {
   const [email, setEmail] = useState(initialEmail);
   const [sentEmail, setSentEmail] = useState(initialEmail);
@@ -50,7 +52,7 @@ export default function EmailVerifyForm({
   const isVerified = status === 'VERIFIED';
 
   const hasSentEmail = status === 'SENT' || isVerifying || isVerified;
-  const isEmailLocked = isSending || isVerifying || isVerified;
+  const isEmailLocked = isSending || isVerifying || isVerified || emailDisabled;
   const isSentEmail = email === sentEmail;
 
   const handleSend = async () => {

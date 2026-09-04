@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import BaseModal from '@/components/common/Modal';
-import EmailVerifyForm, { EmailVerifyBaseProps } from './EmailVerifyForm';
+import EmailVerifyForm, { EmailVerifyBaseProps } from '../../_components/EmailVerifyForm';
 
 type EmailVerifyModalProps = Pick<EmailVerifyBaseProps, 'title' | 'description' | 'onNext'> & {
   isOpen: boolean;

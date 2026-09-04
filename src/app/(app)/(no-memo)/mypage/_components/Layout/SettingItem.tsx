@@ -28,6 +28,8 @@ export default function SettingItem({
   buttonClassName,
   onClick,
 }: SettingItemProps) {
+  const hasDocument = Boolean(document?.fileUrl || document?.url);
+
   return (
     <div className="flex items-center justify-between gap-3">
       <div className="flex items-center gap-[15px]">
@@ -39,9 +41,15 @@ export default function SettingItem({
           <h3 className="font-bold">{label}</h3>
 
           {document ? (
-            <DocumentLinkItemList document={document} urlLabel={urlLabel} />
+            hasDocument ? (
+              <DocumentLinkItemList document={document} urlLabel={urlLabel} />
+            ) : (
+              <span className="text-gray-500">{`${label}를 추가해주세요`}</span>
+            )
           ) : (
-            <span>{value}</span>
+            <span className={value ? '' : 'text-gray-500'}>
+              {value || `${label} 정보를 설정해주세요`}
+            </span>
           )}
         </div>
       </div>

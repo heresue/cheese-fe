@@ -1,9 +1,10 @@
-import SettingItem from '../Layout/SettingItem';
+import { useRouter } from 'next/navigation';
 
+import SettingItem from '../Layout/SettingItem';
 import { getAccountItems } from './profile.data';
 
 import type { AccountSettings } from '@/types/profile';
-import type { MypageModalItem } from '..//Modal/types';
+import type { MypageModalItem } from '../Modal/types';
 
 type AccountSettingsProps = {
   profile: AccountSettings;
@@ -11,6 +12,8 @@ type AccountSettingsProps = {
 };
 
 export default function AccountSettings({ profile, onOpenModal }: AccountSettingsProps) {
+  const router = useRouter();
+
   const accountItems = getAccountItems(profile);
 
   return (
@@ -24,6 +27,11 @@ export default function AccountSettings({ profile, onOpenModal }: AccountSetting
               {...item}
               buttonClassName={item.danger ? '!text-error-subtle' : ''}
               onClick={() => {
+                if (item.field === 'updatePassword') {
+                  router.push('/reset-password');
+                  return;
+                }
+
                 if (!item.modalType) return;
 
                 onOpenModal({
