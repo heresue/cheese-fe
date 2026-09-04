@@ -20,15 +20,21 @@ import LikeOutlineIcon from '@/assets/icons/common/like-outline.svg';
 import LikeFilledIcon from '@/assets/icons/common/like-filled.svg';
 
 import type { JobPost } from '@/types/community/community';
-import type { TogglePostLikeParams } from '@/types/community/community';
+import type { ToggleJobPostLikeParams } from '@/types/community/community';
 
 type JobPostCardProps = {
   post: JobPost;
   onDirectApply: () => void;
-  onToggleLike: (variables: TogglePostLikeParams) => void;
+  onToggleLike: (variables: ToggleJobPostLikeParams) => void;
+  isLikePending?: boolean;
 };
 
-export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPostCardProps) {
+export default function JobPostCard({
+  post,
+  onDirectApply,
+  onToggleLike,
+  isLikePending = false,
+}: JobPostCardProps) {
   const isClosed = isRecruitClosed(post.deadline);
 
   const fieldLabel = getOptionLabel(FIELD_OPTIONS, toFieldSelectValue(post.field));
@@ -72,10 +78,11 @@ export default function JobPostCard({ post, onDirectApply, onToggleLike }: JobPo
       <div className="flex gap-1">
         <button
           type="button"
+          disabled={isLikePending}
           onClick={(e) => {
             e.stopPropagation();
             onToggleLike({
-              postId: post.id,
+              jobId: post.id,
               isLiked: post.isLiked,
             });
           }}

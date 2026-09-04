@@ -93,3 +93,26 @@ export function deleteJobPost({ jobId, userId }: DeleteJobPostRequest) {
     query: { userId },
   });
 }
+
+export type JobPostLikeRequest = {
+  jobId: string;
+  userId: string;
+};
+
+export type JobPostLikeResponse = {
+  isLiked: boolean;
+};
+
+export function likeJobPost({ jobId, userId }: JobPostLikeRequest) {
+  return apiClient<JobPostLikeResponse>(`/backend-api/community/jobs/${jobId}/like`, {
+    method: 'POST',
+    query: { userId },
+  });
+}
+
+export function unlikeJobPost({ jobId, userId }: JobPostLikeRequest) {
+  return apiClient<JobPostLikeResponse>(`/backend-api/community/jobs/${jobId}/like`, {
+    method: 'DELETE',
+    query: { userId },
+  });
+}

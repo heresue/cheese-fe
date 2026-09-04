@@ -18,7 +18,7 @@ export type ApplyInfo =
     };
 
 export type JobPost = {
-  id: number;
+  id: string;
   companyName: string;
   title: string;
 
@@ -102,5 +102,10 @@ export type InfoPost = {
 
 export type TogglePostLikeParams = {
   postId: number;
+  isLiked: boolean;
+};
+
+export type ToggleJobPostLikeParams = {
+  jobId: string;
   isLiked: boolean;
 };

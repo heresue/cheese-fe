@@ -16,12 +16,16 @@ type PostDetailAsideActionsProps = {
   post: JobPost | GroupPost;
   isClosed?: boolean;
   buttonText?: string;
+  onToggleLike?: () => void;
+  isLikePending?: boolean;
 };
 
 export default function PostDetailAsideActions({
   post,
   isClosed,
   buttonText = '지원하기',
+  onToggleLike,
+  isLikePending = false,
 }: PostDetailAsideActionsProps) {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const [isLiked, setIsLiked] = useState(post.isLiked);
@@ -29,8 +33,17 @@ export default function PostDetailAsideActions({
   const closedButtonText = 'apply' in post ? '채용 마감' : '모집 마감';
 
   const handleToggleLike = () => {
+    if (isLikePending) return;
+
+    if (onToggleLike) {
+      onToggleLike();
+      return;
+    }
+
     setIsLiked((prev) => !prev);
   };
+
+  const displayedIsLiked = onToggleLike ? post.isLiked : isLiked;
 
   const handleApplyClick = () => {
     if ('apply' in post) {
@@ -48,11 +61,12 @@ export default function PostDetailAsideActions({
       <Button
         variant="outlineGray"
         onClick={handleToggleLike}
+        disabled={isLikePending}
         size={54}
         width={46}
         className="border-gray-400"
       >
-        {isLiked ? (
+        {displayedIsLiked ? (
           <LikeFilledIcon className="text-error-subtle w-[14px]" />
         ) : (
           <LikeOutlineIcon className="w-[14px] text-gray-500" />

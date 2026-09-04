@@ -71,7 +71,7 @@ export default function AppliedJobList({ sort, keyword }: AppliedJobListProps) {
           onDirectApply={() => {
             // TODO: 지원현황 UX 결정 후 적용
           }}
-          onToggleLike={({ postId }) => toggleLike(postId)}
+          onToggleLike={({ jobId }) => toggleLike(jobId)}
         />
       ))}
     </>

@@ -13,6 +13,7 @@ import CommunityListState from '../../_components/CommunityListState';
 
 import { ApiError } from '@/api/client';
 import { useJobPost } from '@/queries/community/useJobPost';
+import { useToggleJobPostLike } from '@/queries/community/useToggleJobPostLike';
 
 import { getOptionLabel } from '@/lib/getOptionLabel';
 import { isRecruitClosed } from '@/lib/formatDeadline';
@@ -34,6 +35,7 @@ function formatField(fields: Field[]) {
 export default function JobDetailPage() {
   const { jobId } = useParams<{ jobId: string }>();
   const { data: jobPost, error, isPending, refetch } = useJobPost(jobId);
+  const { mutate: toggleJobPostLike, isPending: isLikePending } = useToggleJobPostLike();
 
   if (error instanceof ApiError && error.status === 404) {
     notFound();
@@ -103,7 +105,14 @@ export default function JobDetailPage() {
         actions={
           <div className="flex w-full flex-col gap-5 px-3 py-5">
             <PostDetailAsideInfoItem label="지원자수" value={`${jobPost.applicantCount}명`} />
-            <PostDetailAsideActions post={jobPost} isClosed={isClosed} />
+            <PostDetailAsideActions
+              post={jobPost}
+              isClosed={isClosed}
+              isLikePending={isLikePending}
+              onToggleLike={() => {
+                toggleJobPostLike({ jobId, isLiked: jobPost.isLiked });
+              }}
+            />
           </div>
         }
       >

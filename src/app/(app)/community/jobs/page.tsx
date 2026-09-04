@@ -50,8 +50,7 @@ export default function CommunityJobsPage() {
     };
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  // TODO: API 연동 후 좋아요 캐시 갱신 방식 최적화
-  const { mutate: toggleJobPostLike } = useToggleJobPostLike();
+  const { mutate: toggleJobPostLike, isPending: isLikePending } = useToggleJobPostLike();
 
   if (isPending) {
     return <CommunityListState type="loading" message="로딩 중..." />;
@@ -86,6 +85,7 @@ export default function CommunityJobsPage() {
           post={jobPost}
           onDirectApply={() => setSelectedApplyPost(jobPost)}
           onToggleLike={toggleJobPostLike}
+          isLikePending={isLikePending}
         />
       ))}
 
