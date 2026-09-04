@@ -55,7 +55,27 @@ type SettingItemData = {
   danger?: boolean;
 };
 
-function formatDate(dateString?: string) {
+function normalizeDateOnly(dateString?: string) {
+  if (!dateString) return '';
+
+  const datePart = dateString.split('T')[0];
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(datePart)) return '';
+
+  return datePart;
+}
+
+function formatDateOnly(dateString?: string) {
+  const normalizedDate = normalizeDateOnly(dateString);
+
+  if (!normalizedDate) return '';
+
+  const [year, month, day] = normalizedDate.split('-');
+
+  return `${year}. ${month}. ${day}`;
+}
+
+function formatTimestampDate(dateString?: string) {
   if (!dateString) return '';
 
   const date = new Date(dateString);
@@ -205,8 +225,8 @@ export function getCompanyProfileItems(profile: CompanyProfile): SettingItemData
       section: 'companyProfile',
       field: 'foundedAt',
       label: '설립일',
-      value: formatDate(profile.foundedAt),
-      editValue: profile.foundedAt ?? '',
+      value: formatDateOnly(profile.foundedAt),
+      editValue: normalizeDateOnly(profile.foundedAt),
       icon: <CalendarIcon className="h-6" />,
       buttonIcon: <PlusIcon className="h-3" />,
       buttonText: '추가',
@@ -246,7 +266,7 @@ export function getAccountItems(profile: AccountSettings): SettingItemData[] {
       section: 'accountAction',
       field: 'updatePassword',
       label: '비밀번호',
-      value: `마지막 변경일: ${formatDate(profile.passwordUpdatedAt)}`,
+      value: `마지막 변경일: ${formatTimestampDate(profile.passwordUpdatedAt)}`,
       icon: <PasswordIcon className="h-6" />,
       buttonIcon: <EditIcon className="h-[14px]" />,
       buttonText: '변경',
