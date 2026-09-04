@@ -73,7 +73,6 @@ export default function MyPage() {
     return <div>마이페이지 정보를 불러오지 못했습니다.</div>;
   }
 
-  // TODO: 사이드바 프로필 정보를 activeProfileType 변경과 동기화
   const activeProfileType = mypage.activeProfileType;
   const isPersonalProfile = activeProfileType === 'personal';
   const nextProfileLabel = PROFILE_SWITCH_OPTIONS.find(

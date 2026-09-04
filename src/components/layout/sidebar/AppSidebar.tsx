@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-// 반영 확인주석
+
 import {
   AlarmIcon,
   CalendarIcon,
@@ -18,14 +18,15 @@ import { MiniCalendar } from '@/app/(app)/calendar/_ui/sidebar/MiniCalendar';
 import ProfileImage from '@/components/common/ProfileImage';
 import { NotificationSidebar } from './NotificationSidebar';
 
+import { useCurrentUser } from '@/queries/auth/useCurrentUser';
+import { useMypage } from '@/queries/mypage/useMypage';
+
 import { cn } from '@/lib/cn';
 import {
   getSidebarIconClassName,
   getSidebarItemClassName,
   isSidebarItemActive,
 } from '@/components/layout/sidebar/utils';
-
-import { mockMypage } from '@/mocks/profile/userProfiles';
 
 type NavigationIconType = 'bell' | 'calendar' | 'memo' | 'pencil' | 'community';
 
@@ -65,15 +66,22 @@ export default function AppSidebar() {
 
   const isMyPageActive = !isNotificationSidebarOpen && isSidebarItemActive(pathname, '/mypage');
 
-  const mypage = mockMypage;
+  const { data: user } = useCurrentUser();
+  const { data: mypage } = useMypage(user?.id);
 
   const profile =
-    mypage.activeProfileType === 'personal' ? mypage.personalProfile : mypage.companyProfile;
+    mypage?.activeProfileType === 'personal'
+      ? mypage.personalProfile
+      : mypage?.activeProfileType === 'company'
+        ? mypage.companyProfile
+        : undefined;
 
   const profileName =
-    mypage.activeProfileType === 'personal'
+    mypage?.activeProfileType === 'personal'
       ? mypage.personalProfile.nickname
-      : mypage.companyProfile.companyName;
+      : mypage?.activeProfileType === 'company'
+        ? mypage.companyProfile.companyName
+        : '';
 
   return (
     <>
@@ -99,10 +107,10 @@ export default function AppSidebar() {
               onClick={() => setIsNotificationSidebarOpen(false)}
             >
               <div className="flex h-[30px] w-[30px] items-center justify-center">
-                <ProfileImage src={profile.profileImageUrl} size={25} />
+                <ProfileImage src={profile?.profileImageUrl} size={25} />
               </div>
 
-              <span>{profileName} 님</span>
+              <span>{profileName ? `${profileName} 님` : ''}</span>
             </Link>
           </div>
 
