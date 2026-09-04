@@ -46,6 +46,7 @@ export default function SelectEditModal({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (disabled) return;
     if (!selectedValue) return;
 
     if (hasOpenKakaoInput) {
@@ -63,7 +64,6 @@ export default function SelectEditModal({
       return;
     }
 
-    // TODO: API 요청
     onSave(selectedValue);
   };
 
@@ -85,6 +85,7 @@ export default function SelectEditModal({
           <select
             id={`${formId}-select`}
             value={selectedValue}
+            disabled={disabled}
             onChange={(e) => setSelectedValue(e.target.value)}
             className="flex-1 appearance-none outline-none"
           >
@@ -103,6 +104,7 @@ export default function SelectEditModal({
             placeholder="오픈 카카오톡 URL 입력"
             className="h-10 px-2"
             value={openKakaoUrl}
+            disabled={disabled}
             onChange={(e) => setOpenKakaoUrl(e.target.value)}
           />
         )}
