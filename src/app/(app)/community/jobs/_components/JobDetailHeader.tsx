@@ -8,6 +8,7 @@ import PostDetailHeader from '../../_components/PostDetail';
 import { useCurrentUser } from '@/queries/auth/useCurrentUser';
 import { useMypage } from '@/queries/mypage/useMypage';
 import { useDeleteJobPost } from '@/queries/community/useDeleteJobPost';
+import { useUpdateActiveProfileType } from '@/queries/mypage/useUpdateActiveProfileType';
 
 import type { JobPost } from '@/types/community/community';
 
@@ -24,11 +25,46 @@ export default function JobDetailHeader({ jobId, jobPost }: JobDetailHeaderProps
   const { data: user } = useCurrentUser();
   const { data: mypage } = useMypage(user?.id);
   const { mutate: deleteJobPost, isPending: isDeletePending } = useDeleteJobPost();
+  const { mutate: updateActiveProfileType, isPending: isProfileSwitchPending } =
+    useUpdateActiveProfileType();
 
   const isMine =
     (jobPost.author.profileType === 'personal' &&
       jobPost.author.id === mypage?.personalProfile.id) ||
     (jobPost.author.profileType === 'company' && jobPost.author.id === mypage?.companyProfile.id);
+
+  const handleEdit = () => {
+    console.log('handleEdit 실행', {
+      authorProfileType: jobPost.author.profileType,
+      activeProfileType: user?.activeProfileType,
+    });
+    if (!user || isProfileSwitchPending) return;
+
+    const authorProfileType = jobPost.author.profileType;
+
+    if (authorProfileType === user.activeProfileType) {
+      router.push(`/community/jobs/${jobId}/edit`);
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `이 게시글은 ${authorProfileType === 'company' ? '기업' : '개인'} 프로필로 작성되었습니다.\n수정하려면 해당 프로필로 전환해야 합니다. 전환하시겠습니까?`,
+    );
+
+    if (!confirmed) return;
+
+    updateActiveProfileType(
+      {
+        userId: user.id,
+        activeProfileType: authorProfileType,
+      },
+      {
+        onSuccess: () => {
+          router.push(`/community/jobs/${jobId}/edit`);
+        },
+      },
+    );
+  };
 
   return (
     <PostDetailHeader
@@ -39,7 +75,7 @@ export default function JobDetailHeader({ jobId, jobPost }: JobDetailHeaderProps
       isMenuOpen={isMenuOpen}
       onToggleMenu={() => setIsMenuOpen((prev) => !prev)}
       onCloseMenu={() => setIsMenuOpen(false)}
-      onEdit={() => router.push(`/community/jobs/${jobId}/edit`)}
+      onEdit={handleEdit}
       onDelete={() => {
         if (!user || isDeletePending) return;
 
