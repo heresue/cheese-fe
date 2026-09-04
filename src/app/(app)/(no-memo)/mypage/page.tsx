@@ -234,7 +234,13 @@ export default function MyPage() {
         }
 
         if (field === 'employeeCount' && typeof value === 'string') {
-          nextValue = Number(value);
+          if (value.trim() === '') return;
+
+          const employeeCount = Number(value);
+
+          if (!Number.isFinite(employeeCount) || employeeCount < 0) return;
+
+          nextValue = employeeCount;
         }
 
         const companyProfileData = {
