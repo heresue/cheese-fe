@@ -40,8 +40,9 @@ const PROFILE_SWITCH_OPTIONS: CategoryTabItem<ProfileType>[] = [
 ];
 
 export default function MyPage() {
-  const { data: user } = useCurrentUser();
-  const { data: mypage, isPending, isError } = useMypage(user?.id);
+  const { data: user, isPending: isUserPending, isError: isUserError } = useCurrentUser();
+  const { data: mypage, isPending: isMypagePending, isError: isMypageError } = useMypage(user?.id);
+
   const { mutateAsync: updateActiveProfileType, isPending: isActiveProfilePending } =
     useUpdateActiveProfileType();
   const { mutateAsync: updatePersonalProfile, isPending: isPersonalProfilePending } =
@@ -56,11 +57,19 @@ export default function MyPage() {
 
   const { editingItem, openModal, closeModal } = useMypageModal();
 
-  if (isPending) {
+  if (isUserPending) {
     return <div>로딩 중...</div>;
   }
 
-  if (isError || !mypage) {
+  if (isUserError || !user) {
+    return <div>사용자 정보를 불러오지 못했습니다.</div>;
+  }
+
+  if (isMypagePending) {
+    return <div>로딩 중...</div>;
+  }
+
+  if (isMypageError || !mypage) {
     return <div>마이페이지 정보를 불러오지 못했습니다.</div>;
   }
 
