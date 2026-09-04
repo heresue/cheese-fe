@@ -5,33 +5,55 @@ import { useRouter } from 'next/navigation';
 
 import PostDetailHeader from '../../_components/PostDetail';
 
+import { useCurrentUser } from '@/queries/auth/useCurrentUser';
+import { useMypage } from '@/queries/mypage/useMypage';
+import { useDeleteJobPost } from '@/queries/community/useDeleteJobPost';
+
 import type { JobPost } from '@/types/community/community';
 
-const currentUserId = 1;
-
 type JobDetailHeaderProps = {
+  jobId: string;
   jobPost: JobPost;
 };
 
-export default function JobDetailHeader({ jobPost }: JobDetailHeaderProps) {
+export default function JobDetailHeader({ jobId, jobPost }: JobDetailHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const router = useRouter();
+
+  const { data: user } = useCurrentUser();
+  const { data: mypage } = useMypage(user?.id);
+  const { mutate: deleteJobPost, isPending: isDeletePending } = useDeleteJobPost();
+
+  const isMine =
+    (jobPost.author.profileType === 'personal' &&
+      jobPost.author.id === mypage?.personalProfile.id) ||
+    (jobPost.author.profileType === 'company' && jobPost.author.id === mypage?.companyProfile.id);
 
   return (
     <PostDetailHeader
       title={jobPost.title}
       createdAt={jobPost.createdAt}
       viewCount={jobPost.viewCount}
-      isMine={jobPost.author.id === currentUserId}
+      isMine={isMine}
       isMenuOpen={isMenuOpen}
       onToggleMenu={() => setIsMenuOpen((prev) => !prev)}
       onCloseMenu={() => setIsMenuOpen(false)}
-      onEdit={() => router.push(`/community/jobs/${jobPost.id}/edit`)}
+      onEdit={() => router.push(`/community/jobs/${jobId}/edit`)}
       onDelete={() => {
-        // TODO: 삭제 API
-        alert('게시글이 삭제되었습니다.');
-        router.push('/community/jobs');
+        if (!user || isDeletePending) return;
+
+        const confirmed = window.confirm('삭제하시겠습니까?');
+        if (!confirmed) return;
+
+        deleteJobPost(
+          { jobId, userId: user.id },
+          {
+            onSuccess: () => {
+              router.push('/community/jobs');
+            },
+          },
+        );
       }}
     />
   );

@@ -81,3 +81,15 @@ export function updateJobPost({ jobId, userId, data }: UpdateJobPostRequest) {
     body: JSON.stringify(data),
   });
 }
+
+export type DeleteJobPostRequest = {
+  jobId: string;
+  userId: string;
+};
+
+export function deleteJobPost({ jobId, userId }: DeleteJobPostRequest) {
+  return apiClient<JobPost>(`/backend-api/community/jobs/${jobId}`, {
+    method: 'DELETE',
+    query: { userId },
+  });
+}

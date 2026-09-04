@@ -88,7 +88,7 @@ export default function JobDetailPage() {
   return (
     <div className="mb-[50px] flex items-start gap-5">
       <section className="flex flex-1 flex-col gap-10 px-5">
-        <JobDetailHeader jobPost={jobPost} />
+        <JobDetailHeader jobId={jobId} jobPost={jobPost} />
 
         <article className="flex flex-col gap-5">
           <div
