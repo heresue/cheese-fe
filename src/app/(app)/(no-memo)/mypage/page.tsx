@@ -128,6 +128,7 @@ export default function MyPage() {
   };
 
   const handleProfileImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const input = event.target;
     const file = event.target.files?.[0];
 
     if (!file || !user?.id) return;
@@ -179,6 +180,8 @@ export default function MyPage() {
     } catch (error) {
       console.error('Failed to upload profile image:', error);
       alert('프로필 이미지 변경에 실패했습니다. 다시 시도해 주세요.');
+    } finally {
+      input.value = '';
     }
   };
 
