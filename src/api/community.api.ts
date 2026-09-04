@@ -67,3 +67,17 @@ export function createJobPost(request: CreateJobPostRequest) {
     body: JSON.stringify(request),
   });
 }
+
+export type UpdateJobPostRequest = {
+  jobId: string;
+  userId: string;
+  data: Omit<CreateJobPostRequest, 'userId'>;
+};
+
+export function updateJobPost({ jobId, userId, data }: UpdateJobPostRequest) {
+  return apiClient<JobPost>(`/backend-api/community/jobs/${jobId}`, {
+    method: 'PATCH',
+    query: { userId },
+    body: JSON.stringify(data),
+  });
+}

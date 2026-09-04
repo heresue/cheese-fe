@@ -20,31 +20,41 @@ import type { JobPost } from '@/types/community/community';
 import { FieldSelectValue, toFieldArray, toFieldSelectValue } from '@/lib/jobField';
 import { useCurrentUser } from '@/queries/auth/useCurrentUser';
 import { useCreateJobPost } from '@/queries/community/useCreateJobPost';
+import { useUpdateJobPost } from '@/queries/community/useUpdateJobPost';
 import { useMypage } from '@/queries/mypage/useMypage';
+import { formatDate } from '@/lib/formatDate';
 
 type JobPostFormProps = {
   mode: 'create' | 'edit';
+  jobId?: string;
   initialValues?: JobPost;
 };
 
-export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
+// TODO: (논의필요) 채용공고 수정 진입 시 작성 프로필과 현재 활성 프로필을 비교하고,
+// 불일치하면 프로필 전환 확인 후 수정 페이지로 이동하도록 처리
+export default function JobPostForm({ mode, jobId, initialValues }: JobPostFormProps) {
   const router = useRouter();
   const [field, setField] = useState(toFieldSelectValue(initialValues?.field));
   const [employmentType, setEmploymentType] = useState(initialValues?.employmentType ?? '');
   const [education, setEducation] = useState(initialValues?.education ?? '');
   const [career, setCareer] = useState(initialValues?.career ?? '');
-  const [date, setDate] = useState(initialValues?.deadline ?? '');
+  const [date, setDate] = useState(
+    initialValues?.deadline ? formatDate(initialValues.deadline).replaceAll('.', '-') : '',
+  );
 
   const { data: user } = useCurrentUser();
   const { data: mypage } = useMypage(user?.id);
   const { mutate: createJobPost, isPending: isCreatePending } = useCreateJobPost();
+  const { mutate: updateJobPost, isPending: isUpdatePending } = useUpdateJobPost();
 
   const isCompanyProfile = user?.activeProfileType === 'company';
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>, content: string) => {
     event.preventDefault();
 
-    if (!user || !mypage || isCreatePending) return;
+    if (!user || isCreatePending || isUpdatePending) return;
+
+    if (mode === 'create' && !mypage) return;
 
     const formData = new FormData(event.currentTarget);
 
@@ -56,10 +66,14 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
       .filter(Boolean);
     const applyUrl = String(formData.get('url') ?? '');
 
-    const jobPostPayload = {
-      userId: user.id,
+    const jobPostData = {
       // TODO: 개인 프로필 작성 시 companyName 입력 방식 협의 필요
-      companyName: isCompanyProfile ? mypage.companyProfile.companyName : '',
+      companyName:
+        mode === 'edit' && initialValues
+          ? initialValues.companyName
+          : isCompanyProfile
+            ? (mypage?.companyProfile.companyName ?? '')
+            : '',
       title,
       field: toFieldArray(field),
       employmentType,
@@ -80,16 +94,31 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
     };
 
     if (mode === 'create') {
-      createJobPost(jobPostPayload, {
-        onSuccess: (createdJobPost) => {
-          router.push(`/community/jobs/${createdJobPost.id}`);
+      createJobPost(
+        { userId: user.id, ...jobPostData },
+        {
+          onSuccess: (createdJobPost) => {
+            router.push(`/community/jobs/${createdJobPost.id}`);
+          },
         },
-      });
+      );
       return;
     }
 
-    // TODO: 수정 API + 게시글 상세 페이지로 이동
-    alert('게시글이 수정되었습니다.');
+    if (!jobId || !initialValues) return;
+
+    updateJobPost(
+      {
+        jobId,
+        userId: user.id,
+        data: jobPostData,
+      },
+      {
+        onSuccess: () => {
+          router.push(`/community/jobs/${jobId}`);
+        },
+      },
+    );
   };
 
   const applyUrl = initialValues?.apply.type === 'homepage' ? initialValues.apply.url : '';
@@ -99,7 +128,7 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
       mode={mode}
       onSubmit={handleSubmit}
       initialContent={initialValues?.content ?? ''}
-      isSubmitting={mode === 'create' && isCreatePending}
+      isSubmitting={mode === 'create' ? isCreatePending : isUpdatePending}
     >
       <section className="flex flex-col gap-[30px]">
         <FormField label="제목" required>
@@ -164,7 +193,7 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
             <DatePicker
               value={date}
               onChange={setDate}
-              formatDisplayValue={(value) => value.replaceAll('-', '. ')}
+              formatDisplayValue={(value) => value.replaceAll('-', '.')}
               buttonClassName="border-b border-gray-400 h-[30px] focus-within:border-secondary-600 focus-within:border-b-2"
             />
           </FormField>
