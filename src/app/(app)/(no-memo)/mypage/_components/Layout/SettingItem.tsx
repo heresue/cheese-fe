@@ -28,7 +28,7 @@ export default function SettingItem({
   buttonClassName,
   onClick,
 }: SettingItemProps) {
-  const hasDocument = Boolean(document?.fileName || document?.url);
+  const hasDocument = Boolean(document?.fileUrl || document?.url);
 
   return (
     <div className="flex items-center justify-between gap-3">
