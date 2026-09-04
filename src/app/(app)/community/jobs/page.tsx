@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import JobPostCard from '@/components/community/jobs/JobPostCard';
@@ -8,7 +8,7 @@ import JobPostCard from '@/components/community/jobs/JobPostCard';
 import CommunityListState from '../_components/CommunityListState';
 import ApplyModal from '../_components/ApplyModal';
 
-import { isCommunitySort } from '@/app/(app)/community/_constants/community';
+import { COMMUNITY_LIST_LIMIT, isCommunitySort } from '@/app/(app)/community/_constants/community';
 
 import { useJobPosts } from '@/queries/community/useJobPosts';
 import { useToggleJobPostLike } from '@/queries/community/useToggleJobPostLike';
@@ -23,7 +23,32 @@ export default function CommunityJobsPage() {
   const sort = isCommunitySort(sortParam) ? sortParam : 'latest';
   const keyword = searchParams.get('keyword') ?? '';
 
-  const { data: jobPosts = [], isPending, isError, refetch } = useJobPosts({ sort, keyword });
+  const { data, isPending, isError, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useJobPosts({ sort, keyword, limit: COMMUNITY_LIST_LIMIT });
+
+  const jobPosts = data?.pages.flatMap((page) => page.items) ?? [];
+
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const target = loadMoreRef.current;
+
+    if (!target || !hasNextPage) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      const [entry] = entries;
+
+      if (entry.isIntersecting && !isFetchingNextPage) {
+        void fetchNextPage();
+      }
+    });
+
+    observer.observe(target);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   // TODO: API 연동 후 좋아요 캐시 갱신 방식 최적화
   const { mutate: toggleJobPostLike } = useToggleJobPostLike();
@@ -63,6 +88,8 @@ export default function CommunityJobsPage() {
           onToggleLike={toggleJobPostLike}
         />
       ))}
+
+      <div ref={loadMoreRef} className="h-px" />
 
       {selectedApplyPost && (
         <ApplyModal post={selectedApplyPost} isOpen onClose={() => setSelectedApplyPost(null)} />

@@ -1,19 +1,28 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { communityQueryKeys } from './communityQueryKeys';
 
 import { getJobPosts } from '@/api/community.api';
 import { useCurrentUser } from '@/queries/auth/useCurrentUser';
 
-import type { CommunityPostsListParams } from '@/types/community/query';
+import type { JobPostsListParams } from '@/types/community/query';
 
-export function useJobPosts(params: CommunityPostsListParams) {
+export function useJobPosts(params: JobPostsListParams) {
   const { data: currentUser } = useCurrentUser();
   const requestParams = { ...params, userId: currentUser?.id };
 
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: communityQueryKeys.jobList(requestParams),
-    queryFn: ({ signal }) => getJobPosts({ ...requestParams, signal }),
-    select: (response) => response.items,
+
+    queryFn: ({ pageParam, signal }) =>
+      getJobPosts({ ...requestParams, cursor: pageParam, signal }),
+
+    initialPageParam: undefined as string | undefined,
+
+    getNextPageParam: (lastPage) => {
+      return lastPage.hasMore ? (lastPage.nextCursor ?? undefined) : undefined;
+    },
+
+    enabled: !!currentUser,
   });
 }
