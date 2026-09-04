@@ -1,4 +1,6 @@
-import { notFound } from 'next/navigation';
+'use client';
+
+import { notFound, useParams } from 'next/navigation';
 
 import {
   PostDetailAside,
@@ -7,9 +9,14 @@ import {
   PostDetailAsideProfile,
 } from '../../_components/PostDetailAside';
 import { JobDetailHeader } from '../_components';
+import CommunityListState from '../../_components/CommunityListState';
+
+import { ApiError } from '@/api/client';
+import { useJobPost } from '@/queries/community/useJobPost';
 
 import { getOptionLabel } from '@/lib/getOptionLabel';
 import { isRecruitClosed } from '@/lib/formatDeadline';
+import { formatDate } from '@/lib/formatDate';
 
 import { APPLY_LABEL } from '@/components/community/jobs/constants';
 import { EDUCATION_OPTIONS, EMPLOYMENT_TYPE_OPTIONS } from '@/constants/profileOptions';
@@ -18,21 +25,34 @@ import { POST_CONTENT_CLASS } from '../../_constants/community';
 
 import type { Field } from '@/types/community/community';
 
-import { jobPosts } from '@/mocks/posts';
-
 const FIELD_ORDER: Field[] = ['FE', 'BE'];
 
 function formatField(fields: Field[]) {
   return FIELD_ORDER.filter((field) => fields.includes(field)).join(', ');
 }
 
-export default async function JobDetailPage({ params }: { params: Promise<{ jobId: string }> }) {
-  const { jobId } = await params;
+export default function JobDetailPage() {
+  const { jobId } = useParams<{ jobId: string }>();
+  const { data: jobPost, error, isPending, refetch } = useJobPost(jobId);
 
-  const jobPost = jobPosts.find((post) => post.id === Number(jobId));
-
-  if (!jobPost) {
+  if (error instanceof ApiError && error.status === 404) {
     notFound();
+  }
+
+  if (isPending) {
+    return <CommunityListState type="loading" message="로딩 중..." />;
+  }
+
+  if (error || !jobPost) {
+    return (
+      <CommunityListState
+        type="error"
+        message="채용공고를 불러오지 못했습니다."
+        onRetry={() => {
+          void refetch();
+        }}
+      />
+    );
   }
 
   const applyUrl = jobPost.apply.type === 'homepage' ? jobPost.apply.url : '-';
@@ -61,7 +81,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ jobI
     },
     { label: '학력', value: getOptionLabel(EDUCATION_OPTIONS, jobPost.education) },
     { label: '고용 형태', value: getOptionLabel(EMPLOYMENT_TYPE_OPTIONS, jobPost.employmentType) },
-    { label: '지원 마감일', value: jobPost.deadline },
+    { label: '지원 마감일', value: jobPost.deadline ? formatDate(jobPost.deadline) : '상시모집' },
     { label: '지원 방법', value: APPLY_LABEL[jobPost.apply.type] },
   ];
 

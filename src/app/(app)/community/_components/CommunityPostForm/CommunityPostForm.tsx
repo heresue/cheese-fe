@@ -16,6 +16,7 @@ type CommunityPostFormProps = {
   mode?: 'create' | 'edit';
   onSubmit: (event: React.FormEvent<HTMLFormElement>, content: string) => void;
   initialContent?: string;
+  isSubmitting?: boolean;
   children: ReactNode;
 };
 
@@ -23,6 +24,7 @@ export default function CommunityPostForm({
   mode = 'create',
   onSubmit,
   initialContent = '',
+  isSubmitting = false,
   children,
 }: CommunityPostFormProps) {
   const [content, setContent] = useState(initialContent);
@@ -61,7 +63,15 @@ export default function CommunityPostForm({
             <h2 className="text-[20px] leading-[30px] font-medium">{title}</h2>
           </div>
 
-          <Button type="submit" form={formId} width={100} size={44} paddingX={12} className="gap-3">
+          <Button
+            type="submit"
+            form={formId}
+            width={100}
+            size={44}
+            paddingX={12}
+            className="gap-3"
+            disabled={isSubmitting}
+          >
             <EditIcon className="w-4" aria-hidden="true" />
             {submitButtonText}
           </Button>

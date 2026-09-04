@@ -10,6 +10,9 @@ export const communityQueryKeys = {
   jobs: () => [...communityQueryKeys.all, 'jobs'] as const,
   jobLists: () => [...communityQueryKeys.jobs(), 'list'] as const,
   jobList: (params: JobPostsListParams) => [...communityQueryKeys.jobLists(), params] as const,
+  jobDetails: () => [...communityQueryKeys.jobs(), 'detail'] as const,
+  jobDetail: (jobId: string, userId?: string) =>
+    [...communityQueryKeys.jobDetails(), jobId, { userId }] as const,
 
   groups: () => [...communityQueryKeys.all, 'groups'] as const,
   groupLists: () => [...communityQueryKeys.groups(), 'list'] as const,
