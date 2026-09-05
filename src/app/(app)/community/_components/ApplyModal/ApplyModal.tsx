@@ -17,7 +17,7 @@ export type ApplyModalProps = {
   post: JobPost | GroupPost;
   isOpen: boolean;
   onClose: () => void;
-  onApply?: () => Promise<void>;
+  onApply: () => Promise<void>;
   isApplyPending?: boolean;
   isApplied?: boolean;
 };
@@ -36,9 +36,11 @@ export default function ApplyModal({
 
   const handleApplyClick = async () => {
     if (isApplyPending || isApplied) return;
+
     setApplyError(null);
+
     try {
-      await onApply?.();
+      await onApply();
       setIsCompleted(true);
     } catch (error) {
       setApplyError(

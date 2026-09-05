@@ -48,7 +48,7 @@ export default function PostDetailAsideActions({
   };
 
   const displayedIsLiked = onToggleLike ? post.isLiked : isLiked;
-  const isApplied = Boolean(onApply) && post.isApplied;
+  const isApplied = post.isApplied;
 
   const handleApplyClick = () => {
     if (isClosed || isApplyPending || isApplied) return;
@@ -79,31 +79,35 @@ export default function PostDetailAsideActions({
         )}
       </Button>
 
-      <Button
-        disabled={isClosed || isApplyPending || isApplied}
-        onClick={handleApplyClick}
-        size={54}
-        width={182}
-        className="flex gap-3"
-      >
-        <ShareIcon className="h-[13px]" />
-        {isApplied
-          ? '지원 완료'
-          : isClosed
-            ? closedButtonText
-            : isApplyPending
-              ? '지원 중...'
-              : buttonText}
-      </Button>
+      {onApply && (
+        <Button
+          disabled={isClosed || isApplyPending || isApplied}
+          onClick={handleApplyClick}
+          size={54}
+          width={182}
+          className="flex gap-3"
+        >
+          <ShareIcon className="h-[13px]" />
+          {isApplied
+            ? '지원 완료'
+            : isClosed
+              ? closedButtonText
+              : isApplyPending
+                ? '지원 중...'
+                : buttonText}
+        </Button>
+      )}
 
-      <ApplyModal
-        post={post}
-        isOpen={isApplyModalOpen}
-        onClose={() => setIsApplyModalOpen(false)}
-        onApply={onApply}
-        isApplyPending={isApplyPending}
-        isApplied={isApplied}
-      />
+      {onApply && (
+        <ApplyModal
+          post={post}
+          isOpen={isApplyModalOpen}
+          onClose={() => setIsApplyModalOpen(false)}
+          onApply={onApply}
+          isApplyPending={isApplyPending}
+          isApplied={post.isApplied}
+        />
+      )}
     </div>
   );
 }
