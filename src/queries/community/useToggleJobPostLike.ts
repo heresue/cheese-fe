@@ -7,6 +7,7 @@ import { mypageQueryKeys } from '@/queries/mypage/mypageQueryKeys';
 
 import type { JobPost, ToggleJobPostLikeParams } from '@/types/community/community';
 import type { InfiniteData } from '@tanstack/react-query';
+import type { JobBookmarksResponse } from '@/api/mypage.api';
 
 export function useToggleJobPostLike() {
   const queryClient = useQueryClient();
@@ -56,6 +57,23 @@ export function useToggleJobPostLike() {
             );
           },
         },
+        (current) => {
+          if (!current) return current;
+
+          return {
+            ...current,
+            pages: current.pages.map((page) => ({
+              ...page,
+              items: page.items.map((post) =>
+                post.id === variables.jobId ? updateLike(post) : post,
+              ),
+            })),
+          };
+        },
+      );
+
+      queryClient.setQueriesData<InfiniteData<JobBookmarksResponse>>(
+        { queryKey: mypageQueryKeys.bookmarks(currentUser.id, 'jobs') },
         (current) => {
           if (!current) return current;
 

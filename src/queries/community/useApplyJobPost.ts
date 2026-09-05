@@ -63,6 +63,9 @@ export function useApplyJobPost() {
         queryClient.invalidateQueries({ queryKey, exact: true }),
         queryClient.invalidateQueries(listFilters),
         queryClient.invalidateQueries({
+          queryKey: mypageQueryKeys.bookmarks(response.userId, 'jobs'),
+        }),
+        queryClient.invalidateQueries({
           queryKey: mypageQueryKeys.jobApplications(response.userId),
         }),
       ]);

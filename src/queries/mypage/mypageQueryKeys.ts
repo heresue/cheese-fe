@@ -1,4 +1,4 @@
-import type { JobApplicationsParams } from '@/api/mypage.api';
+import type { BookmarkListParams, BookmarkType, JobApplicationsParams } from '@/api/mypage.api';
 
 export const mypageQueryKeys = {
   all: ['mypage'] as const,
@@ -10,4 +10,8 @@ export const mypageQueryKeys = {
     userId: string | undefined,
     params: Omit<JobApplicationsParams, 'userId' | 'cursor'>,
   ) => [...mypageQueryKeys.jobApplications(userId), params] as const,
+  bookmarks: (userId: string | undefined, type: BookmarkType) =>
+    [...mypageQueryKeys.user(userId), 'bookmarks', type] as const,
+  bookmarkList: (userId: string | undefined, type: BookmarkType, params: BookmarkListParams) =>
+    [...mypageQueryKeys.bookmarks(userId, type), params] as const,
 };

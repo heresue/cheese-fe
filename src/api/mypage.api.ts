@@ -81,6 +81,30 @@ export type JobApplicationsParams = {
   sort?: ApplicationSort;
 };
 
+export type BookmarkType = 'jobs' | 'groups' | 'info';
+
+export type BookmarkListParams = {
+  limit?: number;
+};
+
+export type JobBookmarksResponse = {
+  items: JobPost[];
+  nextCursor: string | null;
+  hasMore: boolean;
+};
+
+export function getJobBookmarks(
+  { userId, cursor, limit = 20 }: BookmarkListParams & { userId: string; cursor?: string },
+  signal?: AbortSignal,
+) {
+  return apiClient<JobBookmarksResponse>('/backend-api/mypage/bookmarks', {
+    method: 'GET',
+    cache: 'no-store',
+    query: { userId, type: 'jobs', cursor, limit: String(limit) },
+    signal,
+  });
+}
+
 export type JobApplicationsResponse = {
   items: JobPost[];
   nextCursor: string | null;
