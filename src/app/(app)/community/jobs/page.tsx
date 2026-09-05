@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
+import { Button } from '@/components/common/Button';
 import JobPostCard from '@/components/community/jobs/JobPostCard';
 
 import CommunityListState from '../_components/CommunityListState';
@@ -23,8 +24,16 @@ export default function CommunityJobsPage() {
   const sort = isCommunitySort(sortParam) ? sortParam : 'latest';
   const keyword = searchParams.get('keyword') ?? '';
 
-  const { data, isPending, isError, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useJobPosts({ sort, keyword, limit: COMMUNITY_LIST_LIMIT });
+  const {
+    data,
+    isPending,
+    isError,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isFetchNextPageError,
+  } = useJobPosts({ sort, keyword, limit: COMMUNITY_LIST_LIMIT });
 
   const jobPosts = data?.pages.flatMap((page) => page.items) ?? [];
   const selectedApplyPost = jobPosts.find((post) => post.id === selectedApplyPostId);
@@ -34,7 +43,7 @@ export default function CommunityJobsPage() {
   useEffect(() => {
     const target = loadMoreRef.current;
 
-    if (!target || !hasNextPage) return;
+    if (!target || !hasNextPage || isFetchNextPageError) return;
 
     const observer = new IntersectionObserver((entries) => {
       const [entry] = entries;
@@ -49,7 +58,7 @@ export default function CommunityJobsPage() {
     return () => {
       observer.disconnect();
     };
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, isFetchNextPageError]);
 
   const { mutate: toggleJobPostLike, isPending: isLikePending } = useToggleJobPostLike();
   const {
@@ -62,7 +71,7 @@ export default function CommunityJobsPage() {
     return <CommunityListState type="loading" message="로딩 중..." />;
   }
 
-  if (isError) {
+  if (isError && !isFetchNextPageError) {
     return (
       <CommunityListState
         type="error"
@@ -101,6 +110,20 @@ export default function CommunityJobsPage() {
 
       <div ref={loadMoreRef} className="h-px" />
 
+      {isFetchNextPageError && (
+        <div className="flex justify-center py-5">
+          <Button
+            width={120}
+            variant="outlineGray"
+            onClick={() => {
+              void fetchNextPage();
+            }}
+            disabled={isFetchingNextPage}
+          >
+            다시 시도
+          </Button>
+        </div>
+      )}
       {selectedApplyPost && (
         <ApplyModal
           key={selectedApplyPost.id}
