@@ -18,6 +18,8 @@ type PostDetailAsideActionsProps = {
   buttonText?: string;
   onToggleLike?: () => void;
   isLikePending?: boolean;
+  onApply?: () => Promise<void>;
+  isApplyPending?: boolean;
 };
 
 export default function PostDetailAsideActions({
@@ -26,6 +28,8 @@ export default function PostDetailAsideActions({
   buttonText = '지원하기',
   onToggleLike,
   isLikePending = false,
+  onApply,
+  isApplyPending = false,
 }: PostDetailAsideActionsProps) {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const [isLiked, setIsLiked] = useState(post.isLiked);
@@ -44,8 +48,10 @@ export default function PostDetailAsideActions({
   };
 
   const displayedIsLiked = onToggleLike ? post.isLiked : isLiked;
+  const isApplied = Boolean(onApply) && post.isApplied;
 
   const handleApplyClick = () => {
+    if (isClosed || isApplyPending || isApplied) return;
     if ('apply' in post) {
       if (post.apply.type === 'homepage') {
         window.open(post.apply.url, '_blank', 'noopener,noreferrer');
@@ -74,20 +80,29 @@ export default function PostDetailAsideActions({
       </Button>
 
       <Button
-        disabled={isClosed}
+        disabled={isClosed || isApplyPending || isApplied}
         onClick={handleApplyClick}
         size={54}
         width={182}
         className="flex gap-3"
       >
         <ShareIcon className="h-[13px]" />
-        {isClosed ? closedButtonText : buttonText}
+        {isApplied
+          ? '지원 완료'
+          : isClosed
+            ? closedButtonText
+            : isApplyPending
+              ? '지원 중...'
+              : buttonText}
       </Button>
 
       <ApplyModal
         post={post}
         isOpen={isApplyModalOpen}
         onClose={() => setIsApplyModalOpen(false)}
+        onApply={onApply}
+        isApplyPending={isApplyPending}
+        isApplied={isApplied}
       />
     </div>
   );

@@ -116,3 +116,19 @@ export function unlikeJobPost({ jobId, userId }: JobPostLikeRequest) {
     query: { userId },
   });
 }
+
+export type JobPostApplyRequest = {
+  jobId: string;
+  userId: string;
+};
+
+export type JobPostApplyResponse = {
+  isApplied: boolean;
+};
+
+export function applyJobPost({ jobId, userId }: JobPostApplyRequest) {
+  return apiClient<JobPostApplyResponse>(`/backend-api/community/jobs/${jobId}/apply`, {
+    method: 'POST',
+    query: { userId },
+  });
+}

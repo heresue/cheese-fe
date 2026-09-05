@@ -13,6 +13,7 @@ import CommunityListState from '../../_components/CommunityListState';
 
 import { ApiError } from '@/api/client';
 import { useJobPost } from '@/queries/community/useJobPost';
+import { useApplyJobPost } from '@/queries/community/useApplyJobPost';
 import { useToggleJobPostLike } from '@/queries/community/useToggleJobPostLike';
 
 import { getOptionLabel } from '@/lib/getOptionLabel';
@@ -36,6 +37,7 @@ export default function JobDetailPage() {
   const { jobId } = useParams<{ jobId: string }>();
   const { data: jobPost, error, isPending, refetch } = useJobPost(jobId);
   const { mutate: toggleJobPostLike, isPending: isLikePending } = useToggleJobPostLike();
+  const { mutateAsync: applyJobPost, isPending: isApplyPending } = useApplyJobPost();
 
   if (error instanceof ApiError && error.status === 404) {
     notFound();
@@ -109,6 +111,14 @@ export default function JobDetailPage() {
               post={jobPost}
               isClosed={isClosed}
               isLikePending={isLikePending}
+              isApplyPending={isApplyPending}
+              onApply={async () => {
+                if (isApplyPending || jobPost.isApplied || isClosed) return;
+                const response = await applyJobPost(jobId);
+                if (!response.isApplied) {
+                  throw new Error('지원이 완료되지 않았습니다. 다시 시도해주세요.');
+                }
+              }}
               onToggleLike={() => {
                 toggleJobPostLike({ jobId, isLiked: jobPost.isLiked });
               }}

@@ -27,6 +27,7 @@ type JobPostCardProps = {
   onDirectApply: () => void;
   onToggleLike: (variables: ToggleJobPostLikeParams) => void;
   isLikePending?: boolean;
+  isApplyPending?: boolean;
 };
 
 export default function JobPostCard({
@@ -34,6 +35,7 @@ export default function JobPostCard({
   onDirectApply,
   onToggleLike,
   isLikePending = false,
+  isApplyPending = false,
 }: JobPostCardProps) {
   const isClosed = isRecruitClosed(post.deadline);
 
@@ -98,7 +100,13 @@ export default function JobPostCard({
             {post.likeCount}
           </span>
         </button>
-        <JobApplyAction apply={post.apply} onDirectApply={onDirectApply} isClosed={isClosed} />
+        <JobApplyAction
+          apply={post.apply}
+          onDirectApply={onDirectApply}
+          isClosed={isClosed}
+          isApplied={post.isApplied}
+          isApplyPending={isApplyPending}
+        />
       </div>
     </article>
   );

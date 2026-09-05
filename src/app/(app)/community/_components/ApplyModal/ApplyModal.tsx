@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import BaseModal from '@/components/common/Modal';
+import { ApiError } from '@/api/client';
 
 import ApplyFormContent from './ApplyFormContent';
 import ApplyCompleteContent from './ApplyCompleteContent';
@@ -16,18 +17,40 @@ export type ApplyModalProps = {
   post: JobPost | GroupPost;
   isOpen: boolean;
   onClose: () => void;
+  onApply?: () => Promise<void>;
+  isApplyPending?: boolean;
+  isApplied?: boolean;
 };
 
-export default function ApplyModal({ post, isOpen, onClose }: ApplyModalProps) {
+export default function ApplyModal({
+  post,
+  isOpen,
+  onClose,
+  onApply,
+  isApplyPending = false,
+  isApplied = false,
+}: ApplyModalProps) {
   const router = useRouter();
   const [isCompleted, setIsCompleted] = useState(false);
+  const [applyError, setApplyError] = useState<string | null>(null);
 
-  const handleApplyClick = () => {
-    setIsCompleted(true);
+  const handleApplyClick = async () => {
+    if (isApplyPending || isApplied) return;
+    setApplyError(null);
+    try {
+      await onApply?.();
+      setIsCompleted(true);
+    } catch (error) {
+      setApplyError(
+        error instanceof ApiError ? error.message : '지원하지 못했습니다. 다시 시도해주세요.',
+      );
+    }
   };
 
   const handleClose = () => {
+    if (isApplyPending) return;
     setIsCompleted(false);
+    setApplyError(null);
     onClose();
   };
 
@@ -53,6 +76,7 @@ export default function ApplyModal({ post, isOpen, onClose }: ApplyModalProps) {
             data-no-drag
             type="button"
             onClick={handleClose}
+            disabled={isApplyPending}
             aria-label="닫기"
             className="mr-[25px] p-[7px]"
           >
@@ -64,7 +88,18 @@ export default function ApplyModal({ post, isOpen, onClose }: ApplyModalProps) {
           {isCompleted ? (
             <ApplyCompleteContent title={post.title} onMoveApplications={handleMoveApplications} />
           ) : (
-            <ApplyFormContent post={post} onClose={handleClose} onApply={handleApplyClick} />
+            <ApplyFormContent
+              post={post}
+              onClose={handleClose}
+              onApply={handleApplyClick}
+              isApplyPending={isApplyPending}
+              isApplied={isApplied}
+            />
+          )}
+          {applyError && (
+            <p role="alert" className="text-error-subtle mt-3 text-[14px]">
+              {applyError}
+            </p>
           )}
         </div>
       </section>

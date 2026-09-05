@@ -8,11 +8,23 @@ export default function JobApplyAction({
   apply,
   onDirectApply,
   isClosed,
+  isApplied = false,
+  isApplyPending = false,
 }: {
   apply: ApplyInfo;
   onDirectApply: () => void;
   isClosed: boolean;
+  isApplied?: boolean;
+  isApplyPending?: boolean;
 }) {
+  if (isApplied) {
+    return (
+      <Button width={100} variant="gray" disabled>
+        지원 완료
+      </Button>
+    );
+  }
+
   if (isClosed) {
     return (
       <Button width={100} variant="gray" disabled>
@@ -32,8 +44,8 @@ export default function JobApplyAction({
   }
 
   return (
-    <Button width={100} onClick={onDirectApply} disabled={isClosed}>
-      {APPLY_LABEL[apply.type]}
+    <Button width={100} onClick={onDirectApply} disabled={isClosed || isApplyPending}>
+      {isApplyPending ? '지원 중...' : APPLY_LABEL[apply.type]}
     </Button>
   );
 }
