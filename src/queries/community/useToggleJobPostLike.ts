@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { likeJobPost, unlikeJobPost, type JobPostsResponse } from '@/api/community.api';
 import { useCurrentUser } from '@/queries/auth/useCurrentUser';
 import { communityQueryKeys } from './communityQueryKeys';
+import { mypageQueryKeys } from '@/queries/mypage/mypageQueryKeys';
 
 import type { JobPost, ToggleJobPostLikeParams } from '@/types/community/community';
 import type { InfiniteData } from '@tanstack/react-query';
@@ -24,6 +25,10 @@ export function useToggleJobPostLike() {
 
     onSuccess: (response, variables) => {
       if (!currentUser) return;
+
+      void queryClient.invalidateQueries({
+        queryKey: mypageQueryKeys.jobApplications(currentUser.id),
+      });
 
       const likeCountDelta = response.isLiked === variables.isLiked ? 0 : response.isLiked ? 1 : -1;
       const updateLike = (post: JobPost): JobPost => ({

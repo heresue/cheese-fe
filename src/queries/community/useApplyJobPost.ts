@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { applyJobPost, type JobPostsResponse } from '@/api/community.api';
 import { useCurrentUser } from '@/queries/auth/useCurrentUser';
 import { communityQueryKeys } from './communityQueryKeys';
+import { mypageQueryKeys } from '@/queries/mypage/mypageQueryKeys';
 
 import type { JobPost } from '@/types/community/community';
 import type { InfiniteData, QueryFilters } from '@tanstack/react-query';
@@ -61,6 +62,9 @@ export function useApplyJobPost() {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey, exact: true }),
         queryClient.invalidateQueries(listFilters),
+        queryClient.invalidateQueries({
+          queryKey: mypageQueryKeys.jobApplications(response.userId),
+        }),
       ]);
     },
   });

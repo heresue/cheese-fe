@@ -1,4 +1,6 @@
 import { apiClient } from '@/api/client';
+import type { JobPost } from '@/types/community/community';
+import type { ApplicationSort } from '@/app/(app)/(no-memo)/mypage/applications/_constants/applications';
 
 import type {
   PersonalProfile,
@@ -68,5 +70,31 @@ export async function updateAccountSettings({ userId, data }: UpdateAccountSetti
       userId,
       ...data,
     }),
+  });
+}
+
+export type JobApplicationsParams = {
+  userId: string;
+  cursor?: string;
+  limit?: number;
+  q?: string;
+  sort?: ApplicationSort;
+};
+
+export type JobApplicationsResponse = {
+  items: JobPost[];
+  nextCursor: string | null;
+  hasMore: boolean;
+};
+
+export function getJobApplications(
+  { userId, cursor, limit = 20, q, sort = 'latest' }: JobApplicationsParams,
+  signal?: AbortSignal,
+) {
+  return apiClient<JobApplicationsResponse>('/backend-api/mypage/applications', {
+    method: 'GET',
+    cache: 'no-store',
+    query: { userId, type: 'jobs', cursor, limit: String(limit), q, sort },
+    signal,
   });
 }
