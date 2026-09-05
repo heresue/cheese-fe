@@ -2,6 +2,8 @@ import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/common/Button';
 import { DocumentLinkItem } from '@/components/common/DocumentLink';
+import { useCurrentUser } from '@/queries/auth/useCurrentUser';
+import { useMypage } from '@/queries/mypage/useMypage';
 
 import ShareIcon from '@/assets/icons/common/contact.svg';
 import EditIcon from '@/assets/icons/common/edit.svg';
@@ -10,18 +12,35 @@ import LinkIcon from '@/assets/icons/common/link.svg';
 
 import type { JobPost, GroupPost } from '@/types/community/community';
 
-import { mockMypage } from '@/mocks/profile/userProfiles';
-
 type ApplyFormContentProps = {
   post: JobPost | GroupPost;
   onClose: () => void;
-  onApply: () => void;
+  onApply: () => Promise<void>;
+  isApplyPending?: boolean;
+  isApplied?: boolean;
 };
 
-export default function ApplyFormContent({ post, onClose, onApply }: ApplyFormContentProps) {
+export default function ApplyFormContent({
+  post,
+  onClose,
+  onApply,
+  isApplyPending = false,
+  isApplied = false,
+}: ApplyFormContentProps) {
   const router = useRouter();
 
-  const { personalProfile, accountSettings } = mockMypage;
+  const { data: user, isError: isUserError } = useCurrentUser();
+  const { data: mypage, isPending: isMypagePending, isError: isMypageError } = useMypage(user?.id);
+
+  if (isUserError || isMypageError) {
+    return <p role="alert">정보를 불러오지 못했습니다.</p>;
+  }
+
+  if (!mypage) {
+    return null;
+  }
+
+  const { personalProfile, accountSettings } = mypage;
 
   const documentLinks = [
     {
@@ -65,15 +84,19 @@ export default function ApplyFormContent({ post, onClose, onApply }: ApplyFormCo
 
             <div className="flex justify-between px-3">
               <ul className="flex flex-col gap-2 text-[14px] leading-[30px]">
-                {documentLinks.map((document) => (
-                  <li key={`${document.href}-${document.label}`}>
-                    <DocumentLinkItem
-                      href={document.href}
-                      label={document.label}
-                      icon={document.icon}
-                    />
-                  </li>
-                ))}
+                {documentLinks.length > 0 ? (
+                  documentLinks.map((document) => (
+                    <li key={`${document.href}-${document.label}`}>
+                      <DocumentLinkItem
+                        href={document.href}
+                        label={document.label}
+                        icon={document.icon}
+                      />
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-gray-500">등록된 문서가 없습니다.</li>
+                )}
               </ul>
 
               <Button
@@ -82,6 +105,7 @@ export default function ApplyFormContent({ post, onClose, onApply }: ApplyFormCo
                 paddingX={9}
                 className="gap-[7px] text-gray-500"
                 onClick={handleMoveToMyPage}
+                disabled={isApplyPending}
               >
                 <EditIcon className="w-[14px]" />
                 변경
@@ -91,17 +115,20 @@ export default function ApplyFormContent({ post, onClose, onApply }: ApplyFormCo
 
           <section className="flex flex-col gap-5">
             <h3 className="font-bold">내 이메일, 주소</h3>
+
             <div className="flex justify-between px-3">
               <ul className="flex flex-col gap-2 text-[14px] leading-[30px] text-gray-700">
-                <li>{personalProfile.email}</li>
-                <li>{accountSettings.address}</li>
+                <li>{personalProfile.email || '등록된 이메일이 없습니다.'}</li>
+                <li>{accountSettings.address || '등록된 주소가 없습니다.'}</li>
               </ul>
+
               <Button
                 variant="outlineLightGray"
                 size={38}
                 paddingX={9}
                 className="gap-[7px] text-gray-500"
                 onClick={handleMoveToMyPage}
+                disabled={isApplyPending}
               >
                 <EditIcon className="w-[14px]" />
                 변경
@@ -120,9 +147,15 @@ export default function ApplyFormContent({ post, onClose, onApply }: ApplyFormCo
       </div>
 
       <footer className="flex justify-center">
-        <Button size={54} width={182} className="flex gap-3" onClick={onApply}>
+        <Button
+          size={54}
+          width={182}
+          className="flex gap-3"
+          onClick={onApply}
+          disabled={isApplyPending || isApplied}
+        >
           <ShareIcon className="h-[13px]" />
-          지원하기
+          {isApplied ? '지원 완료' : '지원하기'}
         </Button>
       </footer>
     </div>

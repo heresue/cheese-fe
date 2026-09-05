@@ -5,12 +5,12 @@ import { useMemo } from 'react';
 import GroupPostCard from '@/components/community/groups';
 import { useLikeToggle } from '@/hooks/useLikeToggle';
 
-import type { CommunitySort } from '@/app/(app)/community/_constants/community';
+import type { ApplicationSort } from '../_constants/applications';
 
 import { groupPosts } from '@/mocks/posts';
 
 type AppliedGroupListProps = {
-  sort: CommunitySort;
+  sort: ApplicationSort;
   keyword: string;
 };
 
@@ -34,27 +34,8 @@ export default function AppliedGroupList({ sort, keyword }: AppliedGroupListProp
     });
 
     return [...searchedPosts].sort((a, b) => {
-      if (sort === 'like') {
-        return b.likeCount - a.likeCount;
-      }
-
-      if (sort === 'deadline') {
-        if (!a.deadline && !b.deadline) {
-          return 0;
-        }
-
-        if (!a.deadline) {
-          return 1;
-        }
-
-        if (!b.deadline) {
-          return -1;
-        }
-
-        return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
-      }
-
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      const difference = new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      return sort === 'oldest' ? -difference : difference;
     });
   }, [posts, sort, keyword]);
 

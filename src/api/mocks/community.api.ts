@@ -42,28 +42,6 @@ function sortRecruitPosts<T extends RecruitPostSortFields>(
   });
 }
 
-export async function getJobPosts({
-  sort = 'latest',
-  keyword = '',
-}: CommunityPostsListParams = {}): Promise<JobPost[]> {
-  const normalizedKeyword = keyword.trim().toLowerCase();
-
-  const filteredPosts = jobPosts.filter((post) => {
-    if (!normalizedKeyword) {
-      return true;
-    }
-
-    return (
-      post.title.toLowerCase().includes(normalizedKeyword) ||
-      post.companyName.toLowerCase().includes(normalizedKeyword) ||
-      post.author.nickname.toLowerCase().includes(normalizedKeyword) ||
-      post.skills.some((skill) => skill.toLowerCase().includes(normalizedKeyword))
-    );
-  });
-
-  return sortRecruitPosts(filteredPosts, sort, (post) => new Date(post.createdAt).getTime());
-}
-
 export async function getGroupPosts({
   sort = 'latest',
   keyword = '',
@@ -144,14 +122,6 @@ function updatePostLike(posts: LikeablePost[], postId: number, nextIsLiked: bool
     isLiked: nextIsLiked,
     likeCount: Math.max(0, post.likeCount + (nextIsLiked ? 1 : -1)),
   };
-}
-
-export async function likeJobPost(postId: number): Promise<void> {
-  updatePostLike(jobPosts, postId, true);
-}
-
-export async function unlikeJobPost(postId: number): Promise<void> {
-  updatePostLike(jobPosts, postId, false);
 }
 
 export async function likeGroupPost(postId: number): Promise<void> {

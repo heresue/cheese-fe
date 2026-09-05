@@ -1,79 +1,105 @@
-'use client';
+﻿'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useRef } from 'react';
 
-import { useLikeToggle } from '@/hooks/useLikeToggle';
 import JobPostCard from '@/components/community/jobs/JobPostCard';
+import CommunityListState from '@/app/(app)/community/_components/CommunityListState';
+import { useCurrentUser } from '@/queries/auth/useCurrentUser';
+import { useJobApplications } from '@/queries/mypage/useJobApplications';
+import { useToggleJobPostLike } from '@/queries/community/useToggleJobPostLike';
 
-import type { CommunitySort } from '@/app/(app)/community/_constants/community';
-
-import { jobPosts } from '@/mocks/posts';
+import type { ApplicationSort } from '../_constants/applications';
 
 type AppliedJobListProps = {
-  sort: CommunitySort;
+  sort: ApplicationSort;
   keyword: string;
 };
 
 export default function AppliedJobList({ sort, keyword }: AppliedJobListProps) {
-  const appliedJobPosts = useMemo(
-    () => jobPosts.filter((post) => post.isApplied && post.apply.type === 'direct'),
-    [],
-  );
+  const currentUserQuery = useCurrentUser();
+  const {
+    data,
+    isPending,
+    isError,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchNextPageError,
+  } = useJobApplications({ sort, q: keyword.trim(), limit: 20 });
+  const { mutate: toggleLike, isPending: isLikePending } = useToggleJobPostLike();
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const posts = data?.pages.flatMap((page) => page.items) ?? [];
 
-  const { posts, toggleLike } = useLikeToggle(appliedJobPosts);
+  useEffect(() => {
+    const target = loadMoreRef.current;
+    if (!target || !hasNextPage || isFetching || isFetchNextPageError) return;
 
-  const filteredJobPosts = useMemo(() => {
-    const normalizedKeyword = keyword.trim().toLowerCase();
-
-    const searchedPosts = posts.filter((post) => {
-      if (!normalizedKeyword) {
-        return true;
-      }
-
-      return (
-        post.title.toLowerCase().includes(normalizedKeyword) ||
-        post.companyName.toLowerCase().includes(normalizedKeyword) ||
-        post.author.nickname.toLowerCase().includes(normalizedKeyword)
-      );
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) void fetchNextPage();
     });
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetching, isFetchNextPageError]);
 
-    return [...searchedPosts].sort((a, b) => {
-      if (sort === 'like') {
-        return b.likeCount - a.likeCount;
-      }
+  if (currentUserQuery.isError) {
+    return (
+      <CommunityListState
+        type="error"
+        message="사용자 정보를 불러오지 못했습니다."
+        onRetry={() => {
+          void currentUserQuery.refetch();
+        }}
+      />
+    );
+  }
 
-      if (sort === 'deadline') {
-        if (!a.deadline && !b.deadline) {
-          return 0;
-        }
+  if (isPending) {
+    return <CommunityListState type="loading" message="로딩 중..." />;
+  }
 
-        if (!a.deadline) {
-          return 1;
-        }
+  if (isError && !isFetchNextPageError) {
+    return (
+      <CommunityListState
+        type="error"
+        message="지원현황을 불러오지 못했습니다."
+        onRetry={() => {
+          void refetch();
+        }}
+      />
+    );
+  }
 
-        if (!b.deadline) {
-          return -1;
-        }
-
-        return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
-      }
-
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    });
-  }, [posts, sort, keyword]);
+  if (posts.length === 0) {
+    return (
+      <CommunityListState
+        type="empty"
+        message={keyword.trim() ? '검색 결과가 없습니다.' : '지원한 채용공고가 없습니다.'}
+      />
+    );
+  }
 
   return (
     <>
-      {filteredJobPosts.map((post) => (
+      {posts.map((post) => (
         <JobPostCard
           key={post.id}
           post={post}
-          onDirectApply={() => {
-            // TODO: 지원현황 UX 결정 후 적용
-          }}
-          onToggleLike={({ postId }) => toggleLike(postId)}
+          onDirectApply={() => {}}
+          onToggleLike={toggleLike}
+          isLikePending={isLikePending}
         />
       ))}
+      <div ref={loadMoreRef} className="h-px" />
+      {isFetchNextPageError && (
+        <CommunityListState
+          type="error"
+          message="다음 지원현황을 불러오지 못했습니다."
+          onRetry={() => {
+            void fetchNextPage();
+          }}
+        />
+      )}
     </>
   );
 }

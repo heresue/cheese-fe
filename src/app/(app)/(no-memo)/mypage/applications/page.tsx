@@ -7,10 +7,7 @@ import ListFilterBar from '@/components/common/ListFilterBar';
 import AppliedJobList from './_components/AppliedJobList';
 import AppliedGroupList from './_components/AppliedGroupList';
 
-import {
-  COMMUNITY_SORT_OPTIONS,
-  type CommunitySort,
-} from '@/app/(app)/community/_constants/community';
+import { APPLICATION_SORT_OPTIONS, type ApplicationSort } from './_constants/applications';
 
 import { useSearchHistories } from '@/hooks/useSearchHistories';
 
@@ -33,7 +30,7 @@ export default function ApplicationsPage() {
   const [activeApplicationsTab, setActiveApplicationsTab] =
     useState<MypageApplicationsCategoryTabValue>('jobs');
 
-  const [sort, setSort] = useState<CommunitySort>('latest');
+  const [sort, setSort] = useState<ApplicationSort>('latest');
   const [keyword, setKeyword] = useState('');
 
   const { histories: applicationSearchHistories, addHistory: addApplicationSearchHistory } =
@@ -65,7 +62,7 @@ export default function ApplicationsPage() {
         />
 
         <ListFilterBar
-          sortOptions={COMMUNITY_SORT_OPTIONS}
+          sortOptions={APPLICATION_SORT_OPTIONS}
           selectedSort={sort}
           searchValue={keyword}
           searchPlaceholder="검색"

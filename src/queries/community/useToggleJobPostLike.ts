@@ -1,23 +1,93 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { likeJobPost, unlikeJobPost } from '@/api/mocks/community.api';
+import { likeJobPost, unlikeJobPost, type JobPostsResponse } from '@/api/community.api';
+import { useCurrentUser } from '@/queries/auth/useCurrentUser';
 import { communityQueryKeys } from './communityQueryKeys';
+import { mypageQueryKeys } from '@/queries/mypage/mypageQueryKeys';
 
-import type { TogglePostLikeParams } from '@/types/community/community';
+import type { JobPost, ToggleJobPostLikeParams } from '@/types/community/community';
+import type { InfiniteData } from '@tanstack/react-query';
+import type { JobBookmarksResponse } from '@/api/mypage.api';
 
 export function useToggleJobPostLike() {
   const queryClient = useQueryClient();
+  const { data: currentUser } = useCurrentUser();
 
   return useMutation({
-    mutationFn: ({ postId, isLiked }: TogglePostLikeParams) => {
-      return isLiked ? unlikeJobPost(postId) : likeJobPost(postId);
+    mutationFn: ({ jobId, isLiked }: ToggleJobPostLikeParams) => {
+      if (!currentUser) {
+        throw new Error('로그인 사용자 정보가 필요합니다.');
+      }
+
+      const request = { jobId, userId: currentUser.id };
+
+      return isLiked ? unlikeJobPost(request) : likeJobPost(request);
     },
 
-    onSuccess: async () => {
-      // TODO: 실제 API 응답 구조에 따라 invalidate 대신 setQueryData 또는 optimistic update 적용 검토
-      await queryClient.invalidateQueries({
-        queryKey: communityQueryKeys.jobLists(),
+    onSuccess: (response, variables) => {
+      if (!currentUser) return;
+
+      void queryClient.invalidateQueries({
+        queryKey: mypageQueryKeys.jobApplications(currentUser.id),
       });
+
+      const likeCountDelta = response.isLiked === variables.isLiked ? 0 : response.isLiked ? 1 : -1;
+      const updateLike = (post: JobPost): JobPost => ({
+        ...post,
+        isLiked: response.isLiked,
+        likeCount: Math.max(0, post.likeCount + likeCountDelta),
+      });
+
+      queryClient.setQueryData<JobPost>(
+        communityQueryKeys.jobDetail(variables.jobId, currentUser.id),
+        (current) => (current ? updateLike(current) : current),
+      );
+
+      queryClient.setQueriesData<InfiniteData<JobPostsResponse>>(
+        {
+          queryKey: communityQueryKeys.jobLists(),
+          predicate: (query) => {
+            const params = query.queryKey[3];
+
+            return (
+              typeof params === 'object' &&
+              params !== null &&
+              'userId' in params &&
+              params.userId === currentUser.id
+            );
+          },
+        },
+        (current) => {
+          if (!current) return current;
+
+          return {
+            ...current,
+            pages: current.pages.map((page) => ({
+              ...page,
+              items: page.items.map((post) =>
+                post.id === variables.jobId ? updateLike(post) : post,
+              ),
+            })),
+          };
+        },
+      );
+
+      queryClient.setQueriesData<InfiniteData<JobBookmarksResponse>>(
+        { queryKey: mypageQueryKeys.bookmarks(currentUser.id, 'jobs') },
+        (current) => {
+          if (!current) return current;
+
+          return {
+            ...current,
+            pages: current.pages.map((page) => ({
+              ...page,
+              items: page.items.map((post) =>
+                post.id === variables.jobId ? updateLike(post) : post,
+              ),
+            })),
+          };
+        },
+      );
     },
   });
 }

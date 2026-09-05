@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { Input } from '@/components/common/Input';
 import { Select } from '@/components/common/Select';
@@ -17,21 +18,43 @@ import {
 
 import type { JobPost } from '@/types/community/community';
 import { FieldSelectValue, toFieldArray, toFieldSelectValue } from '@/lib/jobField';
+import { useCurrentUser } from '@/queries/auth/useCurrentUser';
+import { useCreateJobPost } from '@/queries/community/useCreateJobPost';
+import { useUpdateJobPost } from '@/queries/community/useUpdateJobPost';
+import { useMypage } from '@/queries/mypage/useMypage';
+import { formatDate } from '@/lib/formatDate';
 
 type JobPostFormProps = {
   mode: 'create' | 'edit';
+  jobId?: string;
   initialValues?: JobPost;
 };
 
-export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
+// TODO: (논의필요) 채용공고 수정 진입 시 작성 프로필과 현재 활성 프로필을 비교하고,
+// 불일치하면 프로필 전환 확인 후 수정 페이지로 이동하도록 처리
+export default function JobPostForm({ mode, jobId, initialValues }: JobPostFormProps) {
+  const router = useRouter();
   const [field, setField] = useState(toFieldSelectValue(initialValues?.field));
   const [employmentType, setEmploymentType] = useState(initialValues?.employmentType ?? '');
   const [education, setEducation] = useState(initialValues?.education ?? '');
   const [career, setCareer] = useState(initialValues?.career ?? '');
-  const [date, setDate] = useState(initialValues?.deadline ?? '');
+  const [date, setDate] = useState(
+    initialValues?.deadline ? formatDate(initialValues.deadline).replaceAll('.', '-') : '',
+  );
+
+  const { data: user } = useCurrentUser();
+  const { data: mypage } = useMypage(user?.id);
+  const { mutate: createJobPost, isPending: isCreatePending } = useCreateJobPost();
+  const { mutate: updateJobPost, isPending: isUpdatePending } = useUpdateJobPost();
+
+  const isCompanyProfile = user?.activeProfileType === 'company';
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>, content: string) => {
     event.preventDefault();
+
+    if (!user || isCreatePending || isUpdatePending) return;
+
+    if (mode === 'create' && !mypage) return;
 
     const formData = new FormData(event.currentTarget);
 
@@ -41,9 +64,20 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
       .split(',')
       .map((skill) => skill.trim())
       .filter(Boolean);
-    const applyUrl = String(formData.get('url') ?? '');
+    const applyUrl = String(formData.get('url') ?? '').trim();
 
-    const jobPostPayload = {
+    if (!isCompanyProfile && !applyUrl) {
+      return;
+    }
+
+    const jobPostData = {
+      // TODO: 개인 프로필 작성 시 companyName 입력 방식 협의 필요
+      companyName:
+        mode === 'edit' && initialValues
+          ? initialValues.companyName
+          : isCompanyProfile
+            ? (mypage?.companyProfile.companyName ?? '')
+            : '',
       title,
       field: toFieldArray(field),
       employmentType,
@@ -51,22 +85,44 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
       education,
       career,
       skills,
-      deadline: date,
-      apply: {
-        type: 'homepage',
-        url: applyUrl,
-      },
+      deadline: date || null,
+      apply: isCompanyProfile
+        ? {
+            type: 'direct' as const,
+          }
+        : {
+            type: 'homepage' as const,
+            url: applyUrl,
+          },
       content,
     };
 
     if (mode === 'create') {
-      // TODO: 생성 API + 게시글 상세 페이지로 이동
-      alert('게시글이 등록되었습니다.');
+      createJobPost(
+        { userId: user.id, ...jobPostData },
+        {
+          onSuccess: (createdJobPost) => {
+            router.push(`/community/jobs/${createdJobPost.id}`);
+          },
+        },
+      );
       return;
     }
 
-    // TODO: 수정 API + 게시글 상세 페이지로 이동
-    alert('게시글이 수정되었습니다.');
+    if (!jobId || !initialValues) return;
+
+    updateJobPost(
+      {
+        jobId,
+        userId: user.id,
+        data: jobPostData,
+      },
+      {
+        onSuccess: () => {
+          router.push(`/community/jobs/${jobId}`);
+        },
+      },
+    );
   };
 
   const applyUrl = initialValues?.apply.type === 'homepage' ? initialValues.apply.url : '';
@@ -76,6 +132,7 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
       mode={mode}
       onSubmit={handleSubmit}
       initialContent={initialValues?.content ?? ''}
+      isSubmitting={mode === 'create' ? isCreatePending : isUpdatePending}
     >
       <section className="flex flex-col gap-[30px]">
         <FormField label="제목" required>
@@ -140,16 +197,18 @@ export default function JobPostForm({ mode, initialValues }: JobPostFormProps) {
             <DatePicker
               value={date}
               onChange={setDate}
-              formatDisplayValue={(value) => value.replaceAll('-', '. ')}
+              formatDisplayValue={(value) => value.replaceAll('-', '.')}
               buttonClassName="border-b border-gray-400 h-[30px] focus-within:border-secondary-600 focus-within:border-b-2"
             />
           </FormField>
 
-          <FormField label="공고 URL" labelClassName="text-[14px]" className="col-span-2" required>
+          {/* TODO: 기업 프로필에서 공고 URL 입력 시 직접지원과 외부 링크를 어떻게 제공할지 UX 협의 필요 */}
+          <FormField label="공고 URL" labelClassName="text-[14px]" className="col-span-2">
             <Input
               label="공고 URL"
               name="url"
               type="url"
+              required={!isCompanyProfile}
               placeholder="URL 입력"
               defaultValue={applyUrl}
               className="h-[30px]"

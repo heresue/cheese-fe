@@ -39,6 +39,12 @@ export function isInfoSort(value: string | null): value is InfoSort {
 }
 
 /* ================================
+     커뮤니티 목록
+   ================================ */
+
+export const COMMUNITY_LIST_LIMIT = 20;
+
+/* ================================
      게시글 상세 페이지
    ================================ */
 export const POST_CONTENT_CLASS = '[&_p]:m-0 [&_p]:min-h-6 [&_br]:block [&_br]:content-[""]';

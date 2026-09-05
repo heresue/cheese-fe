@@ -12,6 +12,7 @@ import {
 
 import { cn } from '@/lib/cn';
 import { getOptionLabel } from '@/lib/getOptionLabel';
+import { formatDate } from '@/lib/formatDate';
 
 import { INFO_SORT_OPTIONS } from '../../_constants/community';
 
@@ -87,7 +88,7 @@ export default function PostDetailHeader({
       </div>
 
       <div className="flex items-center justify-end gap-5">
-        <span className="text-[14px] leading-6 text-gray-600">{createdAt}</span>
+        <span className="text-[14px] leading-6 text-gray-600"> {formatDate(createdAt)}</span>
 
         <div className="flex h-6 items-center gap-1">
           <ViewIcon className="w-4 text-gray-500" />

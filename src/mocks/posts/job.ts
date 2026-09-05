@@ -5,7 +5,7 @@ import getMockDeadline from '@/mocks/getMockDeadline';
 
 export const jobPosts: JobPost[] = [
   {
-    id: 1,
+    id: '00000000-0000-4000-8000-000000000001',
     companyName: '치즈공장',
     title: '2026년 스타트업 인턴 부문 경력직 채용',
 
@@ -57,7 +57,7 @@ export const jobPosts: JobPost[] = [
     isApplied: true,
   },
   {
-    id: 2,
+    id: '00000000-0000-4000-8000-000000000002',
     companyName: '프론트랩',
     title: '프론트엔드 개발자 정규직 채용',
 
@@ -105,7 +105,7 @@ export const jobPosts: JobPost[] = [
     isApplied: true,
   },
   {
-    id: 3,
+    id: '00000000-0000-4000-8000-000000000003',
     companyName: '백엔드코어',
     title: 'Spring Boot 기반 백엔드 개발자 모집',
 
@@ -154,7 +154,7 @@ export const jobPosts: JobPost[] = [
     isApplied: false,
   },
   {
-    id: 4,
+    id: '00000000-0000-4000-8000-000000000004',
     companyName: 'UI팩토리',
     title: 'UI/UX 중심 프론트엔드 개발자 채용',
 
@@ -202,7 +202,7 @@ export const jobPosts: JobPost[] = [
     isApplied: false,
   },
   {
-    id: 5,
+    id: '00000000-0000-4000-8000-000000000005',
     companyName: '데브스테이션',
     title: 'Next.js 기반 웹 서비스 개발자 채용',
 
@@ -251,7 +251,7 @@ export const jobPosts: JobPost[] = [
     isApplied: false,
   },
   {
-    id: 6,
+    id: '00000000-0000-4000-8000-000000000006',
     companyName: '클라우드웨이',
     title: '클라우드 기반 백엔드 개발자 채용 (AWS)',
 

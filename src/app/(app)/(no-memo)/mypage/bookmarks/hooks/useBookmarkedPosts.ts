@@ -1,7 +1,7 @@
 import { useLikeToggle } from '@/hooks/useLikeToggle';
 
 type BookmarkablePost = {
-  id: number;
+  id: string | number;
   isLiked: boolean;
   likeCount: number;
 };

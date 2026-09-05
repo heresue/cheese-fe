@@ -1,4 +1,5 @@
 import { updateActiveProfileType, type UpdateActiveProfileTypeRequest } from '@/api/mypage.api';
+import { authQueryKeys } from '@/queries/auth/authQueryKeys';
 import { mypageQueryKeys } from '@/queries/mypage/mypageQueryKeys';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -10,10 +11,15 @@ export function useUpdateActiveProfileType() {
       return updateActiveProfileType(request);
     },
 
-    onSuccess: (_, variables) => {
-      return queryClient.invalidateQueries({
-        queryKey: mypageQueryKeys.user(variables.userId),
-      });
+    onSuccess: async (_, variables) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: mypageQueryKeys.user(variables.userId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: authQueryKeys.me(),
+        }),
+      ]);
     },
   });
 }

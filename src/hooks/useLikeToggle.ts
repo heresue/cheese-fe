@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 type LikeablePost = {
-  id: number;
+  id: string | number;
   isLiked: boolean;
   likeCount: number;
 };
@@ -9,7 +9,7 @@ type LikeablePost = {
 export function useLikeToggle<T extends LikeablePost>(initialPosts: T[]) {
   const [posts, setPosts] = useState(initialPosts);
 
-  const toggleLike = (postId: number) => {
+  const toggleLike = (postId: T['id']) => {
     setPosts((prevPosts) =>
       prevPosts.map((post) => {
         if (post.id !== postId) return post;
