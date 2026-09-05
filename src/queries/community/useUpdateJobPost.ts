@@ -9,7 +9,12 @@ export function useUpdateJobPost() {
 
   return useMutation({
     mutationFn: (request: UpdateJobPostRequest) => updateJobPost(request),
+
     onSuccess: async (updatedJobPost, variables) => {
+      queryClient.removeQueries({
+        queryKey: [...communityQueryKeys.jobDetails(), variables.jobId],
+      });
+
       queryClient.setQueryData(
         communityQueryKeys.jobDetail(variables.jobId, variables.userId),
         updatedJobPost,
