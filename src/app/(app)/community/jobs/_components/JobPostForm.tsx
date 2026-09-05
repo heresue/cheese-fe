@@ -64,7 +64,11 @@ export default function JobPostForm({ mode, jobId, initialValues }: JobPostFormP
       .split(',')
       .map((skill) => skill.trim())
       .filter(Boolean);
-    const applyUrl = String(formData.get('url') ?? '');
+    const applyUrl = String(formData.get('url') ?? '').trim();
+
+    if (!isCompanyProfile && !applyUrl) {
+      return;
+    }
 
     const jobPostData = {
       // TODO: 개인 프로필 작성 시 companyName 입력 방식 협의 필요
@@ -198,12 +202,13 @@ export default function JobPostForm({ mode, jobId, initialValues }: JobPostFormP
             />
           </FormField>
 
-          {/* TODO: 프로필 유형별 공고 URL 필수 여부 및 지원 방식 UX 협의 필요 */}
+          {/* TODO: 기업 프로필에서 공고 URL 입력 시 직접지원과 외부 링크를 어떻게 제공할지 UX 협의 필요 */}
           <FormField label="공고 URL" labelClassName="text-[14px]" className="col-span-2">
             <Input
               label="공고 URL"
               name="url"
               type="url"
+              required={!isCompanyProfile}
               placeholder="URL 입력"
               defaultValue={applyUrl}
               className="h-[30px]"
