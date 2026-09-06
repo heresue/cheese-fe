@@ -7,7 +7,7 @@ import { groupPosts } from '@/mocks/posts';
 export default async function GroupEditPage({ params }: { params: Promise<{ groupId: string }> }) {
   const { groupId } = await params;
 
-  const groupPost = groupPosts.find((post) => post.id === Number(groupId));
+  const groupPost = groupPosts.find((post) => post.id === groupId);
 
   if (!groupPost) {
     notFound();
