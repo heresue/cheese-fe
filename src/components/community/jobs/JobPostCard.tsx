@@ -65,7 +65,6 @@ export default function JobPostCard({
         </span>
       </div>
 
-      {/* <div className={cn('mx-7 flex min-w-0 flex-1 flex-col gap-2', isClosed && 'opacity-50')}> */}
       <div
         className={cn('mx-7 flex min-w-[300px] flex-1 flex-col gap-2', isClosed && 'opacity-50')}
       >
