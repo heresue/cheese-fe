@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 import { Input } from '@/components/common/Input';
 import { Select } from '@/components/common/Select';
@@ -9,6 +8,7 @@ import DatePicker from '@/components/common/DatePicker/DatePicker';
 
 import { CommunityPostForm, FormField } from '../../_components/CommunityPostForm';
 import CommunityListState from '../../_components/CommunityListState';
+import { useCommunityPostNavigation } from '../../_components/Layout/CommunityPostNavigationProvider';
 
 import { ApiError } from '@/api/client';
 
@@ -42,7 +42,7 @@ type FormErrors = Partial<
 >;
 
 export default function JobPostForm({ mode, jobId, initialValues }: JobPostFormProps) {
-  const router = useRouter();
+  const { replaceAfterSave } = useCommunityPostNavigation();
   const [errors, setErrors] = useState<FormErrors>({});
   const clearError = (name: keyof FormErrors) => {
     setErrors((previous) => ({ ...previous, [name]: undefined }));
@@ -174,7 +174,7 @@ export default function JobPostForm({ mode, jobId, initialValues }: JobPostFormP
     if (mode === 'create') {
       createJobPost(jobPostData, {
         onSuccess: (createdJobPost) => {
-          router.replace(`/community/jobs/${createdJobPost.id}`);
+          replaceAfterSave(`/community/jobs/${createdJobPost.id}`);
         },
         onError,
       });
@@ -190,7 +190,7 @@ export default function JobPostForm({ mode, jobId, initialValues }: JobPostFormP
       },
       {
         onSuccess: () => {
-          router.replace(`/community/jobs/${jobId}`);
+          replaceAfterSave(`/community/jobs/${jobId}`);
         },
         onError,
       },

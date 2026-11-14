@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 import { Input } from '@/components/common/Input';
 import { Select } from '@/components/common/Select';
@@ -9,6 +8,7 @@ import { Button } from '@/components/common/Button';
 
 import { CommunityPostForm } from '../../_components/CommunityPostForm';
 import { FormField } from '../../_components/CommunityPostForm';
+import { useCommunityPostNavigation } from '../../_components/Layout/CommunityPostNavigationProvider';
 
 import useFileUpload from '@/hooks/useFileUpload';
 import useTagInput from '@/hooks/useTagInput';
@@ -41,7 +41,7 @@ type InfoPostFormProps = {
 };
 
 export default function InfoPostForm({ mode, initialValues }: InfoPostFormProps) {
-  const router = useRouter();
+  const { replaceAfterSave } = useCommunityPostNavigation();
 
   const [errors, setErrors] = useState<FormErrors>({});
   const clearError = (name: keyof FormErrors) => {
@@ -150,7 +150,7 @@ export default function InfoPostForm({ mode, initialValues }: InfoPostFormProps)
           ...(uploadedFile ? { attachmentFileId: uploadedFile.id } : {}),
         });
 
-        router.replace(`/community/info/${createdInfoPost.id}`);
+        replaceAfterSave(`/community/info/${createdInfoPost.id}`);
       } catch (error) {
         alert(
           error instanceof ApiError ? error.message : '정보/자료공유 게시글 등록에 실패했습니다.',
@@ -181,7 +181,7 @@ export default function InfoPostForm({ mode, initialValues }: InfoPostFormProps)
         },
       });
 
-      router.replace(`/community/info/${initialValues.id}`);
+      replaceAfterSave(`/community/info/${initialValues.id}`);
     } catch (error) {
       alert(
         error instanceof ApiError ? error.message : '정보/자료공유 게시글 수정에 실패했습니다.',

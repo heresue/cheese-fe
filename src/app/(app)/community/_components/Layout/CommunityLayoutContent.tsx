@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { CategoryTabs } from '@/components/common/CategoryTabs';
 import ListFilterBar from '@/components/common/ListFilterBar';
+import { useCommunityPostNavigation } from './CommunityPostNavigationProvider';
 
 import { useUpdateSearchParams } from '@/hooks/useUpdateSearchParams';
 import {
@@ -15,6 +16,7 @@ import {
 
 export default function CommunityLayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const { navigate } = useCommunityPostNavigation();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -38,13 +40,7 @@ export default function CommunityLayoutContent({ children }: { children: React.R
   const handleChangeTab = (value: (typeof COMMUNITY_CATEGORY_TABS)[number]['value']) => {
     const nextPath = isCreatePage ? `${value}/create` : `${value}`;
 
-    if (isCreatePage) {
-      const isConfirmed = window.confirm('작성 중인 내용이 사라집니다. 이동하시겠습니까?');
-
-      if (!isConfirmed) return;
-    }
-
-    router.push(nextPath);
+    navigate(nextPath);
   };
 
   return (

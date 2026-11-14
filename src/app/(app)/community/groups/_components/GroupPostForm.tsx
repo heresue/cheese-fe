@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 import { Input } from '@/components/common/Input';
 import { Select } from '@/components/common/Select';
 import DatePicker from '@/components/common/DatePicker/DatePicker';
 
 import { CommunityPostForm, FormField } from '../../_components/CommunityPostForm';
+import { useCommunityPostNavigation } from '../../_components/Layout/CommunityPostNavigationProvider';
 
 import { ApiError } from '@/api/client';
 import { useCreateGroupPost } from '@/queries/community/useCreateGroupPost';
@@ -36,7 +36,7 @@ type GroupPostFormProps = {
 };
 
 export default function GroupPostForm({ mode, groupId, initialValues }: GroupPostFormProps) {
-  const router = useRouter();
+  const { replaceAfterSave } = useCommunityPostNavigation();
 
   const [errors, setErrors] = useState<FormErrors>({});
   const clearError = (name: keyof FormErrors) => {
@@ -149,7 +149,7 @@ export default function GroupPostForm({ mode, groupId, initialValues }: GroupPos
     if (mode === 'create') {
       createGroupPost(groupPostPayload, {
         onSuccess: (createdGroupPost) => {
-          router.replace(`/community/groups/${createdGroupPost.id}`);
+          replaceAfterSave(`/community/groups/${createdGroupPost.id}`);
         },
         onError,
       });
@@ -162,7 +162,7 @@ export default function GroupPostForm({ mode, groupId, initialValues }: GroupPos
       { groupId, data: groupPostPayload },
       {
         onSuccess: () => {
-          router.replace(`/community/groups/${groupId}`);
+          replaceAfterSave(`/community/groups/${groupId}`);
         },
         onError,
       },
